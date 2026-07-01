@@ -1068,8 +1068,34 @@ def gmat_open_decks() -> bytes:
     return b""
 
 
+# Desktop sync target defaults - match the phone app (ios/ContentView.swift) so
+# desktop <-> phone sync through the same self-hosted GMATWiz server with no
+# Preferences setup. Overridable via col config (gmatSyncEndpoint/User/Pass).
+GMAT_SYNC_ENDPOINT = "http://127.0.0.1:27811/"
+GMAT_SYNC_USER = "gmat"
+GMAT_SYNC_PASS = "wiz"
+
+
 def gmat_sync_now() -> bytes:
-    """Trigger Anki's collection sync (same as the old toolbar Sync button)."""
+    """Trigger Anki's collection sync. On first use (no sync configured), point
+    the desktop at the self-hosted GMATWiz server and log in automatically, so
+    the Sync button 'just works' desktop<->phone without touching Preferences.
+    If the user has already configured sync (e.g. AnkiWeb), we respect it."""
+    col = aqt.mw.col
+    endpoint = col.get_config("gmatSyncEndpoint", None) or GMAT_SYNC_ENDPOINT
+    user = col.get_config("gmatSyncUser", None) or GMAT_SYNC_USER
+    password = col.get_config("gmatSyncPass", None) or GMAT_SYNC_PASS
+
+    # Log in off the GUI thread only if nothing is configured yet.
+    if aqt.mw.pm.sync_auth() is None:
+        try:
+            auth = col.sync_login(user, password, endpoint)
+            aqt.mw.pm.set_custom_sync_url(endpoint)
+            aqt.mw.pm.set_sync_key(auth.hkey)
+            aqt.mw.pm.set_sync_username(user)
+        except Exception as exc:
+            print(f"GMATWiz: auto sync-login failed ({exc}); is the server running?")
+
     aqt.mw.taskman.run_on_main(aqt.mw.on_sync_button_clicked)
     return b""
 

@@ -43,6 +43,11 @@ DONE - DESKTOP (runs via ./run, one Anki window)
     * "Free study (all decks)" = bridges to mw.moveToState("deckBrowser") - the
       escape hatch.
     * "Sync" button in the GMATWiz header = bridges to mw.on_sync_button_clicked.
+      On first use (no sync configured) it AUTO-LOGS-IN to the self-hosted
+      GMATWiz server (defaults match the phone: gmat:wiz @ 127.0.0.1:27811,
+      overridable via col config gmatSyncEndpoint/User/Pass) and stores the
+      hkey + custom sync URL in the profile, so desktop<->phone sync "just
+      works" with no Preferences setup. Existing sync config is respected.
 - REQUIRED RUST ENGINE CHANGE: topic-aware scheduling (rslib) - weak-topic cards
   surface first while FSRS intervals stay valid; per-card topic mastery in
   CardData (no schema migration); SetTopicMastery RPC; toggle in deckconfig.
