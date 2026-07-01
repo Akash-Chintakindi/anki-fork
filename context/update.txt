@@ -1,0 +1,143 @@
+===============================================================================
+GMATWiz - PROJECT UPDATE (state of the build)
+Companion to context.txt (codebase map) and PRD.md (product plan).
+Repo: /Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork
+Branch: gmatwiz   (nothing pushed to any remote)
+Last updated: 2026-07-01
+===============================================================================
+
+WHAT GMATWIZ IS
+- A GMAT prep app built INSIDE a fork of Anki (brownfield): we edit Anki's own
+  Rust/Python/TypeScript, reusing its spaced-repetition + FSRS engine, and turn
+  it into a structured GMAT tutor. Not a layer on top of Anki.
+- Current scope: GMAT Focus **Quant, Problem Solving only** (arithmetic +
+  algebra; no geometry, no Data Sufficiency). Verbal + Data Insights are NOT in
+  yet (post-MVP).
+
+-------------------------------------------------------------------------------
+GIT HISTORY (branch: gmatwiz)
+-------------------------------------------------------------------------------
+  8d8ce2646  GMATWiz MVP - engine change, app shell, diagnostic, lessons
+  97379598d  honest Memory calibration + Performance & Readiness scores (desktop)
+  ba7955c48  iOS app runs a real review on the shared Rust engine
+  2aba37956  Readiness dashboard on iOS (3 scores from the shared engine)
+  769631577  adaptive Today plan - lesson->FSRS, EMA mastery, dated pacing
+(Base upstream commit: b00308e55.)
+
+-------------------------------------------------------------------------------
+DONE - DESKTOP (runs via ./run, one Anki window)
+-------------------------------------------------------------------------------
+- Anki builds from source; GMATWiz opens as a screen INSIDE the main window
+  (a new "gmat" state in qt/aqt/main.py). Top-bar tabs: GMATWiz | Decks | Add |
+  Browse | Stats | Sync. "Decks" is the free-study escape hatch.
+- REQUIRED RUST ENGINE CHANGE: topic-aware scheduling (rslib) - weak-topic cards
+  surface first while FSRS intervals stay valid; per-card topic mastery in
+  CardData (no schema migration); SetTopicMastery RPC; toggle in deckconfig.
+  3 Rust unit tests + 1 Python test; undo + integrity verified.
+- Content: GMAT PS notetype + importer (pylib/anki/gmatwiz.py); 273 questions
+  (42 authored seed + 231 open-licensed AQuA-RAT) in gmatwiz/content/;
+  18 authored lessons in gmatwiz/lessons/.
+- App experience (SvelteKit in ts/routes/gmat/, served by qt/aqt/mediasrv.py):
+  * Today: an ASSEMBLED, time-budgeted session (due reviews -> next lesson ->
+    targeted weak practice) sized to daily minutes, with a dated on/behind-
+    track pacing banner to the exam. "Start today" walks the checklist.
+  * Diagnostic: 21-question timed Quant pretest -> per-topic mastery ->
+    personalized plan (weakest-first); auto-enables topic-aware scheduling.
+  * Learn: 18 lessons as I-do -> we-do -> you-do (application-first).
+    Completing a lesson SCHEDULES its you-do items as real cards (idempotent),
+    so application flows into spaced review.
+  * Practice: real review loop on the REAL scheduler (records reviews). Every
+    answer EMA-updates that topic's mastery (0.7*old + 0.3*correct) and writes
+    it back via set_topic_mastery -> the plan + topic-aware order keep
+    re-adapting (a living plan, not diagnose-once).
+  * Error Log: wrong answers captured (required review).
+  * Readiness dashboard: three SEPARATE scores, each with the honesty rule.
+- Exponent rendering (x^2) fixed across practice/diagnostic/lessons.
+
+THE THREE SCORES (honesty rule: point + range + evidence + give-up abstention)
+- Memory: calibrated from the review log - observed retention + 95% CI, a
+  reliability diagram by past-interval bucket vs target, ECE + calibrated badge.
+  Abstains under 150 graded reviews.
+- Performance: from FIRST-EXPOSURE attempts (new questions), distinct from
+  Memory; point + CI, per-topic weak spots, held-out per-topic-model vs
+  global-baseline Brier check. Abstains under 50 attempts.
+- Readiness: projected GMAT Focus QUANT section score (Q60-90) + range +
+  confidence, gated by the full give-up rule (coverage >=50%, >=200 reviews,
+  >=50 attempts, ECE <=0.10). Total (205-805) ABSTAINS (needs Verbal + DI).
+  Mapping is a documented heuristic, not yet validated vs official scores.
+
+-------------------------------------------------------------------------------
+DONE - MOBILE (iOS Simulator)
+-------------------------------------------------------------------------------
+- The SHARED Anki Rust engine cross-compiles to iOS (arm64 sim), incl. C deps
+  (bundled SQLite, ring, zstd). No scheduler rewritten in Swift.
+- ffi/ crate: C API over the engine (open collection, next card, answer, scores).
+  Built into out/ios/GmatwizFFI.xcframework.
+- ios/: XcodeGen project (project.yml) + SwiftUI app "GMATWizPhone":
+  * Practice tab: opens the real GMAT::Quant collection, fetches a scheduled
+    card, answers it -> records a REAL review; FSRS reschedules (verified:
+    New 42->41, card -> Learn).
+  * Readiness tab: the same three scores, computed in the shared engine
+    (rslib gmat_scores_json), honestly abstaining on a fresh deck.
+- Engine helpers live in rslib/src/gmatwiz.rs (single place, all engine logic).
+
+-------------------------------------------------------------------------------
+NOT DONE / KNOWN GAPS
+-------------------------------------------------------------------------------
+- SYNC: desktop and iOS are NOT synced. They share the ENGINE (code), not the
+  DATA. Each has its own collection (desktop: profile; iOS: app sandbox copy).
+  Two-way sync is PRD Phase 7 (self-hosted Anki Sync Server + conflict rule);
+  not required for MVP.
+- iOS is SIMULATOR only. A real device needs code signing + the device engine
+  slice (ios/build-ios.sh builds device+sim xcframework).
+- SCORE LOGIC DUPLICATION: computed in Python (desktop, qt/aqt/mediasrv.py) AND
+  Rust (mobile, rslib/src/gmatwiz.rs), kept in sync by mirroring. Suggested
+  follow-up: unify onto the Rust impl (expose via a backend RPC so desktop uses
+  it too) to remove drift risk.
+- No Verbal or Data Insights content/notetypes yet.
+- No AI features (architected to add later; everything runs with AI off).
+- Desktop installer (clean-machine) not built yet (PRD Section 17).
+- Validation challenges not yet done: paraphrase test (7d), leakage check (7e),
+  ablation of the application-first feature, one-command benchmark (7h) - these
+  need accumulated real study data.
+
+-------------------------------------------------------------------------------
+HOW TO RUN
+-------------------------------------------------------------------------------
+Desktop:
+  cd /Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork
+  ./run
+  # In app: Tools -> Import GMAT Quant (once), then use the GMATWiz tab.
+
+Mobile (simulator):
+  xcodegen generate --spec ios/project.yml
+  xcodebuild -project ios/GMATWizPhone.xcodeproj -scheme GMATWizPhone \
+    -sdk iphonesimulator -configuration Debug -derivedDataPath ios/build \
+    -destination 'platform=iOS Simulator,name=iPhone 17' build
+  xcrun simctl boot "iPhone 17"; open -a Simulator
+  xcrun simctl install booted ios/build/Build/Products/Debug-iphonesimulator/GMATWizPhone.app
+  xcrun simctl launch booted com.gmatwiz.phone
+  # Prove reviews are real (quit app first - it holds an exclusive DB lock):
+  #   DB="$(xcrun simctl get_app_container booted com.gmatwiz.phone data)/Documents/gmat.anki2"
+  #   sqlite3 "$DB" "select count() from revlog;"
+
+Rebuild after Rust FFI changes:
+  PROTOC="$(pwd)/out/extracted/protoc/bin/protoc" CARGO_TARGET_DIR=out/rust \
+    cargo build -p gmatwiz_ffi --features rustls --target aarch64-apple-ios-sim
+  # then recreate out/ios/GmatwizFFI.xcframework (see ios/build-ios.sh).
+
+-------------------------------------------------------------------------------
+KEY FILES ADDED/CHANGED (beyond context.txt's map)
+-------------------------------------------------------------------------------
+  rslib/src/scheduler/topic_aware.rs   - topic-aware scheduling + tests
+  rslib/src/gmatwiz.rs                 - mobile review helpers + 3-score scoring
+  pylib/anki/gmatwiz.py                - GMAT PS notetype + importer
+  qt/aqt/gmat.py                       - GMATWiz screen/state + menu/toolbar
+  qt/aqt/mediasrv.py                   - all gmat* handlers + desktop scoring
+  ts/routes/gmat/                      - the SvelteKit app (Today/Learn/Practice/
+                                         Readiness/Error Log + diagnostic/plan)
+  ffi/                                 - C FFI crate over the shared engine
+  ios/                                 - SwiftUI app (Practice + Readiness)
+  gmatwiz/content/, gmatwiz/lessons/, gmatwiz/design/  - content/lessons/design
+  PRD.md, PRD.pdf, context.txt, POST_XCODE_TODO.md
+===============================================================================
