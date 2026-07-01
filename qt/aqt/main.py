@@ -786,6 +786,8 @@ class AnkiQt(QMainWindow):
     def _gmatCleanup(self, newState: MainWindowState) -> None:
         # restore the bottom bar that the GMATWiz screen hides
         self.bottomWeb.show()
+        # restore the top toolbar the GMATWiz screen hid
+        self.toolbarWeb.show()
 
     def _selectedDeck(self) -> DeckDict | None:
         did = self.col.decks.selected()

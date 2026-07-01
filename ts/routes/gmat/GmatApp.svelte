@@ -66,14 +66,29 @@ chrome77/es2020 webview.
         | "plan"
         | "learn"
         | "lesson"
-        | "mock"
-        | "progress";
+        | "mock";
     let view: View = "home";
 
     // ---- progress (integrated Stats) ----
     let stats: GmatStats | null = null;
     let syncing = false;
     let syncMsg = "";
+
+    // Ambient "spellfall": GMAT math glyphs drifting behind the app (the
+    // subject's own vernacular as magic). Precomputed so it's stable + cheap;
+    // paused under prefers-reduced-motion via CSS.
+    const SKY_CHARS = "× ÷ √ π % ∑ ∞ + − = ² ³ ½ ¼ ✦ ✧ ⋆ 7 3 x".split(" ");
+    const skyGlyphs = Array.from({ length: 22 }, (_, i) => {
+        const r = (n: number) => ((Math.sin(i * 12.9898 + n * 78.233) * 43758.5453) % 1 + 1) % 1;
+        return {
+            ch: SKY_CHARS[Math.floor(r(1) * SKY_CHARS.length)],
+            x: Math.round(r(2) * 100),
+            size: 14 + Math.round(r(3) * 26),
+            dur: 14 + Math.round(r(4) * 20),
+            delay: -Math.round(r(5) * 30),
+            gold: r(6) > 0.5,
+        };
+    });
 
     // ---- official/practice-test scores (calibration) ----
     let officialScores: OfficialScore[] = [];
@@ -213,9 +228,9 @@ chrome77/es2020 webview.
             }
             if (next === "dashboard") {
                 officialScores = await fetchOfficialScores();
+                stats = await fetchStats();
             }
         }
-        if (next === "progress") stats = await fetchStats();
     }
 
     async function runSync(): Promise<void> {
@@ -668,10 +683,35 @@ chrome77/es2020 webview.
 </script>
 
 <div class="gw">
+    <div class="sky" aria-hidden="true">
+        {#each skyGlyphs as g}
+            <span
+                class="glyph"
+                style="left:{g.x}%;font-size:{g.size}px;animation-duration:{g.dur}s;animation-delay:{g.delay}s;color:{g.gold
+                    ? 'var(--gold)'
+                    : 'var(--indicator)'}"
+            >{g.ch}</span>
+        {/each}
+    </div>
     <header class="topbar">
         <div class="brand">
-            <span class="mark">GMAT<span class="mark-accent">Wiz</span></span>
-            <span class="ruler" aria-hidden="true"></span>
+            <svg class="sigil" viewBox="0 0 48 48" aria-hidden="true">
+                <ellipse class="hat-brim" cx="24" cy="39" rx="18" ry="4.6" />
+                <path
+                    class="hat-cone"
+                    d="M24 6 C 22.4 6 21.4 7.3 21 9 L 14.6 38 L 33.4 38 L 27 9 C 26.6 7.3 25.6 6 24 6 Z"
+                />
+                <path class="hat-band" d="M15.6 33 L 32.4 33 L 33.2 37.6 L 14.8 37.6 Z" />
+                <path
+                    class="hat-star"
+                    d="M24 13 l1.3 3.2 3.4 .3 -2.6 2.3 .8 3.4 -2.9-1.8 -2.9 1.8 .8-3.4 -2.6-2.3 3.4-.3 Z"
+                />
+                <circle class="hat-spark" cx="34" cy="15" r="1.1" />
+                <circle class="hat-spark" cx="12.5" cy="22" r="0.9" />
+            </svg>
+            <span class="wordmark">
+                <span class="wm-gmat">GMAT</span><span class="wm-wiz">Wiz</span>
+            </span>
         </div>
         <nav class="nav">
             <button class:active={view === "home"} on:click={() => go("home")}>Today</button>
@@ -680,8 +720,10 @@ chrome77/es2020 webview.
                 on:click={() => go("learn")}>Learn</button
             >
             <button class:active={view === "practice"} on:click={() => go("practice")}>Practice</button>
-            <button class:active={view === "dashboard"} on:click={() => go("dashboard")}>Readiness</button>
-            <button class:active={view === "progress"} on:click={() => go("progress")}>Progress</button>
+            <button
+                class:active={view === "dashboard"}
+                on:click={() => go("dashboard")}>Progress</button
+            >
             <button class:active={view === "errors"} on:click={() => go("errors")}>Error Log</button>
             <span class="nav-spacer" aria-hidden="true"></span>
             <button class="nav-util" disabled={syncing} on:click={runSync} title="Sync with your other devices">
@@ -908,7 +950,7 @@ chrome77/es2020 webview.
         </main>
     {:else if view === "dashboard"}
         <main class="col-wide">
-            <p class="eyebrow">Readiness &mdash; three separate questions</p>
+            <p class="eyebrow">Progress &mdash; three honest questions</p>
             <h1 class="display">What we actually know.</h1>
 
             <div class="score-grid">
@@ -1107,6 +1149,88 @@ chrome77/es2020 webview.
                 <div class="bar"><div class="bar-fill" style="width:{coveragePct}%"></div></div>
             </section>
 
+            <div class="activity">
+                <p class="eyebrow">Activity</p>
+                {#if stats && stats.has_data}
+                    <div class="mini-grid">
+                        <div class="mini">
+                            <span class="mini-n">{stats.reviews_today}</span>
+                            <span class="mini-l">reviews today</span>
+                        </div>
+                        <div class="mini">
+                            <span class="mini-n">{stats.streak}</span>
+                            <span class="mini-l">day streak</span>
+                        </div>
+                        <div class="mini">
+                            <span class="mini-n">{stats.time_today_min}m</span>
+                            <span class="mini-l">time today</span>
+                        </div>
+                    </div>
+
+                    <section class="progress-card">
+                        <div class="coverage-head">
+                            <span class="eyebrow">Last 7 days</span>
+                            <span class="muted">{stats.reviews_total} reviews all-time</span>
+                        </div>
+                        <div class="spark">
+                            {#each stats.spark as c}
+                                {@const peak = Math.max(1, ...stats.spark)}
+                                <div class="spark-col" title="{c} reviews">
+                                    <div class="spark-bar" style="height:{Math.round((100 * c) / peak)}%"></div>
+                                </div>
+                            {/each}
+                        </div>
+                    </section>
+
+                    <section class="progress-card">
+                        <div class="coverage-head">
+                            <span class="eyebrow">Review pipeline</span>
+                            <span class="muted">{stats.pipeline.total} cards</span>
+                        </div>
+                        <div class="pipe">
+                            {#each [["new", stats.pipeline.new], ["learning", stats.pipeline.learning], ["young", stats.pipeline.young], ["mature", stats.pipeline.mature]] as [label, val]}
+                                <div class="pipe-row">
+                                    <span class="pipe-label">{label}</span>
+                                    <div class="pipe-track">
+                                        <div
+                                            class="pipe-fill pipe-{label}"
+                                            style="width:{stats.pipeline.total
+                                                ? Math.round((100 * Number(val)) / stats.pipeline.total)
+                                                : 0}%"
+                                        ></div>
+                                    </div>
+                                    <span class="pipe-n">{val}</span>
+                                </div>
+                            {/each}
+                        </div>
+                    </section>
+
+                    <section class="progress-card">
+                        <div class="coverage-head">
+                            <span class="eyebrow">Due next 7 days</span>
+                            <span class="muted">{stats.due_today} due today</span>
+                        </div>
+                        <div class="spark">
+                            {#each stats.forecast as c, i}
+                                {@const peak = Math.max(1, ...stats.forecast)}
+                                <div class="spark-col" title="{c} due">
+                                    <div class="spark-bar cast" style="height:{Math.round((100 * c) / peak)}%"></div>
+                                    <span class="spark-x">{i === 0 ? "today" : `+${i}`}</span>
+                                </div>
+                            {/each}
+                        </div>
+                    </section>
+                {:else}
+                    <section class="q-card empty">
+                        <p>No review history yet. Do some Practice and your activity shows up here.</p>
+                    </section>
+                {/if}
+                <div class="progress-actions">
+                    <button class="ghost" on:click={() => openFullStats()}>Open full Anki stats</button>
+                    <button class="ghost" on:click={() => openDecks()}>Free study (all decks)</button>
+                </div>
+            </div>
+
             <section class="official">
                 <div class="coverage-head">
                     <span class="eyebrow">Practice-test scores</span>
@@ -1155,95 +1279,6 @@ chrome77/es2020 webview.
                     </ul>
                 {/if}
             </section>
-        </main>
-    {:else if view === "progress"}
-        <main class="col">
-            <p class="eyebrow">Progress</p>
-            <h1 class="display">Your study, at a glance.</h1>
-            <p class="lede">
-                Activity and pipeline for your GMAT deck. For the full spaced-repetition graphs,
-                open Anki's stats.
-            </p>
-
-            {#if stats && stats.has_data}
-                <div class="mini-grid">
-                    <div class="mini">
-                        <span class="mini-n">{stats.reviews_today}</span>
-                        <span class="mini-l">reviews today</span>
-                    </div>
-                    <div class="mini">
-                        <span class="mini-n">{stats.streak}</span>
-                        <span class="mini-l">day streak</span>
-                    </div>
-                    <div class="mini">
-                        <span class="mini-n">{stats.time_today_min}m</span>
-                        <span class="mini-l">time today</span>
-                    </div>
-                </div>
-
-                <section class="progress-card">
-                    <div class="coverage-head">
-                        <span class="eyebrow">Last 7 days</span>
-                        <span class="muted">{stats.reviews_total} reviews all-time</span>
-                    </div>
-                    <div class="spark">
-                        {#each stats.spark as c}
-                            {@const peak = Math.max(1, ...stats.spark)}
-                            <div class="spark-col" title="{c} reviews">
-                                <div class="spark-bar" style="height:{Math.round((100 * c) / peak)}%"></div>
-                            </div>
-                        {/each}
-                    </div>
-                </section>
-
-                <section class="progress-card">
-                    <div class="coverage-head">
-                        <span class="eyebrow">Review pipeline</span>
-                        <span class="muted">{stats.pipeline.total} cards</span>
-                    </div>
-                    <div class="pipe">
-                        {#each [["new", stats.pipeline.new], ["learning", stats.pipeline.learning], ["young", stats.pipeline.young], ["mature", stats.pipeline.mature]] as [label, val]}
-                            <div class="pipe-row">
-                                <span class="pipe-label">{label}</span>
-                                <div class="pipe-track">
-                                    <div
-                                        class="pipe-fill pipe-{label}"
-                                        style="width:{stats.pipeline.total
-                                            ? Math.round((100 * Number(val)) / stats.pipeline.total)
-                                            : 0}%"
-                                    ></div>
-                                </div>
-                                <span class="pipe-n">{val}</span>
-                            </div>
-                        {/each}
-                    </div>
-                </section>
-
-                <section class="progress-card">
-                    <div class="coverage-head">
-                        <span class="eyebrow">Due next 7 days</span>
-                        <span class="muted">{stats.due_today} due today</span>
-                    </div>
-                    <div class="spark">
-                        {#each stats.forecast as c, i}
-                            {@const peak = Math.max(1, ...stats.forecast)}
-                            <div class="spark-col" title="{c} due">
-                                <div class="spark-bar cast" style="height:{Math.round((100 * c) / peak)}%"></div>
-                                <span class="spark-x">{i === 0 ? "today" : `+${i}`}</span>
-                            </div>
-                        {/each}
-                    </div>
-                </section>
-            {:else}
-                <section class="q-card empty">
-                    <p>No review history yet. Do some Practice and your progress shows up here.</p>
-                </section>
-            {/if}
-
-            <div class="progress-actions">
-                <button class="ghost" on:click={() => openFullStats()}>Open full Anki stats</button>
-                <button class="ghost" on:click={() => openDecks()}>Free study (all decks)</button>
-            </div>
         </main>
     {:else if view === "onboarding"}
         <main class="col">
@@ -1783,29 +1818,54 @@ chrome77/es2020 webview.
 </div>
 
 <style>
+    /*
+      GMATWiz "Arcane Academy" theme. Every color/font is a token so a light
+      mode is later just a second token set on .gw. Palette: deep indigo night,
+      parchment ink, arcane gold (brand) and amethyst (primary action), with
+      ember/emerald reserved for wrong/right. Signature: a faded "spellfall" of
+      GMAT math glyphs drifting behind the content.
+    */
     .gw {
-        --paper: #eae6dd;
-        --surface: #f4f1e9;
-        --sunk: #e1dbcf;
-        --ink: #211f19;
-        --ink-soft: #5f5849;
-        --ink-faint: #8c8472;
-        --indicator: #2e6e5e;
-        --indicator-ink: #245a4b;
-        --indicator-tint: #dce7e1;
-        --clay-ink: #8c4233;
-        --clay-tint: #f0ded7;
-        --brass-tint: #ece0c2;
-        --line: #d3cbbc;
-        --line-strong: #bcb2a0;
-        --voice: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+        --paper: #130e2b;
+        --paper-2: #1c1445;
+        --surface: #221a46;
+        --surface-2: #2b2159;
+        --sunk: #191234;
+        --ink: #efeaff;
+        --ink-soft: #c4b8ea;
+        --ink-faint: #8f83b8;
+        /* amethyst = primary action / selection */
+        --indicator: #9a6bf5;
+        --indicator-ink: #7c4de0;
+        --indicator-tint: rgba(154, 107, 245, 0.16);
+        /* ember = wrong / repair */
+        --clay-ink: #ec7a70;
+        --clay-tint: rgba(236, 122, 112, 0.15);
+        /* gold = brand / accents */
+        --gold: #f2c879;
+        --gold-ink: #e8b84b;
+        --brass-ink: #e8b84b;
+        --brass-tint: rgba(232, 184, 75, 0.14);
+        /* emerald = correct / good */
+        --emerald: #57d9a8;
+        --line: rgba(240, 205, 130, 0.16);
+        --line-strong: rgba(240, 205, 130, 0.36);
+        --shadow: 0 12px 34px rgba(0, 0, 0, 0.5);
+        --glow: 0 0 26px rgba(154, 107, 245, 0.4);
+        --gold-glow: 0 0 20px rgba(240, 200, 120, 0.35);
+        --voice: "Hoefler Text", "Baskerville", "Iowan Old Style", Georgia, serif;
+        --script: "Snell Roundhand", "Zapfino", "Apple Chancery", "Segoe Script", cursive;
         --ui: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
+        position: relative;
         box-sizing: border-box;
         min-height: 100vh;
         margin: 0;
-        background: var(--paper);
+        background:
+            radial-gradient(120% 80% at 82% -10%, var(--paper-2) 0%, transparent 55%),
+            radial-gradient(90% 60% at 10% 0%, rgba(154, 107, 245, 0.12) 0%, transparent 45%),
+            var(--paper);
         color: var(--ink);
         font-family: var(--ui);
         -webkit-font-smoothing: antialiased;
@@ -1827,32 +1887,82 @@ chrome77/es2020 webview.
         top: 0;
         z-index: 5;
     }
+    /* ambient spellfall behind everything */
+    .sky {
+        position: fixed;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 0;
+    }
+    .glyph {
+        position: absolute;
+        top: 0;
+        font-family: var(--mono);
+        opacity: 0;
+        animation-name: spellfall;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+        text-shadow: 0 0 12px currentColor;
+        will-change: transform, opacity;
+    }
+    @keyframes spellfall {
+        0% {
+            transform: translateY(-12vh) rotate(0deg);
+            opacity: 0;
+        }
+        12% {
+            opacity: 0.22;
+        }
+        88% {
+            opacity: 0.22;
+        }
+        100% {
+            transform: translateY(112vh) rotate(45deg);
+            opacity: 0;
+        }
+    }
+
     .brand {
         display: flex;
         align-items: center;
+        gap: 12px;
     }
-    .mark {
+    .sigil {
+        width: 34px;
+        height: 34px;
+        flex: none;
+        filter: drop-shadow(var(--gold-glow));
+    }
+    .hat-brim,
+    .hat-cone {
+        fill: var(--indicator);
+    }
+    .hat-band,
+    .hat-star,
+    .hat-spark {
+        fill: var(--gold);
+    }
+    .wordmark {
+        display: inline-flex;
+        align-items: baseline;
+    }
+    .wm-gmat {
         font-family: var(--voice);
         font-weight: 700;
-        font-size: 20px;
-        letter-spacing: 0.01em;
+        font-size: 22px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--gold);
     }
-    .mark-accent {
-        color: var(--indicator-ink);
-    }
-    .ruler {
-        display: inline-block;
-        width: 64px;
-        height: 12px;
-        margin-left: 12px;
-        background-image: repeating-linear-gradient(
-            90deg,
-            var(--line-strong) 0,
-            var(--line-strong) 1px,
-            transparent 1px,
-            transparent 8px
-        );
-        opacity: 0.8;
+    .wm-wiz {
+        font-family: var(--script);
+        font-size: 30px;
+        line-height: 0.8;
+        color: var(--indicator);
+        margin-left: 6px;
+        transform: rotate(-5deg);
+        text-shadow: var(--glow);
     }
     .nav {
         display: flex;
@@ -1898,8 +2008,9 @@ chrome77/es2020 webview.
         background: var(--paper);
     }
     .nav button.active {
-        color: var(--indicator-ink);
+        color: var(--gold);
         font-weight: 600;
+        text-shadow: 0 0 14px rgba(240, 200, 120, 0.4);
     }
     .nav button:focus-visible {
         outline: 2px solid var(--indicator-ink);
@@ -1907,14 +2018,21 @@ chrome77/es2020 webview.
     }
 
     .col {
+        position: relative;
+        z-index: 1;
         max-width: 720px;
         margin: 0 auto;
         padding: 32px 24px 64px;
     }
     .col-wide {
+        position: relative;
+        z-index: 1;
         max-width: 1040px;
         margin: 0 auto;
         padding: 32px 24px 64px;
+    }
+    .activity {
+        margin-top: 26px;
     }
 
     .eyebrow {
@@ -1948,7 +2066,7 @@ chrome77/es2020 webview.
         border: 1px solid var(--line);
         border-radius: 16px;
         padding: 22px;
-        box-shadow: 0 6px 18px rgba(33, 31, 25, 0.08);
+        box-shadow: var(--shadow);
         margin-bottom: 22px;
     }
     .action-head {
@@ -1979,8 +2097,8 @@ chrome77/es2020 webview.
     .primary {
         appearance: none;
         margin-top: 16px;
-        border: 1px solid var(--indicator-ink);
-        background: var(--indicator);
+        border: 1px solid var(--gold-ink);
+        background: linear-gradient(180deg, var(--indicator) 0%, var(--indicator-ink) 100%);
         color: #fff;
         font-family: var(--ui);
         font-size: 15px;
@@ -1988,9 +2106,11 @@ chrome77/es2020 webview.
         padding: 11px 22px;
         border-radius: 10px;
         cursor: pointer;
+        box-shadow: var(--glow);
     }
     .primary:hover:not(:disabled) {
-        background: var(--indicator-ink);
+        background: linear-gradient(180deg, #ac82ff 0%, var(--indicator) 100%);
+        box-shadow: 0 0 30px rgba(154, 107, 245, 0.55);
     }
     .primary:disabled {
         opacity: 0.45;
@@ -2413,7 +2533,7 @@ chrome77/es2020 webview.
         display: block;
         font-family: var(--mono);
         font-size: 28px;
-        color: var(--indicator-ink);
+        color: var(--gold);
     }
     .mini-l {
         font-size: 12px;
@@ -2427,7 +2547,7 @@ chrome77/es2020 webview.
     }
     .readout {
         font-family: var(--mono);
-        color: var(--indicator-ink);
+        color: var(--gold);
         font-weight: 600;
     }
 
@@ -2436,7 +2556,7 @@ chrome77/es2020 webview.
         border: 1px solid var(--line);
         border-radius: 16px;
         padding: 22px;
-        box-shadow: 0 6px 18px rgba(33, 31, 25, 0.08);
+        box-shadow: var(--shadow);
     }
     .q-card.empty {
         color: var(--ink-soft);
@@ -2583,7 +2703,8 @@ chrome77/es2020 webview.
         font-family: var(--mono);
         font-size: 52px;
         line-height: 1;
-        color: var(--indicator-ink);
+        color: var(--gold);
+        text-shadow: var(--gold-glow);
     }
     .band {
         font-family: var(--mono);
@@ -2813,8 +2934,7 @@ chrome77/es2020 webview.
         color: var(--clay-ink);
     }
     .s-developing {
-        color: var(--brass-tint);
-        color: #8a6a22;
+        color: var(--brass-ink);
     }
     .s-strong {
         color: var(--indicator-ink);
@@ -2848,6 +2968,12 @@ chrome77/es2020 webview.
     @media (max-width: 720px) {
         .score-grid {
             grid-template-columns: 1fr;
+        }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .glyph {
+            animation: none;
+            opacity: 0.12;
         }
     }
 </style>

@@ -33,6 +33,8 @@ def render_gmat_screen(mw: aqt.main.AnkiQt) -> None:
     mw.web.setFocus()
     # GMATWiz is a full screen; hide Anki's per-state bottom bar.
     mw.bottomWeb.hide()
+    # GMATWiz is full-bleed with its own in-app nav; hide the native top toolbar.
+    mw.toolbarWeb.hide()
 
 
 def open_gmat(mw: aqt.main.AnkiQt) -> None:

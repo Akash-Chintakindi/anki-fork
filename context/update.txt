@@ -27,17 +27,30 @@ GIT HISTORY (branch: gmatwiz)
   f17a82c86  error-log repair loop + timing analytics + timed adaptive mocks
   2169234b7  official-score calibration + exam-accurate mock (flag/review/edits)
   b39072a4f  user-upload question importer (JSON/CSV)
-  (this commit) toolbar declutter + Decks/Stats/Sync integrated into GMATWiz
+  68440716b  toolbar declutter + Decks/Stats/Sync integrated into GMATWiz
+  5c3231ff2  desktop Sync auto-targets the self-hosted server
+  (this commit) wizard-theme UI revamp: hide native toolbar, merge Progress
 (Base upstream commit: b00308e55.)
 
 -------------------------------------------------------------------------------
 DONE - DESKTOP (runs via ./run, one Anki window)
 -------------------------------------------------------------------------------
 - Anki builds from source; GMATWiz opens as a screen INSIDE the main window
-  (a new "gmat" state in qt/aqt/main.py). The native Anki top-bar tabs
-  (Decks/Add/Browse/Stats/Sync) are now HIDDEN (filtered in the
-  top_toolbar_did_init_links hook in qt/aqt/gmat.py) - the toolbar shows only
-  GMATWiz. Their useful functions are integrated into the GMATWiz UI:
+  (a new "gmat" state in qt/aqt/main.py). The ENTIRE native Anki top toolbar is
+  now HIDDEN while in the gmat state (render_gmat_screen hides mw.toolbarWeb;
+  _gmatCleanup restores it) so GMATWiz is full-bleed with only its OWN top-right
+  in-app tabs. (The toolbar-link filtering in gmat.py still applies for other
+  states like the free-study deck browser, where a GMATWiz link is the way back.)
+- UI THEME: "Arcane Academy" wizard theme (ts/routes/gmat/GmatApp.svelte). Deep
+  indigo night palette + parchment ink + arcane GOLD (brand) and AMETHYST
+  (primary/selection); a wizard-hat SVG sigil + "GMAT Wiz" serif/script lockup
+  in the header; a faded, reduced-motion-aware "spellfall" of GMAT math glyphs
+  drifting behind the content. Fully token-driven (all colors are CSS vars on
+  .gw) so a light mode is later just a second token set - nothing hard-coded.
+- The old separate "Readiness" and "Progress" tabs are MERGED into one
+  "Progress" tab (the three honest scores + coverage + activity stats +
+  practice-test calibration, all in one place). Their useful functions are
+  integrated into the GMATWiz UI:
     * Progress tab = GMAT-scoped stats (gmat_stats handler) + "Open full Anki
       stats" (bridges to mw.onStats via taskman.run_on_main).
     * "Free study (all decks)" = bridges to mw.moveToState("deckBrowser") - the
