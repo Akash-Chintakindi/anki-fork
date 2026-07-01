@@ -105,6 +105,33 @@ export interface GmatOverview {
     plan: GmatPlan | null;
 }
 
+export interface GmatPacing {
+    status: "on_track" | "behind" | "learning_complete" | "no_pacing";
+    days_to_exam: number | null;
+    topics_total: number;
+    topics_learned: number;
+    topics_remaining: number;
+    behind_by: number;
+    topics_per_study_day: number;
+    study_days_remaining: number | null;
+}
+
+export interface TodayBlock {
+    kind: "review" | "learn" | "practice";
+    title: string;
+    detail: string;
+    count?: number;
+    topic?: string | null;
+    est_minutes: number;
+}
+
+export interface TodaySession {
+    has_plan: boolean;
+    pacing: GmatPacing | null;
+    blocks: TodayBlock[];
+    daily_minutes: number;
+}
+
 export interface PretestQuestion {
     stem: string;
     options: Record<string, string>;
@@ -222,6 +249,15 @@ export async function answerCard(
 
 export async function saveProfile(profile: GmatProfile): Promise<void> {
     await postJson("gmatSaveProfile", null, profile);
+}
+
+export async function fetchToday(): Promise<TodaySession> {
+    return postJson<TodaySession>("gmatToday", {
+        has_plan: false,
+        pacing: null,
+        blocks: [],
+        daily_minutes: 0,
+    });
 }
 
 export async function fetchPretest(): Promise<{

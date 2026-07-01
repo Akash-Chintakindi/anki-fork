@@ -1139,7 +1139,59 @@ def gmat_answer_card() -> bytes:
         milliseconds_taken=ms,
     )
     col.sched.answer_card(answer)
+    # Living plan: let ongoing performance move the topic's mastery so the plan
+    # and topic-aware scheduling keep re-adapting (not just the one diagnostic).
+    _gmat_update_mastery(col, _gmat_topic_of_card(col, card_id), correct)
     return b""
+
+
+# EMA weight for how much one fresh answer moves a topic's mastery.
+GMAT_MASTERY_ALPHA = 0.3
+
+
+def _gmat_status(mastery: float) -> str:
+    return "weak" if mastery < 0.5 else ("developing" if mastery < 0.8 else "strong")
+
+
+def _gmat_topic_of_card(col, card_id: int) -> str:
+    try:
+        note = col.get_card(card_id).note()
+        return dict(note.items()).get("Topic", "") or ""
+    except Exception:
+        return ""
+
+
+def _gmat_update_mastery(col, topic: str, correct: bool) -> None:
+    """EMA-update one topic's mastery from a single practice answer and keep the
+    stored plan + topic-aware scheduling in sync. No-op until a plan exists."""
+    if not topic or not col.get_config("gmatPlan", None):
+        return
+    diagnosis = col.get_config("gmatDiagnosis", {}) or {}
+    old = diagnosis.get(topic)
+    old = 0.5 if old is None else float(old)
+    new = round(
+        (1 - GMAT_MASTERY_ALPHA) * old + GMAT_MASTERY_ALPHA * (1.0 if correct else 0.0),
+        3,
+    )
+    diagnosis[topic] = new
+    col.set_config("gmatDiagnosis", diagnosis)
+    try:
+        col._backend.set_topic_mastery(topic=topic, mastery=new)
+    except Exception as exc:
+        print(f"set_topic_mastery failed for {topic}: {exc}")
+    plan = col.get_config("gmatPlan", None)
+    if plan and isinstance(plan.get("topics"), list):
+        for entry in plan["topics"]:
+            if entry.get("topic") == topic:
+                entry["mastery"] = new
+                entry["status"] = _gmat_status(new)
+                break
+        else:
+            plan["topics"].append(
+                {"topic": topic, "mastery": new, "status": _gmat_status(new)}
+            )
+        plan["topics"].sort(key=lambda e: e.get("mastery", 0.5))
+        col.set_config("gmatPlan", plan)
 
 
 def _gmat_notes_by_topic() -> dict:
@@ -1272,6 +1324,182 @@ def gmat_submit_pretest() -> bytes:
     return json.dumps({"diagnosis": diagnosis, "plan": plan}).encode("utf-8")
 
 
+def _gmat_pacing(col) -> dict:
+    """Dated pacing + on/behind-track from profile + plan + learned progress.
+
+    The learn phase is the first ~70% of the runway to the exam; the final ~30%
+    is reserved for review/mixed practice (mirrors the learn-then-drill model).
+    'behind_by' compares topics actually learned against the count you should
+    have learned by today if you were on an even pace.
+    """
+    from datetime import date, datetime
+
+    plan = col.get_config("gmatPlan", None) or {}
+    profile = col.get_config("gmatProfile", {}) or {}
+    learned = col.get_config("gmatLearned", {}) or {}
+    topics = plan.get("topics", []) or []
+    topic_ids = {t.get("topic") for t in topics}
+    topics_total = len(topics)
+    topics_learned = len([t for t in learned if t in topic_ids])
+    topics_remaining = max(0, topics_total - topics_learned)
+    days_per_week = int(plan.get("days_per_week", profile.get("days_per_week", 5)) or 5)
+
+    out = {
+        "status": "no_pacing",
+        "days_to_exam": None,
+        "topics_total": topics_total,
+        "topics_learned": topics_learned,
+        "topics_remaining": topics_remaining,
+        "behind_by": 0,
+        "topics_per_study_day": 0.0,
+        "study_days_remaining": None,
+    }
+
+    exam_date = profile.get("exam_date", "") or ""
+    if not topics_total or not exam_date:
+        return out
+    try:
+        exam = datetime.strptime(exam_date, "%Y-%m-%d").date()
+    except Exception:
+        return out
+
+    today = date.today()
+    days_to_exam = (exam - today).days
+    out["days_to_exam"] = days_to_exam
+    study_days_remaining = max(0, round(max(0, days_to_exam) * days_per_week / 7.0))
+    out["study_days_remaining"] = study_days_remaining
+
+    if topics_remaining == 0:
+        out["status"] = "learning_complete"
+        return out
+
+    # learning runway = first 70% of remaining study days (min 1 while any remain)
+    learn_days_remaining = max(1, round(study_days_remaining * 0.7)) if study_days_remaining else 0
+    out["topics_per_study_day"] = (
+        round(topics_remaining / learn_days_remaining, 2) if learn_days_remaining else float(topics_remaining)
+    )
+
+    # expected progress by today (day-of-week cancels in the ratio, so use
+    # calendar days between plan creation and the 70% learn deadline)
+    created_ts = plan.get("created_ts")
+    behind = 0
+    if created_ts:
+        created = date.fromtimestamp(created_ts)
+        total_days = max(1, (exam - created).days)
+        learn_deadline_days = max(1.0, total_days * 0.7)
+        elapsed = max(0, (today - created).days)
+        frac = min(1.0, elapsed / learn_deadline_days)
+        expected_learned = round(topics_total * frac)
+        behind = max(0, expected_learned - topics_learned)
+    out["behind_by"] = behind
+    out["status"] = "behind" if behind > 0 else "on_track"
+    return out
+
+
+# rough per-item minute costs used to size the daily session
+_REVIEW_MIN = 1.5
+_LESSON_MIN = 12.0
+_PRACTICE_MIN = 2.0
+
+
+def gmat_today() -> bytes:
+    """Assemble today's session: due reviews + next lesson(s) + weak practice,
+    sized to the daily-minute budget, with on/behind-track pacing. Read-only."""
+    return json.dumps(_gmat_build_today(aqt.mw.col)).encode("utf-8")
+
+
+def _gmat_build_today(col) -> dict:
+    plan = col.get_config("gmatPlan", None)
+    if not plan:
+        return {"has_plan": False, "pacing": None, "blocks": [], "daily_minutes": 0}
+
+    pacing = _gmat_pacing(col)
+    daily_minutes = float(plan.get("daily_minutes", 60) or 60)
+    learned = col.get_config("gmatLearned", {}) or {}
+    topics = plan.get("topics", []) or []
+
+    # due today, honoring the engine's daily limits + topic-aware order
+    deck_id = col.decks.id("GMAT::Quant")
+    if col.decks.get_current_id() != deck_id:
+        col.decks.select(deck_id)
+    queued = col.sched.get_queued_cards(fetch_limit=1)
+    due_total = queued.new_count + queued.learning_count + queued.review_count
+
+    # which weak topics have an authored lesson (so "Learn" links resolve)
+    lesson_ids = {
+        t.get("topic_id") for t in _load_lessons_index().get("topics", [])
+    }
+
+    blocks: list = []
+    remaining_min = daily_minutes
+
+    if due_total > 0:
+        est = round(due_total * _REVIEW_MIN)
+        blocks.append(
+            {
+                "kind": "review",
+                "title": "Spaced review",
+                "detail": f"{due_total} question(s) due today",
+                "count": due_total,
+                "est_minutes": est,
+            }
+        )
+        remaining_min -= est
+
+    # next unlearned topics to learn today, weakest-first, paced
+    lessons_target = max(1, round(pacing.get("topics_per_study_day", 0) or 0))
+    to_learn = [
+        t for t in topics
+        if t.get("topic") not in learned and t.get("topic") in lesson_ids
+    ]
+    for entry in to_learn[:lessons_target]:
+        if remaining_min < _LESSON_MIN and blocks:
+            break
+        blocks.append(
+            {
+                "kind": "learn",
+                "title": "Learn a weak topic",
+                "detail": _gmat_status(float(entry.get("mastery", 0.5)))
+                + " · learn it before drilling",
+                "topic": entry.get("topic"),
+                "est_minutes": round(_LESSON_MIN),
+            }
+        )
+        remaining_min -= _LESSON_MIN
+
+    # fill the rest of the budget with targeted practice on the weakest learned topic
+    learned_topics = [t for t in topics if t.get("topic") in learned]
+    if remaining_min >= _PRACTICE_MIN and (learned_topics or due_total == 0):
+        n = max(1, min(20, int(remaining_min // _PRACTICE_MIN)))
+        weak = learned_topics[0] if learned_topics else (topics[0] if topics else None)
+        blocks.append(
+            {
+                "kind": "practice",
+                "title": "Targeted practice",
+                "detail": (
+                    f"{n} extra on {topic_leaf(weak.get('topic'))}"
+                    if weak
+                    else f"{n} extra questions"
+                ),
+                "count": n,
+                "topic": weak.get("topic") if weak else None,
+                "est_minutes": round(n * _PRACTICE_MIN),
+            }
+        )
+
+    return {
+        "has_plan": True,
+        "pacing": pacing,
+        "blocks": blocks,
+        "daily_minutes": round(daily_minutes),
+    }
+
+
+def topic_leaf(topic: str) -> str:
+    leaf = (topic or "").split("::")[-1]
+    return leaf.replace("_", " ").title() if leaf else "your weak topic"
+
+
 def _gmat_lessons_dir() -> str:
     # qt/aqt/mediasrv.py -> aqt -> qt -> repo root; lessons at gmatwiz/lessons.
     root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -1322,13 +1550,7 @@ def gmat_lessons_index() -> bytes:
     return json.dumps({"topics": topics}).encode("utf-8")
 
 
-def gmat_lesson() -> bytes:
-    """Return the full authored lesson for a topic_id."""
-    try:
-        body = json.loads(request.data or b"{}")
-    except Exception:
-        body = {}
-    topic_id = str(body.get("topic_id", ""))
+def _load_lesson_by_topic(topic_id: str) -> dict | None:
     index = _load_lessons_index()
     json_name = None
     for t in index.get("topics", []):
@@ -1336,29 +1558,74 @@ def gmat_lesson() -> bytes:
             json_name = t.get("json") or ((t.get("slug") or "") + ".json")
             break
     if not json_name:
-        return json.dumps({"lesson": None}).encode("utf-8")
+        return None
     path = os.path.join(_gmat_lessons_dir(), json_name)
     try:
         with open(path, encoding="utf-8") as f:
-            lesson = json.load(f)
+            return json.load(f)
     except Exception:
-        lesson = None
+        return None
+
+
+def gmat_lesson() -> bytes:
+    """Return the full authored lesson for a topic_id."""
+    try:
+        body = json.loads(request.data or b"{}")
+    except Exception:
+        body = {}
+    lesson = _load_lesson_by_topic(str(body.get("topic_id", "")))
     return json.dumps({"lesson": lesson}).encode("utf-8")
 
 
+def _schedule_lesson_items(col, topic_id: str) -> int:
+    """Turn a completed lesson's you-do items into real GMAT PS cards so they
+    enter the FSRS review queue. Idempotent per topic. Returns count added."""
+    import anki.gmatwiz
+
+    scheduled = col.get_config("gmatLessonScheduled", []) or []
+    if topic_id in scheduled:
+        return 0
+    lesson = _load_lesson_by_topic(topic_id)
+    if not lesson:
+        return 0
+    questions = []
+    for item in lesson.get("you_do", []) or []:
+        questions.append(
+            {
+                "stem": item.get("stem", ""),
+                "options": item.get("options", {}) or {},
+                "correct": item.get("correct", ""),
+                "explanation": item.get("explanation", ""),
+                "topic": topic_id,
+                "difficulty": item.get("difficulty", "medium"),
+                "source": "GMATWiz lesson",
+            }
+        )
+    if not questions:
+        return 0
+    added = anki.gmatwiz.import_questions(col, questions, "GMAT::Quant")
+    col.set_config("gmatLessonScheduled", scheduled + [topic_id])
+    return added
+
+
 def gmat_mark_learned() -> bytes:
-    """Record that the student completed a topic's lesson."""
+    """Record lesson completion and schedule the topic's you-do items for review."""
     col = aqt.mw.col
     try:
         body = json.loads(request.data or b"{}")
     except Exception:
         body = {}
     topic_id = str(body.get("topic_id", ""))
+    added = 0
     if topic_id:
         learned = col.get_config("gmatLearned", {}) or {}
         learned[topic_id] = int(time.time())
         col.set_config("gmatLearned", learned)
-    return b""
+        try:
+            added = _schedule_lesson_items(col, topic_id)
+        except Exception as exc:
+            print(f"GMATWiz: failed to schedule lesson items for {topic_id}: {exc}")
+    return json.dumps({"scheduled": added}).encode("utf-8")
 
 
 post_handler_list = [
@@ -1375,6 +1642,7 @@ post_handler_list = [
     gmat_lessons_index,
     gmat_lesson,
     gmat_mark_learned,
+    gmat_today,
     get_deck_configs_for_update,
     update_deck_configs,
     get_scheduling_states_with_context,
@@ -1516,6 +1784,7 @@ def _check_dynamic_request_permissions():
         "/_anki/gmatLessonsIndex",
         "/_anki/gmatLesson",
         "/_anki/gmatMarkLearned",
+        "/_anki/gmatToday",
     ):
         pass
     else:

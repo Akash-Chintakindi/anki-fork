@@ -19,6 +19,9 @@ chrome77/es2020 webview.
         Lesson,
         LessonItem,
         LessonTopic,
+        TodaySession,
+        TodayBlock,
+        GmatPacing,
     } from "./api";
     import {
         logError,
@@ -33,6 +36,7 @@ chrome77/es2020 webview.
         fetchLessonsIndex,
         fetchLesson,
         markLearned,
+        fetchToday,
         renderMath,
     } from "./api";
 
@@ -49,6 +53,12 @@ chrome77/es2020 webview.
         | "learn"
         | "lesson";
     let view: View = "home";
+
+    // ---- today's assembled session ----
+    let today: TodaySession | null = null;
+    $: todayEst = today
+        ? today.blocks.reduce((sum, b) => sum + b.est_minutes, 0)
+        : 0;
 
     // ---- teaching / lesson state ----
     let lessonTopics: LessonTopic[] = [];
@@ -100,9 +110,6 @@ chrome77/es2020 webview.
                   ? lesson.you_do[lessonIdx]
                   : null;
     $: lessonOptions = lessonItem ? Object.entries((lessonItem as LessonItem).options) : [];
-    $: recommendedLearn =
-        lessonTopics.find((t) => !t.learned && t.mastery !== null && t.mastery < 0.8) ||
-        null;
 
     let errors: ErrorEntry[] = [];
 
@@ -128,8 +135,24 @@ chrome77/es2020 webview.
             if (fresh) overview = fresh;
             if (next === "home" && overview.plan) {
                 lessonTopics = (await fetchLessonsIndex()).topics;
+                today = await fetchToday();
             }
         }
+    }
+
+    async function startBlock(block: TodayBlock): Promise<void> {
+        if (block.kind === "learn" && block.topic) {
+            await openLesson(block.topic);
+        } else {
+            await go("practice");
+        }
+    }
+
+    function paceLabel(p: GmatPacing): string {
+        if (p.status === "on_track") return "On track";
+        if (p.status === "behind") return "Behind pace";
+        if (p.status === "learning_complete") return "Learning complete";
+        return "";
     }
 
     function choose(key: string): void {
@@ -321,6 +344,7 @@ chrome77/es2020 webview.
     onMount(() => {
         if (overview.plan) {
             fetchLessonsIndex().then((r) => (lessonTopics = r.topics));
+            fetchToday().then((t) => (today = t));
         }
     });
 </script>
@@ -373,41 +397,75 @@ chrome77/es2020 webview.
                         your weak topics.
                     </p>
                     <button class="primary" on:click={startDiagnostic}>Start diagnostic</button>
-                {:else if recommendedLearn}
+                {:else if today && today.blocks.length > 0}
                     <div class="action-head">
-                        <span class="eyebrow">Today's focus</span>
-                        <span class="pill">weak topic</span>
+                        <span class="eyebrow">Today's session</span>
+                        <span class="pill">~{todayEst} of {today.daily_minutes} min</span>
                     </div>
-                    <h2 class="action-title">Learn: {topicLabel(recommendedLearn.topic_id)}</h2>
-                    <p class="muted">
-                        A weak topic from your diagnostic. Learn it first, then practice &mdash;
-                        don't drill blind.{#if overview.plan.days_to_exam !== null}
-                            &middot; {overview.plan.days_to_exam} days to exam{/if}
-                    </p>
-                    <button class="primary" on:click={() => openLesson(recommendedLearn.topic_id)}>
-                        Start lesson
+                    <h2 class="action-title">Do this, in order.</h2>
+                    <ol class="today-list">
+                        {#each today.blocks as b, i}
+                            <li class="today-block kind-{b.kind}">
+                                <span class="tb-index">{i + 1}</span>
+                                <div class="tb-body">
+                                    <span class="tb-title">
+                                        {b.kind === "learn" && b.topic
+                                            ? `Learn: ${topicLabel(b.topic)}`
+                                            : b.title}
+                                    </span>
+                                    <span class="tb-detail">{b.detail}</span>
+                                </div>
+                                <span class="tb-min">{b.est_minutes}m</span>
+                                <button class="tb-go" on:click={() => startBlock(b)}>
+                                    {b.kind === "learn" ? "Learn" : "Start"}
+                                </button>
+                            </li>
+                        {/each}
+                    </ol>
+                    <button class="primary" on:click={() => today && startBlock(today.blocks[0])}>
+                        Start today
                     </button>
-                    <button class="ghost" on:click={() => go("practice")}>Skip to practice</button>
+                    <button class="ghost" on:click={() => go("plan")}>View full plan</button>
                 {:else}
                     <div class="action-head">
-                        <span class="eyebrow">Today's focus</span>
+                        <span class="eyebrow">Today's session</span>
                         <span class="pill">{overview.deck}</span>
                     </div>
-                    <h2 class="action-title">
-                        Focus: {overview.plan.topics
-                            .slice(0, 3)
-                            .map((t) => topicLabel(t.topic))
-                            .join(", ")}
-                    </h2>
+                    <h2 class="action-title">You're caught up.</h2>
                     <p class="muted">
-                        {overview.plan.daily_minutes} min/day{#if overview.plan.days_to_exam !== null}
-                            &middot; {overview.plan.days_to_exam} days to exam{/if}
-                        &middot; weak topics resurface first
+                        No reviews are due and there's nothing new to learn today. Rest, or get
+                        ahead with extra practice.
                     </p>
-                    <button class="primary" on:click={() => go("practice")}>Start practice</button>
+                    <button class="primary" on:click={() => go("practice")}>Practice anyway</button>
                     <button class="ghost" on:click={() => go("plan")}>View full plan</button>
                 {/if}
             </section>
+
+            {#if today && today.pacing && today.pacing.status !== "no_pacing"}
+                {@const p = today.pacing}
+                <section class="pace pace-{p.status}">
+                    <div class="pace-top">
+                        <span class="pace-status">{paceLabel(p)}</span>
+                        {#if p.days_to_exam !== null}
+                            <span class="pace-days">{p.days_to_exam} days to exam</span>
+                        {/if}
+                    </div>
+                    <div class="pace-bar" aria-hidden="true">
+                        <span
+                            class="pace-fill"
+                            style="width:{p.topics_total
+                                ? Math.round((100 * p.topics_learned) / p.topics_total)
+                                : 0}%"
+                        ></span>
+                    </div>
+                    <p class="pace-detail">
+                        {p.topics_learned}/{p.topics_total} topics learned{#if p.behind_by > 0}
+                            &middot; {p.behind_by} behind pace &mdash; do a lesson today{:else if p.status === "learning_complete"}
+                            &middot; now consolidate with review + practice{:else}
+                            &middot; keep it up{/if}
+                    </p>
+                </section>
+            {/if}
 
             <div class="mini-grid">
                 <div class="mini">
@@ -1122,6 +1180,128 @@ chrome77/es2020 webview.
     .primary:focus-visible {
         outline: 2px solid var(--indicator-ink);
         outline-offset: 2px;
+    }
+
+    .today-list {
+        list-style: none;
+        margin: 6px 0 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .today-block {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--line-strong);
+        border-radius: 12px;
+        background: var(--surface);
+    }
+    .today-block.kind-review { border-left-color: var(--indicator-ink); }
+    .today-block.kind-learn { border-left-color: var(--brass-ink, #9a6b1f); }
+    .today-block.kind-practice { border-left-color: var(--clay-ink, #b4531f); }
+    .tb-index {
+        flex: none;
+        width: 22px;
+        height: 22px;
+        display: grid;
+        place-items: center;
+        border-radius: 999px;
+        border: 1px solid var(--line-strong);
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--ink-soft);
+    }
+    .tb-body {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    .tb-title {
+        font-family: var(--ui);
+        font-weight: 600;
+        font-size: 15px;
+    }
+    .tb-detail {
+        font-size: 12.5px;
+        color: var(--ink-faint);
+    }
+    .tb-min {
+        flex: none;
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--ink-faint);
+    }
+    .tb-go {
+        appearance: none;
+        flex: none;
+        border: 1px solid var(--line-strong);
+        background: var(--surface);
+        color: var(--ink-soft);
+        font-family: var(--ui);
+        font-size: 13px;
+        font-weight: 600;
+        padding: 6px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    .tb-go:hover {
+        border-color: var(--indicator-ink);
+        color: var(--indicator-ink);
+    }
+
+    .pace {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 22px;
+    }
+    .pace-top {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+    }
+    .pace-status {
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--indicator-ink);
+    }
+    .pace-days {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--ink-faint);
+    }
+    .pace-bar {
+        height: 6px;
+        border-radius: 999px;
+        background: var(--line);
+        margin: 10px 0 8px;
+        overflow: hidden;
+    }
+    .pace-fill {
+        display: block;
+        height: 100%;
+        background: var(--indicator);
+        border-radius: 999px;
+    }
+    .pace-detail {
+        margin: 0;
+        font-size: 12.5px;
+        color: var(--ink-faint);
+    }
+    .pace-behind .pace-status {
+        color: var(--clay-ink, #b4531f);
+    }
+    .pace-behind .pace-fill {
+        background: var(--clay-ink, #b4531f);
     }
 
     .mini-grid {
