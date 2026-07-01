@@ -75,20 +75,26 @@ chrome77/es2020 webview.
     let syncMsg = "";
 
     // Ambient "spellfall": GMAT math glyphs drifting behind the app (the
-    // subject's own vernacular as magic). Precomputed so it's stable + cheap;
-    // paused under prefers-reduced-motion via CSS.
-    const SKY_CHARS = "× ÷ √ π % ∑ ∞ + − = ² ³ ½ ¼ ✦ ✧ ⋆ 7 3 x".split(" ");
-    const skyGlyphs = Array.from({ length: 22 }, (_, i) => {
-        const r = (n: number) => ((Math.sin(i * 12.9898 + n * 78.233) * 43758.5453) % 1 + 1) % 1;
-        return {
-            ch: SKY_CHARS[Math.floor(r(1) * SKY_CHARS.length)],
-            x: Math.round(r(2) * 100),
-            size: 14 + Math.round(r(3) * 26),
-            dur: 14 + Math.round(r(4) * 20),
-            delay: -Math.round(r(5) * 30),
-            gold: r(6) > 0.5,
-        };
-    });
+    // subject's own vernacular as magic), plus soft floating gold orbs.
+    // Precomputed so it's stable + cheap; paused under prefers-reduced-motion.
+    const rand = (i: number, n: number) =>
+        ((Math.sin(i * 12.9898 + n * 78.233) * 43758.5453) % 1 + 1) % 1;
+    const SKY_CHARS = "× ÷ √ π % ∑ ∞ + − = ² ³ ½ ¼ ✦ ✧ ⋆ ✶ 7 3 x π".split(" ");
+    const skyGlyphs = Array.from({ length: 34 }, (_, i) => ({
+        ch: SKY_CHARS[Math.floor(rand(i, 1) * SKY_CHARS.length)],
+        x: Math.round(rand(i, 2) * 100),
+        size: 14 + Math.round(rand(i, 3) * 28),
+        dur: 13 + Math.round(rand(i, 4) * 22),
+        delay: -Math.round(rand(i, 5) * 34),
+        gold: rand(i, 6) > 0.28, // mostly gold, a few amethyst
+    }));
+    const skyOrbs = Array.from({ length: 9 }, (_, i) => ({
+        x: Math.round(rand(i + 100, 2) * 100),
+        size: 90 + Math.round(rand(i + 100, 3) * 180),
+        dur: 26 + Math.round(rand(i + 100, 4) * 26),
+        delay: -Math.round(rand(i + 100, 5) * 40),
+        gold: rand(i + 100, 6) > 0.4,
+    }));
 
     // ---- official/practice-test scores (calibration) ----
     let officialScores: OfficialScore[] = [];
@@ -684,6 +690,13 @@ chrome77/es2020 webview.
 
 <div class="gw">
     <div class="sky" aria-hidden="true">
+        {#each skyOrbs as o}
+            <span
+                class="orb"
+                class:orb-amethyst={!o.gold}
+                style="left:{o.x}%;width:{o.size}px;height:{o.size}px;animation-duration:{o.dur}s;animation-delay:{o.delay}s"
+            ></span>
+        {/each}
         {#each skyGlyphs as g}
             <span
                 class="glyph"
@@ -1848,6 +1861,8 @@ chrome77/es2020 webview.
         --brass-tint: rgba(232, 184, 75, 0.14);
         /* emerald = correct / good */
         --emerald: #57d9a8;
+        --emerald-ink: #3fb98a;
+        --emerald-tint: rgba(87, 217, 168, 0.18);
         --line: rgba(240, 205, 130, 0.16);
         --line-strong: rgba(240, 205, 130, 0.36);
         --shadow: 0 12px 34px rgba(0, 0, 0, 0.5);
@@ -1903,7 +1918,7 @@ chrome77/es2020 webview.
         animation-name: spellfall;
         animation-timing-function: linear;
         animation-iteration-count: infinite;
-        text-shadow: 0 0 12px currentColor;
+        text-shadow: 0 0 14px currentColor;
         will-change: transform, opacity;
     }
     @keyframes spellfall {
@@ -1912,13 +1927,55 @@ chrome77/es2020 webview.
             opacity: 0;
         }
         12% {
-            opacity: 0.22;
+            opacity: 0.3;
         }
         88% {
-            opacity: 0.22;
+            opacity: 0.3;
         }
         100% {
             transform: translateY(112vh) rotate(45deg);
+            opacity: 0;
+        }
+    }
+    /* soft floating gold orbs (bokeh) rising through the night */
+    .orb {
+        position: absolute;
+        bottom: -18%;
+        border-radius: 50%;
+        background: radial-gradient(
+            circle at 35% 35%,
+            rgba(242, 200, 121, 0.5),
+            rgba(242, 200, 121, 0.12) 45%,
+            transparent 70%
+        );
+        filter: blur(2px);
+        opacity: 0;
+        animation-name: floatup;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+        will-change: transform, opacity;
+    }
+    .orb-amethyst {
+        background: radial-gradient(
+            circle at 35% 35%,
+            rgba(154, 107, 245, 0.5),
+            rgba(154, 107, 245, 0.12) 45%,
+            transparent 70%
+        );
+    }
+    @keyframes floatup {
+        0% {
+            transform: translateY(20vh) scale(0.85);
+            opacity: 0;
+        }
+        20% {
+            opacity: 0.5;
+        }
+        80% {
+            opacity: 0.5;
+        }
+        100% {
+            transform: translateY(-120vh) scale(1.1);
             opacity: 0;
         }
     }
@@ -2618,35 +2675,58 @@ chrome77/es2020 webview.
         color: var(--ink-soft) !important;
         background: var(--surface) !important;
     }
+    /* selected but not yet committed: unmistakable amethyst with a glow */
     .opt.sel {
         border-color: var(--indicator) !important;
         background: var(--indicator-tint) !important;
+        box-shadow: 0 0 0 1px var(--indicator), var(--glow) !important;
     }
     .opt.sel .opt-key {
         background: var(--indicator) !important;
         color: #fff !important;
         border-color: var(--indicator) !important;
     }
+    /* after reveal: correct = emerald, your wrong pick = ember */
     .opt.correct {
-        border-color: var(--indicator) !important;
-        background: var(--indicator-tint) !important;
+        border-color: var(--emerald) !important;
+        background: var(--emerald-tint) !important;
+        box-shadow: 0 0 0 1px var(--emerald) !important;
     }
     .opt.correct .opt-key {
-        background: var(--indicator) !important;
-        color: #fff !important;
-        border-color: var(--indicator) !important;
+        background: var(--emerald) !important;
+        color: #10231c !important;
+        border-color: var(--emerald) !important;
+    }
+    .opt.correct::after {
+        content: "correct";
+        margin-left: auto;
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--emerald);
     }
     .opt.wrong {
         border-color: var(--clay-ink) !important;
         background: var(--clay-tint) !important;
+        box-shadow: 0 0 0 1px var(--clay-ink) !important;
     }
     .opt.wrong .opt-key {
         background: var(--clay-ink) !important;
-        color: #fff !important;
+        color: #2a1210 !important;
         border-color: var(--clay-ink) !important;
     }
+    .opt.wrong::after {
+        content: "your pick";
+        margin-left: auto;
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--clay-ink);
+    }
     .opt.muted {
-        opacity: 0.5;
+        opacity: 0.45;
     }
 
     .seal {
@@ -2664,8 +2744,8 @@ chrome77/es2020 webview.
         margin-bottom: 10px;
     }
     .verdict.ok {
-        background: var(--indicator-tint);
-        border-color: var(--indicator);
+        background: var(--emerald-tint);
+        border-color: var(--emerald);
     }
     .verdict.no {
         background: var(--clay-tint);
@@ -2973,7 +3053,11 @@ chrome77/es2020 webview.
     @media (prefers-reduced-motion: reduce) {
         .glyph {
             animation: none;
-            opacity: 0.12;
+            opacity: 0.14;
+        }
+        .orb {
+            animation: none;
+            opacity: 0.28;
         }
     }
 </style>
