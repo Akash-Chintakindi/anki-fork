@@ -103,6 +103,15 @@ struct MockEntry: Decodable {
     let q: Int
 }
 
+struct Calibration: Decodable {
+    let n: Int
+    let bias: Double
+    let residual: Double
+    let point: Int
+    let low: Int
+    let high: Int
+}
+
 struct ReadinessScore: Decodable {
     let status: String
     let section: String?
@@ -117,6 +126,7 @@ struct ReadinessScore: Decodable {
     let reason: String?
     let mocks: [MockEntry]?
     let mock_gap: Int?
+    let calibration: Calibration?
 }
 
 struct GmatScores: Decodable {

@@ -276,8 +276,15 @@ struct DashboardView: View {
                     }
                     card(title: "Readiness", question: "What score would you get today?") {
                         if s.readiness.status == "shown" {
-                            reading("Q\(s.readiness.point ?? 0)",
-                                    "range Q\(s.readiness.low ?? 0)-Q\(s.readiness.high ?? 0) \u{00b7} \(s.readiness.confidence ?? "") confidence")
+                            if let cal = s.readiness.calibration {
+                                reading("Q\(cal.point)",
+                                        "calibrated \u{00b7} range Q\(cal.low)-Q\(cal.high) \u{00b7} \(s.readiness.confidence ?? "") confidence")
+                                Text("Raw model Q\(s.readiness.point ?? 0); shifted \(cal.bias >= 0 ? "+" : "")\(String(format: "%g", cal.bias)) from \(cal.n) official score\(cal.n > 1 ? "s" : "")")
+                                    .font(.caption2).foregroundStyle(.secondary)
+                            } else {
+                                reading("Q\(s.readiness.point ?? 0)",
+                                        "range Q\(s.readiness.low ?? 0)-Q\(s.readiness.high ?? 0) \u{00b7} \(s.readiness.confidence ?? "") confidence")
+                            }
                             if let m = s.readiness.method {
                                 Text(m).font(.caption2).foregroundStyle(.secondary)
                             }

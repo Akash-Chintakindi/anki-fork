@@ -421,6 +421,39 @@ impl Collection {
             .collect()
     }
 
+    /// Real official/practice-test Quant scores the user has logged (config
+    /// `gmatOfficialScores`). These are the ground truth that calibrates the
+    /// accuracy->Q projection (PRD Step 4 - validate against official scores).
+    fn gmat_official_scores(&self) -> Vec<serde_json::Value> {
+        self.get_config_optional::<Vec<serde_json::Value>, _>("gmatOfficialScores")
+            .unwrap_or_default()
+            .into_iter()
+            .filter(|s| s.get("quant").and_then(|v| v.as_f64()).is_some())
+            .collect()
+    }
+
+    /// Bias offset that calibrates the projection: the mean of
+    /// (official Quant - what the app projected at the time that score was
+    /// logged). Only entries carrying a numeric `projected_at_entry` count, so
+    /// this compares like-for-like. Returns (bias, mean_abs_residual, n).
+    fn gmat_calibration(&self, official: &[serde_json::Value]) -> Option<(f64, f64, usize)> {
+        let paired: Vec<(f64, f64)> = official
+            .iter()
+            .filter_map(|s| {
+                let q = s.get("quant")?.as_f64()?;
+                let p = s.get("projected_at_entry")?.as_f64()?;
+                Some((p, q))
+            })
+            .collect();
+        if paired.is_empty() {
+            return None;
+        }
+        let n = paired.len();
+        let bias = paired.iter().map(|(p, q)| q - p).sum::<f64>() / n as f64;
+        let residual = paired.iter().map(|(p, q)| (q - p).abs()).sum::<f64>() / n as f64;
+        Some((bias, residual, n))
+    }
+
     fn gmat_readiness_json(
         &self,
         memory: &serde_json::Value,
@@ -429,6 +462,8 @@ impl Collection {
         now: i64,
     ) -> serde_json::Value {
         let mocks = self.gmat_mock_history();
+        let official = self.gmat_official_scores();
+        let calibration = self.gmat_calibration(&official);
         let reviews = memory.get("reviews").and_then(|v| v.as_i64()).unwrap_or(0);
         let attempts = performance
             .get("attempts")
@@ -460,6 +495,7 @@ impl Collection {
                 "unmet": unmet,
                 "reason": "A confident number with no evidence is just a guess.",
                 "mocks": mocks,
+                "official": official,
                 "updated_ts": now,
             });
         }
@@ -467,11 +503,8 @@ impl Collection {
         let acc_low = performance["low"].as_f64().unwrap_or(0.0) / 100.0;
         let acc_high = performance["high"].as_f64().unwrap_or(0.0) / 100.0;
         let point = gmat_accuracy_to_quant(acc);
-        let confidence = if coverage_pct >= 80.0 && attempts >= 150 {
-            "medium"
-        } else {
-            "low"
-        };
+        let low = gmat_accuracy_to_quant(acc_low);
+        let high = gmat_accuracy_to_quant(acc_high);
         // Calibration signal: how far the projection sits from the latest
         // timed mock. A large gap is displayed, not hidden (honesty rule).
         let mock_gap = mocks
@@ -479,19 +512,57 @@ impl Collection {
             .and_then(|m| m.get("q"))
             .and_then(|q| q.as_i64())
             .map(|q| point - q);
+
+        // Calibration to real scores: shift the heuristic by the measured bias
+        // and surface it as the headline, while keeping the raw map visible.
+        let clampq = |v: f64| v.clamp(60.0, 90.0).round() as i64;
+        let round1 = |v: f64| (v * 10.0).round() / 10.0;
+        let (calibration_json, method, confidence) = match calibration {
+            Some((bias, residual, n)) => {
+                let cal = json!({
+                    "n": n,
+                    "bias": round1(bias),
+                    "residual": round1(residual),
+                    "point": clampq(point as f64 + bias),
+                    "low": clampq(low as f64 + bias),
+                    "high": clampq(high as f64 + bias),
+                });
+                let method = format!(
+                    "Calibrated to your {n} official score(s): the accuracy->Q map is shifted by {:+.0} point(s) (mean error {:.1}).",
+                    round1(bias),
+                    round1(residual),
+                );
+                // Real outcomes are stronger evidence than coverage alone.
+                let confidence = if n >= 2 {
+                    if coverage_pct >= 80.0 { "high" } else { "medium" }
+                } else if coverage_pct >= 80.0 && attempts >= 150 {
+                    "medium"
+                } else {
+                    "low"
+                };
+                (cal, method, confidence)
+            }
+            None => (
+                serde_json::Value::Null,
+                "Heuristic map from held-out first-exposure accuracy; not yet validated against official practice-test scores.".to_string(),
+                if coverage_pct >= 80.0 && attempts >= 150 { "medium" } else { "low" },
+            ),
+        };
         json!({
             "status": "shown",
             "section": "Quant",
             "point": point,
-            "low": gmat_accuracy_to_quant(acc_low),
-            "high": gmat_accuracy_to_quant(acc_high),
+            "low": low,
+            "high": high,
             "scale": "GMAT Focus Quant section (60-90)",
             "confidence": confidence,
-            "method": "Heuristic map from held-out first-exposure accuracy; not yet validated against official practice-test scores.",
+            "method": method,
             "total_status": "abstain",
             "total_reason": "Total (205-805) needs Verbal + Data Insights data (not yet in scope).",
             "mocks": mocks,
             "mock_gap": mock_gap,
+            "official": official,
+            "calibration": calibration_json,
             "updated_ts": now,
         })
     }

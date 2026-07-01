@@ -90,6 +90,25 @@ export interface MockEntry {
     q: number;
 }
 
+export interface OfficialScore {
+    ts: number;
+    date?: string;
+    quant: number;
+    total?: number | null;
+    verbal?: number | null;
+    di?: number | null;
+    projected_at_entry?: number | null;
+}
+
+export interface Calibration {
+    n: number;
+    bias: number;
+    residual: number;
+    point: number;
+    low: number;
+    high: number;
+}
+
 export interface GmatReadiness {
     status: "shown" | "abstain";
     section?: string;
@@ -105,6 +124,8 @@ export interface GmatReadiness {
     reason?: string;
     mocks?: MockEntry[];
     mock_gap?: number | null;
+    official?: OfficialScore[];
+    calibration?: Calibration | null;
     updated_ts?: number;
 }
 
@@ -285,6 +306,23 @@ export async function fetchToday(): Promise<TodaySession> {
         blocks: [],
         daily_minutes: 0,
     });
+}
+
+export async function fetchOfficialScores(): Promise<OfficialScore[]> {
+    const data = await postJson<{ scores: OfficialScore[] }>("gmatOfficialScores", {
+        scores: [],
+    });
+    return data.scores ?? [];
+}
+
+export async function saveOfficialScore(entry: {
+    date?: string;
+    quant: number;
+    total?: number | null;
+    verbal?: number | null;
+    di?: number | null;
+}): Promise<{ ok: boolean; error?: string }> {
+    return postJson("gmatSaveOfficialScore", { ok: false }, entry);
 }
 
 export async function fetchPretest(): Promise<{

@@ -1055,6 +1055,63 @@ def gmat_save_profile() -> bytes:
     return b""
 
 
+def gmat_official_scores() -> bytes:
+    """Return the user's logged official/practice-test scores (most recent first)."""
+    col = aqt.mw.col
+    scores = col.get_config("gmatOfficialScores", []) or []
+    return json.dumps({"scores": list(reversed(scores))}).encode("utf-8")
+
+
+def _gmat_current_projection(col) -> int | None:
+    """The app's current RAW Quant projection (heuristic, pre-calibration), so a
+    newly logged official score can be compared like-for-like."""
+    try:
+        readiness = _gmat_scores(col).get("readiness", {})
+        if readiness.get("status") == "shown":
+            return int(readiness.get("point"))
+    except Exception as exc:
+        print(f"GMATWiz: could not snapshot projection: {exc}")
+    return None
+
+
+def gmat_save_official_score() -> bytes:
+    """Log a real practice-test score as calibration ground truth. Snapshots the
+    app's current projection so the engine can measure its bias. Body: JSON with
+    quant (60-90) and optional total/verbal/di/date."""
+    col = aqt.mw.col
+    try:
+        body = json.loads(request.data or b"{}")
+    except Exception:
+        body = {}
+    try:
+        quant = int(body.get("quant", 0) or 0)
+    except (TypeError, ValueError):
+        quant = 0
+    if not (60 <= quant <= 90):
+        return json.dumps({"ok": False, "error": "Quant must be 60-90."}).encode("utf-8")
+
+    def opt_int(key: str) -> int | None:
+        try:
+            v = int(body.get(key))
+            return v
+        except (TypeError, ValueError):
+            return None
+
+    entry = {
+        "ts": int(time.time()),
+        "date": str(body.get("date", "")),
+        "quant": quant,
+        "total": opt_int("total"),
+        "verbal": opt_int("verbal"),
+        "di": opt_int("di"),
+        "projected_at_entry": _gmat_current_projection(col),
+    }
+    scores = col.get_config("gmatOfficialScores", []) or []
+    scores.append(entry)
+    col.set_config("gmatOfficialScores", scores[-50:])
+    return json.dumps({"ok": True, "entry": entry}).encode("utf-8")
+
+
 def gmat_pretest_questions() -> bytes:
     """Return a 21-question diagnostic sampled across all Quant topics."""
     import random
@@ -1675,6 +1732,8 @@ post_handler_list = [
     gmat_today,
     gmat_mock_questions,
     gmat_submit_mock,
+    gmat_official_scores,
+    gmat_save_official_score,
     get_deck_configs_for_update,
     update_deck_configs,
     get_scheduling_states_with_context,
@@ -1819,6 +1878,8 @@ def _check_dynamic_request_permissions():
         "/_anki/gmatToday",
         "/_anki/gmatMockQuestions",
         "/_anki/gmatSubmitMock",
+        "/_anki/gmatOfficialScores",
+        "/_anki/gmatSaveOfficialScore",
     ):
         pass
     else:

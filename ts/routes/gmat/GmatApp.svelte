@@ -26,6 +26,7 @@ chrome77/es2020 webview.
         MockQuestion,
         MockResult,
         MockReport,
+        OfficialScore,
     } from "./api";
     import {
         logError,
@@ -43,6 +44,8 @@ chrome77/es2020 webview.
         fetchToday,
         fetchMockPool,
         submitMock,
+        fetchOfficialScores,
+        saveOfficialScore,
         renderMath,
     } from "./api";
 
@@ -60,6 +63,14 @@ chrome77/es2020 webview.
         | "lesson"
         | "mock";
     let view: View = "home";
+
+    // ---- official/practice-test scores (calibration) ----
+    let officialScores: OfficialScore[] = [];
+    let osQuant = "";
+    let osTotal = "";
+    let osDate = "";
+    let osSaving = false;
+    let osError = "";
 
     // ---- today's assembled session ----
     let today: TodaySession | null = null;
@@ -106,20 +117,30 @@ chrome77/es2020 webview.
     const TARGET_SECS = 128; // GMAT Focus Quant pace: 45 min / 21 questions
 
     // ---- mock exam state (timed, exam conditions, no mid-test feedback) ----
-    type MockPhase = "intro" | "run" | "report";
+    // Exam-accurate: adaptive selection, bookmark/flag, a pre-submit review
+    // screen, and up to 3 answer changes in review (GMAT Focus rules).
+    type MockPhase = "intro" | "run" | "review" | "report";
+    interface MockItem {
+        q: MockQuestion;
+        answer: string | null;
+        flagged: boolean;
+        ms: number;
+        firstShownAt: number;
+    }
+    const MOCK_MAX_CHANGES = 3;
     let mockPhase: MockPhase = "intro";
     let mockPool: MockQuestion[] = [];
     let mockCount = 21;
     let mockSecondsLeft = 0;
     let mockTimer = 0;
-    let mockResults: MockResult[] = [];
-    let mockCurrent: MockQuestion | null = null;
-    let mockSelected: string | null = null;
-    let mockShownAt = 0;
+    let mockItems: MockItem[] = [];
+    let mockPos = 0;
     let mockDiffIdx = 1; // 0 easy, 1 medium, 2 hard - simple adaptive ladder
+    let mockChangesLeft = MOCK_MAX_CHANGES;
     let mockReport: MockReport | null = null;
     let mockWhy: (ErrorWhy | null)[] = []; // per-miss classification on the report
     let mockSubmitting = false;
+    let mockMissResults: MockResult[] = []; // misses to classify on the report
 
     $: optionEntries = card ? Object.entries(card.options) : [];
     $: sessionAccuracy = answered > 0 ? Math.round((correctCount / answered) * 100) : 0;
@@ -179,7 +200,33 @@ chrome77/es2020 webview.
                 lessonTopics = (await fetchLessonsIndex()).topics;
                 today = await fetchToday();
             }
+            if (next === "dashboard") {
+                officialScores = await fetchOfficialScores();
+            }
         }
+    }
+
+    async function submitOfficialScore(): Promise<void> {
+        const quant = parseInt(osQuant, 10);
+        if (Number.isNaN(quant) || quant < 60 || quant > 90) {
+            osError = "Enter a Quant score between 60 and 90.";
+            return;
+        }
+        osSaving = true;
+        osError = "";
+        const total = osTotal ? parseInt(osTotal, 10) : null;
+        const res = await saveOfficialScore({ quant, total, date: osDate });
+        osSaving = false;
+        if (!res.ok) {
+            osError = res.error || "Could not save.";
+            return;
+        }
+        osQuant = "";
+        osTotal = "";
+        osDate = "";
+        officialScores = await fetchOfficialScores();
+        const fresh = await refreshOverview();
+        if (fresh) overview = fresh;
     }
 
     async function startBlock(block: TodayBlock): Promise<void> {
@@ -453,8 +500,8 @@ chrome77/es2020 webview.
         if (!mockPool.length) return null;
         const wantDiff = MOCK_DIFFS[mockDiffIdx];
         const usage = new Map<string, number>();
-        for (const r of mockResults) {
-            usage.set(r.topic, (usage.get(r.topic) ?? 0) + 1);
+        for (const it of mockItems) {
+            usage.set(it.q.topic, (usage.get(it.q.topic) ?? 0) + 1);
         }
         const byPreference = [...mockPool].sort((a, b) => {
             const diffA = a.difficulty === wantDiff ? 0 : 1;
@@ -468,12 +515,15 @@ chrome77/es2020 webview.
     }
 
     function beginMock(): void {
-        mockResults = [];
+        mockItems = [];
+        mockPos = 0;
         mockDiffIdx = 1;
-        mockSelected = null;
+        mockChangesLeft = MOCK_MAX_CHANGES;
         mockPhase = "run";
-        mockCurrent = pickMockQuestion();
-        mockShownAt = Date.now();
+        const first = pickMockQuestion();
+        if (first) {
+            mockItems = [{ q: first, answer: null, flagged: false, ms: 0, firstShownAt: Date.now() }];
+        }
         stopTimer();
         mockTimer = window.setInterval(() => {
             mockSecondsLeft -= 1;
@@ -481,43 +531,85 @@ chrome77/es2020 webview.
         }, 1000);
     }
 
-    async function nextMock(): Promise<void> {
-        if (!mockCurrent || mockSelected === null) return;
-        const correct = mockSelected === mockCurrent.correct;
-        mockResults = [
-            ...mockResults,
-            {
-                topic: mockCurrent.topic,
-                difficulty: mockCurrent.difficulty,
-                correct,
-                ms: Date.now() - mockShownAt,
-                stem: mockCurrent.stem,
-                chosen: mockSelected,
-                correct_key: mockCurrent.correct,
-            },
-        ];
-        mockDiffIdx = correct ? Math.min(2, mockDiffIdx + 1) : Math.max(0, mockDiffIdx - 1);
-        mockSelected = null;
-        if (mockResults.length >= mockCount) {
-            await finishMock();
-            return;
+    $: mockCurrentItem = mockItems[mockPos] ?? null;
+    $: mockAnswered = mockItems.filter((it) => it.answer !== null).length;
+
+    /** Select/change an answer. First answer is free and sets the adaptive
+        ladder; any later change (here or in review) costs one of 3 edits. */
+    function selectMockAnswer(key: string): void {
+        const it = mockItems[mockPos];
+        if (!it) return;
+        if (it.answer === null) {
+            it.answer = key;
+            it.ms = Date.now() - it.firstShownAt;
+            const correct = key === it.q.correct;
+            mockDiffIdx = correct ? Math.min(2, mockDiffIdx + 1) : Math.max(0, mockDiffIdx - 1);
+        } else if (key !== it.answer) {
+            if (mockChangesLeft <= 0) return;
+            mockChangesLeft -= 1;
+            it.answer = key;
         }
-        mockCurrent = pickMockQuestion();
-        mockShownAt = Date.now();
-        if (!mockCurrent) await finishMock();
+        mockItems = [...mockItems];
+    }
+
+    function toggleMockFlag(): void {
+        const it = mockItems[mockPos];
+        if (!it) return;
+        it.flagged = !it.flagged;
+        mockItems = [...mockItems];
+    }
+
+    /** Advance: pick the next adaptive question the first time we reach a new
+        slot; otherwise move within already-seen questions; at the end -> review. */
+    function advanceMock(): void {
+        if (mockPos === mockItems.length - 1 && mockItems.length < mockCount) {
+            const next = pickMockQuestion();
+            if (!next) {
+                mockPhase = "review";
+                return;
+            }
+            mockItems = [
+                ...mockItems,
+                { q: next, answer: null, flagged: false, ms: 0, firstShownAt: Date.now() },
+            ];
+            mockPos += 1;
+        } else if (mockPos < mockItems.length - 1) {
+            mockPos += 1;
+        } else {
+            mockPhase = "review";
+        }
+    }
+
+    function backMock(): void {
+        if (mockPos > 0) mockPos -= 1;
+    }
+
+    function reviewJump(i: number): void {
+        mockPos = i;
+        mockPhase = "run";
     }
 
     async function finishMock(): Promise<void> {
         if (mockSubmitting || mockPhase === "report") return;
         mockSubmitting = true;
         stopTimer();
-        mockReport = await submitMock(mockResults);
-        mockWhy = mockResults.filter((r) => !r.correct).map(() => null);
+        const results: MockResult[] = mockItems.map((it) => ({
+            topic: it.q.topic,
+            difficulty: it.q.difficulty,
+            correct: it.answer === it.q.correct,
+            ms: it.ms,
+            stem: it.q.stem,
+            chosen: it.answer ?? "",
+            correct_key: it.q.correct,
+        }));
+        mockReport = await submitMock(results);
+        mockMissResults = results.filter((r) => !r.correct);
+        mockWhy = mockMissResults.map(() => null);
         mockPhase = "report";
         mockSubmitting = false;
     }
 
-    $: mockMisses = mockResults.filter((r) => !r.correct);
+    $: mockMisses = mockMissResults;
     $: mockAllClassified = mockWhy.every((w) => w !== null);
 
     async function classifyMockMiss(idx: number, why: ErrorWhy): Promise<void> {
@@ -902,13 +994,30 @@ chrome77/es2020 webview.
                     <span class="eyebrow">Readiness</span>
                     <p class="measure-q">What score would you get today?</p>
                     {#if overview.readiness.status === "shown"}
-                        <div class="needle-wrap">
-                            <span class="readout-lg">Q{overview.readiness.point}</span>
-                            <span class="band">
-                                range Q{overview.readiness.low}&ndash;Q{overview.readiness.high} &middot;
-                                {overview.readiness.confidence} confidence
-                            </span>
-                        </div>
+                        {@const cal = overview.readiness.calibration}
+                        {#if cal}
+                            <div class="needle-wrap">
+                                <span class="readout-lg">Q{cal.point}</span>
+                                <span class="pill cal-ok">calibrated</span>
+                                <span class="band">
+                                    range Q{cal.low}&ndash;Q{cal.high} &middot;
+                                    {overview.readiness.confidence} confidence
+                                </span>
+                            </div>
+                            <p class="muted">
+                                Raw model said Q{overview.readiness.point}; shifted
+                                {cal.bias >= 0 ? "+" : ""}{cal.bias} from your {cal.n} official
+                                score{cal.n > 1 ? "s" : ""} (avg error {cal.residual}).
+                            </p>
+                        {:else}
+                            <div class="needle-wrap">
+                                <span class="readout-lg">Q{overview.readiness.point}</span>
+                                <span class="band">
+                                    range Q{overview.readiness.low}&ndash;Q{overview.readiness.high} &middot;
+                                    {overview.readiness.confidence} confidence
+                                </span>
+                            </div>
+                        {/if}
                         <p class="muted">{overview.readiness.scale}. {overview.readiness.method}</p>
                         {#if overview.readiness.mocks?.length}
                             {@const lastMock =
@@ -966,6 +1075,55 @@ chrome77/es2020 webview.
                     <span class="readout">{overview.topics_covered}/{overview.topics_total}</span>
                 </div>
                 <div class="bar"><div class="bar-fill" style="width:{coveragePct}%"></div></div>
+            </section>
+
+            <section class="official">
+                <div class="coverage-head">
+                    <span class="eyebrow">Practice-test scores</span>
+                    <span class="muted">calibrates your Readiness projection</span>
+                </div>
+                <p class="muted">
+                    Took a real GMAT practice test (e.g. an official mba.com exam)? Log the Quant
+                    section score and we'll correct the projection to match your real results.
+                </p>
+                <div class="os-form">
+                    <label>
+                        <span class="os-label">Quant (60&ndash;90)</span>
+                        <input class="os-input" type="number" min="60" max="90" bind:value={osQuant} />
+                    </label>
+                    <label>
+                        <span class="os-label">Total (opt.)</span>
+                        <input class="os-input" type="number" min="205" max="805" bind:value={osTotal} />
+                    </label>
+                    <label>
+                        <span class="os-label">Date (opt.)</span>
+                        <input class="os-input" type="date" bind:value={osDate} />
+                    </label>
+                    <button class="primary os-save" disabled={osSaving} on:click={submitOfficialScore}>
+                        {osSaving ? "Saving…" : "Log score"}
+                    </button>
+                </div>
+                {#if osError}<p class="warn-text">{osError}</p>{/if}
+                {#if officialScores.length}
+                    <ul class="os-list">
+                        {#each officialScores as s}
+                            <li class="os-item">
+                                <span class="readout">Q{s.quant}</span>
+                                {#if s.total}<span class="muted">total {s.total}</span>{/if}
+                                {#if s.date}<span class="muted">{s.date}</span>{/if}
+                                {#if s.projected_at_entry != null}
+                                    <span class="muted">
+                                        (app said Q{s.projected_at_entry} &middot;
+                                        {s.quant - s.projected_at_entry >= 0 ? "+" : ""}{s.quant -
+                                            s.projected_at_entry})
+                                    </span>
+                                {:else}
+                                    <span class="muted">(logged before a projection existed)</span>
+                                {/if}
+                            </li>
+                        {/each}
+                    </ul>
+                {/if}
             </section>
         </main>
     {:else if view === "onboarding"}
@@ -1264,9 +1422,11 @@ chrome77/es2020 webview.
                         <span class="pill">{Math.min(mockCount, mockPool.length)} questions &middot; 45:00</span>
                     </div>
                     <p class="muted">
-                        Aim for ~2:08 per question. Guessing beats leaving blanks &mdash; but you'll
-                        classify every miss afterwards.
+                        Aim for ~2:08 per question. Flag anything to revisit, then review and change
+                        up to 3 answers before you submit &mdash; just like the real section.
+                        Guessing beats leaving blanks, but you'll classify every miss afterwards.
                     </p>
+                    <p class="muted">Quant only for now (Verbal + Data Insights come later).</p>
                     <button
                         class="primary"
                         disabled={mockPool.length === 0}
@@ -1282,22 +1442,37 @@ chrome77/es2020 webview.
                         {fmtTime(mockSecondsLeft)}
                     </span>
                     left &middot; question
-                    <span class="readout">{mockResults.length + 1}</span>
+                    <span class="readout">{mockPos + 1}</span>
                     of {mockCount}
+                    &middot; <span class="muted">{mockAnswered} answered</span>
+                    {#if mockChangesLeft < 3}
+                        &middot; <span class="muted">{mockChangesLeft} edits left</span>
+                    {/if}
                 </div>
-                {#if mockCurrent}
+                {#if mockCurrentItem}
                     <section class="q-card">
                         <div class="q-head">
                             <span class="eyebrow">GMAT Quant &middot; timed</span>
-                            <span class="pill diff-{mockCurrent.difficulty}">{mockCurrent.difficulty}</span>
+                            <div class="q-head-right">
+                                <button
+                                    class="flag-btn"
+                                    class:on={mockCurrentItem.flagged}
+                                    on:click={toggleMockFlag}
+                                >
+                                    {mockCurrentItem.flagged ? "\u2691 Flagged" : "\u2690 Flag"}
+                                </button>
+                                <span class="pill diff-{mockCurrentItem.q.difficulty}">
+                                    {mockCurrentItem.q.difficulty}
+                                </span>
+                            </div>
                         </div>
-                        <h1 class="stem">{@html renderMath(mockCurrent.stem)}</h1>
+                        <h1 class="stem">{@html renderMath(mockCurrentItem.q.stem)}</h1>
                         <ul class="opts">
-                            {#each Object.entries(mockCurrent.options) as [key, value]}
+                            {#each Object.entries(mockCurrentItem.q.options) as [key, value]}
                                 <li>
                                     <button
-                                        class="opt {mockSelected === key ? 'sel' : ''}"
-                                        on:click={() => (mockSelected = key)}
+                                        class="opt {mockCurrentItem.answer === key ? 'sel' : ''}"
+                                        on:click={() => selectMockAnswer(key)}
                                     >
                                         <span class="opt-key">{key}</span>
                                         <span>{@html renderMath(value)}</span>
@@ -1305,12 +1480,58 @@ chrome77/es2020 webview.
                                 </li>
                             {/each}
                         </ul>
-                        <button class="primary" disabled={mockSelected === null} on:click={nextMock}>
-                            {mockResults.length + 1 >= mockCount ? "Finish section" : "Lock in & next"}
-                        </button>
-                        <p class="seal">Sealed until the end &mdash; exam conditions.</p>
+                        <div class="mock-nav">
+                            <button class="ghost" disabled={mockPos === 0} on:click={backMock}>
+                                Back
+                            </button>
+                            <button class="primary" on:click={advanceMock}>
+                                {mockPos === mockCount - 1 ? "Review section" : "Next"}
+                            </button>
+                        </div>
+                        <p class="seal">Sealed until you submit &mdash; exam conditions.</p>
                     </section>
                 {/if}
+            {:else if mockPhase === "review"}
+                <div class="session-meter">
+                    <span class="readout" class:overpace={mockSecondsLeft < 300}>
+                        {fmtTime(mockSecondsLeft)}
+                    </span>
+                    left &middot; <span class="readout">{mockAnswered}</span>/{mockCount} answered
+                    &middot; <span class="muted">{mockChangesLeft} edits left</span>
+                </div>
+                <section class="q-card">
+                    <div class="q-head">
+                        <span class="eyebrow">Review before you submit</span>
+                    </div>
+                    <p class="muted">
+                        Tap any question to revisit it. You can change up to 3 answers. Unanswered and
+                        flagged questions are marked.
+                    </p>
+                    <ol class="review-grid">
+                        {#each mockItems as it, i}
+                            <li>
+                                <button
+                                    class="review-cell {it.answer === null ? 'unanswered' : 'answered'}"
+                                    class:flagged={it.flagged}
+                                    on:click={() => reviewJump(i)}
+                                >
+                                    <span class="rc-n">{i + 1}</span>
+                                    <span class="rc-state">
+                                        {it.answer ?? "\u2014"}{it.flagged ? " \u2691" : ""}
+                                    </span>
+                                </button>
+                            </li>
+                        {/each}
+                    </ol>
+                    <button class="primary" on:click={finishMock} disabled={mockSubmitting}>
+                        {mockSubmitting ? "Scoring…" : "Submit section"}
+                    </button>
+                    {#if mockAnswered < mockCount}
+                        <p class="warn-text">
+                            {mockCount - mockAnswered} unanswered will be scored as wrong.
+                        </p>
+                    {/if}
+                </section>
             {:else if mockReport}
                 <p class="eyebrow">Mock report</p>
                 <h1 class="display">
@@ -1767,6 +1988,134 @@ chrome77/es2020 webview.
     .muted-display {
         color: var(--ink-faint);
         font-size: 0.6em;
+    }
+
+    .official {
+        margin-top: 22px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 16px 18px;
+    }
+    .os-form {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: 12px;
+        margin-top: 10px;
+    }
+    .os-form label {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .os-label {
+        font-size: 12px;
+        color: var(--ink-faint);
+    }
+    .os-input {
+        font-family: var(--mono);
+        font-size: 15px;
+        padding: 8px 10px;
+        border: 1px solid var(--line-strong);
+        border-radius: 8px;
+        background: var(--paper);
+        color: var(--ink);
+        width: 130px;
+    }
+    .os-save {
+        margin-top: 0;
+    }
+    .os-list {
+        list-style: none;
+        margin: 14px 0 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .os-item {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        padding: 6px 0;
+        border-top: 1px solid var(--line);
+    }
+
+    /* mock exam: flag, nav, review grid */
+    .q-head-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .flag-btn {
+        appearance: none;
+        border: 1px solid var(--line-strong);
+        background: var(--surface);
+        color: var(--ink-soft);
+        font-family: var(--ui);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 999px;
+        cursor: pointer;
+    }
+    .flag-btn.on {
+        border-color: var(--clay-ink);
+        color: var(--clay-ink);
+        background: var(--clay-tint);
+    }
+    .mock-nav {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-top: 16px;
+    }
+    .mock-nav .primary {
+        margin-top: 0;
+    }
+    .review-grid {
+        list-style: none;
+        margin: 12px 0 16px;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+        gap: 8px;
+    }
+    .review-cell {
+        width: 100%;
+        appearance: none;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        padding: 8px 4px;
+        border: 1px solid var(--line-strong);
+        border-radius: 8px;
+        background: var(--surface);
+        color: var(--ink);
+    }
+    .review-cell.answered {
+        background: var(--indicator-tint);
+        border-color: var(--indicator-ink);
+    }
+    .review-cell.unanswered {
+        background: var(--sunk);
+    }
+    .review-cell.flagged {
+        border-color: var(--clay-ink);
+        border-width: 2px;
+    }
+    .rc-n {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--ink-faint);
+    }
+    .rc-state {
+        font-family: var(--mono);
+        font-size: 14px;
+        font-weight: 600;
     }
 
     .pace {
