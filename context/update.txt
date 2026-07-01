@@ -24,7 +24,9 @@ GIT HISTORY (branch: gmatwiz)
   769631577  adaptive Today plan - lesson->FSRS, EMA mastery, dated pacing
   c9e020a21  one scoring engine for desktop + mobile (kill Python/Rust drift)
   42edc261b  desktop<->phone two-way sync + clean-machine installer
-  (next)     error-log repair loop + timing analytics + timed adaptive mocks
+  f17a82c86  error-log repair loop + timing analytics + timed adaptive mocks
+  2169234b7  official-score calibration + exam-accurate mock (flag/review/edits)
+  (this commit) user-upload question importer (JSON/CSV)
 (Base upstream commit: b00308e55.)
 
 -------------------------------------------------------------------------------
@@ -69,7 +71,19 @@ DONE - DESKTOP (runs via ./run, one Anki window)
     (living plan), misses require classification, and the ENGINE folds mock
     history into Readiness (mock Q history + projection-vs-mock gap warning).
     Today suggests a mock when learning completes or exam <= 21 days (7-day
-    cadence).
+    cadence). Now EXAM-ACCURATE: flag/bookmark, a pre-submit review grid, and
+    up to 3 answer changes in review (GMAT Focus rules); Quant-only for now.
+  * OFFICIAL-SCORE CALIBRATION (Readiness tab): log a real practice-test Quant
+    score; the desktop snapshots the app's raw projection at that moment
+    (gmatOfficialScores config, projected_at_entry). The ENGINE computes a bias
+    = mean(official - projected) and shows a CALIBRATED Q as the headline while
+    keeping the raw heuristic + residual visible (honesty rule). Confidence
+    bumps with >=2 official scores. Shared by desktop + phone (engine-owned).
+  * USER-UPLOAD IMPORT (Tools -> "Import my questions..."): bring your own
+    question set (JSON in our schema or CSV) to practice in-app - the PRD
+    ContentSource user-upload seam. Validates rows (reasons for skips), tags
+    source="user-upload" + tag gmatwiz::user-upload, imports into GMAT::Quant.
+    Legal: we never bundle copyrighted official tests (PRD sec 19).
   * Readiness dashboard: three SEPARATE scores, each with the honesty rule.
 - Exponent rendering (x^2) fixed across practice/diagnostic/lessons.
 
@@ -83,7 +97,8 @@ THE THREE SCORES (honesty rule: point + range + evidence + give-up abstention)
 - Readiness: projected GMAT Focus QUANT section score (Q60-90) + range +
   confidence, gated by the full give-up rule (coverage >=50%, >=200 reviews,
   >=50 attempts, ECE <=0.10). Total (205-805) ABSTAINS (needs Verbal + DI).
-  Mapping is a documented heuristic, not yet validated vs official scores.
+  Mapping is a documented heuristic; now CALIBRATED against the user's real
+  official scores when logged (bias offset, raw + calibrated both shown).
 
 -------------------------------------------------------------------------------
 DONE - MOBILE (iOS Simulator)
