@@ -191,4 +191,30 @@ enum GmatwizEngine {
         guard let data = String(cString: c).data(using: .utf8) else { return nil }
         return try? JSONDecoder().decode(GmatScores.self, from: data)
     }
+
+    /// Sync the collection at `path` against a self-hosted Anki sync server so the
+    /// phone shares ONE collection with the desktop. The caller must release any
+    /// open collection handle for this path first (SQLite is single-writer).
+    static func sync(
+        path: String,
+        endpoint: String,
+        username: String,
+        password: String,
+        preferUpload: Bool
+    ) -> GmatSyncResult? {
+        guard let c = gmatwiz_sync(path, endpoint, username, password, preferUpload) else {
+            return nil
+        }
+        defer { gmatwiz_string_free(c) }
+        guard let data = String(cString: c).data(using: .utf8) else { return nil }
+        return try? JSONDecoder().decode(GmatSyncResult.self, from: data)
+    }
+}
+
+/// Result of a sync attempt from the shared engine. On failure `error` says why
+/// (honesty rule: never a bare "failed").
+struct GmatSyncResult: Decodable {
+    let ok: Bool
+    let action: String?
+    let error: String?
 }

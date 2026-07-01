@@ -16,6 +16,10 @@ cd "$ROOT"
 
 export PROTOC="$ROOT/out/extracted/protoc/bin/protoc"
 export CARGO_TARGET_DIR="$ROOT/out/rust"
+# Match a modern deployment target so the C deps (zstd/ring/sqlite), which the
+# SDK compiles for the current iOS, link cleanly (avoids the ___chkstk_darwin
+# undefined-symbol you get when the default min target falls back to iOS 10).
+export IPHONEOS_DEPLOYMENT_TARGET="${IPHONEOS_DEPLOYMENT_TARGET:-16.0}"
 PROFILE="release"
 FEATURES="rustls"
 LIB="libgmatwiz_ffi.a"

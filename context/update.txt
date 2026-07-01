@@ -22,6 +22,8 @@ GIT HISTORY (branch: gmatwiz)
   ba7955c48  iOS app runs a real review on the shared Rust engine
   2aba37956  Readiness dashboard on iOS (3 scores from the shared engine)
   769631577  adaptive Today plan - lesson->FSRS, EMA mastery, dated pacing
+  c9e020a21  one scoring engine for desktop + mobile (kill Python/Rust drift)
+  (uncommitted) mobile<->desktop sync (FFI gmatwiz_sync + Swift) + installer
 (Base upstream commit: b00308e55.)
 
 -------------------------------------------------------------------------------
@@ -82,24 +84,52 @@ DONE - MOBILE (iOS Simulator)
 - Engine helpers live in rslib/src/gmatwiz.rs (single place, all engine logic).
 
 -------------------------------------------------------------------------------
+DONE - SYNC (PRD Phase 7) + INSTALLER (PRD Section 17)
+-------------------------------------------------------------------------------
+- SELF-HOSTED SYNC SERVER: the engine already ships one. Run with
+    ./tools/gmat-sync-server.sh     (defaults: gmat:wiz @ 127.0.0.1:27811,
+                                     data in out/syncserver)
+  NOTE: the server must be RUNNING for sync to work; "Sync failed" on the phone
+  almost always means nothing is listening on the endpoint. The app now shows
+  the engine's error reason. First/divergent syncs obey the server-dictated
+  direction (an empty side can never wipe the populated side).
+- DESKTOP sync: Anki's built-in full sync; point at the server via the endpoint.
+- MOBILE sync: rslib/src/gmatwiz.rs Backend::gmat_sync + gmat_sync_collection_at;
+  FFI gmatwiz_sync(path, endpoint, user, pass, prefer_upload); Swift
+  GmatwizEngine.sync + Sync down/up buttons in the app. The phone closes its
+  collection (single-writer lock), the engine reopens/syncs, then it reopens.
+- PROVEN two-way, both directions: desktop<->desktop AND desktop<->phone (via the
+  exact mobile C FFI) converge (revlog counts match) against the self-hosted
+  server. iOS app builds + runs in the simulator with the Sync controls.
+- CONFLICT RULE:
+  * Reviews (revlog) are append-only -> merged as a union; never conflict.
+  * Note/card edits: last-writer-wins per object by USN/mtime (Anki's model).
+  * First/divergent sync needs a FULL sync; direction is explicit (no silent
+    loss): desktop is the authoring source of truth; the phone offers Sync down
+    (take server) and Sync up (push phone). Offline edits reconcile on reconnect
+    via normal sync; if both diverged at schema level, a full sync in the chosen
+    direction resolves it.
+- INSTALLER: native macOS .dmg via Briefcase (ad-hoc signed -> runs on a clean
+  machine), contains GMATWiz. Build:  ./ninja wheels && ./ninja installer:package
+  Output: out/installer/dist/anki-26.05-mac-apple.dmg (~229 MB). Wheels alone:
+  out/wheels/anki-*.whl + aqt-*.whl.
+
+-------------------------------------------------------------------------------
 NOT DONE / KNOWN GAPS
 -------------------------------------------------------------------------------
-- SYNC: desktop and iOS are NOT synced. They share the ENGINE (code), not the
-  DATA. Each has its own collection (desktop: profile; iOS: app sandbox copy).
-  Two-way sync is PRD Phase 7 (self-hosted Anki Sync Server + conflict rule);
-  not required for MVP.
-- iOS is SIMULATOR only. A real device needs code signing + the device engine
-  slice (ios/build-ios.sh builds device+sim xcframework).
-- SCORE LOGIC DUPLICATION: computed in Python (desktop, qt/aqt/mediasrv.py) AND
-  Rust (mobile, rslib/src/gmatwiz.rs), kept in sync by mirroring. Suggested
-  follow-up: unify onto the Rust impl (expose via a backend RPC so desktop uses
-  it too) to remove drift risk.
+- iOS on a REAL device needs an Apple signing identity (simulator works now;
+  ios/build-ios.sh builds a device+sim xcframework at deployment target 16.0).
+- Sync auth is a simple self-hosted user:pass (SYNC_USER1). No account UI in the
+  phone app yet (endpoint/user/pass are constants in ReviewModel); a settings
+  screen is a small follow-up.
 - No Verbal or Data Insights content/notetypes yet.
 - No AI features (architected to add later; everything runs with AI off).
-- Desktop installer (clean-machine) not built yet (PRD Section 17).
 - Validation challenges not yet done: paraphrase test (7d), leakage check (7e),
   ablation of the application-first feature, one-command benchmark (7h) - these
   need accumulated real study data.
+- RESOLVED (was a gap): score-logic duplication - desktop now calls the Rust
+  engine via the GmatScores RPC (single source of truth); Memory/Perf/Readiness
+  can no longer drift between platforms.
 
 -------------------------------------------------------------------------------
 HOW TO RUN

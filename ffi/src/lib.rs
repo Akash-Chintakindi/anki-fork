@@ -238,3 +238,40 @@ pub unsafe extern "C" fn gmatwiz_collection_scores(
         Err(_) => ptr::null_mut(),
     }
 }
+
+/// Sync the collection at `path` against a self-hosted Anki sync server, then
+/// close it, so the phone shares one collection with the desktop. Returns a JSON
+/// status string (free with `gmatwiz_string_free`), or null on error.
+///
+/// The caller must first free any open collection handle for this path
+/// (SQLite is single-writer). `prefer_upload` chooses the direction if the
+/// server requires a full sync (true = push phone -> server on first sync).
+///
+/// # Safety
+/// `path`, `endpoint`, `username`, `password` must be valid NUL-terminated C strings.
+#[no_mangle]
+pub unsafe extern "C" fn gmatwiz_sync(
+    path: *const c_char,
+    endpoint: *const c_char,
+    username: *const c_char,
+    password: *const c_char,
+    prefer_upload: bool,
+) -> *mut c_char {
+    if path.is_null() || endpoint.is_null() || username.is_null() || password.is_null() {
+        return ptr::null_mut();
+    }
+    let s = |p: *const c_char| CStr::from_ptr(p).to_string_lossy().into_owned();
+    match anki::gmatwiz::gmat_sync_collection_at(
+        &s(path),
+        &s(endpoint),
+        &s(username),
+        &s(password),
+        prefer_upload,
+    ) {
+        Ok(json) => to_c_string(json),
+        // Honesty rule: report *why* the sync failed, not just that it did.
+        Err(err) => to_c_string(
+            serde_json::json!({ "ok": false, "error": format!("{err:?}") }).to_string(),
+        ),
+    }
+}

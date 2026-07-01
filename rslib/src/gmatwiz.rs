@@ -416,3 +416,84 @@ impl Collection {
         })
     }
 }
+
+// --- Sync (shared by desktop + mobile) ---------------------------------------
+// Desktop already has Anki's full sync built in. For mobile we expose the same
+// engine sync in one call. A full sync reopens the collection, which the Backend
+// manages, so sync goes through a Backend rather than a bare Collection.
+
+impl crate::backend::Backend {
+    /// Log in, then sync against `endpoint`. On a first or divergent sync the
+    /// server requires a full sync; we resolve it in the caller's chosen
+    /// direction (`prefer_upload`). Returns a small JSON status.
+    pub fn gmat_sync(
+        &self,
+        endpoint: &str,
+        username: &str,
+        password: &str,
+        prefer_upload: bool,
+    ) -> Result<String> {
+        use anki_proto::sync::sync_collection_response::ChangesRequired;
+
+        use crate::services::BackendSyncService;
+
+        let auth = self.sync_login(anki_proto::sync::SyncLoginRequest {
+            username: username.into(),
+            password: password.into(),
+            endpoint: Some(endpoint.into()),
+        })?;
+        let out = self.sync_collection(anki_proto::sync::SyncCollectionRequest {
+            auth: Some(auth.clone()),
+            sync_media: false,
+        })?;
+        let full = |upload: bool| -> Result<&'static str> {
+            self.full_upload_or_download(anki_proto::sync::FullUploadOrDownloadRequest {
+                auth: Some(auth.clone()),
+                upload,
+                server_usn: None,
+            })?;
+            Ok(if upload { "full_upload" } else { "full_download" })
+        };
+        // When the server dictates a single possible direction (e.g. the server
+        // is empty -> upload is the only option), obey it rather than the
+        // caller's preference, so a first sync can never silently wipe a side.
+        let action =
+            match ChangesRequired::try_from(out.required).unwrap_or(ChangesRequired::NoChanges) {
+                ChangesRequired::NoChanges => "no_changes",
+                ChangesRequired::NormalSync => "normal_sync",
+                ChangesRequired::FullDownload => full(false)?,
+                ChangesRequired::FullUpload => full(true)?,
+                _ => full(prefer_upload)?,
+            };
+        Ok(json!({ "ok": true, "action": action }).to_string())
+    }
+}
+
+/// Open the collection at `col_path`, sync it against `endpoint`, then close it.
+/// The caller must NOT hold the collection open (SQLite is single-writer): the
+/// iOS app closes its review collection, calls this, then reopens.
+pub fn gmat_sync_collection_at(
+    col_path: &str,
+    endpoint: &str,
+    username: &str,
+    password: &str,
+    prefer_upload: bool,
+) -> Result<String> {
+    use anki_i18n::I18n;
+
+    use crate::backend::Backend;
+    use crate::services::BackendCollectionService;
+
+    let base = col_path.trim_end_matches(".anki2");
+    let backend = Backend::new(I18n::template_only(), false);
+    backend.open_collection(anki_proto::collection::OpenCollectionRequest {
+        collection_path: col_path.into(),
+        media_folder_path: format!("{base}.media"),
+        media_db_path: format!("{base}.media.db2"),
+    })?;
+    let result = backend.gmat_sync(endpoint, username, password, prefer_upload);
+    let _ = backend.close_collection(anki_proto::collection::CloseCollectionRequest {
+        downgrade_to_schema11: false,
+    });
+    result
+}

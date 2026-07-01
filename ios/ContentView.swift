@@ -18,8 +18,17 @@ final class ReviewModel: ObservableObject {
     @Published var selected: String?
     @Published var lastCorrect: Bool?
     @Published var scores: GmatScores?
+    @Published var syncing = false
+    @Published var syncMessage = ""
+
+    // Point these at your self-hosted Anki sync server. From the iOS simulator
+    // the host machine's loopback is reachable at 127.0.0.1.
+    var syncEndpoint = "http://127.0.0.1:27811/"
+    var syncUser = "gmat"
+    var syncPass = "wiz"
 
     private var collection: GmatCollectionHandle?
+    private var didSelftestSync = false
 
     init() { open() }
 
@@ -52,6 +61,11 @@ final class ReviewModel: ObservableObject {
             GmatwizEngine.answer(handle, cardId: card.id, correct: true)
             refresh()
         }
+        // Headless proof: run a sync on launch so a screenshot shows the result.
+        if ProcessInfo.processInfo.arguments.contains("--gmat-selftest-sync"), !didSelftestSync {
+            didSelftestSync = true
+            sync(preferUpload: false)
+        }
     }
 
     func refresh() {
@@ -73,6 +87,36 @@ final class ReviewModel: ObservableObject {
     }
 
     func next() { refresh() }
+
+    /// Sync this phone's collection with the desktop via the self-hosted server.
+    /// Releases the collection first (SQLite single-writer), syncs on the shared
+    /// engine, then reopens and reloads. `preferUpload` picks the direction only
+    /// if the server requires a first/divergent full sync.
+    func sync(preferUpload: Bool) {
+        guard !syncing else { return }
+        let path = writableCollectionPath()
+        collection = nil  // release the write lock before the engine reopens the file
+        syncing = true
+        syncMessage = "Syncing…"
+        DispatchQueue.global().async {
+            let result = GmatwizEngine.sync(
+                path: path, endpoint: self.syncEndpoint,
+                username: self.syncUser, password: self.syncPass,
+                preferUpload: preferUpload)
+            DispatchQueue.main.async {
+                self.syncing = false
+                if let r = result {
+                    self.syncMessage = r.ok
+                        ? "Synced (\(r.action ?? "ok"))"
+                        : "Sync failed: \(r.error ?? "unknown"). Is the sync server running?"
+                } else {
+                    self.syncMessage = "Sync failed: engine unavailable"
+                }
+                self.open()
+                self.loadScores()
+            }
+        }
+    }
 }
 
 struct ContentView: View {
@@ -101,6 +145,16 @@ struct ReviewView: View {
                 .font(.title2).bold()
             Text("running on the shared Anki engine")
                 .font(.caption).foregroundStyle(.secondary)
+
+            HStack(spacing: 8) {
+                Button("Sync \u{2193}") { model.sync(preferUpload: false) }
+                    .buttonStyle(.bordered).disabled(model.syncing)
+                Button("Sync \u{2191}") { model.sync(preferUpload: true) }
+                    .buttonStyle(.bordered).disabled(model.syncing)
+                if !model.syncMessage.isEmpty {
+                    Text(model.syncMessage).font(.caption2).foregroundStyle(.secondary)
+                }
+            }
 
             if let s = model.state {
                 HStack(spacing: 16) {

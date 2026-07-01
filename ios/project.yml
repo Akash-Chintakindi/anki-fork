@@ -2,7 +2,7 @@ name: GMATWizPhone
 options:
   bundleIdPrefix: com.gmatwiz
   deploymentTarget:
-    iOS: "15.0"
+    iOS: "16.0"
   createIntermediateGroups: true
 settings:
   base:
@@ -11,7 +11,7 @@ targets:
   GMATWizPhone:
     type: application
     platform: iOS
-    deploymentTarget: "15.0"
+    deploymentTarget: "16.0"
     sources:
       - path: GMATWizPhone
       - path: GmatwizEngine.swift

@@ -68,6 +68,17 @@ int gmatwiz_collection_answer(GmatCollection *handle, int64_t card_id, bool corr
 // Free with gmatwiz_string_free.
 char *gmatwiz_collection_scores(GmatCollection *handle);
 
+// Syncs the collection at `path` against a self-hosted Anki sync server, then
+// closes it, so the phone shares one collection with the desktop. Returns a JSON
+// status string (free with gmatwiz_string_free), or NULL on error. The caller
+// must free any open GmatCollection for this path first (single-writer lock).
+// `prefer_upload` picks the direction if the server requires a full sync.
+char *gmatwiz_sync(const char *path,
+                   const char *endpoint,
+                   const char *username,
+                   const char *password,
+                   bool prefer_upload);
+
 #ifdef __cplusplus
 }
 #endif
