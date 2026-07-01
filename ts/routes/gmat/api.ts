@@ -13,6 +13,12 @@ export interface GmatQuestion {
     difficulty: string;
 }
 
+export interface CalibrationBin {
+    label: string;
+    observed: number;
+    n: number;
+}
+
 export interface GmatMemory {
     status: "shown" | "abstain";
     point?: number;
@@ -20,6 +26,12 @@ export interface GmatMemory {
     high?: number;
     reviews: number;
     reviews_required?: number;
+    reason?: string;
+    target?: number;
+    ece?: number;
+    calibrated?: boolean;
+    bins?: CalibrationBin[];
+    updated_ts?: number;
 }
 
 export interface GmatProfile {
@@ -42,6 +54,42 @@ export interface GmatPlan {
     created_ts: number;
 }
 
+export interface PerfEval {
+    baseline_brier: number;
+    model_brier: number;
+    beats_baseline: boolean;
+    test_n: number;
+}
+
+export interface GmatPerformance {
+    status: "shown" | "abstain";
+    point?: number;
+    low?: number;
+    high?: number;
+    attempts: number;
+    attempts_required?: number;
+    reason?: string;
+    weak_topics?: { topic: string; accuracy: number; n: number }[];
+    eval?: PerfEval | null;
+    updated_ts?: number;
+}
+
+export interface GmatReadiness {
+    status: "shown" | "abstain";
+    section?: string;
+    point?: number;
+    low?: number;
+    high?: number;
+    scale?: string;
+    confidence?: string;
+    method?: string;
+    total_status?: string;
+    total_reason?: string;
+    unmet?: string[];
+    reason?: string;
+    updated_ts?: number;
+}
+
 export interface GmatOverview {
     deck: string;
     total: number;
@@ -51,6 +99,8 @@ export interface GmatOverview {
     topics_covered: number;
     topics_total: number;
     memory: GmatMemory;
+    performance: GmatPerformance;
+    readiness: GmatReadiness;
     profile: GmatProfile | null;
     plan: GmatPlan | null;
 }
@@ -101,6 +151,8 @@ export const EMPTY_OVERVIEW: GmatOverview = {
     topics_covered: 0,
     topics_total: 18,
     memory: { status: "abstain", reviews: 0, reviews_required: 150 },
+    performance: { status: "abstain", attempts: 0, attempts_required: 50 },
+    readiness: { status: "abstain", unmet: [] },
     profile: null,
     plan: null,
 };

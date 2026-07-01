@@ -497,9 +497,42 @@ chrome77/es2020 webview.
                     {#if overview.memory.status === "shown"}
                         <div class="needle-wrap">
                             <span class="readout-lg">{overview.memory.point}%</span>
-                            <span class="band">range {overview.memory.low}&ndash;{overview.memory.high}%</span>
+                            <span class="band">
+                                range {overview.memory.low}&ndash;{overview.memory.high}% &middot;
+                                {overview.memory.reviews} reviews
+                            </span>
                         </div>
-                        <p class="muted">Based on {overview.memory.reviews} graded reviews.</p>
+                        <div class="calib">
+                            <div class="calib-head">
+                                <span class="eyebrow">Calibration</span>
+                                <span class="pill {overview.memory.calibrated ? 'cal-ok' : 'cal-warn'}">
+                                    {overview.memory.calibrated ? "calibrated" : "drift"} &middot; ECE
+                                    {overview.memory.ece}
+                                </span>
+                            </div>
+                            <p class="muted">
+                                Target {overview.memory.target}% retention (dashed line). Bars are your
+                                actual recall by past interval &mdash; near the line means well-calibrated.
+                            </p>
+                            <div class="calib-bars">
+                                {#each overview.memory.bins ?? [] as b}
+                                    <div class="calib-col" title="{b.n} reviews">
+                                        <div class="calib-track">
+                                            <div
+                                                class="calib-target"
+                                                style="bottom:{overview.memory.target}%"
+                                            ></div>
+                                            <div
+                                                class="calib-fill"
+                                                style="height:{Math.round(b.observed * 100)}%"
+                                            ></div>
+                                        </div>
+                                        <span class="calib-pct">{Math.round(b.observed * 100)}%</span>
+                                        <span class="calib-x">{b.label}</span>
+                                    </div>
+                                {/each}
+                            </div>
+                        </div>
                     {:else}
                         <div class="abstain">
                             <span class="abstain-mark">— · —</span>
@@ -517,26 +550,70 @@ chrome77/es2020 webview.
                 <section class="measure">
                     <span class="eyebrow">Performance</span>
                     <p class="measure-q">Can you answer a new exam-style question?</p>
-                    <div class="abstain">
-                        <span class="abstain-mark">— · —</span>
-                        <p class="abstain-title">Not enough data</p>
-                        <p class="muted">Needs 50 graded application attempts.</p>
-                        <p class="next">Best next step: build a streak of timed practice.</p>
-                    </div>
+                    {#if overview.performance.status === "shown"}
+                        <div class="needle-wrap">
+                            <span class="readout-lg">{overview.performance.point}%</span>
+                            <span class="band">
+                                range {overview.performance.low}&ndash;{overview.performance.high}% &middot;
+                                {overview.performance.attempts} new-question attempts
+                            </span>
+                        </div>
+                        {#if overview.performance.eval}
+                            <p class="muted">
+                                Held-out check: per-topic model Brier {overview.performance.eval.model_brier}
+                                vs baseline {overview.performance.eval.baseline_brier} on
+                                {overview.performance.eval.test_n} items &mdash;
+                                {overview.performance.eval.beats_baseline
+                                    ? "beats the simple baseline."
+                                    : "not yet beating the baseline."}
+                            </p>
+                        {/if}
+                        {#if overview.performance.weak_topics?.length}
+                            <p class="next">
+                                Weakest: {overview.performance.weak_topics
+                                    .slice(0, 3)
+                                    .map((t) => topicLabel(t.topic))
+                                    .join(", ")}
+                            </p>
+                        {/if}
+                    {:else}
+                        <div class="abstain">
+                            <span class="abstain-mark">— · —</span>
+                            <p class="abstain-title">Not enough data</p>
+                            <p class="muted">{overview.performance.reason}</p>
+                            <p class="next">Best next step: build a streak of timed practice.</p>
+                        </div>
+                    {/if}
                 </section>
 
                 <!-- Readiness -->
                 <section class="measure">
                     <span class="eyebrow">Readiness</span>
                     <p class="measure-q">What score would you get today?</p>
-                    <div class="abstain">
-                        <span class="abstain-mark">— · —</span>
-                        <p class="abstain-title">Not enough data</p>
-                        <p class="muted">
-                            Needs 50% topic coverage (now {coveragePct}%), 200 reviews and 50 attempts.
-                        </p>
-                        <p class="next">A confident number with no evidence is just a guess.</p>
-                    </div>
+                    {#if overview.readiness.status === "shown"}
+                        <div class="needle-wrap">
+                            <span class="readout-lg">Q{overview.readiness.point}</span>
+                            <span class="band">
+                                range Q{overview.readiness.low}&ndash;Q{overview.readiness.high} &middot;
+                                {overview.readiness.confidence} confidence
+                            </span>
+                        </div>
+                        <p class="muted">{overview.readiness.scale}. {overview.readiness.method}</p>
+                        <p class="next">Total (205-805): {overview.readiness.total_reason}</p>
+                    {:else}
+                        <div class="abstain">
+                            <span class="abstain-mark">— · —</span>
+                            <p class="abstain-title">Not enough data</p>
+                            {#if overview.readiness.unmet?.length}
+                                <ul class="unmet">
+                                    {#each overview.readiness.unmet as u}
+                                        <li>{u}</li>
+                                    {/each}
+                                </ul>
+                            {/if}
+                            <p class="next">{overview.readiness.reason}</p>
+                        </div>
+                    {/if}
                 </section>
             </div>
 
@@ -1240,6 +1317,73 @@ chrome77/es2020 webview.
         font-size: 13px;
         color: var(--ink-faint);
     }
+    .calib {
+        border-top: 1px solid var(--line);
+        margin-top: 14px;
+        padding-top: 12px;
+    }
+    .calib-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 4px;
+    }
+    .cal-ok {
+        background: var(--indicator-tint);
+        border-color: var(--indicator);
+        color: var(--indicator-ink);
+    }
+    .cal-warn {
+        background: var(--clay-tint);
+        border-color: var(--clay-ink);
+        color: var(--clay-ink);
+    }
+    .calib-bars {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+    .calib-col {
+        flex: 1 1 0;
+        text-align: center;
+        margin: 0 2px;
+    }
+    .calib-track {
+        position: relative;
+        height: 84px;
+        border-radius: 6px 6px 0 0;
+        background: var(--sunk);
+        overflow: hidden;
+    }
+    .calib-fill {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--indicator);
+    }
+    .calib-target {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 0;
+        border-top: 2px dashed var(--clay-ink);
+        z-index: 1;
+    }
+    .calib-pct {
+        display: block;
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--ink-soft);
+        margin-top: 4px;
+    }
+    .calib-x {
+        display: block;
+        font-size: 10px;
+        color: var(--ink-faint);
+    }
+
     .abstain {
         border-top: 1px solid var(--line);
         padding-top: 14px;
@@ -1254,6 +1398,13 @@ chrome77/es2020 webview.
         font-weight: 600;
         margin: 6px 0 4px;
         color: var(--ink-soft);
+    }
+    .unmet {
+        margin: 4px 0 0 16px;
+        padding: 0;
+        font-size: 12px;
+        color: var(--ink-faint);
+        line-height: 1.5;
     }
     .next {
         margin-top: 10px;
