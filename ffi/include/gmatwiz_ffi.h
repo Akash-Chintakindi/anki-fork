@@ -10,12 +10,14 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct GmatwizBackend GmatwizBackend;
+typedef struct GmatCollection GmatCollection;
 
 // Returns the engine build hash. Free with gmatwiz_string_free.
 char *gmatwiz_buildhash(void);
@@ -45,6 +47,22 @@ int gmatwiz_backend_command(GmatwizBackend *handle,
 
 // Frees a buffer returned by gmatwiz_backend_command.
 void gmatwiz_buffer_free(uint8_t *ptr, size_t len);
+
+// --- High-level GMATWiz collection API (iOS review session) ---
+
+// Opens a collection at the given .anki2 path. Returns NULL on failure.
+GmatCollection *gmatwiz_open_collection(const char *path);
+
+// Frees a collection opened with gmatwiz_open_collection.
+void gmatwiz_collection_free(GmatCollection *handle);
+
+// Returns review state for `deck` (default "GMAT::Quant") as a JSON string
+// {new, learning, review, card}. Free with gmatwiz_string_free.
+char *gmatwiz_collection_state(GmatCollection *handle, const char *deck);
+
+// Answers the current card via the real scheduler (correct => Good, else Again).
+// Returns 0 on success, 1 on engine error, -1 on invalid arguments.
+int gmatwiz_collection_answer(GmatCollection *handle, int64_t card_id, bool correct);
 
 #ifdef __cplusplus
 }

@@ -1,0 +1,35 @@
+name: GMATWizPhone
+options:
+  bundleIdPrefix: com.gmatwiz
+  deploymentTarget:
+    iOS: "15.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+targets:
+  GMATWizPhone:
+    type: application
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - path: GMATWizPhone
+      - path: GmatwizEngine.swift
+      - path: ContentView.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.gmatwiz.phone
+        TARGETED_DEVICE_FAMILY: "1,2"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: GMATWiz
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+    dependencies:
+      - framework: ../out/ios/GmatwizFFI.xcframework
+        embed: true
+schemes:
+  GMATWizPhone:
+    build:
+      targets:
+        GMATWizPhone: all
+    run:
+      config: Debug

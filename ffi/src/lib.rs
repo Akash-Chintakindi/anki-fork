@@ -11,16 +11,24 @@
 
 use std::ffi::c_char;
 use std::ffi::c_int;
+use std::ffi::CStr;
 use std::ffi::CString;
 use std::ptr;
 use std::slice;
 
 use anki::backend::init_backend;
 use anki::backend::Backend;
+use anki::collection::Collection;
+use anki::collection::CollectionBuilder;
 
 /// Opaque handle to a backend instance, owned by the caller.
 pub struct GmatwizBackend {
     inner: Backend,
+}
+
+/// Opaque handle to an open collection (the shared engine + a real .anki2 DB).
+pub struct GmatCollection {
+    col: Collection,
 }
 
 fn to_c_string(s: impl Into<Vec<u8>>) -> *mut c_char {
@@ -132,5 +140,83 @@ pub unsafe extern "C" fn gmatwiz_backend_command(
 pub unsafe extern "C" fn gmatwiz_buffer_free(ptr: *mut u8, len: usize) {
     if !ptr.is_null() && len > 0 {
         drop(Box::from_raw(slice::from_raw_parts_mut(ptr, len)));
+    }
+}
+
+// --- High-level GMATWiz collection API (for the iOS review session) ----------
+// These keep all scheduling logic in the shared Rust engine and hand Swift plain
+// JSON / ints, so the phone runs a real review without re-encoding protobuf.
+
+/// Open a collection at the given .anki2 path. Returns null on failure.
+///
+/// # Safety
+/// `path` must be a valid NUL-terminated C string (or null).
+#[no_mangle]
+pub unsafe extern "C" fn gmatwiz_open_collection(path: *const c_char) -> *mut GmatCollection {
+    if path.is_null() {
+        return ptr::null_mut();
+    }
+    let cpath = match CStr::from_ptr(path).to_str() {
+        Ok(s) => s,
+        Err(_) => return ptr::null_mut(),
+    };
+    match CollectionBuilder::new(cpath).build() {
+        Ok(col) => Box::into_raw(Box::new(GmatCollection { col })),
+        Err(_) => ptr::null_mut(),
+    }
+}
+
+/// Free a collection opened with `gmatwiz_open_collection`.
+///
+/// # Safety
+/// `handle` must have been returned by `gmatwiz_open_collection` (or be null).
+#[no_mangle]
+pub unsafe extern "C" fn gmatwiz_collection_free(handle: *mut GmatCollection) {
+    if !handle.is_null() {
+        drop(Box::from_raw(handle));
+    }
+}
+
+/// Return the current review state for `deck` (defaults to "GMAT::Quant") as a
+/// JSON string: `{new, learning, review, card}`. Free with `gmatwiz_string_free`.
+///
+/// # Safety
+/// `handle` must be valid; `deck` a NUL-terminated C string or null.
+#[no_mangle]
+pub unsafe extern "C" fn gmatwiz_collection_state(
+    handle: *mut GmatCollection,
+    deck: *const c_char,
+) -> *mut c_char {
+    if handle.is_null() {
+        return ptr::null_mut();
+    }
+    let deck_name = if deck.is_null() {
+        "GMAT::Quant".to_string()
+    } else {
+        CStr::from_ptr(deck).to_string_lossy().into_owned()
+    };
+    match (*handle).col.gmat_mobile_state_json(&deck_name) {
+        Ok(s) => to_c_string(s),
+        Err(_) => ptr::null_mut(),
+    }
+}
+
+/// Answer the current card through the real scheduler. `correct` => Good, else
+/// Again. Returns 0 on success, 1 on engine error, -1 on invalid arguments.
+///
+/// # Safety
+/// `handle` must be valid.
+#[no_mangle]
+pub unsafe extern "C" fn gmatwiz_collection_answer(
+    handle: *mut GmatCollection,
+    card_id: i64,
+    correct: bool,
+) -> c_int {
+    if handle.is_null() {
+        return -1;
+    }
+    match (*handle).col.gmat_mobile_answer(card_id, correct) {
+        Ok(()) => 0,
+        Err(_) => 1,
     }
 }

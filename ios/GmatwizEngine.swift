@@ -15,6 +15,31 @@ final class GmatwizBackendHandle {
     deinit { gmatwiz_backend_free(ptr) }
 }
 
+/// Opaque handle to an open collection (the shared engine + a real .anki2 DB).
+final class GmatCollectionHandle {
+    fileprivate let ptr: OpaquePointer
+    fileprivate init(_ ptr: OpaquePointer) { self.ptr = ptr }
+    deinit { gmatwiz_collection_free(ptr) }
+}
+
+/// A scheduled card decoded from the engine's JSON.
+struct GmatCard: Decodable {
+    let id: Int64
+    let stem: String
+    let options: [String: String]
+    let correct: String
+    let explanation: String
+    let topic: String
+}
+
+/// Review state returned by the shared scheduler.
+struct GmatReviewState: Decodable {
+    let new: Int
+    let learning: Int
+    let review: Int
+    let card: GmatCard?
+}
+
 enum GmatwizEngine {
     /// Smoke-test greeting proving the engine is linked.
     static func hello() -> String {
@@ -58,5 +83,35 @@ enum GmatwizEngine {
             gmatwiz_buffer_free(p, outLen)
         }
         return (code, out)
+    }
+
+    // --- High-level collection review API (shared engine) ---
+
+    /// Open a collection at the given .anki2 path.
+    static func openCollection(path: String) -> GmatCollectionHandle? {
+        guard let ptr = gmatwiz_open_collection(path) else { return nil }
+        return GmatCollectionHandle(ptr)
+    }
+
+    /// Current review state for the deck (counts + next card), via the scheduler.
+    static func reviewState(
+        _ collection: GmatCollectionHandle,
+        deck: String = "GMAT::Quant"
+    ) -> GmatReviewState? {
+        guard let c = gmatwiz_collection_state(collection.ptr, deck) else { return nil }
+        defer { gmatwiz_string_free(c) }
+        let json = String(cString: c)
+        guard let data = json.data(using: .utf8) else { return nil }
+        return try? JSONDecoder().decode(GmatReviewState.self, from: data)
+    }
+
+    /// Answer the current card through the real scheduler (records a review).
+    @discardableResult
+    static func answer(
+        _ collection: GmatCollectionHandle,
+        cardId: Int64,
+        correct: Bool
+    ) -> Bool {
+        return gmatwiz_collection_answer(collection.ptr, cardId, correct) == 0
     }
 }
