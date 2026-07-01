@@ -223,7 +223,15 @@ def import_user_questions(mw: aqt.main.AnkiQt) -> None:
     CollectionOp(parent=mw, op=op).success(on_success).run_in_background()
 
 
+# Native Anki toolbar tabs we hide: GMATWiz surfaces Decks (free study) and
+# Stats inside its own UI, and Sync via its own control, so the raw tabs are
+# redundant clutter for a focused GMAT student.
+_HIDDEN_TOOLBAR_IDS = ('id="decks"', 'id="add"', 'id="browse"', 'id="stats"', 'id="sync"')
+
+
 def _add_toolbar_link(links: list, toolbar) -> None:
+    # Strip the built-in tabs, leaving a single GMATWiz-focused toolbar.
+    links[:] = [l for l in links if not any(h in l for h in _HIDDEN_TOOLBAR_IDS)]
     link = toolbar.create_link(
         "gmatwiz",
         "GMATWiz",

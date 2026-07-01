@@ -308,6 +308,53 @@ export async function fetchToday(): Promise<TodaySession> {
     });
 }
 
+export interface GmatStats {
+    has_data: boolean;
+    reviews_today: number;
+    time_today_min: number;
+    reviews_total: number;
+    streak: number;
+    due_today: number;
+    forecast: number[];
+    spark: number[];
+    pipeline: {
+        new: number;
+        learning: number;
+        young: number;
+        mature: number;
+        total: number;
+    };
+}
+
+export async function fetchStats(): Promise<GmatStats> {
+    return postJson<GmatStats>("gmatStats", {
+        has_data: false,
+        reviews_today: 0,
+        time_today_min: 0,
+        reviews_total: 0,
+        streak: 0,
+        due_today: 0,
+        forecast: [],
+        spark: [],
+        pipeline: { new: 0, learning: 0, young: 0, mature: 0, total: 0 },
+    });
+}
+
+/** Open Anki's full stats screen (deep-dive graphs). */
+export async function openFullStats(): Promise<void> {
+    await postJson("gmatOpenStats", null);
+}
+
+/** Switch to Anki's deck browser - free-study escape hatch. */
+export async function openDecks(): Promise<void> {
+    await postJson("gmatOpenDecks", null);
+}
+
+/** Trigger Anki's desktop collection sync. */
+export async function syncNow(): Promise<void> {
+    await postJson("gmatSyncNow", null);
+}
+
 export async function fetchOfficialScores(): Promise<OfficialScore[]> {
     const data = await postJson<{ scores: OfficialScore[] }>("gmatOfficialScores", {
         scores: [],

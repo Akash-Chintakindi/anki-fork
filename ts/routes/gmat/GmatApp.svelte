@@ -27,6 +27,7 @@ chrome77/es2020 webview.
         MockResult,
         MockReport,
         OfficialScore,
+        GmatStats,
     } from "./api";
     import {
         logError,
@@ -46,6 +47,10 @@ chrome77/es2020 webview.
         submitMock,
         fetchOfficialScores,
         saveOfficialScore,
+        fetchStats,
+        openFullStats,
+        openDecks,
+        syncNow,
         renderMath,
     } from "./api";
 
@@ -61,8 +66,14 @@ chrome77/es2020 webview.
         | "plan"
         | "learn"
         | "lesson"
-        | "mock";
+        | "mock"
+        | "progress";
     let view: View = "home";
+
+    // ---- progress (integrated Stats) ----
+    let stats: GmatStats | null = null;
+    let syncing = false;
+    let syncMsg = "";
 
     // ---- official/practice-test scores (calibration) ----
     let officialScores: OfficialScore[] = [];
@@ -204,6 +215,20 @@ chrome77/es2020 webview.
                 officialScores = await fetchOfficialScores();
             }
         }
+        if (next === "progress") stats = await fetchStats();
+    }
+
+    async function runSync(): Promise<void> {
+        if (syncing) return;
+        syncing = true;
+        syncMsg = "Syncing…";
+        try {
+            await syncNow();
+            syncMsg = "Sync started";
+        } catch (_e) {
+            syncMsg = "Sync failed";
+        }
+        syncing = false;
     }
 
     async function submitOfficialScore(): Promise<void> {
@@ -656,7 +681,12 @@ chrome77/es2020 webview.
             >
             <button class:active={view === "practice"} on:click={() => go("practice")}>Practice</button>
             <button class:active={view === "dashboard"} on:click={() => go("dashboard")}>Readiness</button>
+            <button class:active={view === "progress"} on:click={() => go("progress")}>Progress</button>
             <button class:active={view === "errors"} on:click={() => go("errors")}>Error Log</button>
+            <span class="nav-spacer" aria-hidden="true"></span>
+            <button class="nav-util" disabled={syncing} on:click={runSync} title="Sync with your other devices">
+                {syncing ? "Syncing…" : "Sync"}
+            </button>
         </nav>
     </header>
 
@@ -1125,6 +1155,95 @@ chrome77/es2020 webview.
                     </ul>
                 {/if}
             </section>
+        </main>
+    {:else if view === "progress"}
+        <main class="col">
+            <p class="eyebrow">Progress</p>
+            <h1 class="display">Your study, at a glance.</h1>
+            <p class="lede">
+                Activity and pipeline for your GMAT deck. For the full spaced-repetition graphs,
+                open Anki's stats.
+            </p>
+
+            {#if stats && stats.has_data}
+                <div class="mini-grid">
+                    <div class="mini">
+                        <span class="mini-n">{stats.reviews_today}</span>
+                        <span class="mini-l">reviews today</span>
+                    </div>
+                    <div class="mini">
+                        <span class="mini-n">{stats.streak}</span>
+                        <span class="mini-l">day streak</span>
+                    </div>
+                    <div class="mini">
+                        <span class="mini-n">{stats.time_today_min}m</span>
+                        <span class="mini-l">time today</span>
+                    </div>
+                </div>
+
+                <section class="progress-card">
+                    <div class="coverage-head">
+                        <span class="eyebrow">Last 7 days</span>
+                        <span class="muted">{stats.reviews_total} reviews all-time</span>
+                    </div>
+                    <div class="spark">
+                        {#each stats.spark as c}
+                            {@const peak = Math.max(1, ...stats.spark)}
+                            <div class="spark-col" title="{c} reviews">
+                                <div class="spark-bar" style="height:{Math.round((100 * c) / peak)}%"></div>
+                            </div>
+                        {/each}
+                    </div>
+                </section>
+
+                <section class="progress-card">
+                    <div class="coverage-head">
+                        <span class="eyebrow">Review pipeline</span>
+                        <span class="muted">{stats.pipeline.total} cards</span>
+                    </div>
+                    <div class="pipe">
+                        {#each [["new", stats.pipeline.new], ["learning", stats.pipeline.learning], ["young", stats.pipeline.young], ["mature", stats.pipeline.mature]] as [label, val]}
+                            <div class="pipe-row">
+                                <span class="pipe-label">{label}</span>
+                                <div class="pipe-track">
+                                    <div
+                                        class="pipe-fill pipe-{label}"
+                                        style="width:{stats.pipeline.total
+                                            ? Math.round((100 * Number(val)) / stats.pipeline.total)
+                                            : 0}%"
+                                    ></div>
+                                </div>
+                                <span class="pipe-n">{val}</span>
+                            </div>
+                        {/each}
+                    </div>
+                </section>
+
+                <section class="progress-card">
+                    <div class="coverage-head">
+                        <span class="eyebrow">Due next 7 days</span>
+                        <span class="muted">{stats.due_today} due today</span>
+                    </div>
+                    <div class="spark">
+                        {#each stats.forecast as c, i}
+                            {@const peak = Math.max(1, ...stats.forecast)}
+                            <div class="spark-col" title="{c} due">
+                                <div class="spark-bar cast" style="height:{Math.round((100 * c) / peak)}%"></div>
+                                <span class="spark-x">{i === 0 ? "today" : `+${i}`}</span>
+                            </div>
+                        {/each}
+                    </div>
+                </section>
+            {:else}
+                <section class="q-card empty">
+                    <p>No review history yet. Do some Practice and your progress shows up here.</p>
+                </section>
+            {/if}
+
+            <div class="progress-actions">
+                <button class="ghost" on:click={() => openFullStats()}>Open full Anki stats</button>
+                <button class="ghost" on:click={() => openDecks()}>Free study (all decks)</button>
+            </div>
         </main>
     {:else if view === "onboarding"}
         <main class="col">
@@ -1735,6 +1854,33 @@ chrome77/es2020 webview.
         );
         opacity: 0.8;
     }
+    .nav {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .nav-spacer {
+        width: 10px;
+    }
+    .nav-util {
+        appearance: none;
+        background: none;
+        font-family: var(--ui);
+        font-size: 14px;
+        color: var(--ink-soft);
+        padding: 6px 12px;
+        border: 1px solid var(--line-strong);
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    .nav-util:hover:not(:disabled) {
+        color: var(--indicator-ink);
+        border-color: var(--indicator-ink);
+    }
+    .nav-util:disabled {
+        opacity: 0.5;
+        cursor: default;
+    }
     .nav button {
         appearance: none;
         background: none;
@@ -2040,6 +2186,90 @@ chrome77/es2020 webview.
         gap: 10px;
         padding: 6px 0;
         border-top: 1px solid var(--line);
+    }
+
+    /* progress (integrated stats) */
+    .progress-card {
+        margin-top: 16px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 16px 18px;
+    }
+    .spark {
+        display: flex;
+        align-items: flex-end;
+        gap: 6px;
+        height: 88px;
+        margin-top: 12px;
+    }
+    .spark-col {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        height: 100%;
+        gap: 4px;
+    }
+    .spark-bar {
+        width: 100%;
+        min-height: 2px;
+        background: var(--indicator);
+        border-radius: 4px 4px 0 0;
+    }
+    .spark-bar.cast {
+        background: var(--brass-ink, #9a6b1f);
+        opacity: 0.7;
+    }
+    .spark-x {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--ink-faint);
+    }
+    .pipe {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 12px;
+    }
+    .pipe-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .pipe-label {
+        width: 68px;
+        font-size: 13px;
+        color: var(--ink-soft);
+    }
+    .pipe-track {
+        flex: 1;
+        height: 10px;
+        background: var(--line);
+        border-radius: 999px;
+        overflow: hidden;
+    }
+    .pipe-fill {
+        height: 100%;
+        border-radius: 999px;
+        background: var(--indicator);
+    }
+    .pipe-new { background: var(--ink-faint); }
+    .pipe-learning { background: var(--clay-ink, #b4531f); }
+    .pipe-young { background: var(--brass-ink, #9a6b1f); }
+    .pipe-mature { background: var(--indicator); }
+    .pipe-n {
+        width: 40px;
+        text-align: right;
+        font-family: var(--mono);
+        font-size: 13px;
+        color: var(--ink-soft);
+    }
+    .progress-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 18px;
     }
 
     /* mock exam: flag, nav, review grid */

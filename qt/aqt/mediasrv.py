@@ -1055,6 +1055,115 @@ def gmat_save_profile() -> bytes:
     return b""
 
 
+def gmat_open_stats() -> bytes:
+    """Open Anki's full statistics screen (the complete SRS graphs). Runs on the
+    main GUI thread. GMATWiz surfaces a focused summary; this is the deep dive."""
+    aqt.mw.taskman.run_on_main(aqt.mw.onStats)
+    return b""
+
+
+def gmat_open_decks() -> bytes:
+    """Switch to Anki's deck browser - the free-study escape hatch (PRD)."""
+    aqt.mw.taskman.run_on_main(lambda: aqt.mw.moveToState("deckBrowser"))
+    return b""
+
+
+def gmat_sync_now() -> bytes:
+    """Trigger Anki's collection sync (same as the old toolbar Sync button)."""
+    aqt.mw.taskman.run_on_main(aqt.mw.on_sync_button_clicked)
+    return b""
+
+
+def gmat_stats() -> bytes:
+    """A focused, GMAT-scoped activity summary for the in-app Progress view:
+    today's work, streak, the review pipeline, and a 7-day due forecast. Computed
+    from the collection (read-only); the full Anki graphs are one click away."""
+    col = aqt.mw.col
+    base = 'note:"GMAT PS"'
+
+    def count(query: str) -> int:
+        try:
+            return len(col.find_cards(query))
+        except Exception:
+            return 0
+
+    model = col.models.by_name("GMAT PS")
+    if model is None:
+        return json.dumps({"has_data": False}).encode("utf-8")
+    mid = model["id"]
+    scope = "cid in (select id from cards where nid in " "(select id from notes where mid=?))"
+
+    try:
+        cutoff = int(col.sched.day_cutoff)
+    except Exception:
+        cutoff = int(time.time())
+    start_today = (cutoff - 86400) * 1000
+
+    reviews_today = (
+        col.db.scalar(
+            f"select count() from revlog where id>=? and {scope}", start_today, mid
+        )
+        or 0
+    )
+    time_today_ms = (
+        col.db.scalar(
+            f"select coalesce(sum(time),0) from revlog where id>=? and {scope}",
+            start_today,
+            mid,
+        )
+        or 0
+    )
+    reviews_total = col.db.scalar(f"select count() from revlog where {scope}", mid) or 0
+
+    # study streak: consecutive days (ending today or yesterday) with a review
+    day_indices = set(
+        col.db.list(
+            f"select distinct cast((?-id/1000)/86400 as int) from revlog where {scope}",
+            cutoff,
+            mid,
+        )
+        or []
+    )
+    streak = 0
+    i = 0 if 0 in day_indices else 1
+    while i in day_indices:
+        streak += 1
+        i += 1
+
+    # 7-day review sparkline (6 days ago .. today) and due forecast (today .. +6)
+    spark = []
+    for d in range(6, -1, -1):
+        s = (cutoff - (d + 1) * 86400) * 1000
+        e = (cutoff - d * 86400) * 1000
+        spark.append(
+            col.db.scalar(
+                f"select count() from revlog where id>=? and id<? and {scope}", s, e, mid
+            )
+            or 0
+        )
+    forecast = [count(f"{base} -is:suspended prop:due={d}") for d in range(7)]
+
+    return json.dumps(
+        {
+            "has_data": True,
+            "reviews_today": reviews_today,
+            "time_today_min": round(time_today_ms / 60000),
+            "reviews_total": reviews_total,
+            "streak": streak,
+            "due_today": count(f"{base} is:due"),
+            "forecast": forecast,
+            "spark": spark,
+            "pipeline": {
+                "new": count(f"{base} is:new"),
+                "learning": count(f"{base} is:learn"),
+                "young": count(f"{base} -is:new -is:suspended prop:ivl>=1 prop:ivl<21"),
+                "mature": count(f"{base} prop:ivl>=21"),
+                "total": count(base),
+            },
+        }
+    ).encode("utf-8")
+
+
 def gmat_official_scores() -> bytes:
     """Return the user's logged official/practice-test scores (most recent first)."""
     col = aqt.mw.col
@@ -1734,6 +1843,10 @@ post_handler_list = [
     gmat_submit_mock,
     gmat_official_scores,
     gmat_save_official_score,
+    gmat_open_stats,
+    gmat_open_decks,
+    gmat_sync_now,
+    gmat_stats,
     get_deck_configs_for_update,
     update_deck_configs,
     get_scheduling_states_with_context,
@@ -1880,6 +1993,10 @@ def _check_dynamic_request_permissions():
         "/_anki/gmatSubmitMock",
         "/_anki/gmatOfficialScores",
         "/_anki/gmatSaveOfficialScore",
+        "/_anki/gmatOpenStats",
+        "/_anki/gmatOpenDecks",
+        "/_anki/gmatSyncNow",
+        "/_anki/gmatStats",
     ):
         pass
     else:

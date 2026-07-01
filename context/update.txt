@@ -26,15 +26,23 @@ GIT HISTORY (branch: gmatwiz)
   42edc261b  desktop<->phone two-way sync + clean-machine installer
   f17a82c86  error-log repair loop + timing analytics + timed adaptive mocks
   2169234b7  official-score calibration + exam-accurate mock (flag/review/edits)
-  (this commit) user-upload question importer (JSON/CSV)
+  b39072a4f  user-upload question importer (JSON/CSV)
+  (this commit) toolbar declutter + Decks/Stats/Sync integrated into GMATWiz
 (Base upstream commit: b00308e55.)
 
 -------------------------------------------------------------------------------
 DONE - DESKTOP (runs via ./run, one Anki window)
 -------------------------------------------------------------------------------
 - Anki builds from source; GMATWiz opens as a screen INSIDE the main window
-  (a new "gmat" state in qt/aqt/main.py). Top-bar tabs: GMATWiz | Decks | Add |
-  Browse | Stats | Sync. "Decks" is the free-study escape hatch.
+  (a new "gmat" state in qt/aqt/main.py). The native Anki top-bar tabs
+  (Decks/Add/Browse/Stats/Sync) are now HIDDEN (filtered in the
+  top_toolbar_did_init_links hook in qt/aqt/gmat.py) - the toolbar shows only
+  GMATWiz. Their useful functions are integrated into the GMATWiz UI:
+    * Progress tab = GMAT-scoped stats (gmat_stats handler) + "Open full Anki
+      stats" (bridges to mw.onStats via taskman.run_on_main).
+    * "Free study (all decks)" = bridges to mw.moveToState("deckBrowser") - the
+      escape hatch.
+    * "Sync" button in the GMATWiz header = bridges to mw.on_sync_button_clicked.
 - REQUIRED RUST ENGINE CHANGE: topic-aware scheduling (rslib) - weak-topic cards
   surface first while FSRS intervals stay valid; per-card topic mastery in
   CardData (no schema migration); SetTopicMastery RPC; toggle in deckconfig.
@@ -85,6 +93,10 @@ DONE - DESKTOP (runs via ./run, one Anki window)
     source="user-upload" + tag gmatwiz::user-upload, imports into GMAT::Quant.
     Legal: we never bundle copyrighted official tests (PRD sec 19).
   * Readiness dashboard: three SEPARATE scores, each with the honesty rule.
+  * Progress tab: focused, GMAT-scoped activity - reviews today, day streak,
+    time today, a 7-day review sparkline, the review pipeline (new/learning/
+    young/mature), and a 7-day due forecast; computed read-only via find_cards +
+    a scoped revlog query. Buttons open Anki's full stats and free-study decks.
 - Exponent rendering (x^2) fixed across practice/diagnostic/lessons.
 
 THE THREE SCORES (honesty rule: point + range + evidence + give-up abstention)
