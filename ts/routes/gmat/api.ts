@@ -61,6 +61,14 @@ export interface PerfEval {
     test_n: number;
 }
 
+export interface TimingInfo {
+    n: number;
+    avg_ms: number;
+    target_ms: number;
+    rushed_wrong: number;
+    slow_correct: number;
+}
+
 export interface GmatPerformance {
     status: "shown" | "abstain";
     point?: number;
@@ -71,7 +79,15 @@ export interface GmatPerformance {
     reason?: string;
     weak_topics?: { topic: string; accuracy: number; n: number }[];
     eval?: PerfEval | null;
+    timing?: TimingInfo | null;
     updated_ts?: number;
+}
+
+export interface MockEntry {
+    ts: number;
+    accuracy: number;
+    n: number;
+    q: number;
 }
 
 export interface GmatReadiness {
@@ -87,6 +103,8 @@ export interface GmatReadiness {
     total_reason?: string;
     unmet?: string[];
     reason?: string;
+    mocks?: MockEntry[];
+    mock_gap?: number | null;
     updated_ts?: number;
 }
 
@@ -117,7 +135,7 @@ export interface GmatPacing {
 }
 
 export interface TodayBlock {
-    kind: "review" | "learn" | "practice";
+    kind: "review" | "learn" | "practice" | "repair" | "mock";
     title: string;
     detail: string;
     count?: number;
@@ -140,11 +158,17 @@ export interface PretestQuestion {
     difficulty: string;
 }
 
+/** Why a question was missed - the one-prompt error-log classification. */
+export type ErrorWhy = "careless" | "concept_gap" | "timing" | "guess" | "";
+
 export interface ErrorEntry {
     stem: string;
     topic: string;
     chosen: string;
     correct: string;
+    why?: ErrorWhy;
+    ms?: number;
+    mock?: boolean;
     ts: number;
 }
 
@@ -221,6 +245,9 @@ export async function logError(entry: {
     topic: string;
     chosen: string;
     correct: string;
+    why?: ErrorWhy;
+    ms?: number;
+    mock?: boolean;
 }): Promise<void> {
     await postJson("gmatLogError", null, entry);
 }
@@ -337,6 +364,61 @@ export async function fetchLesson(topicId: string): Promise<Lesson | null> {
 
 export async function markLearned(topicId: string): Promise<void> {
     await postJson("gmatMarkLearned", null, { topic_id: topicId });
+}
+
+// ---- Mock exams (timed, exam-condition sections) ----
+
+export interface MockQuestion {
+    stem: string;
+    options: Record<string, string>;
+    correct: string;
+    topic: string;
+    difficulty: string;
+    seen: boolean;
+}
+
+export interface MockPool {
+    pool: MockQuestion[];
+    count: number;
+    seconds: number;
+    target_ms: number;
+}
+
+export interface MockResult {
+    topic: string;
+    difficulty: string;
+    correct: boolean;
+    ms: number;
+    stem: string;
+    chosen: string;
+    correct_key: string;
+}
+
+export interface MockReport {
+    ok: boolean;
+    accuracy: number;
+    n: number;
+    q: number | null;
+    per_topic: { topic: string; correct: number; n: number }[];
+    timing: {
+        avg_ms: number;
+        rushed_wrong: number;
+        slow_correct: number;
+        target_ms: number;
+    };
+}
+
+export async function fetchMockPool(): Promise<MockPool> {
+    return postJson<MockPool>("gmatMockQuestions", {
+        pool: [],
+        count: 21,
+        seconds: 2700,
+        target_ms: 128000,
+    });
+}
+
+export async function submitMock(results: MockResult[]): Promise<MockReport | null> {
+    return postJson<MockReport | null>("gmatSubmitMock", null, { results });
 }
 
 /**

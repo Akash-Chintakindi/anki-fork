@@ -61,8 +61,10 @@ void gmatwiz_collection_free(GmatCollection *handle);
 char *gmatwiz_collection_state(GmatCollection *handle, const char *deck);
 
 // Answers the current card via the real scheduler (correct => Good, else Again).
+// `ms` is the real time taken in milliseconds (feeds timing analytics).
 // Returns 0 on success, 1 on engine error, -1 on invalid arguments.
-int gmatwiz_collection_answer(GmatCollection *handle, int64_t card_id, bool correct);
+int gmatwiz_collection_answer(GmatCollection *handle, int64_t card_id, bool correct,
+                              uint32_t ms);
 
 // Returns Memory/Performance/Readiness scores as a JSON string.
 // Free with gmatwiz_string_free.

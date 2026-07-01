@@ -29,6 +29,7 @@ final class ReviewModel: ObservableObject {
 
     private var collection: GmatCollectionHandle?
     private var didSelftestSync = false
+    private var cardShownAt = Date()
 
     init() { open() }
 
@@ -74,6 +75,7 @@ final class ReviewModel: ObservableObject {
         revealed = false
         selected = nil
         lastCorrect = nil
+        cardShownAt = Date()
         status = state == nil ? "Failed to read review state" : ""
     }
 
@@ -82,8 +84,9 @@ final class ReviewModel: ObservableObject {
         let correct = choice == card.correct
         lastCorrect = correct
         revealed = true
+        let ms = UInt32(min(max(Date().timeIntervalSince(cardShownAt) * 1000, 0), 600_000))
         // Real review recorded through the shared engine's scheduler.
-        GmatwizEngine.answer(c, cardId: card.id, correct: correct)
+        GmatwizEngine.answer(c, cardId: card.id, correct: correct, ms: ms)
     }
 
     func next() { refresh() }
@@ -263,6 +266,10 @@ struct DashboardView: View {
                                 Text("held-out: model \(String(format: "%.3f", e.model_brier)) vs baseline \(String(format: "%.3f", e.baseline_brier)) - \(e.beats_baseline ? "beats baseline" : "not yet beating baseline")")
                                     .font(.caption2).foregroundStyle(.secondary)
                             }
+                            if let t = s.performance.timing {
+                                Text("pace: avg \(t.avg_ms / 1000)s/q (target \(t.target_ms / 1000)s) \u{00b7} \(t.rushed_wrong) rushed-wrong \u{00b7} \(t.slow_correct) slow-correct")
+                                    .font(.caption2).foregroundStyle(.secondary)
+                            }
                         } else {
                             abstain(s.performance.reason ?? "Not enough data")
                         }
@@ -276,6 +283,10 @@ struct DashboardView: View {
                             }
                             if let t = s.readiness.total_reason {
                                 Text("Total: \(t)").font(.caption2).foregroundStyle(.secondary)
+                            }
+                            if let mocks = s.readiness.mocks, let last = mocks.last {
+                                Text("last mock: Q\(last.q) (\(Int((last.accuracy * 100).rounded()))% of \(last.n))\(s.readiness.mock_gap.map { " \u{00b7} projection gap \($0 >= 0 ? "+" : "")\($0)" } ?? "")")
+                                    .font(.caption2).foregroundStyle(.secondary)
                             }
                         } else {
                             abstain(s.readiness.reason ?? "Not enough data")

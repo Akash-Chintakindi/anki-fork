@@ -2777,6 +2777,7 @@ name = "gmatwiz_ffi"
 version = "0.0.0"
 dependencies = [
  "anki",
+ "serde_json",
 ]
 
 [[package]]

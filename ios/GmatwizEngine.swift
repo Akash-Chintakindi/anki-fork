@@ -75,6 +75,14 @@ struct WeakTopic: Decodable {
     let n: Int
 }
 
+struct TimingInfo: Decodable {
+    let n: Int
+    let avg_ms: Int
+    let target_ms: Int
+    let rushed_wrong: Int
+    let slow_correct: Int
+}
+
 struct PerformanceScore: Decodable {
     let status: String
     let point: Int?
@@ -85,6 +93,14 @@ struct PerformanceScore: Decodable {
     let reason: String?
     let weak_topics: [WeakTopic]?
     let eval: PerfEval?
+    let timing: TimingInfo?
+}
+
+struct MockEntry: Decodable {
+    let ts: Int
+    let accuracy: Double
+    let n: Int
+    let q: Int
 }
 
 struct ReadinessScore: Decodable {
@@ -99,6 +115,8 @@ struct ReadinessScore: Decodable {
     let total_reason: String?
     let unmet: [String]?
     let reason: String?
+    let mocks: [MockEntry]?
+    let mock_gap: Int?
 }
 
 struct GmatScores: Decodable {
@@ -174,14 +192,16 @@ enum GmatwizEngine {
         return try? JSONDecoder().decode(GmatReviewState.self, from: data)
     }
 
-    /// Answer the current card through the real scheduler (records a review).
+    /// Answer the current card through the real scheduler (records a review
+    /// with the real time taken, feeding the timing analytics).
     @discardableResult
     static func answer(
         _ collection: GmatCollectionHandle,
         cardId: Int64,
-        correct: Bool
+        correct: Bool,
+        ms: UInt32 = 1500
     ) -> Bool {
-        return gmatwiz_collection_answer(collection.ptr, cardId, correct) == 0
+        return gmatwiz_collection_answer(collection.ptr, cardId, correct, ms) == 0
     }
 
     /// The three honest scores computed in the shared engine (same logic as desktop).

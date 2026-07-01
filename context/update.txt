@@ -23,7 +23,8 @@ GIT HISTORY (branch: gmatwiz)
   2aba37956  Readiness dashboard on iOS (3 scores from the shared engine)
   769631577  adaptive Today plan - lesson->FSRS, EMA mastery, dated pacing
   c9e020a21  one scoring engine for desktop + mobile (kill Python/Rust drift)
-  (uncommitted) mobile<->desktop sync (FFI gmatwiz_sync + Swift) + installer
+  42edc261b  desktop<->phone two-way sync + clean-machine installer
+  (next)     error-log repair loop + timing analytics + timed adaptive mocks
 (Base upstream commit: b00308e55.)
 
 -------------------------------------------------------------------------------
@@ -52,7 +53,23 @@ DONE - DESKTOP (runs via ./run, one Anki window)
     answer EMA-updates that topic's mastery (0.7*old + 0.3*correct) and writes
     it back via set_topic_mastery -> the plan + topic-aware order keep
     re-adapting (a living plan, not diagnose-once).
-  * Error Log: wrong answers captured (required review).
+  * Error Log -> REPAIR LOOP: every miss must be classified in one tap
+    (careless / concept gap / timing; corrects can be flagged "I guessed").
+    concept_gap -> extra mastery penalty + lesson items scheduled + a "Repair"
+    block in Today (cleared by relearning); timing -> topic marked for timed
+    drill; guess -> mastery penalty countering the lucky Good. Error Log tab
+    has filters + per-entry "Repair now" (relearn or practice).
+  * TIMING ANALYTICS: real per-question ms recorded on both platforms (deck
+    answer-time cap raised to 300s); the ENGINE computes pace vs the 2:08
+    GMAT target and separates fast-but-wrong (careless) from slow-but-correct
+    (fragile) in the Performance score. Practice shows a live pace timer.
+  * TIMED MOCKS: 21-question / 45:00 adaptive section (harder on right,
+    easier on wrong; prefers never-seen questions; sealed until the end).
+    Mocks bypass FSRS (no interval distortion): results update topic mastery
+    (living plan), misses require classification, and the ENGINE folds mock
+    history into Readiness (mock Q history + projection-vs-mock gap warning).
+    Today suggests a mock when learning completes or exam <= 21 days (7-day
+    cadence).
   * Readiness dashboard: three SEPARATE scores, each with the honesty rule.
 - Exponent rendering (x^2) fixed across practice/diagnostic/lessons.
 

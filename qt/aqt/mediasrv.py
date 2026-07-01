@@ -780,9 +780,23 @@ def _gmat_scores(col) -> dict:
         }
 
 
+def _ensure_gmat_time_cap(col) -> None:
+    """Raise the GMAT deck's answer-time cap (default 60s) so slow answers are
+    stored truthfully in the revlog - timing analytics need to see 3-minute
+    struggles, not a clamped 60s. Idempotent."""
+    try:
+        conf = col.decks.config_dict_for_deck_id(col.decks.id("GMAT::Quant"))
+        if int(conf.get("maxTaken", 60)) < 300:
+            conf["maxTaken"] = 300
+            col.decks.update_config(conf)
+    except Exception as exc:
+        print(f"GMATWiz: could not raise answer-time cap: {exc}")
+
+
 def gmat_overview() -> bytes:
     """Headline stats for the GMATWiz home + dashboard (honesty rule)."""
     col = aqt.mw.col
+    _ensure_gmat_time_cap(col)
     try:
         total = len(col.find_cards('note:"GMAT PS"'))
         new = len(col.find_cards('note:"GMAT PS" is:new'))
@@ -818,24 +832,68 @@ def gmat_error_log() -> bytes:
     return json.dumps({"entries": list(reversed(entries))}).encode("utf-8")
 
 
+def _gmat_append_error(col, entry: dict) -> None:
+    entries = col.get_config("gmatErrorLog", []) or []
+    entries.append(entry)
+    col.set_config("gmatErrorLog", entries[-500:])
+
+
+def _gmat_apply_repair(col, topic: str, why: str) -> None:
+    """Turn a classified miss into scheduled remediation (Brainlift: every
+    wrong, slow, or guessed question is a future scheduled learning event).
+
+    - concept_gap: an extra mastery penalty (a misunderstanding is worse than a
+      slip), make sure the topic's lesson items are in the review queue, and
+      queue the topic for a "Repair" block in Today (relearn the lesson).
+    - timing: mark the topic for timed-drill focus in Today's practice.
+    - guess: the scheduler recorded Good, but the student didn't know it -
+      counter the EMA update so mastery reflects reality.
+    - careless: logged for the record; FSRS's Again already resurfaces the card.
+    """
+    if not topic:
+        return
+    now = int(time.time())
+    if why == "concept_gap":
+        _gmat_update_mastery(col, topic, False)
+        try:
+            _schedule_lesson_items(col, topic)
+        except Exception as exc:
+            print(f"GMATWiz: repair scheduling failed for {topic}: {exc}")
+        repairs = col.get_config("gmatRepairTopics", {}) or {}
+        repairs[topic] = now
+        col.set_config("gmatRepairTopics", repairs)
+    elif why == "timing":
+        drills = col.get_config("gmatTimedDrill", {}) or {}
+        drills[topic] = now
+        col.set_config("gmatTimedDrill", drills)
+    elif why == "guess":
+        _gmat_update_mastery(col, topic, False)
+
+
 def gmat_log_error() -> bytes:
-    """Append a missed question to the error log. Body: JSON entry."""
+    """Append a missed (or guessed) question to the error log and schedule its
+    repair. Body: JSON entry with optional why/ms/guess/mock fields."""
     col = aqt.mw.col
     try:
         entry = json.loads(request.data or b"{}")
     except Exception:
         entry = {}
-    entries = col.get_config("gmatErrorLog", []) or []
-    entries.append(
+    topic = str(entry.get("topic", ""))
+    why = str(entry.get("why", ""))
+    _gmat_append_error(
+        col,
         {
             "stem": str(entry.get("stem", ""))[:400],
-            "topic": str(entry.get("topic", "")),
+            "topic": topic,
             "chosen": str(entry.get("chosen", "")),
             "correct": str(entry.get("correct", "")),
+            "why": why,
+            "ms": int(entry.get("ms", 0) or 0),
+            "mock": bool(entry.get("mock", False)),
             "ts": int(time.time()),
-        }
+        },
     )
-    col.set_config("gmatErrorLog", entries[-500:])
+    _gmat_apply_repair(col, topic, why)
     return b""
 
 
@@ -1225,6 +1283,28 @@ def _gmat_build_today(col) -> dict:
         )
         remaining_min -= est
 
+    # repair first: relearn topics whose misses were classified "concept gap"
+    # (error log -> repair loop). Entries expire after 14 days.
+    now_ts = int(time.time())
+    repairs = {
+        t: ts
+        for t, ts in (col.get_config("gmatRepairTopics", {}) or {}).items()
+        if now_ts - ts < 14 * 86400 and t in lesson_ids
+    }
+    for topic in list(repairs)[:2]:
+        if remaining_min < _LESSON_MIN and blocks:
+            break
+        blocks.append(
+            {
+                "kind": "repair",
+                "title": "Repair a concept gap",
+                "detail": "you missed this on a concept - relearn, then re-apply",
+                "topic": topic,
+                "est_minutes": round(_LESSON_MIN),
+            }
+        )
+        remaining_min -= _LESSON_MIN
+
     # next unlearned topics to learn today, weakest-first, paced
     lessons_target = max(1, round(pacing.get("topics_per_study_day", 0) or 0))
     to_learn = [
@@ -1251,18 +1331,46 @@ def _gmat_build_today(col) -> dict:
     if remaining_min >= _PRACTICE_MIN and (learned_topics or due_total == 0):
         n = max(1, min(20, int(remaining_min // _PRACTICE_MIN)))
         weak = learned_topics[0] if learned_topics else (topics[0] if topics else None)
+        drills = {
+            t: ts
+            for t, ts in (col.get_config("gmatTimedDrill", {}) or {}).items()
+            if now_ts - ts < 14 * 86400
+        }
+        detail = (
+            f"{n} extra on {topic_leaf(weak.get('topic'))}"
+            if weak
+            else f"{n} extra questions"
+        )
+        if drills:
+            detail += f" · timed focus: {topic_leaf(next(iter(drills)))} (~2:08/q)"
         blocks.append(
             {
                 "kind": "practice",
                 "title": "Targeted practice",
-                "detail": (
-                    f"{n} extra on {topic_leaf(weak.get('topic'))}"
-                    if weak
-                    else f"{n} extra questions"
-                ),
+                "detail": detail,
                 "count": n,
                 "topic": weak.get("topic") if weak else None,
                 "est_minutes": round(n * _PRACTICE_MIN),
+            }
+        )
+
+    # suggest a timed mock when the learning runway is done or the exam is
+    # close, at most every 7 days (the app decides when to simulate the exam)
+    mocks = col.get_config("gmatMocks", []) or []
+    last_mock_ts = mocks[-1].get("ts", 0) if mocks else 0
+    days_to_exam = pacing.get("days_to_exam")
+    mock_due = (
+        pacing.get("status") == "learning_complete"
+        or (days_to_exam is not None and days_to_exam <= 21)
+    ) and (now_ts - last_mock_ts) > 7 * 86400
+    if mock_due:
+        blocks.append(
+            {
+                "kind": "mock",
+                "title": "Timed mock section",
+                "detail": "21 questions · 45:00 · exam conditions, no feedback until the end",
+                "count": 21,
+                "est_minutes": 45,
             }
         )
 
@@ -1404,7 +1512,150 @@ def gmat_mark_learned() -> bytes:
             added = _schedule_lesson_items(col, topic_id)
         except Exception as exc:
             print(f"GMATWiz: failed to schedule lesson items for {topic_id}: {exc}")
+        # relearning the lesson completes any pending concept-gap repair
+        repairs = col.get_config("gmatRepairTopics", {}) or {}
+        if topic_id in repairs:
+            del repairs[topic_id]
+            col.set_config("gmatRepairTopics", repairs)
     return json.dumps({"scheduled": added}).encode("utf-8")
+
+
+# Display-only mirror of rslib/src/gmatwiz.rs GMAT_TARGET_MS (the engine owns
+# the persistent timing analytics; this only shapes the immediate mock report).
+GMAT_MOCK_TARGET_MS = 128_000
+
+
+def gmat_mock_questions() -> bytes:
+    """Question pool for a timed mock section: 21 questions / 45 minutes under
+    exam conditions. Stratified by topic x difficulty, preferring questions the
+    student has never seen, so the mock stays a held-out measurement."""
+    import random
+
+    col = aqt.mw.col
+    seen_nids: set = set()
+    try:
+        rows = col.db.all(
+            "select distinct c.nid from cards c join revlog r on r.cid = c.id"
+        )
+        seen_nids = {r[0] for r in rows}
+    except Exception:
+        pass
+
+    pool: list = []
+    for nid in col.find_notes('note:"GMAT PS"'):
+        fields = dict(col.get_note(nid).items())
+        pool.append(
+            {
+                "stem": fields.get("Stem", ""),
+                "options": {k: fields.get(f"Option{k}", "") for k in "ABCDE"},
+                "correct": fields.get("Correct", ""),
+                "topic": fields.get("Topic", ""),
+                "difficulty": fields.get("Difficulty", "medium") or "medium",
+                "seen": nid in seen_nids,
+            }
+        )
+    random.shuffle(pool)
+    # unseen first so the client's adaptive picker naturally prefers held-out items
+    pool.sort(key=lambda q: q["seen"])
+    return json.dumps(
+        {
+            "pool": pool[:200],
+            "count": 21,
+            "seconds": 45 * 60,
+            "target_ms": GMAT_MOCK_TARGET_MS,
+        }
+    ).encode("utf-8")
+
+
+def gmat_submit_mock() -> bytes:
+    """Store a finished mock, update the living plan from its answers, and
+    return the report. Mock answers deliberately do NOT go through the
+    scheduler (they would distort FSRS intervals); they live in gmatMocks and
+    the engine folds them into Readiness as calibration evidence."""
+    from collections import defaultdict
+
+    col = aqt.mw.col
+    try:
+        body = json.loads(request.data or b"{}")
+    except Exception:
+        body = {}
+    results = body.get("results", []) or []
+    n = len(results)
+    if n == 0:
+        return json.dumps({"ok": False}).encode("utf-8")
+
+    correct = sum(1 for r in results if r.get("correct"))
+    accuracy = correct / n
+
+    per_topic: dict = defaultdict(lambda: [0, 0])
+    timed = [r for r in results if int(r.get("ms", 0) or 0) > 0]
+    rushed_wrong = sum(
+        1
+        for r in timed
+        if not r.get("correct") and int(r["ms"]) < GMAT_MOCK_TARGET_MS // 2
+    )
+    slow_correct = sum(
+        1
+        for r in timed
+        if r.get("correct") and int(r["ms"]) > GMAT_MOCK_TARGET_MS * 3 // 2
+    )
+    avg_ms = int(sum(int(r["ms"]) for r in timed) / len(timed)) if timed else 0
+    for r in results:
+        topic = str(r.get("topic", ""))
+        if not topic:
+            continue
+        per_topic[topic][1] += 1
+        if r.get("correct"):
+            per_topic[topic][0] += 1
+        # every mock answer updates the living plan, like practice answers do
+        _gmat_update_mastery(col, topic, bool(r.get("correct")))
+
+    mocks = col.get_config("gmatMocks", []) or []
+    mocks.append(
+        {
+            "ts": int(time.time()),
+            "accuracy": round(accuracy, 4),
+            "n": n,
+            "timing": {
+                "avg_ms": avg_ms,
+                "rushed_wrong": rushed_wrong,
+                "slow_correct": slow_correct,
+            },
+        }
+    )
+    col.set_config("gmatMocks", mocks[-20:])
+
+    # score the mock in the shared engine (single accuracy->Q implementation)
+    q = None
+    try:
+        raw = col._backend.gmat_scores()
+        scores = json.loads(getattr(raw, "val", raw))
+        engine_mocks = scores.get("readiness", {}).get("mocks", []) or []
+        if engine_mocks:
+            q = engine_mocks[-1].get("q")
+    except Exception as exc:
+        print(f"GMATWiz: mock scoring unavailable: {exc}")
+
+    return json.dumps(
+        {
+            "ok": True,
+            "accuracy": round(accuracy, 4),
+            "n": n,
+            "q": q,
+            "per_topic": [
+                {"topic": t, "correct": c, "n": total}
+                for t, (c, total) in sorted(
+                    per_topic.items(), key=lambda kv: kv[1][0] / kv[1][1]
+                )
+            ],
+            "timing": {
+                "avg_ms": avg_ms,
+                "rushed_wrong": rushed_wrong,
+                "slow_correct": slow_correct,
+                "target_ms": GMAT_MOCK_TARGET_MS,
+            },
+        }
+    ).encode("utf-8")
 
 
 post_handler_list = [
@@ -1422,6 +1673,8 @@ post_handler_list = [
     gmat_lesson,
     gmat_mark_learned,
     gmat_today,
+    gmat_mock_questions,
+    gmat_submit_mock,
     get_deck_configs_for_update,
     update_deck_configs,
     get_scheduling_states_with_context,
@@ -1564,6 +1817,8 @@ def _check_dynamic_request_permissions():
         "/_anki/gmatLesson",
         "/_anki/gmatMarkLearned",
         "/_anki/gmatToday",
+        "/_anki/gmatMockQuestions",
+        "/_anki/gmatSubmitMock",
     ):
         pass
     else:

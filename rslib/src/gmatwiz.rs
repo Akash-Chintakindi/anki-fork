@@ -28,6 +28,34 @@ const READY_MIN_ATTEMPTS: usize = 50;
 const READY_MAX_ECE: f64 = 0.10;
 const QUANT_TOPIC_TOTAL: f64 = 18.0;
 const TARGET_RETENTION: f64 = 0.9;
+// GMAT Focus Quant pacing: 21 questions in 45 minutes ~= 128s per question.
+const GMAT_TARGET_MS: i64 = 128_000;
+
+/// Timing risk classification for one first-exposure attempt (Brainlift: wrong,
+/// SLOW, or guessed questions are all future scheduled learning events):
+/// - "rushed_wrong": wrong in under half the target pace (careless signal)
+/// - "slow_correct": right but over 1.5x the target pace (fragile knowledge)
+fn gmat_time_flag(ms: i64, correct: bool) -> Option<&'static str> {
+    if ms <= 0 {
+        return None; // untimed legacy rows carry no signal
+    }
+    if !correct && ms < GMAT_TARGET_MS / 2 {
+        Some("rushed_wrong")
+    } else if correct && ms > GMAT_TARGET_MS * 3 / 2 {
+        Some("slow_correct")
+    } else {
+        None
+    }
+}
+
+/// Transparent heuristic map: first-exposure accuracy -> GMAT Focus Quant
+/// section score (60-90). Anchors: 0.40->70, 0.90->88. Mirrored nowhere else -
+/// this is the single implementation both platforms and mocks use.
+fn gmat_accuracy_to_quant(acc: f64) -> i64 {
+    (70.0 + (acc - 0.40) * (88.0 - 70.0) / (0.90 - 0.40))
+        .clamp(60.0, 90.0)
+        .round() as i64
+}
 
 impl Collection {
     fn gmat_select_deck(&mut self, deck_name: &str) -> Result<()> {
@@ -85,8 +113,9 @@ impl Collection {
     }
 
     /// Answer the current card through the real scheduler (Good if `correct`,
-    /// else Again), writing a revlog entry. This is a genuine review.
-    pub fn gmat_mobile_answer(&mut self, card_id: i64, correct: bool) -> Result<()> {
+    /// else Again), writing a revlog entry with the real time taken. This is a
+    /// genuine review; `ms` feeds the timing analytics.
+    pub fn gmat_mobile_answer(&mut self, card_id: i64, correct: bool, ms: u32) -> Result<()> {
         let queued = self.get_queued_cards(1, false)?;
         let qc = queued
             .cards
@@ -100,7 +129,7 @@ impl Collection {
             new_state: if correct { states.good } else { states.again },
             rating: if correct { Rating::Good } else { Rating::Again },
             answered_at: TimestampMillis::now(),
-            milliseconds_taken: 1500,
+            milliseconds_taken: ms.min(600_000),
             custom_data: None,
             from_queue: true,
         };
@@ -254,18 +283,18 @@ impl Collection {
                 "reason": "No GMAT questions yet.", "updated_ts": now,
             }));
         }
-        let mut stmt = self
-            .storage
-            .db
-            .prepare("select cid, ease from revlog where lastIvl = 0 and ease between 1 and 4")?;
-        let raw: Vec<(i64, i64)> = stmt
-            .query_map([], |r| Ok((r.get(0)?, r.get(1)?)))?
+        let mut stmt = self.storage.db.prepare(
+            "select cid, ease, time from revlog where lastIvl = 0 and ease between 1 and 4",
+        )?;
+        let raw: Vec<(i64, i64, i64)> = stmt
+            .query_map([], |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?)))?
             .collect::<rusqlite::Result<_>>()?;
-        let attempts: Vec<(i64, u8)> = raw
+        let timed: Vec<(i64, u8, i64)> = raw
             .into_iter()
-            .filter(|(cid, _)| card_topics.contains_key(cid))
-            .map(|(cid, ease)| (cid, if ease >= 2 { 1 } else { 0 }))
+            .filter(|(cid, _, _)| card_topics.contains_key(cid))
+            .map(|(cid, ease, ms)| (cid, u8::from(ease >= 2), ms))
             .collect();
+        let attempts: Vec<(i64, u8)> = timed.iter().map(|&(cid, ok, _)| (cid, ok)).collect();
         let total = attempts.len();
         if total < PERF_MIN_ATTEMPTS {
             return Ok(json!({
@@ -336,6 +365,31 @@ impl Collection {
             serde_json::Value::Null
         };
 
+        // Timing analytics over timed first-exposure attempts: separates
+        // "fast but wrong" (careless) from "slow but correct" (fragile).
+        let with_time: Vec<&(i64, u8, i64)> = timed.iter().filter(|(_, _, ms)| *ms > 0).collect();
+        let timing = if with_time.is_empty() {
+            serde_json::Value::Null
+        } else {
+            let n = with_time.len();
+            let avg_ms = with_time.iter().map(|(_, _, ms)| ms).sum::<i64>() / n as i64;
+            let rushed_wrong = with_time
+                .iter()
+                .filter(|(_, ok, ms)| gmat_time_flag(*ms, *ok == 1) == Some("rushed_wrong"))
+                .count();
+            let slow_correct = with_time
+                .iter()
+                .filter(|(_, ok, ms)| gmat_time_flag(*ms, *ok == 1) == Some("slow_correct"))
+                .count();
+            json!({
+                "n": n,
+                "avg_ms": avg_ms,
+                "target_ms": GMAT_TARGET_MS,
+                "rushed_wrong": rushed_wrong,
+                "slow_correct": slow_correct,
+            })
+        };
+
         Ok(json!({
             "status": "shown",
             "point": (acc * 100.0).round() as i64,
@@ -344,8 +398,27 @@ impl Collection {
             "attempts": total,
             "weak_topics": weak,
             "eval": eval,
+            "timing": timing,
             "updated_ts": now,
         }))
+    }
+
+    /// Mock-exam history stored by the desktop (config `gmatMocks`), scored
+    /// here so the accuracy->Quant map has exactly one implementation.
+    fn gmat_mock_history(&self) -> Vec<serde_json::Value> {
+        self.get_config_optional::<Vec<serde_json::Value>, _>("gmatMocks")
+            .unwrap_or_default()
+            .iter()
+            .filter_map(|m| {
+                let acc = m.get("accuracy")?.as_f64()?;
+                Some(json!({
+                    "ts": m.get("ts").and_then(|v| v.as_i64()).unwrap_or(0),
+                    "accuracy": acc,
+                    "n": m.get("n").and_then(|v| v.as_i64()).unwrap_or(0),
+                    "q": gmat_accuracy_to_quant(acc),
+                }))
+            })
+            .collect()
     }
 
     fn gmat_readiness_json(
@@ -355,6 +428,7 @@ impl Collection {
         coverage_pct: f64,
         now: i64,
     ) -> serde_json::Value {
+        let mocks = self.gmat_mock_history();
         let reviews = memory.get("reviews").and_then(|v| v.as_i64()).unwrap_or(0);
         let attempts = performance
             .get("attempts")
@@ -385,33 +459,39 @@ impl Collection {
                 "status": "abstain",
                 "unmet": unmet,
                 "reason": "A confident number with no evidence is just a guess.",
+                "mocks": mocks,
                 "updated_ts": now,
             });
         }
         let acc = performance["point"].as_f64().unwrap_or(0.0) / 100.0;
         let acc_low = performance["low"].as_f64().unwrap_or(0.0) / 100.0;
         let acc_high = performance["high"].as_f64().unwrap_or(0.0) / 100.0;
-        let to_q = |a: f64| -> i64 {
-            (70.0 + (a - 0.40) * (88.0 - 70.0) / (0.90 - 0.40))
-                .clamp(60.0, 90.0)
-                .round() as i64
-        };
+        let point = gmat_accuracy_to_quant(acc);
         let confidence = if coverage_pct >= 80.0 && attempts >= 150 {
             "medium"
         } else {
             "low"
         };
+        // Calibration signal: how far the projection sits from the latest
+        // timed mock. A large gap is displayed, not hidden (honesty rule).
+        let mock_gap = mocks
+            .last()
+            .and_then(|m| m.get("q"))
+            .and_then(|q| q.as_i64())
+            .map(|q| point - q);
         json!({
             "status": "shown",
             "section": "Quant",
-            "point": to_q(acc),
-            "low": to_q(acc_low),
-            "high": to_q(acc_high),
+            "point": point,
+            "low": gmat_accuracy_to_quant(acc_low),
+            "high": gmat_accuracy_to_quant(acc_high),
             "scale": "GMAT Focus Quant section (60-90)",
             "confidence": confidence,
             "method": "Heuristic map from held-out first-exposure accuracy; not yet validated against official practice-test scores.",
             "total_status": "abstain",
             "total_reason": "Total (205-805) needs Verbal + Data Insights data (not yet in scope).",
+            "mocks": mocks,
+            "mock_gap": mock_gap,
             "updated_ts": now,
         })
     }
@@ -466,6 +546,34 @@ impl crate::backend::Backend {
                 _ => full(prefer_upload)?,
             };
         Ok(json!({ "ok": true, "action": action }).to_string())
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn time_flags_separate_careless_from_fragile() {
+        // fast + wrong = careless signal
+        assert_eq!(gmat_time_flag(30_000, false), Some("rushed_wrong"));
+        // slow + correct = fragile knowledge
+        assert_eq!(gmat_time_flag(200_000, true), Some("slow_correct"));
+        // on-pace answers and untimed rows carry no flag
+        assert_eq!(gmat_time_flag(100_000, true), None);
+        assert_eq!(gmat_time_flag(100_000, false), None);
+        assert_eq!(gmat_time_flag(0, false), None);
+        // slow + wrong is a plain miss (not "rushed"), fast + correct is fine
+        assert_eq!(gmat_time_flag(200_000, false), None);
+        assert_eq!(gmat_time_flag(30_000, true), None);
+    }
+
+    #[test]
+    fn accuracy_to_quant_anchors_and_clamps() {
+        assert_eq!(gmat_accuracy_to_quant(0.40), 70);
+        assert_eq!(gmat_accuracy_to_quant(0.90), 88);
+        assert_eq!(gmat_accuracy_to_quant(0.0), 60); // clamped floor
+        assert_eq!(gmat_accuracy_to_quant(1.0), 90); // clamped ceiling
     }
 }
 

@@ -15,6 +15,7 @@ chrome77/es2020 webview.
         ScheduledCard,
         Counts,
         ErrorEntry,
+        ErrorWhy,
         PretestQuestion,
         Lesson,
         LessonItem,
@@ -22,6 +23,9 @@ chrome77/es2020 webview.
         TodaySession,
         TodayBlock,
         GmatPacing,
+        MockQuestion,
+        MockResult,
+        MockReport,
     } from "./api";
     import {
         logError,
@@ -37,6 +41,8 @@ chrome77/es2020 webview.
         fetchLesson,
         markLearned,
         fetchToday,
+        fetchMockPool,
+        submitMock,
         renderMath,
     } from "./api";
 
@@ -51,7 +57,8 @@ chrome77/es2020 webview.
         | "pretest"
         | "plan"
         | "learn"
-        | "lesson";
+        | "lesson"
+        | "mock";
     let view: View = "home";
 
     // ---- today's assembled session ----
@@ -90,6 +97,29 @@ chrome77/es2020 webview.
     let started = 0;
     let answered = 0;
     let correctCount = 0;
+    // error-log capture: a wrong answer must be classified before moving on
+    let pendingWhy = false;
+    let guessLogged = false;
+    let answerMs = 0;
+    let practiceElapsed = 0;
+    let practiceTimer = 0;
+    const TARGET_SECS = 128; // GMAT Focus Quant pace: 45 min / 21 questions
+
+    // ---- mock exam state (timed, exam conditions, no mid-test feedback) ----
+    type MockPhase = "intro" | "run" | "report";
+    let mockPhase: MockPhase = "intro";
+    let mockPool: MockQuestion[] = [];
+    let mockCount = 21;
+    let mockSecondsLeft = 0;
+    let mockTimer = 0;
+    let mockResults: MockResult[] = [];
+    let mockCurrent: MockQuestion | null = null;
+    let mockSelected: string | null = null;
+    let mockShownAt = 0;
+    let mockDiffIdx = 1; // 0 easy, 1 medium, 2 hard - simple adaptive ladder
+    let mockReport: MockReport | null = null;
+    let mockWhy: (ErrorWhy | null)[] = []; // per-miss classification on the report
+    let mockSubmitting = false;
 
     $: optionEntries = card ? Object.entries(card.options) : [];
     $: sessionAccuracy = answered > 0 ? Math.round((correctCount / answered) * 100) : 0;
@@ -117,10 +147,17 @@ chrome77/es2020 webview.
         loading = true;
         selected = null;
         revealed = false;
+        pendingWhy = false;
+        guessLogged = false;
         const result = await fetchNextCard();
         card = result.card;
         counts = result.counts;
         started = Date.now();
+        practiceElapsed = 0;
+        if (practiceTimer) clearInterval(practiceTimer);
+        practiceTimer = window.setInterval(() => {
+            if (!revealed) practiceElapsed += 1;
+        }, 1000);
         loading = false;
     }
 
@@ -128,7 +165,12 @@ chrome77/es2020 webview.
         stopTimer();
         view = next;
         if (next === "practice") await loadNextCard();
-        if (next === "errors") errors = await fetchErrorLog();
+        if (next === "errors") {
+            errors = await fetchErrorLog();
+            if (!lessonTopics.length) {
+                lessonTopics = (await fetchLessonsIndex()).topics;
+            }
+        }
         if (next === "learn") lessonTopics = (await fetchLessonsIndex()).topics;
         if (next === "home" || next === "dashboard") {
             const fresh = await refreshOverview();
@@ -141,8 +183,10 @@ chrome77/es2020 webview.
     }
 
     async function startBlock(block: TodayBlock): Promise<void> {
-        if (block.kind === "learn" && block.topic) {
+        if ((block.kind === "learn" || block.kind === "repair") && block.topic) {
             await openLesson(block.topic);
+        } else if (block.kind === "mock") {
+            await startMock();
         } else {
             await go("practice");
         }
@@ -163,19 +207,44 @@ chrome77/es2020 webview.
         if (selected === null || revealed || !card) return;
         revealed = true;
         answered += 1;
+        answerMs = Date.now() - started;
         const isCorrect = selected === card.correct;
         if (isCorrect) {
             correctCount += 1;
         } else {
-            await logError({
-                stem: card.stem,
-                topic: card.topic,
-                chosen: selected,
-                correct: card.correct,
-            });
+            // Error log is required: classify the miss before the next question.
+            pendingWhy = true;
         }
         // Record a REAL review through the scheduler (Good if right, Again if wrong).
-        await answerCard(card.card_id, isCorrect, Date.now() - started);
+        await answerCard(card.card_id, isCorrect, answerMs);
+    }
+
+    /** One-prompt error-log capture: why did the miss happen? */
+    async function classifyMiss(why: ErrorWhy): Promise<void> {
+        if (!card || selected === null) return;
+        pendingWhy = false;
+        await logError({
+            stem: card.stem,
+            topic: card.topic,
+            chosen: selected,
+            correct: card.correct,
+            why,
+            ms: answerMs,
+        });
+    }
+
+    /** Correct, but only by guessing - honesty beats a lucky streak. */
+    async function markGuess(): Promise<void> {
+        if (!card || selected === null || guessLogged) return;
+        guessLogged = true;
+        await logError({
+            stem: card.stem,
+            topic: card.topic,
+            chosen: selected,
+            correct: card.correct,
+            why: "guess",
+            ms: answerMs,
+        });
     }
 
     function optionState(key: string): string {
@@ -197,6 +266,14 @@ chrome77/es2020 webview.
         if (pretestTimer) {
             clearInterval(pretestTimer);
             pretestTimer = 0;
+        }
+        if (practiceTimer) {
+            clearInterval(practiceTimer);
+            practiceTimer = 0;
+        }
+        if (mockTimer) {
+            clearInterval(mockTimer);
+            mockTimer = 0;
         }
     }
 
@@ -341,6 +418,130 @@ chrome77/es2020 webview.
         await go(target);
     }
 
+    // ---- error log: filters + repair-now ----
+    let errorFilter: "all" | ErrorWhy = "all";
+    $: filteredErrors =
+        errorFilter === "all" ? errors : errors.filter((e) => (e.why || "") === errorFilter);
+    $: hasLessonFor = new Set(lessonTopics.map((t) => t.topic_id));
+
+    async function repairNow(e: ErrorEntry): Promise<void> {
+        // Concept gaps get the lesson again; everything else gets applied practice.
+        if (e.why === "concept_gap" && e.topic && hasLessonFor.has(e.topic)) {
+            await openLesson(e.topic);
+        } else {
+            await go("practice");
+        }
+    }
+
+    // ---- mock exam (timed section, exam conditions) ----
+    async function startMock(): Promise<void> {
+        stopTimer();
+        mockPhase = "intro";
+        mockReport = null;
+        view = "mock";
+        const data = await fetchMockPool();
+        mockPool = data.pool;
+        mockCount = Math.min(data.count, data.pool.length);
+        mockSecondsLeft = data.seconds;
+    }
+
+    const MOCK_DIFFS = ["easy", "medium", "hard"];
+
+    /** Simple adaptive ladder: correct -> harder, wrong -> easier. Prefers the
+        least-used topic at the current difficulty; falls back gracefully. */
+    function pickMockQuestion(): MockQuestion | null {
+        if (!mockPool.length) return null;
+        const wantDiff = MOCK_DIFFS[mockDiffIdx];
+        const usage = new Map<string, number>();
+        for (const r of mockResults) {
+            usage.set(r.topic, (usage.get(r.topic) ?? 0) + 1);
+        }
+        const byPreference = [...mockPool].sort((a, b) => {
+            const diffA = a.difficulty === wantDiff ? 0 : 1;
+            const diffB = b.difficulty === wantDiff ? 0 : 1;
+            if (diffA !== diffB) return diffA - diffB;
+            return (usage.get(a.topic) ?? 0) - (usage.get(b.topic) ?? 0);
+        });
+        const picked = byPreference[0];
+        mockPool = mockPool.filter((q) => q !== picked);
+        return picked;
+    }
+
+    function beginMock(): void {
+        mockResults = [];
+        mockDiffIdx = 1;
+        mockSelected = null;
+        mockPhase = "run";
+        mockCurrent = pickMockQuestion();
+        mockShownAt = Date.now();
+        stopTimer();
+        mockTimer = window.setInterval(() => {
+            mockSecondsLeft -= 1;
+            if (mockSecondsLeft <= 0) void finishMock();
+        }, 1000);
+    }
+
+    async function nextMock(): Promise<void> {
+        if (!mockCurrent || mockSelected === null) return;
+        const correct = mockSelected === mockCurrent.correct;
+        mockResults = [
+            ...mockResults,
+            {
+                topic: mockCurrent.topic,
+                difficulty: mockCurrent.difficulty,
+                correct,
+                ms: Date.now() - mockShownAt,
+                stem: mockCurrent.stem,
+                chosen: mockSelected,
+                correct_key: mockCurrent.correct,
+            },
+        ];
+        mockDiffIdx = correct ? Math.min(2, mockDiffIdx + 1) : Math.max(0, mockDiffIdx - 1);
+        mockSelected = null;
+        if (mockResults.length >= mockCount) {
+            await finishMock();
+            return;
+        }
+        mockCurrent = pickMockQuestion();
+        mockShownAt = Date.now();
+        if (!mockCurrent) await finishMock();
+    }
+
+    async function finishMock(): Promise<void> {
+        if (mockSubmitting || mockPhase === "report") return;
+        mockSubmitting = true;
+        stopTimer();
+        mockReport = await submitMock(mockResults);
+        mockWhy = mockResults.filter((r) => !r.correct).map(() => null);
+        mockPhase = "report";
+        mockSubmitting = false;
+    }
+
+    $: mockMisses = mockResults.filter((r) => !r.correct);
+    $: mockAllClassified = mockWhy.every((w) => w !== null);
+
+    async function classifyMockMiss(idx: number, why: ErrorWhy): Promise<void> {
+        const miss = mockMisses[idx];
+        if (!miss || mockWhy[idx] !== null) return;
+        mockWhy[idx] = why;
+        mockWhy = [...mockWhy];
+        await logError({
+            stem: miss.stem,
+            topic: miss.topic,
+            chosen: miss.chosen,
+            correct: miss.correct_key,
+            why,
+            ms: miss.ms,
+            mock: true,
+        });
+    }
+
+    async function finishMockReport(): Promise<void> {
+        const fresh = await refreshOverview();
+        if (fresh) overview = fresh;
+        await go("home");
+    }
+
     onMount(() => {
         if (overview.plan) {
             fetchLessonsIndex().then((r) => (lessonTopics = r.topics));
@@ -411,13 +612,19 @@ chrome77/es2020 webview.
                                     <span class="tb-title">
                                         {b.kind === "learn" && b.topic
                                             ? `Learn: ${topicLabel(b.topic)}`
-                                            : b.title}
+                                            : b.kind === "repair" && b.topic
+                                              ? `Repair: ${topicLabel(b.topic)}`
+                                              : b.title}
                                     </span>
                                     <span class="tb-detail">{b.detail}</span>
                                 </div>
                                 <span class="tb-min">{b.est_minutes}m</span>
                                 <button class="tb-go" on:click={() => startBlock(b)}>
-                                    {b.kind === "learn" ? "Learn" : "Start"}
+                                    {b.kind === "learn" || b.kind === "repair"
+                                        ? "Learn"
+                                        : b.kind === "mock"
+                                          ? "Begin"
+                                          : "Start"}
                                 </button>
                             </li>
                         {/each}
@@ -492,6 +699,13 @@ chrome77/es2020 webview.
                 {#if remaining > 0}
                     &middot; <span class="muted">{remaining} in queue</span>
                 {/if}
+                {#if card && !revealed}
+                    &middot;
+                    <span class="readout" class:overpace={practiceElapsed > TARGET_SECS}>
+                        {fmtTime(practiceElapsed)}
+                    </span>
+                    <span class="muted">/ {fmtTime(TARGET_SECS)} pace</span>
+                {/if}
             </div>
 
             {#if loading}
@@ -527,10 +741,38 @@ chrome77/es2020 webview.
                     {:else}
                         <div class="verdict {selected === card.correct ? 'ok' : 'no'}">
                             <strong>{selected === card.correct ? "Correct" : "Not yet"}</strong>
-                            <span class="muted">Answer: {card.correct}</span>
+                            <span class="muted">
+                                Answer: {card.correct} &middot; took {fmtTime(
+                                    Math.round(answerMs / 1000),
+                                )}
+                            </span>
                         </div>
                         <p class="explain">{@html renderMath(card.explanation)}</p>
-                        <button class="primary" on:click={loadNextCard}>Next question</button>
+                        {#if pendingWhy}
+                            <div class="why-box">
+                                <p class="why-q">Why did you miss it? (goes in your error log)</p>
+                                <div class="why-chips">
+                                    <button class="why-chip" on:click={() => classifyMiss("careless")}>
+                                        Careless slip
+                                    </button>
+                                    <button class="why-chip" on:click={() => classifyMiss("concept_gap")}>
+                                        Concept gap
+                                    </button>
+                                    <button class="why-chip" on:click={() => classifyMiss("timing")}>
+                                        Ran out of time
+                                    </button>
+                                </div>
+                            </div>
+                        {:else}
+                            {#if selected === card.correct && !guessLogged}
+                                <button class="ghost guess-link" on:click={markGuess}>
+                                    Honestly? I guessed.
+                                </button>
+                            {:else if guessLogged}
+                                <p class="muted">Logged as a guess &mdash; it will resurface.</p>
+                            {/if}
+                            <button class="primary" on:click={loadNextCard}>Next question</button>
+                        {/if}
                     {/if}
                 </section>
             {:else}
@@ -626,6 +868,17 @@ chrome77/es2020 webview.
                                     : "not yet beating the baseline."}
                             </p>
                         {/if}
+                        {#if overview.performance.timing && overview.performance.timing.n > 0}
+                            {@const t = overview.performance.timing}
+                            <p class="muted">
+                                Pace: avg {fmtTime(Math.round(t.avg_ms / 1000))}/question (target
+                                {fmtTime(Math.round(t.target_ms / 1000))}) &middot;
+                                <span class="warn-text">{t.rushed_wrong} fast-but-wrong</span>
+                                (careless) &middot;
+                                <span class="warn-text">{t.slow_correct} slow-but-correct</span>
+                                (fragile &mdash; right, but not at exam pace)
+                            </p>
+                        {/if}
                         {#if overview.performance.weak_topics?.length}
                             <p class="next">
                                 Weakest: {overview.performance.weak_topics
@@ -657,6 +910,30 @@ chrome77/es2020 webview.
                             </span>
                         </div>
                         <p class="muted">{overview.readiness.scale}. {overview.readiness.method}</p>
+                        {#if overview.readiness.mocks?.length}
+                            {@const lastMock =
+                                overview.readiness.mocks[overview.readiness.mocks.length - 1]}
+                            <p class="muted">
+                                Mocks: {overview.readiness.mocks
+                                    .slice(-3)
+                                    .map((m) => `Q${m.q}`)
+                                    .join(" → ")}
+                                (last: {Math.round(lastMock.accuracy * 100)}% of {lastMock.n})
+                                {#if overview.readiness.mock_gap != null && Math.abs(overview.readiness.mock_gap) > 4}
+                                    &middot; <span class="warn-text">
+                                        projection is {Math.abs(overview.readiness.mock_gap)} points
+                                        {overview.readiness.mock_gap > 0 ? "above" : "below"} your last
+                                        mock &mdash; trust the range, not the point
+                                    </span>
+                                {/if}
+                            </p>
+                        {:else}
+                            <p class="muted">
+                                No timed mocks yet &mdash; a mock section is the only way to check
+                                this projection against exam conditions.
+                            </p>
+                            <button class="ghost" on:click={startMock}>Take a timed mock</button>
+                        {/if}
                         <p class="next">Total (205-805): {overview.readiness.total_reason}</p>
                     {:else}
                         <div class="abstain">
@@ -670,6 +947,14 @@ chrome77/es2020 webview.
                                 </ul>
                             {/if}
                             <p class="next">{overview.readiness.reason}</p>
+                            {#if overview.readiness.mocks?.length}
+                                <p class="muted">
+                                    Mock history: {overview.readiness.mocks
+                                        .slice(-3)
+                                        .map((m) => `Q${m.q}`)
+                                        .join(" → ")}
+                                </p>
+                            {/if}
                         </div>
                     {/if}
                 </section>
@@ -963,6 +1248,148 @@ chrome77/es2020 webview.
                 <section class="q-card empty"><p>Lesson not found.</p></section>
             {/if}
         </main>
+    {:else if view === "mock"}
+        <main class="col">
+            {#if mockPhase === "intro"}
+                <p class="eyebrow">Mock section &mdash; exam conditions</p>
+                <h1 class="display">45 minutes. 21 questions. No feedback.</h1>
+                <p class="lede">
+                    This simulates the GMAT Focus Quant section: timed, adaptive (harder when you're
+                    right, easier when you're wrong), and sealed &mdash; no answers until the end.
+                    It's also how we check the Readiness projection against reality.
+                </p>
+                <section class="action-card">
+                    <div class="action-head">
+                        <span class="eyebrow">Ready?</span>
+                        <span class="pill">{Math.min(mockCount, mockPool.length)} questions &middot; 45:00</span>
+                    </div>
+                    <p class="muted">
+                        Aim for ~2:08 per question. Guessing beats leaving blanks &mdash; but you'll
+                        classify every miss afterwards.
+                    </p>
+                    <button
+                        class="primary"
+                        disabled={mockPool.length === 0}
+                        on:click={beginMock}
+                    >
+                        Start the clock
+                    </button>
+                    <button class="ghost" on:click={() => go("home")}>Not now</button>
+                </section>
+            {:else if mockPhase === "run"}
+                <div class="session-meter">
+                    <span class="readout" class:overpace={mockSecondsLeft < 300}>
+                        {fmtTime(mockSecondsLeft)}
+                    </span>
+                    left &middot; question
+                    <span class="readout">{mockResults.length + 1}</span>
+                    of {mockCount}
+                </div>
+                {#if mockCurrent}
+                    <section class="q-card">
+                        <div class="q-head">
+                            <span class="eyebrow">GMAT Quant &middot; timed</span>
+                            <span class="pill diff-{mockCurrent.difficulty}">{mockCurrent.difficulty}</span>
+                        </div>
+                        <h1 class="stem">{@html renderMath(mockCurrent.stem)}</h1>
+                        <ul class="opts">
+                            {#each Object.entries(mockCurrent.options) as [key, value]}
+                                <li>
+                                    <button
+                                        class="opt {mockSelected === key ? 'sel' : ''}"
+                                        on:click={() => (mockSelected = key)}
+                                    >
+                                        <span class="opt-key">{key}</span>
+                                        <span>{@html renderMath(value)}</span>
+                                    </button>
+                                </li>
+                            {/each}
+                        </ul>
+                        <button class="primary" disabled={mockSelected === null} on:click={nextMock}>
+                            {mockResults.length + 1 >= mockCount ? "Finish section" : "Lock in & next"}
+                        </button>
+                        <p class="seal">Sealed until the end &mdash; exam conditions.</p>
+                    </section>
+                {/if}
+            {:else if mockReport}
+                <p class="eyebrow">Mock report</p>
+                <h1 class="display">
+                    {#if mockReport.q != null}Q{mockReport.q}{:else}Done.{/if}
+                    <span class="muted-display">
+                        &middot; {Math.round(mockReport.accuracy * 100)}% of {mockReport.n}
+                    </span>
+                </h1>
+                <p class="lede">
+                    Estimated from this section alone, on the same transparent scale as Readiness.
+                    One mock is a data point, not a verdict.
+                </p>
+                <section class="action-card">
+                    <div class="action-head">
+                        <span class="eyebrow">Pace</span>
+                        <span class="pill">
+                            avg {fmtTime(Math.round(mockReport.timing.avg_ms / 1000))}/q
+                        </span>
+                    </div>
+                    <p class="muted">
+                        {mockReport.timing.rushed_wrong} fast-but-wrong (careless) &middot;
+                        {mockReport.timing.slow_correct} slow-but-correct (fragile) &middot; target
+                        {fmtTime(Math.round(mockReport.timing.target_ms / 1000))}/question
+                    </p>
+                    {#if mockReport.per_topic.length}
+                        <p class="muted">
+                            Weakest topics this section: {mockReport.per_topic
+                                .slice(0, 3)
+                                .map((t) => `${topicLabel(t.topic)} (${t.correct}/${t.n})`)
+                                .join(", ")}
+                        </p>
+                    {/if}
+                </section>
+
+                {#if mockMisses.length > 0}
+                    <section class="action-card">
+                        <div class="action-head">
+                            <span class="eyebrow">Error log &mdash; required</span>
+                            <span class="pill">
+                                {mockWhy.filter((w) => w !== null).length}/{mockMisses.length} classified
+                            </span>
+                        </div>
+                        <p class="muted">Classify every miss before you finish. Why did it happen?</p>
+                        <ul class="err-list">
+                            {#each mockMisses as m, i}
+                                <li class="err">
+                                    <div class="err-top">
+                                        <span class="pill">{topicLabel(m.topic)}</span>
+                                        <span class="muted">
+                                            chose {m.chosen} &middot; correct {m.correct_key} &middot;
+                                            {fmtTime(Math.round(m.ms / 1000))}
+                                        </span>
+                                    </div>
+                                    <p class="err-stem">{@html renderMath(m.stem)}</p>
+                                    {#if mockWhy[i] === null}
+                                        <div class="why-chips">
+                                            <button class="why-chip" on:click={() => classifyMockMiss(i, "careless")}>
+                                                Careless slip
+                                            </button>
+                                            <button class="why-chip" on:click={() => classifyMockMiss(i, "concept_gap")}>
+                                                Concept gap
+                                            </button>
+                                            <button class="why-chip" on:click={() => classifyMockMiss(i, "timing")}>
+                                                Ran out of time
+                                            </button>
+                                        </div>
+                                    {:else}
+                                        <span class="pill why-{mockWhy[i]}">{(mockWhy[i] || "").replace("_", " ")}</span>
+                                    {/if}
+                                </li>
+                            {/each}
+                        </ul>
+                    </section>
+                {/if}
+                <button class="primary" disabled={!mockAllClassified} on:click={finishMockReport}>
+                    {mockAllClassified ? "Done - back to Today" : "Classify every miss first"}
+                </button>
+            {/if}
+        </main>
     {:else}
         <main class="col">
             <p class="eyebrow">Error log &mdash; required review</p>
@@ -974,14 +1401,39 @@ chrome77/es2020 webview.
                     <p>No logged errors yet. Missed questions in Practice appear here automatically.</p>
                 </section>
             {:else}
+                <div class="err-filters">
+                    {#each [["all", "All"], ["careless", "Careless"], ["concept_gap", "Concept gap"], ["timing", "Timing"], ["guess", "Guessed"]] as [key, label]}
+                        <button
+                            class="why-chip"
+                            class:active={errorFilter === key}
+                            on:click={() => (errorFilter = key as "all" | ErrorWhy)}
+                        >
+                            {label}
+                        </button>
+                    {/each}
+                </div>
                 <ul class="err-list">
-                    {#each errors as e}
+                    {#each filteredErrors as e}
                         <li class="err">
                             <div class="err-top">
-                                <span class="pill">{e.topic || "Quant"}</span>
-                                <span class="muted">chose {e.chosen} &middot; correct {e.correct}</span>
+                                <span class="pill">{topicLabel(e.topic) || "Quant"}</span>
+                                {#if e.why}
+                                    <span class="pill why-{e.why}">{e.why.replace("_", " ")}</span>
+                                {/if}
+                                {#if e.mock}
+                                    <span class="pill">mock</span>
+                                {/if}
+                                <span class="muted">
+                                    chose {e.chosen} &middot; correct {e.correct}
+                                    {#if e.ms}&middot; {fmtTime(Math.round(e.ms / 1000))}{/if}
+                                </span>
                             </div>
                             <p class="err-stem">{e.stem}</p>
+                            <button class="tb-go" on:click={() => repairNow(e)}>
+                                {e.why === "concept_gap" && e.topic && hasLessonFor.has(e.topic)
+                                    ? "Repair now: relearn"
+                                    : "Repair now: practice"}
+                            </button>
                         </li>
                     {/each}
                 </ul>
@@ -1203,6 +1655,8 @@ chrome77/es2020 webview.
     .today-block.kind-review { border-left-color: var(--indicator-ink); }
     .today-block.kind-learn { border-left-color: var(--brass-ink, #9a6b1f); }
     .today-block.kind-practice { border-left-color: var(--clay-ink, #b4531f); }
+    .today-block.kind-repair { border-left-color: var(--clay-ink, #8c4233); }
+    .today-block.kind-mock { border-left-color: var(--ink); }
     .tb-index {
         flex: none;
         width: 22px;
@@ -1253,6 +1707,66 @@ chrome77/es2020 webview.
     .tb-go:hover {
         border-color: var(--indicator-ink);
         color: var(--indicator-ink);
+    }
+
+    /* error-log why-capture + filters */
+    .why-box {
+        margin-top: 14px;
+        padding: 12px 14px;
+        border: 1px solid var(--clay-ink);
+        border-radius: 10px;
+        background: var(--clay-tint);
+    }
+    .why-q {
+        margin: 0 0 8px;
+        font-weight: 600;
+        font-size: 14px;
+    }
+    .why-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .why-chip {
+        appearance: none;
+        border: 1px solid var(--line-strong);
+        background: var(--surface);
+        color: var(--ink-soft);
+        font-family: var(--ui);
+        font-size: 13px;
+        font-weight: 600;
+        padding: 6px 12px;
+        border-radius: 999px;
+        cursor: pointer;
+    }
+    .why-chip:hover,
+    .why-chip.active {
+        border-color: var(--indicator-ink);
+        color: var(--indicator-ink);
+    }
+    .guess-link {
+        display: inline-block;
+        margin-right: 10px;
+    }
+    .err-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 14px;
+    }
+    .why-careless { background: var(--brass-tint); }
+    .why-concept_gap { background: var(--clay-tint); }
+    .why-timing { background: var(--indicator-tint); }
+    .why-guess { background: var(--sunk); }
+    .overpace {
+        color: var(--clay-ink);
+    }
+    .warn-text {
+        color: var(--clay-ink);
+    }
+    .muted-display {
+        color: var(--ink-faint);
+        font-size: 0.6em;
     }
 
     .pace {

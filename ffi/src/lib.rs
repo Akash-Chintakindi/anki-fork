@@ -202,7 +202,8 @@ pub unsafe extern "C" fn gmatwiz_collection_state(
 }
 
 /// Answer the current card through the real scheduler. `correct` => Good, else
-/// Again. Returns 0 on success, 1 on engine error, -1 on invalid arguments.
+/// Again; `ms` is the real time taken (feeds the timing analytics). Returns 0
+/// on success, 1 on engine error, -1 on invalid arguments.
 ///
 /// # Safety
 /// `handle` must be valid.
@@ -211,11 +212,12 @@ pub unsafe extern "C" fn gmatwiz_collection_answer(
     handle: *mut GmatCollection,
     card_id: i64,
     correct: bool,
+    ms: u32,
 ) -> c_int {
     if handle.is_null() {
         return -1;
     }
-    match (*handle).col.gmat_mobile_answer(card_id, correct) {
+    match (*handle).col.gmat_mobile_answer(card_id, correct, ms) {
         Ok(()) => 0,
         Err(_) => 1,
     }
