@@ -24,6 +24,10 @@ service CollectionService {
   // GMATWiz gating-milestone RPC: proves the proto -> Rust -> Python pipeline
   // end to end. Appended last to keep service method indices stable.
   rpc GmatwizHello(generic.Empty) returns (generic.String);
+  // GMATWiz: the three honest scores (Memory, Performance, Readiness) computed
+  // once in the shared Rust engine, as JSON. Desktop and mobile both call this
+  // so the numbers + give-up abstentions can never drift. Appended last.
+  rpc GmatScores(generic.Empty) returns (generic.String);
 }
 
 // Implicitly includes any of the above methods that are not listed in the

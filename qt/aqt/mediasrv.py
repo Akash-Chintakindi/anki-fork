@@ -743,253 +743,41 @@ def gmat_questions() -> bytes:
 
 # Number of leaf topics in the GMAT Focus Quant coverage map (PRD Section 5).
 GMAT_QUANT_TOPIC_TOTAL = 18
-# Give-up rule thresholds (PRD Section 4).
-GMAT_MEMORY_MIN_REVIEWS = 150
 
 
-def _gmat_memory(col) -> dict:
-    """Calibrated Memory model computed honestly from the review log.
-
-    Point estimate = observed retention (share of graded reviews recalled), with
-    a 95% confidence interval. Calibration is shown as a reliability diagram:
-    observed retention within each past-interval bucket vs the scheduler's target
-    retention. ECE = review-weighted mean gap between observed and target.
-    Abstains (give-up rule) until GMAT_MEMORY_MIN_REVIEWS graded reviews exist.
-    """
-    import math
-
-    total = (
-        col.db.scalar("select count() from revlog where ease between 1 and 4") or 0
-    )
-    if total < GMAT_MEMORY_MIN_REVIEWS:
-        return {
-            "status": "abstain",
-            "reviews": total,
-            "reviews_required": GMAT_MEMORY_MIN_REVIEWS,
-            "reason": f"Need {GMAT_MEMORY_MIN_REVIEWS} graded reviews; you have {total}.",
-            "updated_ts": int(time.time()),
-        }
-
-    passed = (
-        col.db.scalar("select count() from revlog where ease between 2 and 4") or 0
-    )
-    observed = passed / total
-    se = math.sqrt(observed * (1 - observed) / total)
-    low = max(0.0, observed - 1.96 * se)
-    high = min(1.0, observed + 1.96 * se)
-
-    try:
-        conf = col.decks.config_dict_for_deck_id(col.decks.id("GMAT::Quant"))
-        target = float(conf.get("desiredRetention", 0.9))
-    except Exception:
-        target = 0.9
-
-    # reliability diagram: observed retention by past-interval bucket (days)
-    rows = col.db.all(
-        "select case "
-        "when lastIvl<=3 then 0 when lastIvl<=7 then 1 when lastIvl<=21 then 2 "
-        "when lastIvl<=60 then 3 else 4 end as b, "
-        "count(), sum(case when ease between 2 and 4 then 1 else 0 end) "
-        "from revlog where ease between 1 and 4 and lastIvl >= 1 "
-        "group by b order by b"
-    )
-    labels = ["1-3d", "4-7d", "8-21d", "22-60d", "60d+"]
-    bins = []
-    binned_total = sum(r[1] for r in rows) or 1
-    ece = 0.0
-    for b, n, p in rows:
-        obs = (p / n) if n else 0.0
-        bins.append({"label": labels[int(b)], "observed": round(obs, 3), "n": n})
-        ece += (n / binned_total) * abs(obs - target)
-
+def _score_unavailable() -> dict:
     return {
-        "status": "shown",
-        "point": round(observed * 100),
-        "low": round(low * 100),
-        "high": round(high * 100),
-        "reviews": total,
-        "target": round(target * 100),
-        "ece": round(ece, 3),
-        "calibrated": ece <= 0.10,
-        "bins": bins,
+        "status": "abstain",
+        "reason": "Scores are temporarily unavailable.",
         "updated_ts": int(time.time()),
     }
 
 
-# Give-up thresholds (PRD Section 4).
-GMAT_PERF_MIN_ATTEMPTS = 50
-GMAT_PERF_MIN_PER_TOPIC = 8
-GMAT_READY_MIN_COVERAGE = 50  # percent
-GMAT_READY_MIN_REVIEWS = 200
-GMAT_READY_MIN_ATTEMPTS = 50
-GMAT_READY_MAX_ECE = 0.10
-
-
-def _gmat_card_topics(col) -> dict:
-    """Map GMAT card id -> topic. Bounded by the GMAT deck size."""
-    cid_topic: dict = {}
-    for nid in col.find_notes('note:"GMAT PS"'):
-        note = col.get_note(nid)
-        topic = dict(note.items()).get("Topic", "")
-        for cid in note.card_ids():
-            cid_topic[cid] = topic
-    return cid_topic
-
-
-def _gmat_performance(col) -> dict:
-    """Performance model: can the student answer a NEW exam-style question?
-
-    Distinct from Memory (retention of already-seen cards): here we score only
-    FIRST-EXPOSURE attempts (revlog rows with lastIvl == 0). Point = observed
-    first-try accuracy with a 95% CI. Includes a held-out (train/test) check of a
-    per-topic model vs a global-mean baseline (Brier score), per PRD Step 2.
-    Abstains until GMAT_PERF_MIN_ATTEMPTS attempts (give-up rule).
+def _gmat_scores(col) -> dict:
+    """The three honest scores (Memory, Performance, Readiness) from the SHARED
+    Rust engine - the single source of truth for desktop AND mobile, so the
+    numbers and give-up abstentions can never drift between platforms. Degrades
+    cleanly to abstention if the engine call fails, so reviews keep working.
     """
-    import math
-
-    cid_topic = _gmat_card_topics(col)
-    now = int(time.time())
-    if not cid_topic:
+    try:
+        raw = col._backend.gmat_scores()
+        data = json.loads(getattr(raw, "val", raw))
         return {
-            "status": "abstain",
-            "attempts": 0,
-            "attempts_required": GMAT_PERF_MIN_ATTEMPTS,
-            "reason": "No GMAT questions yet - import GMAT Quant.",
-            "updated_ts": now,
+            "memory": data.get("memory", _score_unavailable()),
+            "performance": data.get("performance", _score_unavailable()),
+            "readiness": data.get("readiness", _score_unavailable()),
+            "topics_covered": data.get("topics_covered", 0),
+            "topics_total": data.get("topics_total", GMAT_QUANT_TOPIC_TOTAL),
         }
-
-    rows = col.db.all(
-        "select cid, ease from revlog where lastIvl = 0 and ease between 1 and 4"
-    )
-    attempts = [(cid, 1 if ease >= 2 else 0) for cid, ease in rows if cid in cid_topic]
-    total = len(attempts)
-    if total < GMAT_PERF_MIN_ATTEMPTS:
+    except Exception as exc:
+        print(f"GMATWiz: score engine unavailable: {exc}")
         return {
-            "status": "abstain",
-            "attempts": total,
-            "attempts_required": GMAT_PERF_MIN_ATTEMPTS,
-            "reason": f"Need {GMAT_PERF_MIN_ATTEMPTS} new-question attempts; you have {total}.",
-            "updated_ts": now,
+            "memory": _score_unavailable(),
+            "performance": _score_unavailable(),
+            "readiness": _score_unavailable(),
+            "topics_covered": 0,
+            "topics_total": GMAT_QUANT_TOPIC_TOTAL,
         }
-
-    correct = sum(ok for _, ok in attempts)
-    acc = correct / total
-    se = math.sqrt(acc * (1 - acc) / total)
-
-    # per-topic accuracy (only where the give-up per-topic threshold is met)
-    per_topic: dict = {}
-    for cid, ok in attempts:
-        pt = per_topic.setdefault(cid_topic[cid], [0, 0])
-        pt[0] += ok
-        pt[1] += 1
-    weak_topics = sorted(
-        (
-            {"topic": t, "accuracy": round(c / n, 3), "n": n}
-            for t, (c, n) in per_topic.items()
-            if n >= GMAT_PERF_MIN_PER_TOPIC
-        ),
-        key=lambda x: x["accuracy"],
-    )
-
-    # held-out eval: per-topic model vs global-mean baseline (Brier, lower=better)
-    train = [(cid, ok) for cid, ok in attempts if (cid % 10) < 7]
-    test = [(cid, ok) for cid, ok in attempts if (cid % 10) >= 7]
-    eval_out = None
-    if train and test:
-        g_mean = sum(ok for _, ok in train) / len(train)
-        topic_mean: dict = {}
-        tt: dict = {}
-        for cid, ok in train:
-            m = tt.setdefault(cid_topic[cid], [0, 0])
-            m[0] += ok
-            m[1] += 1
-        for t, (c, n) in tt.items():
-            topic_mean[t] = c / n
-        base_brier = sum((g_mean - ok) ** 2 for _, ok in test) / len(test)
-        model_brier = sum(
-            (topic_mean.get(cid_topic[cid], g_mean) - ok) ** 2 for cid, ok in test
-        ) / len(test)
-        eval_out = {
-            "baseline_brier": round(base_brier, 4),
-            "model_brier": round(model_brier, 4),
-            "beats_baseline": model_brier <= base_brier,
-            "test_n": len(test),
-        }
-
-    return {
-        "status": "shown",
-        "point": round(acc * 100),
-        "low": round(max(0.0, acc - 1.96 * se) * 100),
-        "high": round(min(1.0, acc + 1.96 * se) * 100),
-        "attempts": total,
-        "weak_topics": weak_topics[:5],
-        "eval": eval_out,
-        "updated_ts": now,
-    }
-
-
-def _accuracy_to_quant_score(acc: float) -> float:
-    """Transparent (heuristic, not yet validated) map: first-exposure accuracy
-    -> GMAT Focus Quant section score (60-90). Anchors: 0.40->70, 0.90->88."""
-    score = 70.0 + (acc - 0.40) * (88.0 - 70.0) / (0.90 - 0.40)
-    return max(60.0, min(90.0, score))
-
-
-def _gmat_readiness(col, memory: dict, performance: dict, coverage_pct: float) -> dict:
-    """Readiness: projected GMAT Focus QUANT section score (60-90) with a range.
-
-    Gated by the full give-up rule (PRD Section 4). Honest by construction: the
-    total (205-805) is abstained because we have no Verbal/Data Insights data,
-    and the accuracy->score mapping is a documented heuristic not yet validated
-    against official practice-test scores (PRD Step 4).
-    """
-    now = int(time.time())
-    reviews = memory.get("reviews", 0)
-    attempts = performance.get("attempts", 0)
-    ece = memory.get("ece")
-    unmet = []
-    if coverage_pct < GMAT_READY_MIN_COVERAGE:
-        unmet.append(
-            f"topic coverage {round(coverage_pct)}% (need {GMAT_READY_MIN_COVERAGE}%)"
-        )
-    if reviews < GMAT_READY_MIN_REVIEWS:
-        unmet.append(f"{reviews} reviews (need {GMAT_READY_MIN_REVIEWS})")
-    if attempts < GMAT_READY_MIN_ATTEMPTS:
-        unmet.append(f"{attempts} application attempts (need {GMAT_READY_MIN_ATTEMPTS})")
-    if ece is None or ece > GMAT_READY_MAX_ECE:
-        unmet.append("memory not yet calibrated (ECE <= 0.10)")
-
-    if unmet:
-        return {
-            "status": "abstain",
-            "unmet": unmet,
-            "reason": "A confident number with no evidence is just a guess.",
-            "updated_ts": now,
-        }
-
-    acc = performance["point"] / 100.0
-    acc_low = performance["low"] / 100.0
-    acc_high = performance["high"] / 100.0
-    point = round(_accuracy_to_quant_score(acc))
-    low = round(_accuracy_to_quant_score(acc_low))
-    high = round(_accuracy_to_quant_score(acc_high))
-    confidence = "low"
-    if coverage_pct >= 80 and attempts >= 150:
-        confidence = "medium"
-    return {
-        "status": "shown",
-        "section": "Quant",
-        "point": point,
-        "low": low,
-        "high": high,
-        "scale": "GMAT Focus Quant section (60-90)",
-        "confidence": confidence,
-        "method": "Heuristic map from held-out first-exposure accuracy; not yet "
-        "validated against official practice-test scores.",
-        "total_status": "abstain",
-        "total_reason": "Total (205-805) needs Verbal + Data Insights data (not yet in scope).",
-        "updated_ts": now,
-    }
 
 
 def gmat_overview() -> bytes:
@@ -1002,22 +790,8 @@ def gmat_overview() -> bytes:
     except Exception:
         total = new = due = 0
 
-    topics = set()
-    try:
-        for nid in col.find_notes('note:"GMAT PS"'):
-            topic = dict(col.get_note(nid).items()).get("Topic", "")
-            if topic:
-                topics.add(topic)
-    except Exception:
-        pass
-
     reviews = col.db.scalar("select count() from revlog") or 0
-    coverage_pct = (
-        100.0 * len(topics) / GMAT_QUANT_TOPIC_TOTAL if GMAT_QUANT_TOPIC_TOTAL else 0.0
-    )
-    memory = _gmat_memory(col)
-    performance = _gmat_performance(col)
-    readiness = _gmat_readiness(col, memory, performance, coverage_pct)
+    scores = _gmat_scores(col)
 
     return json.dumps(
         {
@@ -1026,11 +800,11 @@ def gmat_overview() -> bytes:
             "new": new,
             "due": due,
             "reviews": reviews,
-            "topics_covered": len(topics),
-            "topics_total": GMAT_QUANT_TOPIC_TOTAL,
-            "memory": memory,
-            "performance": performance,
-            "readiness": readiness,
+            "topics_covered": scores["topics_covered"],
+            "topics_total": scores["topics_total"],
+            "memory": scores["memory"],
+            "performance": scores["performance"],
+            "readiness": scores["readiness"],
             "profile": col.get_config("gmatProfile", None),
             "plan": col.get_config("gmatPlan", None),
         }
@@ -1405,7 +1179,12 @@ _PRACTICE_MIN = 2.0
 def gmat_today() -> bytes:
     """Assemble today's session: due reviews + next lesson(s) + weak practice,
     sized to the daily-minute budget, with on/behind-track pacing. Read-only."""
-    return json.dumps(_gmat_build_today(aqt.mw.col)).encode("utf-8")
+    try:
+        data = _gmat_build_today(aqt.mw.col)
+    except Exception as exc:
+        print(f"GMATWiz: today unavailable: {exc}")
+        data = {"has_plan": False, "pacing": None, "blocks": [], "daily_minutes": 0}
+    return json.dumps(data).encode("utf-8")
 
 
 def _gmat_build_today(col) -> dict:

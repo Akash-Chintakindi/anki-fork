@@ -31,7 +31,8 @@ const TARGET_RETENTION: f64 = 0.9;
 
 impl Collection {
     fn gmat_select_deck(&mut self, deck_name: &str) -> Result<()> {
-        if let Some(did) = self.storage.get_deck_id(deck_name)? {
+        let native = crate::decks::NativeDeckName::from_human_name(deck_name);
+        if let Some(did) = self.storage.get_deck_id(native.as_native_str())? {
             self.set_current_deck(did)?;
         }
         Ok(())
@@ -151,7 +152,8 @@ impl Collection {
             .collect();
         let coverage_pct = 100.0 * topics_covered.len() as f64 / QUANT_TOPIC_TOTAL;
 
-        let memory = self.gmat_memory_json(now)?;
+        let target = self.gmat_target_retention();
+        let memory = self.gmat_memory_json(now, target)?;
         let performance = self.gmat_performance_json(&card_topics, now)?;
         let readiness = self.gmat_readiness_json(&memory, &performance, coverage_pct, now);
 
@@ -165,7 +167,23 @@ impl Collection {
         .to_string())
     }
 
-    fn gmat_memory_json(&self, now: i64) -> Result<serde_json::Value> {
+    /// Target retention for the GMAT deck (its FSRS `desiredRetention`), so
+    /// Memory calibration matches whatever the scheduler is actually aiming for.
+    /// Falls back to the FSRS default when the deck/config is missing.
+    fn gmat_target_retention(&self) -> f64 {
+        let native = crate::decks::NativeDeckName::from_human_name("GMAT::Quant");
+        self.storage
+            .get_deck_id(native.as_native_str())
+            .ok()
+            .flatten()
+            .and_then(|did| self.storage.get_deck(did).ok().flatten())
+            .and_then(|deck| deck.config_id())
+            .and_then(|dcid| self.storage.get_deck_config(dcid).ok().flatten())
+            .map(|conf| conf.inner.desired_retention as f64)
+            .unwrap_or(TARGET_RETENTION)
+    }
+
+    fn gmat_memory_json(&self, now: i64, target: f64) -> Result<serde_json::Value> {
         let total: i64 = self.storage.db.query_row(
             "select count() from revlog where ease between 1 and 4",
             [],
@@ -187,7 +205,6 @@ impl Collection {
         )?;
         let observed = passed as f64 / total as f64;
         let se = (observed * (1.0 - observed) / total as f64).sqrt();
-        let target = TARGET_RETENTION;
 
         let mut stmt = self.storage.db.prepare(
             "select case when lastIvl<=3 then 0 when lastIvl<=7 then 1 \
@@ -393,6 +410,7 @@ impl Collection {
             "scale": "GMAT Focus Quant section (60-90)",
             "confidence": confidence,
             "method": "Heuristic map from held-out first-exposure accuracy; not yet validated against official practice-test scores.",
+            "total_status": "abstain",
             "total_reason": "Total (205-805) needs Verbal + Data Insights data (not yet in scope).",
             "updated_ts": now,
         })

@@ -79,4 +79,10 @@ impl crate::services::CollectionService for Collection {
             val: "GMATWiz engine online".to_string(),
         })
     }
+
+    fn gmat_scores(&mut self) -> error::Result<generic::String> {
+        Ok(generic::String {
+            val: self.gmat_scores_json()?,
+        })
+    }
 }
