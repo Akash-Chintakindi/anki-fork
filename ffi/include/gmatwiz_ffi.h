@@ -64,6 +64,10 @@ char *gmatwiz_collection_state(GmatCollection *handle, const char *deck);
 // Returns 0 on success, 1 on engine error, -1 on invalid arguments.
 int gmatwiz_collection_answer(GmatCollection *handle, int64_t card_id, bool correct);
 
+// Returns Memory/Performance/Readiness scores as a JSON string.
+// Free with gmatwiz_string_free.
+char *gmatwiz_collection_scores(GmatCollection *handle);
+
 #ifdef __cplusplus
 }
 #endif

@@ -17,10 +17,16 @@ final class ReviewModel: ObservableObject {
     @Published var revealed = false
     @Published var selected: String?
     @Published var lastCorrect: Bool?
+    @Published var scores: GmatScores?
 
     private var collection: GmatCollectionHandle?
 
     init() { open() }
+
+    func loadScores() {
+        guard let c = collection else { return }
+        scores = GmatwizEngine.scores(c)
+    }
 
     private func writableCollectionPath() -> String {
         let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
@@ -71,6 +77,23 @@ final class ReviewModel: ObservableObject {
 
 struct ContentView: View {
     @StateObject private var model = ReviewModel()
+    @State private var tab: Int =
+        ProcessInfo.processInfo.arguments.contains("--gmat-tab-readiness") ? 1 : 0
+
+    var body: some View {
+        TabView(selection: $tab) {
+            ReviewView(model: model)
+                .tabItem { Label("Practice", systemImage: "square.and.pencil") }
+                .tag(0)
+            DashboardView(model: model)
+                .tabItem { Label("Readiness", systemImage: "gauge.medium") }
+                .tag(1)
+        }
+    }
+}
+
+struct ReviewView: View {
+    @ObservedObject var model: ReviewModel
 
     var body: some View {
         VStack(spacing: 16) {
@@ -152,5 +175,99 @@ struct ContentView: View {
         }
         .buttonStyle(.plain)
         .disabled(model.revealed)
+    }
+}
+
+struct DashboardView: View {
+    @ObservedObject var model: ReviewModel
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 14) {
+                Text("Readiness").font(.title2).bold()
+                Text("Three separate questions - each with a range, or an honest \"not enough data.\"")
+                    .font(.caption).foregroundStyle(.secondary)
+
+                if let s = model.scores {
+                    card(title: "Memory", question: "Can you recall a fact right now?") {
+                        if s.memory.status == "shown" {
+                            reading("\(s.memory.point ?? 0)%",
+                                    "range \(s.memory.low ?? 0)-\(s.memory.high ?? 0)% \u{00b7} \(s.memory.reviews) reviews")
+                            if let ece = s.memory.ece, let cal = s.memory.calibrated {
+                                Text("\(cal ? "calibrated" : "drift") \u{00b7} ECE \(String(format: "%.3f", ece))")
+                                    .font(.caption).foregroundStyle(cal ? .green : .orange)
+                            }
+                        } else {
+                            abstain(s.memory.reason ?? "Not enough data")
+                        }
+                    }
+                    card(title: "Performance", question: "Can you answer a new exam-style question?") {
+                        if s.performance.status == "shown" {
+                            reading("\(s.performance.point ?? 0)%",
+                                    "range \(s.performance.low ?? 0)-\(s.performance.high ?? 0)% \u{00b7} \(s.performance.attempts) new-question attempts")
+                            if let e = s.performance.eval {
+                                Text("held-out: model \(String(format: "%.3f", e.model_brier)) vs baseline \(String(format: "%.3f", e.baseline_brier)) - \(e.beats_baseline ? "beats baseline" : "not yet beating baseline")")
+                                    .font(.caption2).foregroundStyle(.secondary)
+                            }
+                        } else {
+                            abstain(s.performance.reason ?? "Not enough data")
+                        }
+                    }
+                    card(title: "Readiness", question: "What score would you get today?") {
+                        if s.readiness.status == "shown" {
+                            reading("Q\(s.readiness.point ?? 0)",
+                                    "range Q\(s.readiness.low ?? 0)-Q\(s.readiness.high ?? 0) \u{00b7} \(s.readiness.confidence ?? "") confidence")
+                            if let m = s.readiness.method {
+                                Text(m).font(.caption2).foregroundStyle(.secondary)
+                            }
+                            if let t = s.readiness.total_reason {
+                                Text("Total: \(t)").font(.caption2).foregroundStyle(.secondary)
+                            }
+                        } else {
+                            abstain(s.readiness.reason ?? "Not enough data")
+                            if let unmet = s.readiness.unmet {
+                                ForEach(unmet, id: \.self) { u in
+                                    Text("- \(u)").font(.caption2).foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                    }
+                    Text("Coverage: \(s.topics_covered)/\(s.topics_total) Quant topics")
+                        .font(.caption).foregroundStyle(.secondary)
+                } else {
+                    Text("Loading scores...").foregroundStyle(.secondary)
+                }
+            }
+            .padding()
+        }
+        .onAppear { model.loadScores() }
+    }
+
+    private func card<Content: View>(title: String, question: String,
+                                     @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title.uppercased()).font(.caption2).foregroundStyle(.secondary)
+            Text(question).font(.subheadline).bold()
+            content()
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    private func reading(_ big: String, _ sub: String) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(big).font(.system(size: 34, weight: .bold, design: .monospaced))
+            Text(sub).font(.caption).foregroundStyle(.secondary)
+        }
+    }
+
+    private func abstain(_ text: String) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text("- \u{00b7} -").font(.system(.title3, design: .monospaced)).foregroundStyle(.secondary)
+            Text("Not enough data").font(.subheadline).bold().foregroundStyle(.secondary)
+            Text(text).font(.caption).foregroundStyle(.secondary)
+        }
     }
 }

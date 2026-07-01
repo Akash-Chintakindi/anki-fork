@@ -220,3 +220,21 @@ pub unsafe extern "C" fn gmatwiz_collection_answer(
         Err(_) => 1,
     }
 }
+
+/// The three honest scores (Memory / Performance / Readiness) as a JSON string.
+/// Free with `gmatwiz_string_free`. Returns null on error.
+///
+/// # Safety
+/// `handle` must be valid.
+#[no_mangle]
+pub unsafe extern "C" fn gmatwiz_collection_scores(
+    handle: *mut GmatCollection,
+) -> *mut c_char {
+    if handle.is_null() {
+        return ptr::null_mut();
+    }
+    match (*handle).col.gmat_scores_json() {
+        Ok(s) => to_c_string(s),
+        Err(_) => ptr::null_mut(),
+    }
+}

@@ -40,6 +40,75 @@ struct GmatReviewState: Decodable {
     let card: GmatCard?
 }
 
+// --- Dashboard scores (Memory / Performance / Readiness), computed in-engine ---
+
+struct CalibrationBin: Decodable {
+    let label: String
+    let observed: Double
+    let n: Int
+}
+
+struct MemoryScore: Decodable {
+    let status: String
+    let point: Int?
+    let low: Int?
+    let high: Int?
+    let reviews: Int
+    let reviews_required: Int?
+    let reason: String?
+    let target: Int?
+    let ece: Double?
+    let calibrated: Bool?
+    let bins: [CalibrationBin]?
+}
+
+struct PerfEval: Decodable {
+    let baseline_brier: Double
+    let model_brier: Double
+    let beats_baseline: Bool
+    let test_n: Int
+}
+
+struct WeakTopic: Decodable {
+    let topic: String
+    let accuracy: Double
+    let n: Int
+}
+
+struct PerformanceScore: Decodable {
+    let status: String
+    let point: Int?
+    let low: Int?
+    let high: Int?
+    let attempts: Int
+    let attempts_required: Int?
+    let reason: String?
+    let weak_topics: [WeakTopic]?
+    let eval: PerfEval?
+}
+
+struct ReadinessScore: Decodable {
+    let status: String
+    let section: String?
+    let point: Int?
+    let low: Int?
+    let high: Int?
+    let scale: String?
+    let confidence: String?
+    let method: String?
+    let total_reason: String?
+    let unmet: [String]?
+    let reason: String?
+}
+
+struct GmatScores: Decodable {
+    let memory: MemoryScore
+    let performance: PerformanceScore
+    let readiness: ReadinessScore
+    let topics_covered: Int
+    let topics_total: Int
+}
+
 enum GmatwizEngine {
     /// Smoke-test greeting proving the engine is linked.
     static func hello() -> String {
@@ -113,5 +182,13 @@ enum GmatwizEngine {
         correct: Bool
     ) -> Bool {
         return gmatwiz_collection_answer(collection.ptr, cardId, correct) == 0
+    }
+
+    /// The three honest scores computed in the shared engine (same logic as desktop).
+    static func scores(_ collection: GmatCollectionHandle) -> GmatScores? {
+        guard let c = gmatwiz_collection_scores(collection.ptr) else { return nil }
+        defer { gmatwiz_string_free(c) }
+        guard let data = String(cString: c).data(using: .utf8) else { return nil }
+        return try? JSONDecoder().decode(GmatScores.self, from: data)
     }
 }
