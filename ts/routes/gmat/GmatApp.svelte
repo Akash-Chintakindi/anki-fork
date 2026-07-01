@@ -53,6 +53,7 @@ chrome77/es2020 webview.
         syncNow,
         renderMath,
     } from "./api";
+    import { authEnabled, onUser, signIn, signUp, signOutUser, type AuthUser } from "./auth";
 
     export let overview: GmatOverview;
 
@@ -73,6 +74,36 @@ chrome77/es2020 webview.
     let stats: GmatStats | null = null;
     let syncing = false;
     let syncMsg = "";
+
+    // ---- auth (Firebase; dormant until firebaseConfig has a real apiKey) ----
+    let authUser: AuthUser | null = null;
+    let authReady = !authEnabled; // when disabled: ready, no gate
+    let authMode: "signin" | "signup" = "signin";
+    let authEmail = "";
+    let authPassword = "";
+    let authError = "";
+    let authBusy = false;
+
+    async function submitAuth(): Promise<void> {
+        if (authBusy || !authEmail || !authPassword) return;
+        authError = "";
+        authBusy = true;
+        try {
+            if (authMode === "signin") {
+                await signIn(authEmail, authPassword);
+            } else {
+                await signUp(authEmail, authPassword);
+            }
+            authPassword = "";
+        } catch (e) {
+            authError = (e as Error).message;
+        }
+        authBusy = false;
+    }
+
+    async function doSignOut(): Promise<void> {
+        await signOutUser();
+    }
 
     // Ambient "spellfall": GMAT math glyphs drifting behind the app (the
     // subject's own vernacular as magic), plus soft floating gold orbs.
@@ -681,10 +712,15 @@ chrome77/es2020 webview.
     }
 
     onMount(() => {
+        const unsub = onUser((u) => {
+            authUser = u;
+            authReady = true;
+        });
         if (overview.plan) {
             fetchLessonsIndex().then((r) => (lessonTopics = r.topics));
             fetchToday().then((t) => (today = t));
         }
+        return unsub;
     });
 </script>
 
@@ -706,6 +742,77 @@ chrome77/es2020 webview.
             >{g.ch}</span>
         {/each}
     </div>
+    {#if authEnabled && !authUser}
+        {#if !authReady}
+            <main class="col"><p class="lede">Loading…</p></main>
+        {:else}
+            <main class="col auth-screen">
+                <div class="auth-brand">
+                    <svg class="sigil sigil-lg" viewBox="0 0 48 48" aria-hidden="true">
+                        <ellipse class="hat-brim" cx="24" cy="39" rx="18" ry="4.6" />
+                        <path
+                            class="hat-cone"
+                            d="M24 6 C 22.4 6 21.4 7.3 21 9 L 14.6 38 L 33.4 38 L 27 9 C 26.6 7.3 25.6 6 24 6 Z"
+                        />
+                        <path class="hat-band" d="M15.6 33 L 32.4 33 L 33.2 37.6 L 14.8 37.6 Z" />
+                        <path
+                            class="hat-star"
+                            d="M24 13 l1.3 3.2 3.4 .3 -2.6 2.3 .8 3.4 -2.9-1.8 -2.9 1.8 .8-3.4 -2.6-2.3 3.4-.3 Z"
+                        />
+                    </svg>
+                    <span class="wordmark">
+                        <span class="wm-gmat">GMAT</span><span class="wm-wiz">Wiz</span>
+                    </span>
+                </div>
+                <p class="lede auth-lede">
+                    Sign in to sync your plan, progress, and reviews across every device.
+                </p>
+                <section class="action-card auth-card">
+                    <div class="auth-tabs">
+                        <button
+                            class:active={authMode === "signin"}
+                            on:click={() => {
+                                authMode = "signin";
+                                authError = "";
+                            }}>Sign in</button
+                        >
+                        <button
+                            class:active={authMode === "signup"}
+                            on:click={() => {
+                                authMode = "signup";
+                                authError = "";
+                            }}>Create account</button
+                        >
+                    </div>
+                    <label class="field">
+                        <span class="field-label">Email</span>
+                        <input type="email" autocomplete="email" bind:value={authEmail} />
+                    </label>
+                    <label class="field">
+                        <span class="field-label">Password</span>
+                        <input
+                            type="password"
+                            autocomplete={authMode === "signin" ? "current-password" : "new-password"}
+                            bind:value={authPassword}
+                            on:keydown={(e) => e.key === "Enter" && submitAuth()}
+                        />
+                    </label>
+                    {#if authError}<p class="warn-text">{authError}</p>{/if}
+                    <button
+                        class="primary"
+                        disabled={authBusy || !authEmail || !authPassword}
+                        on:click={submitAuth}
+                    >
+                        {authBusy
+                            ? "Please wait…"
+                            : authMode === "signin"
+                              ? "Sign in"
+                              : "Create account"}
+                    </button>
+                </section>
+            </main>
+        {/if}
+    {:else}
     <header class="topbar">
         <div class="brand">
             <svg class="sigil" viewBox="0 0 48 48" aria-hidden="true">
@@ -742,6 +849,11 @@ chrome77/es2020 webview.
             <button class="nav-util" disabled={syncing} on:click={runSync} title="Sync with your other devices">
                 {syncing ? "Syncing…" : "Sync"}
             </button>
+            {#if authEnabled && authUser}
+                <button class="nav-util" on:click={doSignOut} title={authUser.email ?? "Sign out"}>
+                    Sign out
+                </button>
+            {/if}
         </nav>
     </header>
 
@@ -1828,6 +1940,7 @@ chrome77/es2020 webview.
             {/if}
         </main>
     {/if}
+    {/if}
 </div>
 
 <style>
@@ -2020,6 +2133,58 @@ chrome77/es2020 webview.
         margin-left: 6px;
         transform: rotate(-5deg);
         text-shadow: var(--glow);
+    }
+
+    /* sign-in gate */
+    .auth-screen {
+        max-width: 440px;
+    }
+    .auth-brand {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        margin: 48px 0 6px;
+    }
+    .sigil-lg {
+        width: 56px;
+        height: 56px;
+    }
+    .auth-brand .wm-gmat {
+        font-size: 28px;
+    }
+    .auth-brand .wm-wiz {
+        font-size: 40px;
+    }
+    .auth-lede {
+        text-align: center;
+        margin-bottom: 24px;
+    }
+    .auth-card {
+        margin-bottom: 0;
+    }
+    .auth-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+    .auth-tabs button {
+        appearance: none;
+        flex: 1;
+        background: none;
+        border: 1px solid var(--line-strong);
+        color: var(--ink-soft);
+        font-family: var(--ui);
+        font-size: 14px;
+        font-weight: 600;
+        padding: 9px 12px;
+        border-radius: 9px;
+        cursor: pointer;
+    }
+    .auth-tabs button.active {
+        border-color: var(--gold-ink);
+        color: var(--gold);
+        background: var(--brass-tint);
     }
     .nav {
         display: flex;
