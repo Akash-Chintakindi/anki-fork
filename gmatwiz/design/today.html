@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GMATWiz — Today</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="shell">
+
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <span class="brand__mark" aria-hidden="true"></span>
+      <span class="brand__name">GMATWiz</span>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a class="nav__link is-current" href="today.html">Today</a>
+      <a class="nav__link" href="lesson.html">Lesson</a>
+      <a class="nav__link" href="review.html">Review</a>
+      <a class="nav__link" href="error-log.html">Error log</a>
+      <a class="nav__link" href="dashboard.html">Dashboard</a>
+    </nav>
+    <div class="topbar__aside">
+      <a class="glance" href="dashboard.html"><span class="glance__dot" aria-hidden="true"></span>Readiness &mdash; not enough data</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="col stack-6">
+
+      <div class="stack-2">
+        <p class="eyebrow eyebrow--tick">Tuesday &middot; 11 weeks to exam</p>
+        <h1 class="display voice">One thing first.</h1>
+      </div>
+
+      <!-- THE SINGLE NEXT ACTION — the hero. Everything else stays quiet. -->
+      <section class="panel panel--feature stack-5" aria-labelledby="focus-h">
+        <div class="row" style="grid-template-columns: 1fr auto; grid-auto-flow: initial; justify-content: space-between;">
+          <p class="eyebrow">Today&rsquo;s focus</p>
+          <span class="tag tag--topic">Algebra &middot; Quadratics</span>
+        </div>
+
+        <div class="stack-2">
+          <h2 id="focus-h" class="h2 voice">Guided practice &mdash; we do</h2>
+          <p class="lead muted">Six scaffolded quadratics, with feedback after each. ~12 minutes.</p>
+        </div>
+
+        <div class="because">
+          <span class="because__tick" aria-hidden="true"></span>
+          <p>
+            <b class="measure-num">Why this:</b> quadratics is your lowest-mastery topic with
+            reviews coming due, and you cleared the worked example yesterday. Next stop after
+            this: independent practice.
+          </p>
+        </div>
+
+        <div class="phases" aria-label="Lesson stage">
+          <div class="phase is-done"><span class="phase__tick">&check; I do</span><span class="phase__sub">Worked example</span></div>
+          <div class="phase is-active"><span class="phase__tick">&rarr; We do</span><span class="phase__name">Guided</span></div>
+          <div class="phase is-upcoming"><span class="phase__tick">You do</span><span class="phase__sub">Independent, timed</span></div>
+        </div>
+
+        <div class="row row--wrap" style="margin-top: var(--s2);">
+          <a class="btn btn--primary btn--lg" href="lesson.html">Begin guided practice</a>
+          <a class="btn btn--quiet" href="lesson.html">Preview the topic</a>
+        </div>
+      </section>
+
+      <!-- BYPASSABLE DAILY GOAL — anti-grind: no streaks, easy to set aside -->
+      <section class="panel stack-3" aria-labelledby="goal-h">
+        <div class="row" style="grid-template-columns: 1fr auto; grid-auto-flow: initial; justify-content: space-between;">
+          <p class="eyebrow" id="goal-h">Today&rsquo;s rhythm</p>
+          <button class="link link--quiet" type="button">Short on time? Set today aside</button>
+        </div>
+        <div class="meter">
+          <div class="meter__ticks" aria-hidden="true">
+            <span class="tick is-done"></span><span class="tick is-done"></span><span class="tick is-done"></span>
+            <span class="tick is-done"></span><span class="tick is-done"></span><span class="tick is-done"></span>
+            <span class="tick is-now"></span><span class="tick"></span><span class="tick"></span>
+            <span class="tick"></span><span class="tick"></span><span class="tick"></span>
+            <span class="tick"></span><span class="tick"></span><span class="tick"></span>
+            <span class="tick"></span><span class="tick"></span><span class="tick"></span>
+          </div>
+          <p class="meter__label"><span class="num">6</span> of <span class="num">18</span> reviews done today. Stop whenever &mdash; your plan adjusts, nothing breaks a streak, because there isn&rsquo;t one.</p>
+        </div>
+      </section>
+
+      <!-- SECONDARY — quiet, scannable, never naggy -->
+      <div class="grid-2">
+        <a class="panel stack-3" href="review.html" style="color: var(--ink);">
+          <p class="eyebrow eyebrow--tick">Due reviews</p>
+          <p class="measure__readout" style="margin: 0;"><span class="num">12</span></p>
+          <p class="small muted">Spaced recall, ordered to surface weak topics first. ~6 min.</p>
+        </a>
+        <a class="panel stack-3" href="error-log.html" style="color: var(--ink);">
+          <div class="row" style="grid-template-columns: 1fr auto; grid-auto-flow: initial; justify-content: space-between;">
+            <p class="eyebrow eyebrow--tick">Error log</p>
+            <span class="res res--wrong">3 to review</span>
+          </div>
+          <p class="small muted" style="margin-top: var(--s2);">Three misses are waiting to become practice. A quick &ldquo;why&rdquo; on each unlocks the repair.</p>
+        </a>
+      </div>
+
+      <!-- GENTLE PROGRESS — light "levels", no guilt, no flames -->
+      <section class="panel panel--sunk stack-3">
+        <p class="eyebrow eyebrow--tick">Quiet progress</p>
+        <div class="row row--wrap">
+          <span class="tag">Arithmetic &middot; maintaining</span>
+          <span class="tag tag--topic">Algebra &middot; building</span>
+          <span class="tag">Word problems &middot; not started</span>
+        </div>
+        <p class="caption">Levels move when your <em>application</em> accuracy holds across spaced sessions &mdash; not when you log hours.</p>
+      </section>
+
+    </div>
+  </main>
+</div>
+</body>
+</html>

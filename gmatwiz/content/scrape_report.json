@@ -1,0 +1,82 @@
+{
+  "generated_at": "2026-06-30T20:09:09+00:00",
+  "user_agent": "GMATWiz-ContentBot/0.1 (+educational GMAT prep; respects robots.txt; contact: gmatwiz-content@example.invalid)",
+  "http_client": "urllib",
+  "totals": {
+    "normalized_before_dedupe": 231,
+    "kept_after_dedupe": 231,
+    "removed_dupes": 0
+  },
+  "per_source": [
+    {
+      "source": "gmatclub",
+      "site": "https://gmatclub.com",
+      "entrypoint": "https://gmatclub.com/forum/problem-solving-ps-140/",
+      "license_policy": "scraped-unverified (forum content, copyright retained by authors)",
+      "robots_allowed": false,
+      "robots_excerpt": "(robots.txt returned 403; treated as Disallow: /)",
+      "http_status": null,
+      "raw_items_found": 0,
+      "normalized": 0,
+      "dropped": {},
+      "blocked": true,
+      "notes": [
+        "robots.txt disallows this path for our user-agent; skipped (respecting robots)."
+      ]
+    },
+    {
+      "source": "reddit",
+      "site": "https://www.reddit.com/r/GMAT",
+      "entrypoint": "https://www.reddit.com/r/GMAT/search.json?q=problem+solving&restrict_sr=1&limit=100",
+      "license_policy": "scraped-unverified (user posts, copyright retained by authors)",
+      "robots_allowed": false,
+      "robots_excerpt": "# Welcome to Reddit's robots.txt\n# Reddit believes in an open internet, but not the misuse of public content.\n# See https://support.reddithelp.com/hc/en-us/articles/26410290525844-Public-Content-Policy Reddit's Public Content Policy for access and use restrictions to Reddit content.\n# See https://www.reddit.com/r/reddit4researchers/ for details on how Reddit continues to support research and non-commercial use.\n# policy: https://support.reddithelp.com/hc/en-us/articles/26410290525844-Public-Cont",
+      "http_status": null,
+      "raw_items_found": 0,
+      "normalized": 0,
+      "dropped": {},
+      "blocked": true,
+      "notes": [
+        "reddit.com/robots.txt disallows automated crawling for our user-agent; skipped (respecting robots)."
+      ]
+    },
+    {
+      "source": "aqua_rat",
+      "site": "https://github.com/google-deepmind/AQuA",
+      "entrypoint": "https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license_policy": "Apache-2.0 (verified open dataset; redistributable with attribution)",
+      "robots_allowed": true,
+      "robots_excerpt": "(no usable robots.txt; status=400)",
+      "http_status": 200,
+      "raw_items_found": 254,
+      "normalized": 231,
+      "dropped": {
+        "out_of_scope:geometry": 16,
+        "duplicate_options": 7
+      },
+      "blocked": false,
+      "notes": [
+        "AQuA-RAT (Ling et al., 2017), Apache-2.0. GMAT/GRE-style PS word problems; geometry & data-sufficiency items filtered out per PRD scope."
+      ]
+    }
+  ],
+  "topic_counts": {
+    "gmat::quant::arithmetic::number_properties": 100,
+    "gmat::quant::arithmetic::percents": 41,
+    "gmat::quant::arithmetic::ratios_proportions": 5,
+    "gmat::quant::arithmetic::exponents_roots": 1,
+    "gmat::quant::arithmetic::statistics": 7,
+    "gmat::quant::arithmetic::sets": 2,
+    "gmat::quant::arithmetic::counting": 12,
+    "gmat::quant::arithmetic::probability": 7,
+    "gmat::quant::algebra::quadratics": 4,
+    "gmat::quant::algebra::inequalities": 1,
+    "gmat::quant::algebra::word_problems": 51
+  },
+  "raw_files_written": [
+    "/Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork/gmatwiz/content/raw/gmatclub__robots__20260630T200907Z.txt",
+    "/Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork/gmatwiz/content/raw/reddit__robots__20260630T200907Z.txt",
+    "/Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork/gmatwiz/content/raw/aqua_rat__dataset__20260630T200908Z.jsonl"
+  ],
+  "output_file": "/Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork/gmatwiz/content/questions.json"
+}

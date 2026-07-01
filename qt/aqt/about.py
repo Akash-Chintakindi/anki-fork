@@ -70,6 +70,13 @@ def show(mw: aqt.AnkiQt) -> QDialog:
     abouttext += f"<p>{lede}"
     abouttext += f"<p>{tr.about_anki_is_licensed_under_the_agpl3()}"
     abouttext += f"<p>{tr.about_version(val=version_with_build())}<br>"
+    # GMATWiz gating-milestone proof: value comes from our new Rust backend RPC.
+    try:
+        _gmatwiz_status = mw.col._backend.gmatwiz_hello()
+        _gmatwiz_status = getattr(_gmatwiz_status, "val", _gmatwiz_status)
+    except Exception as _gmatwiz_exc:
+        _gmatwiz_status = f"unavailable ({_gmatwiz_exc})"
+    abouttext += f"GMATWiz: {_gmatwiz_status}<br>"
     abouttext += ("Python %s Qt %s Chromium %s<br>") % (
         platform.python_version(),
         qVersion(),

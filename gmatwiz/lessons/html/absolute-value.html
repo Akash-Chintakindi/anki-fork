@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Absolute Value &middot; GMATWiz Quant</title>
+<style>
+:root{
+  --ink:#1a1813; --muted:#6b6358; --rule:#d9d2c5; --bg:#fbf9f4; --card:#fffdf8;
+  --accent:#7a3b2e; --accent2:#3a5a40; --link:#7a3b2e; --code:#2b2b2b;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:3rem 2rem 6rem;}
+.content{max-width:720px;}
+header.masthead{border-bottom:1px solid var(--rule); padding-bottom:1.2rem; margin-bottom:2rem;}
+.kicker{font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:0 0 .4rem;}
+h1{font-size:2.3rem; line-height:1.1; margin:.1rem 0 .6rem; font-weight:600; letter-spacing:-.01em;}
+.meta{color:var(--muted); font-size:.9rem; margin:0;}
+.meta b{color:var(--ink); font-weight:600;}
+h2{font-size:1.45rem; margin:2.8rem 0 .3rem; font-weight:600; letter-spacing:-.01em;}
+h2 .num{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:.5rem;}
+h3{font-size:1.06rem; margin:1.6rem 0 .4rem; font-weight:600;}
+.sub{color:var(--muted); font-style:italic; margin:.1rem 0 1rem; font-size:.95rem;}
+p{margin:.6rem 0;} ul,ol{margin:.5rem 0 .9rem; padding-left:1.3rem;} li{margin:.25rem 0;}
+a{color:var(--link); text-decoration:none; border-bottom:1px solid rgba(122,59,46,.35);}
+a:hover{border-bottom-color:var(--link);}
+.lead{font-size:1.08rem;}
+section{position:relative;}
+.note{font-size:.8rem; color:var(--muted); line-height:1.4;}
+.objectives{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1rem 1.2rem;}
+.objectives ul{margin:.3rem 0 0;}
+.intent{border-left:3px solid var(--accent2); padding:.4rem 0 .4rem 1rem; margin:1rem 0; font-size:1.05rem;}
+.donow{background:#2b2620; color:#f3ecde; border-radius:8px; padding:1.1rem 1.3rem; margin:1rem 0;}
+.donow .tag{font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:#d8b48a;}
+.donow ol{padding-left:1.2rem;} .donow li{margin:.4rem 0;}
+.donow .ans{color:#b9c6a9; font-style:italic; font-size:.86rem; display:block; margin-top:.15rem;}
+table{border-collapse:collapse; width:100%; font-size:.92rem; margin:.6rem 0 1rem;}
+th,td{text-align:left; padding:.45rem .6rem; border-bottom:1px solid var(--rule); vertical-align:top;}
+th{font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+td.t{white-space:nowrap; color:var(--accent); font-variant-numeric:tabular-nums; width:6.5rem;}
+.q{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1.1rem 1.3rem; margin:1.1rem 0;}
+.q .qid{font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+.q .qid .diff{float:right; color:var(--accent2);}
+.q .stem{font-size:1.03rem; margin:.35rem 0 .6rem;}
+.choices{list-style:none; padding:0; margin:.2rem 0 .4rem; counter-reset:c;}
+.choices li{padding:.32rem .6rem; border:1px solid var(--rule); border-radius:6px; margin:.3rem 0; background:#fff;}
+.choices li .lab{display:inline-block; width:1.5rem; font-weight:600; color:var(--accent);}
+.choices li.correct{border-color:var(--accent2); background:#eef3ec;}
+.choices li.correct .lab{color:var(--accent2);}
+details{margin:.5rem 0 .2rem; border-top:1px dashed var(--rule); padding-top:.5rem;}
+details>summary{cursor:pointer; font-size:.86rem; color:var(--accent); font-weight:600; list-style:none;}
+details>summary::-webkit-details-marker{display:none;}
+details>summary::before{content:"\25B8  "; color:var(--accent);}
+details[open]>summary::before{content:"\25BE  ";}
+.expl{font-size:.95rem; margin-top:.5rem;}
+.hints{font-size:.92rem;} .hints li{margin:.2rem 0;}
+.feedback{font-size:.9rem;} .feedback .ok{color:var(--accent2);} .feedback .no{color:var(--accent);}
+.appfirst{font-size:.78rem; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin:.2rem 0;}
+.mastery{background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--accent2); border-radius:8px; padding:1rem 1.2rem;}
+.pill{display:inline-block; font-size:.72rem; padding:.12rem .5rem; border:1px solid var(--rule); border-radius:999px; color:var(--muted); margin:.1rem .2rem .1rem 0;}
+footer{margin-top:3.5rem; border-top:1px solid var(--rule); padding-top:1rem; color:var(--muted); font-size:.82rem;}
+.src{background:#eef3ec; border:1px solid #cfe0cf; border-radius:8px; padding:.9rem 1.1rem; margin:1.2rem 0;}
+.src .tag{font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent2); font-weight:600;}
+.crumbs{font-size:.85rem; margin-bottom:1.2rem;}
+.ask{font-size:.9rem; background:#fff8ec; border:1px dashed #e0c590; border-radius:8px; padding:.7rem 1rem; margin:1.4rem 0;}
+@media print{ body{background:#fff} .wrap{padding:0} a{border:none} .donow{-webkit-print-color-adjust:exact; print-color-adjust:exact} }
+</style></head>
+<body><div class="wrap"><div class="content">
+  <div class="crumbs"><a href="index.html">&larr; All Quant topics</a> &middot; Algebra</div>
+  <header class="masthead">
+    <p class="kicker">GMATWiz &middot; GMAT Focus Edition &middot; Quantitative Reasoning (Problem Solving)</p>
+    <h1>Absolute Value</h1>
+    <p class="meta"><b>Topic id</b> <code>gmat::quant::algebra::absolute_value</code> &middot; <b>Domain</b> Algebra
+      &middot; <b>Prereqs</b> inequalities, the number line &middot; <b>~22 min</b></p>
+  </header>
+
+  <div class="objectives">
+    <p class="note"><b>Learning objectives</b></p>
+    <ul><li>Interpret |x| as distance from zero (always ≥ 0).</li><li>Solve |A| = c by splitting into A = c and A = −c.</li><li>Solve |A| &lt; c as a band (−c &lt; A &lt; c) and |A| &gt; c as two rays.</li><li>Count integer solutions of absolute-value inequalities.</li></ul>
+    <p class="note">Model: I do → we do → you do &middot; application-first (explanations revealed after an attempt) &middot; Rosenshine (daily review), Archer (I-do/we-do/you-do), SPOV2 application-first.</p>
+  </div>
+
+  
+    <section>
+      <h2><span class="num">1</span>Opening &mdash; retrieval &amp; bridge</h2>
+      <p class="sub">Builds on: The number line and solving equations/inequalities.</p>
+      <div class="donow">
+        <div class="tag">Do Now &middot; from memory, no notes</div>
+        <p>From memory, no calculator. 4 minutes.</p>
+        <ol><li>Compute |−7|.<span class="ans">7.</span></li><li>Compute |3 − 10|.<span class="ans">7.</span></li><li>Solve |x| = 5.<span class="ans">x = 5 or x = −5.</span></li><li>Can |x| ever be negative?<span class="ans">No — it&#x27;s a distance, so it&#x27;s ≥ 0.</span></li><li>Why does |x| = 5 have two solutions?<span class="ans">Both 5 and −5 are distance 5 from 0.</span></li></ol>
+      </div>
+      <p class="note"><b>Retrieval starter (5 min).</b> Retrieves the distance meaning of |x| and the two-solution idea, which generalize into the two-case method for equations and inequalities today.
+      <br><b>If students struggle:</b> If two cases feel arbitrary, mark 5 and −5 on a number line and note both sit 5 units from 0.</p>
+      <h3>Prior-knowledge bridge</h3>
+      <p>Absolute value is distance from zero — that single idea (Q5) explains everything today. &#x27;= c&#x27; means two points (c and −c); &#x27;&lt; c&#x27; means everything within c of zero (a band); &#x27;&gt; c&#x27; means everything farther than c (two outward rays). You&#x27;ll turn each into the plain equations and inequalities you already solve.</p>
+      <h3>Learning intention</h3>
+      <p class="intent">By the end you can solve absolute-value equations with two cases and absolute-value inequalities as bands or two rays.</p>
+      <p class="note"><b>You'll know you've got it when:</b></p>
+      <ul><li>I can split |A| = c into A = c and A = −c.</li><li>I can rewrite |A| &lt; c as −c &lt; A &lt; c.</li><li>I can rewrite |A| &gt; c as A &gt; c or A &lt; −c.</li></ul>
+      <details><summary>Complete timed opening script</summary>
+        <table><thead><tr><th>Time</th><th>Move</th></tr></thead><tbody><tr><td class="t">0:00–4:00</td><td>Do Now; silent retrieval.</td></tr><tr><td class="t">4:00–6:00</td><td>Check; place ±5 on a number line for Q5.</td></tr><tr><td class="t">6:00–8:00</td><td>Bridge: distance → equation two cases and inequality band/rays.</td></tr><tr><td class="t">8:00–9:00</td><td>Learning intention + success criteria.</td></tr><tr><td class="t">9:00–10:00</td><td>I do: solve |2x − 3| = 7.</td></tr></tbody></table>
+      </details>
+    </section>
+
+  <section>
+    <h2><span class="num">2</span>I do &mdash; worked example</h2>
+    <p class="sub">Watch the reasoning modeled end to end before you try.</p>
+    
+    <div class="q">
+      <div class="qid">I DO &middot; worked example<span class="diff">medium</span></div>
+      <div class="stem">Solve for x: |2x − 3| = 7.</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>x = 5 or x = −2</li><li><span class="lab">B</span>x = 5 or x = 2</li><li><span class="lab">C</span>x = −5 or x = 2</li><li><span class="lab">D</span>x = 5</li><li><span class="lab">E</span>x = 2 or x = −2</li></ul>
+      <h3>Think-aloud</h3>
+      <ol><li>|something| = 7 means that something is 7 or −7.</li><li>Case 1: 2x − 3 = 7 → 2x = 10 → x = 5.</li><li>Case 2: 2x − 3 = −7 → 2x = −4 → x = −2.</li><li>Two solutions: x = 5 and x = −2.</li></ol>
+      <p class="expl"><b>Correct: A.</b> The inside is 7 or −7. Case 1: 2x − 3 = 7 → x = 5. Case 2: 2x − 3 = −7 → x = −2.</p>
+      <p class="note"><b>Takeaway.</b> |A| = c (with c ≥ 0) always splits into A = c or A = −c — two cases.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>We do &mdash; guided practice</h2>
+    <p class="sub">Scaffolds and immediate feedback are one click away. Fade them as you gain confidence.</p>
+    
+    <div class="q">
+      <div class="qid">we_1 &middot; we do (guided)<span class="diff">easy</span></div>
+      <div class="stem">Solve: |x + 4| = 9.</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>x = 5 or −13</li><li><span class="lab">B</span>x = 5 or 13</li><li><span class="lab">C</span>x = −5 or 13</li><li><span class="lab">D</span>x = 5</li><li><span class="lab">E</span>x = −13</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>The inside equals 9 or −9.</li><li>x + 4 = 9 → x = 5.</li><li>x + 4 = −9 → x = −13.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Right — x = 5 or −13.<br>
+        <span class="no">If incorrect:</span> Don&#x27;t forget the negative case: x + 4 = −9 gives x = −13.</p>
+        <p class="expl"><b>Answer: A.</b> x + 4 = 9 → x = 5; or x + 4 = −9 → x = −13.</p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">we_2 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">Solve: |x| &lt; 3.</div>
+      <ul class="choices"><li><span class="lab">A</span>x &lt; 3</li><li><span class="lab">B</span>x &gt; 3</li><li class="correct"><span class="lab">C</span>−3 &lt; x &lt; 3</li><li><span class="lab">D</span>x &lt; −3 or x &gt; 3</li><li><span class="lab">E</span>x ≤ 3</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>|x| &lt; 3 means x is within 3 units of zero.</li><li>That&#x27;s an interval around 0.</li><li>−3 &lt; x &lt; 3.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Yes — the band −3 &lt; x &lt; 3.<br>
+        <span class="no">If incorrect:</span> &#x27;Less than&#x27; makes a single band between −c and c, not two separate rays.</p>
+        <p class="expl"><b>Answer: C.</b> Distance from 0 less than 3 means x is between −3 and 3: −3 &lt; x &lt; 3.</p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>You do &mdash; independent application</h2>
+    <p class="sub">Application-first (SPOV2): commit to an answer, then reveal the explanation. Log every miss.</p>
+    
+    <div class="q">
+      <div class="qid">you_1 &middot; you do (independent) &middot; target 60s<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Solve: |3x| = 12.</div>
+      <ul class="choices"><li><span class="lab">A</span>x = 4</li><li class="correct"><span class="lab">B</span>x = 4 or −4</li><li><span class="lab">C</span>x = 36 or −36</li><li><span class="lab">D</span>x = 12 or −12</li><li><span class="lab">E</span>x = 3 or −3</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: B.</b> 3x = 12 or 3x = −12 → x = 4 or x = −4.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_2 &middot; you do (independent) &middot; target 75s<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">How many integer solutions does |x| &lt; 4 have?</div>
+      <ul class="choices"><li><span class="lab">A</span>3</li><li><span class="lab">B</span>4</li><li><span class="lab">C</span>6</li><li class="correct"><span class="lab">D</span>7</li><li><span class="lab">E</span>8</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: D.</b> −4 &lt; x &lt; 4 gives integers −3, −2, −1, 0, 1, 2, 3 → 7 values.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_3 &middot; you do (independent) &middot; target 90s<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Solve: |x − 5| &gt; 2.</div>
+      <ul class="choices"><li><span class="lab">A</span>3 &lt; x &lt; 7</li><li class="correct"><span class="lab">B</span>x &gt; 7 or x &lt; 3</li><li><span class="lab">C</span>x &gt; 3</li><li><span class="lab">D</span>x &lt; 7</li><li><span class="lab">E</span>x &gt; 7 or x &lt; −3</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: B.</b> x − 5 &gt; 2 (x &gt; 7) or x − 5 &lt; −2 (x &lt; 3).</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_4 &middot; you do (independent) &middot; target 105s<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Solve: |2x + 1| ≤ 5.</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>−3 ≤ x ≤ 2</li><li><span class="lab">B</span>−2 ≤ x ≤ 3</li><li><span class="lab">C</span>x ≤ 2</li><li><span class="lab">D</span>−3 ≤ x ≤ 3</li><li><span class="lab">E</span>x ≥ −3</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> −5 ≤ 2x + 1 ≤ 5 → −6 ≤ 2x ≤ 4 → −3 ≤ x ≤ 2.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+  </section>
+
+  
+    <section>
+      <h2><span class="num">5</span>Mastery check</h2>
+      <div class="mastery">
+        <p>A topic is mastered at &gt;=85% correct on new/held-out-style questions across &gt;=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.</p>
+        <p class="note"><b>Threshold</b> 0.85 &middot; <b>spaced sessions</b> &ge; 2</p>
+        <ul><li>&gt;=85% correct on new/held-out-style items (not flashcard recall) per session</li><li>sustained across &gt;=2 spaced sessions with a delay between them</li><li>per-topic memory surfaced only after &gt;=20 graded reviews (PRD give-up rule)</li><li>per-topic performance surfaced only after &gt;=8 application attempts (PRD give-up rule)</li></ul>
+        <p class="note"><b>If not yet mastered:</b> Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -&gt; you-do loop before re-testing.</p>
+      </div>
+      <h3>Sample held-out check items</h3>
+    <div class="q">
+      <div class="qid">mc_1 &middot; held-out check<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Solve: |x − 2| = 6.</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>x = 8 or −4</li><li><span class="lab">B</span>x = 8 or 4</li><li><span class="lab">C</span>x = −8 or 4</li><li><span class="lab">D</span>x = 8</li><li><span class="lab">E</span>x = 4 or −4</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> x − 2 = 6 → x = 8; or x − 2 = −6 → x = −4.</p>
+        
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">mc_2 &middot; held-out check<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">The solution to |x| ≥ 2 is:</div>
+      <ul class="choices"><li><span class="lab">A</span>−2 ≤ x ≤ 2</li><li class="correct"><span class="lab">B</span>x ≤ −2 or x ≥ 2</li><li><span class="lab">C</span>x ≥ 2</li><li><span class="lab">D</span>x ≤ 2</li><li><span class="lab">E</span>x ≥ −2</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: B.</b> Distance from 0 at least 2 → x ≤ −2 or x ≥ 2 (two outward rays).</p>
+        
+      </details>
+    </div>
+    </section>
+
+  <div class="src">
+    <div class="tag">Primary source</div>
+    <p><a href="https://openstax.org/details/books/intermediate-algebra-2e">OpenStax, Intermediate Algebra 2e — Absolute Value Equations &amp; Inequalities</a> &mdash; Two-case equations and band/ray inequalities.</p>
+    <p class='note'>Further reading:</p><ul><li><a href="https://www.khanacademy.org/math/algebra">Khan Academy — Absolute value equations &amp; inequalities</a> &mdash; Distance interpretation and solving.</li><li><a href="https://www.mba.com/exams/gmat-focus-edition">GMAC — GMAT Focus Edition (official exam overview)</a> &mdash; Official exam structure and Quantitative Reasoning scope.</li></ul>
+  </div>
+
+  <div class="ask">Stuck on any step? Ask your GMATWiz coach for a worked walkthrough &mdash; that's what it's here for.</div>
+
+  <footer>
+    <p>GMATWiz lesson &middot; <code>absolute-value.json</code> &middot; schema v1.0 &middot; authored content (OfficialFlag=false), reserved official items used only for late checkpoints.</p>
+  </footer>
+</div></div></body></html>

@@ -1,0 +1,233 @@
+===============================================================================
+GMATWiz - GMAT Quantitative Reasoning (Problem Solving) CONTENT PIPELINE
+===============================================================================
+Location : anki-fork/gmatwiz/content/
+Generated: 2026-06-30 (UTC)
+Scope    : GMAT Focus Edition -> Quantitative Reasoning -> Problem Solving ONLY.
+           Arithmetic + Algebra. NO geometry. NO Data Sufficiency. (PRD Section 5)
+
+This directory is SELF-CONTAINED and ADDITIVE. It creates files ONLY under
+gmatwiz/content/ and does not modify, move, or delete anything elsewhere in the
+Anki fork.
+
+
+-------------------------------------------------------------------------------
+1. WHAT IS HERE (files + exact paths)
+-------------------------------------------------------------------------------
+anki-fork/gmatwiz/content/
+  taxonomy.py        Shared module: the PRD Section 5 leaf-topic taxonomy, the
+                     JSON schema + validator, a keyword TOPIC TAGGER, a geometry/
+                     data-sufficiency out-of-scope filter, a difficulty
+                     heuristic, and dedup helpers. Imported by the two scripts.
+  scraper.py         Reusable scraper. Pulls free/public GMAT Quant PS questions,
+                     respects robots.txt, normalizes to the schema, dedupes
+                     (exact + near-duplicate), auto-tags topics, writes raw
+                     captures + questions.json + scrape_report.json.
+  make_seed.py       Authors the original SEED set and SELF-VERIFIES every item
+                     (recomputes each answer in code), then writes seed.json.
+                     The build fails loudly if any question's math is wrong.
+
+  questions.json     OUTPUT: scraped + normalized questions (231 items).
+  seed.json          OUTPUT: 42 original, independently-verified questions.
+  scrape_report.json OUTPUT: machine-readable per-source run report.
+  README             This file.
+
+  raw/               Raw per-source captures (provenance), e.g.:
+    aqua_rat__dataset__<ts>.jsonl   raw AQuA-RAT JSON-lines as fetched
+    gmatclub__robots__<ts>.txt      the robots.txt decision for GMAT Club
+    reddit__robots__<ts>.txt        Reddit's robots.txt (Disallow: /)
+
+  __pycache__/       Python bytecode cache (safe to delete).
+
+
+-------------------------------------------------------------------------------
+2. NORMALIZED JSON SCHEMA (one object per question)
+-------------------------------------------------------------------------------
+Every item in BOTH questions.json and seed.json has exactly these fields, in
+this order:
+
+  {
+    "id":          string  - "<source>-<12 hex>" content hash (stable, unique)
+    "stem":        string  - the question text
+    "options":     object  - {"A","B","C","D","E"} -> non-empty strings
+    "correct":     string  - one of "A".."E"
+    "explanation": string  - worked solution / rationale (may be "" if a source
+                             provided none; always present for seed.json)
+    "topic":       string  - exactly one leaf, e.g. "gmat::quant::algebra::quadratics"
+    "difficulty":  string  - "easy" | "medium" | "hard"
+    "source":      string  - origin URL / dataset / "GMATWiz original (authored)"
+    "license":     string  - see Section 5 (never claims a license we can't verify)
+    "scraped_at":  string  - ISO-8601 UTC timestamp
+  }
+
+Topic taxonomy (18 leaves, PRD Section 5):
+  Arithmetic: number_properties, fractions, decimals, percents,
+              ratios_proportions, exponents_roots, statistics, sets, counting,
+              probability
+  Algebra:    linear_equations, quadratics, inequalities, absolute_value,
+              functions, sequences, expressions, word_problems
+
+
+-------------------------------------------------------------------------------
+3. SOURCES ATTEMPTED (and their outcomes)
+-------------------------------------------------------------------------------
+Three source adapters were attempted. robots.txt was respected by default.
+
+(1) GMAT Club - free "Problem Solving (PS)" forum  [BLOCKED]
+    Site:        https://gmatclub.com
+    Entry point: https://gmatclub.com/forum/problem-solving-ps-140/
+    robots.txt:  Request for /robots.txt returned HTTP 403 (Cloudflare bot
+                 protection). Per our conservative policy an inaccessible
+                 robots.txt is treated as "Disallow: /".
+    Result:      0 items. Skipped to respect robots / access controls.
+    License plan if ever ingested: "scraped-unverified" (forum content;
+                 copyright retained by the original posters - it would be
+                 quarantined and kept OUT of any redistributable pool).
+
+(2) Reddit r/GMAT - public listing/search JSON  [BLOCKED]
+    Site:        https://www.reddit.com/r/GMAT
+    Entry point: https://www.reddit.com/r/GMAT/search.json?q=problem+solving
+    robots.txt:  Explicit "User-agent: *  Disallow: /" (Reddit Public Content
+                 Policy). We respected it and did not crawl.
+    Result:      0 items. (Reddit also blocks unauthenticated bots at the HTTP
+                 layer; the compliant route is the official Reddit Data API with
+                 OAuth, which is out of scope for this offline pipeline.)
+    License plan if ever ingested: "scraped-unverified" (user posts).
+
+(3) AQuA-RAT (DeepMind) - open dataset  [OK - 231 items]
+    Site:        https://github.com/google-deepmind/AQuA
+    Fetched:     https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json
+    robots.txt:  No blocking robots rule for the raw content host; allowed.
+    License:     Apache-2.0 (VERIFIED open + redistributable with attribution).
+    Format:      JSON-lines; each line has question, 5 options (A-E), a rationale,
+                 and the correct letter - i.e. native GMAT/GRE-style Problem
+                 Solving multiple choice. Ideal for normalization.
+    Raw fetched: 254 questions.
+    Dropped:     16 out-of-scope (geometry)  +  7 duplicate-option items
+                 = 23 dropped, per the PRD scope filter and a quality filter.
+    Normalized:  231 in-scope questions kept (after dedupe: 0 further removed).
+    Citation:    Ling, Yogatama, Dyer, Blunsom (2017), "Program Induction by
+                 Rationale Generation: Learning to Solve and Explain Algebraic
+                 Word Problems," ACL 2017.
+
+SUMMARY (counts scraped per source):
+    gmatclub : 0   (blocked - robots.txt 403 / Cloudflare)
+    reddit   : 0   (blocked - robots.txt Disallow: /)
+    aqua_rat : 231 (Apache-2.0, open)
+    -----------------------------------
+    TOTAL scraped & normalized: 231
+
+
+-------------------------------------------------------------------------------
+4. COUNTS PER TOPIC
+-------------------------------------------------------------------------------
+SCRAPED (questions.json, 231 items)            AUTHORED (seed.json, 42 items)
+                                               (every leaf covered; 2-4 each)
+
+  arithmetic::number_properties .... 100         number_properties ....... 3
+  arithmetic::percents ..............  41         fractions ............... 2
+  arithmetic::ratios_proportions ....   5         decimals ................ 2
+  arithmetic::exponents_roots .......   1         percents ................ 3
+  arithmetic::statistics ............   7         ratios_proportions ...... 2
+  arithmetic::sets ..................   2         exponents_roots ......... 2
+  arithmetic::counting ..............  12         statistics .............. 3
+  arithmetic::probability ...........   7         sets .................... 2
+  arithmetic::fractions .............   0         counting ................ 2
+  arithmetic::decimals ..............   0         probability ............. 2
+  algebra::quadratics ...............   4         linear_equations ........ 3
+  algebra::inequalities .............   1         quadratics .............. 2
+  algebra::word_problems ............  51         inequalities ............ 2
+  algebra::linear_equations .........   0         absolute_value .......... 2
+  algebra::absolute_value ...........   0         functions ............... 2
+  algebra::functions ................   0         sequences ............... 2
+  algebra::sequences ................   0         expressions ............. 2
+  algebra::expressions ..............   0         word_problems ........... 4
+                                                  ----------------------------
+                                                  TOTAL authored: 42
+
+Difficulty mix:
+  scraped  : medium 197, hard 24, easy 10   (AQuA has no difficulty labels;
+             values come from the text heuristic, defaulting to "medium")
+  authored : medium 21, easy 13, hard 8
+
+NOTE ON DISTRIBUTION: the open dataset skews toward number-properties / percent /
+word-problem items, and leaves several leaves empty (fractions, decimals, linear
+equations, absolute value, functions, sequences, expressions). The AUTHORED seed
+set is intentionally designed to cover ALL 18 leaves so the deck has guaranteed,
+balanced, verified coverage regardless of what scraping yields.
+
+
+-------------------------------------------------------------------------------
+5. LICENSING & LEGAL (honest, per PRD Sections 13 & 19)
+-------------------------------------------------------------------------------
+- We NEVER claim a license we cannot verify.
+- seed.json .......... "authored-gmatwiz". Original questions written for
+                       GMATWiz; safe to redistribute under the project license.
+- questions.json ..... "Apache-2.0" for every item (all from AQuA-RAT, whose
+                       repository is Apache-2.0). Redistributable WITH attribution
+                       (see the citation above and each item's "source" field).
+- Forum / user content (GMAT Club, Reddit) would be tagged "scraped-unverified",
+  treated as copyright-retained, QUARANTINED, and kept OUT of any redistributable
+  pool and OUT of the learning pool's "official-question protection" path. None
+  was ingested in this run (both were blocked and respected).
+- Official/copyrighted GMAT items are never relabeled as open and never enter the
+  learning pool (PRD Section 13 guardrail).
+
+
+-------------------------------------------------------------------------------
+6. HOW TO REPRODUCE
+-------------------------------------------------------------------------------
+Requirements: Python 3 standard library only (no pip installs needed). If the
+optional "requests" package is present it is used automatically; otherwise urllib.
+
+  # Re-author + verify the seed set (offline, deterministic):
+  python3 make_seed.py
+
+  # Run the scraper across all sources (needs network for the open dataset):
+  python3 scraper.py
+
+  # Useful flags:
+  python3 scraper.py --sources aqua_rat          # only the open dataset
+  python3 scraper.py --limit 100                 # cap kept items per source
+  python3 scraper.py --delay 2.0                 # politeness delay (seconds)
+  python3 scraper.py --ignore-robots aqua_rat    # bypass robots ONLY for the
+                                                 # named open/own source(s)
+  python3 taxonomy.py                            # quick tagger self-check
+
+Outputs are written next to the scripts (questions.json, scrape_report.json,
+seed.json, raw/). Re-running is safe and idempotent (stable content-hash ids;
+raw captures are timestamped).
+
+
+-------------------------------------------------------------------------------
+7. PIPELINE DETAILS
+-------------------------------------------------------------------------------
+- robots.txt: checked per host via urllib.robotparser, cached; a 401/403 on
+  robots.txt is treated conservatively as Disallow. Override only via
+  --ignore-robots for clearly-open or self-owned sources.
+- Normalization: trims/normalizes whitespace; requires exactly 5 distinct,
+  non-empty A-E options and a valid correct letter; drops geometry and Data
+  Sufficiency items (PRD scope); auto-tags the topic; assigns difficulty.
+- Topic tagging: weighted keyword scoring over stem + options, with a specificity
+  tie-break (taxonomy.py). Unclassifiable items default to number_properties.
+- Dedup: exact content hash + near-duplicate detection via token-set Jaccard
+  similarity (default threshold 0.85) across all sources combined.
+- Seed verification: each authored item ships a check() that recomputes the
+  answer from first principles, finds the matching option, and asserts it equals
+  the labelled "correct". 42/42 verified in this build.
+
+
+-------------------------------------------------------------------------------
+8. KNOWN LIMITATIONS
+-------------------------------------------------------------------------------
+- Scraped content is provided AS-IS under its source license; correctness is NOT
+  independently guaranteed (AQuA-RAT is real but mildly noisy: a few rationales/
+  answers can be imperfect). It is bulk volume, clearly flagged by source +
+  license. The AUTHORED seed set is the clean, verified core.
+- Two sources (GMAT Club, Reddit) are blocked for compliant offline scraping.
+  Compliant paths exist but require accounts/keys: GMAT Club partner access, or
+  the official Reddit Data API (OAuth). These can be added as new adapters
+  later without changing the schema.
+- The difficulty heuristic for scraped items is approximate (the dataset has no
+  difficulty labels).
+===============================================================================

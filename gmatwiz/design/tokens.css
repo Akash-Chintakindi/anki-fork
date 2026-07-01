@@ -1,0 +1,188 @@
+/* ============================================================================
+   GMATWiz — Design Tokens
+   ----------------------------------------------------------------------------
+   Thesis: the app is a precision measuring instrument for competence, not a
+   hype machine. Tokens favor a warm, quiet "instrument" surface (limestone +
+   graphite) with ONE confident indicator color (verdigris) that does the
+   meaningful work: the needle, the point estimate, the primary action, "go".
+
+   Constraints honored (see context.txt): embedded Chromium is chrome77/es2020.
+   No clamp()/min()/max() in CSS, no :has(), no container queries, no nesting,
+   no color-mix(), no flexbox `gap` (grid gap is fine). Conservative on purpose.
+
+   This file is the single source of truth. app.css and every screen read from
+   here. Maps cleanly onto ts/lib/sass/_root-vars.scss later (see bottom).
+   ========================================================================== */
+
+:root {
+  /* --- Palette (light / "daylight instrument") ----------------------------
+     6 named colors carry the identity; the rest are tints/neutrals derived
+     from them. Verdigris is the ONLY saturated color and is rationed. */
+
+  --paper:        #EAE6DD; /* Limestone — canvas. Warm, slightly grey. NOT cream-yellow. */
+  --surface:      #F4F1E9; /* Readout — lit panels sit a step above the paper. */
+  --surface-sunk: #E1DBCF; /* Groove — engraved wells, the scale channel. */
+
+  --ink:          #211F19; /* Graphite — primary text + engravings. */
+  --ink-soft:     #5F5849; /* Taupe — secondary text (AA on paper). */
+  --ink-faint:    #8C8472; /* Faint — captions, disabled, tick labels. */
+
+  --indicator:        #2E6E5E; /* Verdigris — brand, the needle, correct, "go". Fills. */
+  --indicator-ink:    #245A4B; /* Verdigris (text-safe) — links + text on paper, AA. */
+  --indicator-tint:   #DCE7E1; /* Verdigris wash — band fills, selected rows. */
+  --indicator-strong: #1E4C3F; /* Verdigris (pressed / deep). */
+
+  --clay:      #A8503F; /* Clay — needs-repair / incorrect. Used softly, never punitive blocks. */
+  --clay-ink:  #8C4233; /* Clay (text-safe). */
+  --clay-tint: #F0DED7; /* Clay wash. */
+
+  --brass:      #8A6A22; /* Brass — earned mastery glow, rationed warmth (no streaks/confetti). */
+  --brass-tint: #ECE0C2; /* Brass wash. */
+
+  --uncertain:      #56666C; /* Slate — uncertainty / abstention / info. Calm, never alarming. */
+  --uncertain-tint: #DEE2E1; /* Slate wash — abstain backgrounds. */
+
+  /* --- Lines & structure (the engraving) --------------------------------- */
+  --line:        #D3CBBC; /* hairline ticks + dividers */
+  --line-strong: #BCB2A0; /* major ticks + emphasized borders */
+
+  /* --- Elevation (subtle, warm, calm) ------------------------------------ */
+  --shadow-1: 0 1px 2px rgba(33, 31, 25, 0.06), 0 1px 1px rgba(33, 31, 25, 0.04);
+  --shadow-2: 0 6px 18px rgba(33, 31, 25, 0.08), 0 1px 2px rgba(33, 31, 25, 0.05);
+  --inset-1:  inset 0 1px 2px rgba(33, 31, 25, 0.10);
+
+  /* --- Focus (visible, high-contrast, conservative :focus) --------------- */
+  --focus-ring: var(--indicator-ink);
+
+  /* --- Typography --------------------------------------------------------
+     Three deliberate roles for the app's three voices:
+       voice    (serif)  — the tutor speaking to a person: headlines, questions.
+       ui       (sans)   — quiet chrome: nav, buttons, dense controls.
+       readout  (mono)   — the instrument: every number, range, axis, timer.
+     All stacks are system-available (no CDNs; works on chrome77). */
+
+  --font-voice:   Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+  --font-ui:      system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-readout: ui-monospace, "SF Mono", "JetBrains Mono", "Roboto Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* Type scale (no clamp(); responsive bumps live in app.css media queries). */
+  --t-eyebrow:    0.75rem;  /* 12px — mono, tracked, the instrument's labels */
+  --t-caption:    0.8125rem;/* 13px */
+  --t-small:      0.875rem; /* 14px */
+  --t-body:       1rem;     /* 16px */
+  --t-lead:       1.125rem; /* 18px */
+  --t-h3:         1.3125rem;/* 21px */
+  --t-h2:         1.625rem; /* 26px */
+  --t-h1:         2.125rem; /* 34px — serif display */
+  --t-readout:    2.25rem;  /* 36px — mono score readouts */
+  --t-readout-lg: 3.25rem;  /* 52px — the hero reading */
+
+  --lh-tight: 1.15;
+  --lh-snug:  1.32;
+  --lh-body:  1.6;
+
+  --track-eyebrow: 0.14em; /* letter-spacing for mono labels */
+  --track-readout: 0.01em;
+
+  /* --- Spacing (8px rhythm) ---------------------------------------------- */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --s7: 48px;
+  --s8: 64px;
+  --s9: 96px;
+
+  /* --- Radius (soft instrument housings; deliberately NOT zero-radius) ---- */
+  --r-sm:   6px;
+  --r:      10px;
+  --r-lg:   16px;
+  --r-pill: 999px;
+
+  /* --- Layout widths ----------------------------------------------------- */
+  --col:      720px;  /* reading / single-action column */
+  --col-wide: 1040px; /* dashboard */
+
+  /* --- Motion (subtle; "measuring" gestures only) ------------------------ */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur:  420ms;
+  --dur-fast: 160ms;
+}
+
+/* ----------------------------------------------------------------------------
+   Dark theme — "instrument at night". Anki provides dark mode for free via its
+   own tokens; this block keeps the standalone prototypes faithful in dark.
+   Verdigris brightens but never becomes acid; paper becomes warm near-black.
+   -------------------------------------------------------------------------- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper:        #181713;
+    --surface:      #211F1A;
+    --surface-sunk: #100F0C;
+
+    --ink:          #ECE6D8;
+    --ink-soft:     #B3AB99;
+    --ink-faint:    #837B69;
+
+    --indicator:        #56B89B;
+    --indicator-ink:    #74C7AD; /* lighter for text on dark, AA */
+    --indicator-tint:   #1E3A33;
+    --indicator-strong: #8AD6BF;
+
+    --clay:      #D5705C;
+    --clay-ink:  #E2917F;
+    --clay-tint: #3A211B;
+
+    --brass:      #C79A4A;
+    --brass-tint: #38301C;
+
+    --uncertain:      #8A9AA0;
+    --uncertain-tint: #232A2C;
+
+    --line:        #34322B;
+    --line-strong: #4A463C;
+
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.40);
+    --shadow-2: 0 8px 22px rgba(0, 0, 0, 0.50), 0 1px 2px rgba(0, 0, 0, 0.40);
+    --inset-1:  inset 0 1px 2px rgba(0, 0, 0, 0.45);
+
+    --focus-ring: var(--indicator-ink);
+  }
+}
+
+/* ============================================================================
+   ANKI INTEGRATION MAP (for later — do not wire up in these prototypes)
+   ----------------------------------------------------------------------------
+   When these tokens move into ts/lib/sass/_root-vars.scss, alias GMATWiz tokens
+   to Anki's CSS variables so the app inherits Anki light/dark automatically.
+   Keep brand colors (verdigris, clay, brass) as GMATWiz-owned — Anki has no
+   equivalent. Suggested aliases:
+
+     Anki var            -> GMATWiz token        Notes
+     --------            -------------------      --------------------------------
+     --canvas            -> --paper              app background
+     --canvas-elevated   -> --surface            panels / "readouts"
+     --canvas-inset      -> --surface-sunk       the scale groove / wells
+     --fg                -> --ink                primary text
+     --fg-subtle         -> --ink-soft           secondary text
+     --fg-faint          -> --ink-faint          captions / tick labels
+     --border            -> --line               hairlines / dividers
+     --border-strong     -> --line-strong        major ticks
+     --accent (n/a)      -> --indicator          GMATWiz-owned; keep as-is
+
+   Integration pattern (gives Anki theme priority, our hex as standalone fallback):
+
+     :root {
+       --paper:   var(--canvas, #EAE6DD);
+       --surface: var(--canvas-elevated, #F4F1E9);
+       --ink:     var(--fg, #211F19);
+       --line:    var(--border, #D3CBBC);
+       /* brand tokens stay literal */
+       --indicator: #2E6E5E;
+     }
+
+   The prototypes intentionally use literal hex (above) so they render with the
+   GMATWiz identity when opened directly, instead of inheriting Anki greys.
+   ========================================================================== */

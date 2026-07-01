@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import enum
+import json
 import logging
 import mimetypes
 import os
@@ -11,6 +12,7 @@ import re
 import secrets
 import sys
 import threading
+import time
 import traceback
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -422,6 +424,8 @@ def is_sveltekit_page(path: str) -> bool:
         "import-csv",
         "import-page",
         "image-occlusion",
+        "gmat-practice",
+        "gmat",
     ]
 
 
@@ -704,8 +708,441 @@ def save_custom_colours() -> bytes:
     return b""
 
 
+def gmat_questions() -> bytes:
+    """Return GMAT PS questions from the GMAT::Quant deck as JSON.
+
+    Served at /_anki/gmatQuestions for the GMAT Practice page. Read-only.
+    """
+    col = aqt.mw.col
+    questions = []
+    try:
+        note_ids = col.find_notes('note:"GMAT PS"')
+    except Exception:
+        note_ids = []
+    for nid in note_ids:
+        note = col.get_note(nid)
+        fields = dict(note.items())
+        questions.append(
+            {
+                "stem": fields.get("Stem", ""),
+                "options": {
+                    "A": fields.get("OptionA", ""),
+                    "B": fields.get("OptionB", ""),
+                    "C": fields.get("OptionC", ""),
+                    "D": fields.get("OptionD", ""),
+                    "E": fields.get("OptionE", ""),
+                },
+                "correct": fields.get("Correct", ""),
+                "explanation": fields.get("Explanation", ""),
+                "topic": fields.get("Topic", ""),
+                "difficulty": fields.get("Difficulty", ""),
+            }
+        )
+    return json.dumps({"questions": questions}).encode("utf-8")
+
+
+# Number of leaf topics in the GMAT Focus Quant coverage map (PRD Section 5).
+GMAT_QUANT_TOPIC_TOTAL = 18
+# Give-up rule thresholds (PRD Section 4).
+GMAT_MEMORY_MIN_REVIEWS = 150
+
+
+def gmat_overview() -> bytes:
+    """Headline stats for the GMATWiz home + dashboard (honesty rule)."""
+    col = aqt.mw.col
+    try:
+        total = len(col.find_cards('note:"GMAT PS"'))
+        new = len(col.find_cards('note:"GMAT PS" is:new'))
+        due = len(col.find_cards('note:"GMAT PS" (is:due OR is:learn)'))
+    except Exception:
+        total = new = due = 0
+
+    topics = set()
+    try:
+        for nid in col.find_notes('note:"GMAT PS"'):
+            topic = dict(col.get_note(nid).items()).get("Topic", "")
+            if topic:
+                topics.add(topic)
+    except Exception:
+        pass
+
+    reviews = col.db.scalar("select count() from revlog") or 0
+    # Memory follows the give-up rule: abstain until enough graded reviews.
+    if reviews >= GMAT_MEMORY_MIN_REVIEWS:
+        passed = (
+            col.db.scalar("select count() from revlog where ease > 1 and type != 4")
+            or 0
+        )
+        graded = col.db.scalar("select count() from revlog where type != 4") or 1
+        point = round(100 * passed / graded)
+        memory = {
+            "status": "shown",
+            "point": point,
+            "low": max(0, point - 6),
+            "high": min(100, point + 6),
+            "reviews": reviews,
+        }
+    else:
+        memory = {
+            "status": "abstain",
+            "reviews": reviews,
+            "reviews_required": GMAT_MEMORY_MIN_REVIEWS,
+        }
+
+    return json.dumps(
+        {
+            "deck": "GMAT::Quant",
+            "total": total,
+            "new": new,
+            "due": due,
+            "reviews": reviews,
+            "topics_covered": len(topics),
+            "topics_total": GMAT_QUANT_TOPIC_TOTAL,
+            "memory": memory,
+            "profile": col.get_config("gmatProfile", None),
+            "plan": col.get_config("gmatPlan", None),
+        }
+    ).encode("utf-8")
+
+
+def gmat_error_log() -> bytes:
+    """Return the student's logged errors (most recent first)."""
+    col = aqt.mw.col
+    entries = col.get_config("gmatErrorLog", []) or []
+    return json.dumps({"entries": list(reversed(entries))}).encode("utf-8")
+
+
+def gmat_log_error() -> bytes:
+    """Append a missed question to the error log. Body: JSON entry."""
+    col = aqt.mw.col
+    try:
+        entry = json.loads(request.data or b"{}")
+    except Exception:
+        entry = {}
+    entries = col.get_config("gmatErrorLog", []) or []
+    entries.append(
+        {
+            "stem": str(entry.get("stem", ""))[:400],
+            "topic": str(entry.get("topic", "")),
+            "chosen": str(entry.get("chosen", "")),
+            "correct": str(entry.get("correct", "")),
+            "ts": int(time.time()),
+        }
+    )
+    col.set_config("gmatErrorLog", entries[-500:])
+    return b""
+
+
+def gmat_next_card() -> bytes:
+    """Return the next scheduled GMAT card from the REAL scheduler.
+
+    Selecting the GMAT deck and calling get_queued_cards means the topic-aware
+    ordering and daily limits from the engine apply. Read-only.
+    """
+    from anki.cards import Card
+
+    col = aqt.mw.col
+    deck_id = col.decks.id("GMAT::Quant")
+    if col.decks.get_current_id() != deck_id:
+        col.decks.select(deck_id)
+    queued = col.sched.get_queued_cards(fetch_limit=1)
+    counts = {
+        "new": queued.new_count,
+        "learning": queued.learning_count,
+        "review": queued.review_count,
+    }
+    if not queued.cards:
+        return json.dumps({"card": None, "counts": counts}).encode("utf-8")
+    card = Card(col)
+    card._load_from_backend_card(queued.cards[0].card)
+    fields = dict(card.note().items())
+    return json.dumps(
+        {
+            "card": {
+                "card_id": card.id,
+                "stem": fields.get("Stem", ""),
+                "options": {k: fields.get(f"Option{k}", "") for k in "ABCDE"},
+                "correct": fields.get("Correct", ""),
+                "explanation": fields.get("Explanation", ""),
+                "topic": fields.get("Topic", ""),
+                "difficulty": fields.get("Difficulty", ""),
+            },
+            "counts": counts,
+        }
+    ).encode("utf-8")
+
+
+def gmat_answer_card() -> bytes:
+    """Record an answer to the current GMAT card through the real scheduler.
+
+    Maps a correct MCQ answer to Good and an incorrect one to Again, so a real
+    revlog entry is written and FSRS reschedules the card.
+    """
+    from anki.scheduler.v3 import CardAnswer
+    from anki.utils import int_time
+
+    col = aqt.mw.col
+    try:
+        body = json.loads(request.data or b"{}")
+    except Exception:
+        body = {}
+    card_id = int(body.get("card_id", 0))
+    correct = bool(body.get("correct", False))
+    ms = int(body.get("ms", 0))
+
+    deck_id = col.decks.id("GMAT::Quant")
+    if col.decks.get_current_id() != deck_id:
+        col.decks.select(deck_id)
+    queued = col.sched.get_queued_cards(fetch_limit=1)
+    if not queued.cards or queued.cards[0].card.id != card_id:
+        # queue moved on; do not answer the wrong card
+        return b""
+    states = queued.cards[0].states
+    answer = CardAnswer(
+        card_id=card_id,
+        current_state=states.current,
+        new_state=states.good if correct else states.again,
+        rating=CardAnswer.GOOD if correct else CardAnswer.AGAIN,
+        answered_at_millis=int_time(1000),
+        milliseconds_taken=ms,
+    )
+    col.sched.answer_card(answer)
+    return b""
+
+
+def _gmat_notes_by_topic() -> dict:
+    from collections import defaultdict
+
+    col = aqt.mw.col
+    by_topic: dict = defaultdict(list)
+    for nid in col.find_notes('note:"GMAT PS"'):
+        fields = dict(col.get_note(nid).items())
+        topic = fields.get("Topic", "")
+        if topic:
+            by_topic[topic].append(fields)
+    return by_topic
+
+
+def gmat_save_profile() -> bytes:
+    """Store the student's exam date + weekly availability."""
+    col = aqt.mw.col
+    try:
+        body = json.loads(request.data or b"{}")
+    except Exception:
+        body = {}
+    profile = {
+        "exam_date": str(body.get("exam_date", "")),
+        "days_per_week": int(body.get("days_per_week", 5) or 5),
+        "minutes_per_day": int(body.get("minutes_per_day", 60) or 60),
+    }
+    col.set_config("gmatProfile", profile)
+    return b""
+
+
+def gmat_pretest_questions() -> bytes:
+    """Return a 21-question diagnostic sampled across all Quant topics."""
+    import random
+
+    by_topic = _gmat_notes_by_topic()
+    picked: list = []
+    seen: set = set()
+    for notes in by_topic.values():
+        choice = random.choice(notes)
+        picked.append(choice)
+        seen.add(id(choice))
+    all_notes = [n for notes in by_topic.values() for n in notes]
+    random.shuffle(all_notes)
+    for note in all_notes:
+        if len(picked) >= 21:
+            break
+        if id(note) not in seen:
+            picked.append(note)
+            seen.add(id(note))
+    picked = picked[:21]
+    random.shuffle(picked)
+    questions = [
+        {
+            "stem": f.get("Stem", ""),
+            "options": {k: f.get(f"Option{k}", "") for k in "ABCDE"},
+            "correct": f.get("Correct", ""),
+            "topic": f.get("Topic", ""),
+            "difficulty": f.get("Difficulty", ""),
+        }
+        for f in picked
+    ]
+    return json.dumps({"questions": questions, "seconds": 45 * 60}).encode("utf-8")
+
+
+def gmat_submit_pretest() -> bytes:
+    """Turn diagnostic results into per-topic mastery + a study plan.
+
+    Sets each topic's mastery via the Rust RPC (activating topic-aware
+    scheduling), enables the toggle, and stores diagnosis + plan in config.
+    """
+    from collections import defaultdict
+    from datetime import date, datetime
+
+    col = aqt.mw.col
+    try:
+        body = json.loads(request.data or b"{}")
+    except Exception:
+        body = {}
+    results = body.get("results", []) or []
+
+    agg: dict = defaultdict(lambda: [0, 0])  # topic -> [correct, total]
+    for r in results:
+        topic = str(r.get("topic", ""))
+        if not topic:
+            continue
+        agg[topic][1] += 1
+        if r.get("correct"):
+            agg[topic][0] += 1
+
+    diagnosis: dict = {}
+    for topic in _gmat_notes_by_topic().keys():
+        correct, total = agg.get(topic, [0, 0])
+        mastery = (correct / total) if total > 0 else 0.5
+        diagnosis[topic] = round(mastery, 3)
+        try:
+            col._backend.set_topic_mastery(topic=topic, mastery=mastery)
+        except Exception as exc:
+            print(f"set_topic_mastery failed for {topic}: {exc}")
+
+    # Now that mastery is populated, turn on topic-aware scheduling.
+    col.set_config("topicAwareScheduling", True)
+
+    def status(m: float) -> str:
+        return "weak" if m < 0.5 else ("developing" if m < 0.8 else "strong")
+
+    profile = col.get_config("gmatProfile", {}) or {}
+    days_to_exam = None
+    exam_date = profile.get("exam_date", "")
+    if exam_date:
+        try:
+            days_to_exam = (
+                datetime.strptime(exam_date, "%Y-%m-%d").date() - date.today()
+            ).days
+        except Exception:
+            days_to_exam = None
+
+    ranked = sorted(diagnosis.items(), key=lambda kv: kv[1])
+    plan = {
+        "topics": [
+            {"topic": t, "mastery": m, "status": status(m)} for t, m in ranked
+        ],
+        "daily_minutes": int(profile.get("minutes_per_day", 60) or 60),
+        "days_per_week": int(profile.get("days_per_week", 5) or 5),
+        "days_to_exam": days_to_exam,
+        "created_ts": int(time.time()),
+    }
+    col.set_config("gmatDiagnosis", diagnosis)
+    col.set_config("gmatPlan", plan)
+    return json.dumps({"diagnosis": diagnosis, "plan": plan}).encode("utf-8")
+
+
+def _gmat_lessons_dir() -> str:
+    # qt/aqt/mediasrv.py -> aqt -> qt -> repo root; lessons at gmatwiz/lessons.
+    root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    return os.path.join(root, "gmatwiz", "lessons")
+
+
+def _load_lessons_index() -> dict:
+    path = os.path.join(_gmat_lessons_dir(), "index.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {"topics": []}
+
+
+def gmat_lessons_index() -> bytes:
+    """Return the lesson catalog merged with the student's mastery + learned state."""
+    col = aqt.mw.col
+    index = _load_lessons_index()
+    plan = col.get_config("gmatPlan", None) or {}
+    learned = col.get_config("gmatLearned", {}) or {}
+    mastery_by_topic: dict = {}
+    status_by_topic: dict = {}
+    if isinstance(plan, dict):
+        for t in plan.get("topics", []):
+            mastery_by_topic[t.get("topic")] = t.get("mastery")
+            status_by_topic[t.get("topic")] = t.get("status")
+    topics = []
+    for t in index.get("topics", []):
+        tid = t.get("topic_id")
+        topics.append(
+            {
+                "topic_id": tid,
+                "title": t.get("title", ""),
+                "domain": t.get("domain", ""),
+                "mastery": mastery_by_topic.get(tid),
+                "status": status_by_topic.get(tid),
+                "learned": tid in learned,
+            }
+        )
+    # weakest first; unknown mastery (no diagnostic yet) goes last
+    topics.sort(
+        key=lambda x: (
+            x["mastery"] is None,
+            x["mastery"] if x["mastery"] is not None else 1.0,
+        )
+    )
+    return json.dumps({"topics": topics}).encode("utf-8")
+
+
+def gmat_lesson() -> bytes:
+    """Return the full authored lesson for a topic_id."""
+    try:
+        body = json.loads(request.data or b"{}")
+    except Exception:
+        body = {}
+    topic_id = str(body.get("topic_id", ""))
+    index = _load_lessons_index()
+    json_name = None
+    for t in index.get("topics", []):
+        if t.get("topic_id") == topic_id:
+            json_name = t.get("json") or ((t.get("slug") or "") + ".json")
+            break
+    if not json_name:
+        return json.dumps({"lesson": None}).encode("utf-8")
+    path = os.path.join(_gmat_lessons_dir(), json_name)
+    try:
+        with open(path, encoding="utf-8") as f:
+            lesson = json.load(f)
+    except Exception:
+        lesson = None
+    return json.dumps({"lesson": lesson}).encode("utf-8")
+
+
+def gmat_mark_learned() -> bytes:
+    """Record that the student completed a topic's lesson."""
+    col = aqt.mw.col
+    try:
+        body = json.loads(request.data or b"{}")
+    except Exception:
+        body = {}
+    topic_id = str(body.get("topic_id", ""))
+    if topic_id:
+        learned = col.get_config("gmatLearned", {}) or {}
+        learned[topic_id] = int(time.time())
+        col.set_config("gmatLearned", learned)
+    return b""
+
+
 post_handler_list = [
     congrats_info,
+    gmat_questions,
+    gmat_next_card,
+    gmat_answer_card,
+    gmat_overview,
+    gmat_error_log,
+    gmat_log_error,
+    gmat_save_profile,
+    gmat_pretest_questions,
+    gmat_submit_pretest,
+    gmat_lessons_index,
+    gmat_lesson,
+    gmat_mark_learned,
     get_deck_configs_for_update,
     update_deck_configs,
     get_scheduling_states_with_context,
@@ -757,6 +1194,7 @@ exposed_backend_list = [
     # SchedulerService
     "compute_fsrs_params",
     "compute_optimal_retention",
+    "set_topic_mastery",
     "set_wants_abort",
     "evaluate_params_legacy",
     "get_optimal_retention_parameters",
@@ -832,6 +1270,20 @@ def _check_dynamic_request_permissions():
         "/_anki/setSchedulingStates",
         "/_anki/i18nResources",
         "/_anki/congratsInfo",
+        # GMATWiz renders in the main webview (no full API access), so its
+        # read/record endpoints are whitelisted here, like the reviewer's.
+        "/_anki/gmatOverview",
+        "/_anki/gmatQuestions",
+        "/_anki/gmatNextCard",
+        "/_anki/gmatAnswerCard",
+        "/_anki/gmatErrorLog",
+        "/_anki/gmatLogError",
+        "/_anki/gmatSaveProfile",
+        "/_anki/gmatPretestQuestions",
+        "/_anki/gmatSubmitPretest",
+        "/_anki/gmatLessonsIndex",
+        "/_anki/gmatLesson",
+        "/_anki/gmatMarkLearned",
     ):
         pass
     else:

@@ -73,4 +73,10 @@ impl crate::services::CollectionService for Collection {
             .unwrap_or_default();
         Ok(GetCustomColoursResponse { colours })
     }
+
+    fn gmatwiz_hello(&mut self) -> error::Result<generic::String> {
+        Ok(generic::String {
+            val: "GMATWiz engine online".to_string(),
+        })
+    }
 }

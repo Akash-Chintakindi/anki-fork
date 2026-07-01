@@ -53,6 +53,14 @@ pub(crate) struct CardData {
         deserialize_with = "default_on_invalid"
     )]
     pub(crate) last_review_time: Option<TimestampSecs>,
+    /// GMATWiz: per-card topic mastery (0.0-1.0). Added without a schema
+    /// migration via this JSON column.
+    #[serde(
+        rename = "tm",
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "default_on_invalid"
+    )]
+    pub(crate) topic_mastery: Option<f32>,
 
     /// A string representation of a JSON object storing optional data
     /// associated with the card, so v3 custom scheduling code can persist
@@ -70,6 +78,7 @@ impl CardData {
             fsrs_desired_retention: card.desired_retention,
             decay: card.decay,
             last_review_time: card.last_review_time,
+            topic_mastery: card.topic_mastery,
             custom_data: card.custom_data.clone(),
         }
     }
@@ -101,6 +110,9 @@ impl CardData {
             round_to_places(v, 2)
         }
         if let Some(v) = &mut self.decay {
+            round_to_places(v, 3)
+        }
+        if let Some(v) = &mut self.topic_mastery {
             round_to_places(v, 3)
         }
         serde_json::to_string(&self).map_err(Into::into)
@@ -177,6 +189,7 @@ mod test {
             fsrs_desired_retention: Some(0.987654),
             decay: Some(0.123456),
             last_review_time: None,
+            topic_mastery: None,
             custom_data: "".to_string(),
         };
         assert_eq!(

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GMATWiz — Onboarding &amp; diagnostic</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="shell">
+
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <span class="brand__mark" aria-hidden="true"></span>
+      <span class="brand__name">GMATWiz</span>
+    </a>
+    <div></div>
+    <div class="topbar__aside">
+      <span class="glance"><span class="glance__dot" aria-hidden="true"></span>Setting up</span>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="col stack-7">
+
+      <!-- HERO: lead with the thesis, shown through the signature element abstaining -->
+      <section class="stack-5">
+        <p class="eyebrow eyebrow--tick">GMAT Focus &middot; Quantitative</p>
+        <h1 class="display">We measure.<br>We don&rsquo;t guess.</h1>
+        <p class="lead muted">
+          Most prep tools hand you a confident score on day one. GMATWiz shows a
+          <em>range</em> &mdash; and stays honest about what it doesn&rsquo;t know yet.
+          Here&rsquo;s your projected GMAT score right now, before you&rsquo;ve answered anything:
+        </p>
+
+        <figure class="measure is-abstain panel panel--feature" aria-label="Projected GMAT score: not enough data yet">
+          <div class="measure__head">
+            <span class="measure__label">Readiness &mdash; projected GMAT</span>
+            <span class="measure__sure">Scale 205&ndash;805</span>
+          </div>
+          <p class="measure__readout">No projection yet</p>
+          <div class="measure__scale">
+            <div class="measure__rule" aria-hidden="true"></div>
+            <div class="measure__band" style="left: 16%; width: 66%;" aria-hidden="true"></div>
+            <span class="measure__ghostlabel">Not enough data</span>
+            <div class="measure__axis" aria-hidden="true">
+              <span>205</span><span>355</span><span>505</span><span>655</span><span>805</span>
+            </div>
+          </div>
+          <p class="small muted" style="margin-top: var(--s4);">
+            A projection appears only once we can stand behind it. The diagnostic below
+            starts filling the gauge.
+          </p>
+        </figure>
+      </section>
+
+      <!-- SETUP: a real sequence, so numbered steps are earned -->
+      <section class="stack-5">
+        <div class="steps" aria-label="Setup progress">
+          <span class="step is-active"><span class="step__no">1</span><span class="step__name">Exam date</span></span>
+          <span class="step"><span class="step__no">2</span><span class="step__name">Weekly time</span></span>
+          <span class="step"><span class="step__no">3</span><span class="step__name">Diagnostic</span></span>
+        </div>
+
+        <div class="panel stack-5">
+          <div class="grid-2">
+            <div class="field">
+              <label class="field__label" for="examdate">When do you sit the exam?</label>
+              <input class="input mono" id="examdate" type="date" value="2026-09-12">
+              <span class="caption">11 weeks away &mdash; inside the 2&ndash;3 month window for a strong score.</span>
+            </div>
+            <div class="field">
+              <span class="field__label">Hours you can study each week</span>
+              <div class="segmented" role="group" aria-label="Weekly study time">
+                <button class="chip" type="button">3&ndash;5</button>
+                <button class="chip is-selected" type="button" aria-pressed="true">6&ndash;9</button>
+                <button class="chip" type="button">10&ndash;14</button>
+                <button class="chip" type="button">15+</button>
+              </div>
+              <span class="caption">Your plan is built around this &mdash; and stays bypassable on busy days.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DIAGNOSTIC FRAMING + a real, application-first sample item -->
+      <section class="stack-5">
+        <div class="sectionhead">
+          <p class="eyebrow eyebrow--tick">Step 3 &middot; The diagnostic</p>
+          <h2 class="h2 voice">A 20-minute reading, not a test you pass</h2>
+        </div>
+        <p class="muted">
+          We sample adaptively across every Quant topic to find where you actually are.
+          You&rsquo;ll see no score afterward &mdash; just where the gauge sits and the single
+          best place to start. Here&rsquo;s the kind of question you&rsquo;ll meet:
+        </p>
+
+        <div class="panel stack-5">
+          <div class="row" style="grid-auto-flow: column; justify-content: space-between; grid-template-columns: 1fr auto;">
+            <span class="tag tag--topic">Number properties</span>
+            <span class="caption mono">Sample &middot; not graded</span>
+          </div>
+          <p class="stem">
+            If <em>n</em> is a positive integer and <em>n</em>&sup2; is divisible by 72,
+            what is the largest integer that must divide <em>n</em>?
+          </p>
+          <ul class="choices">
+            <li><button class="choice" type="button"><span class="choice__key">A</span><span class="choice__text num">6</span><span class="choice__mark"></span></button></li>
+            <li><button class="choice" type="button"><span class="choice__key">B</span><span class="choice__text num">8</span><span class="choice__mark"></span></button></li>
+            <li><button class="choice" type="button"><span class="choice__key">C</span><span class="choice__text num">12</span><span class="choice__mark"></span></button></li>
+            <li><button class="choice" type="button"><span class="choice__key">D</span><span class="choice__text num">24</span><span class="choice__mark"></span></button></li>
+            <li><button class="choice" type="button"><span class="choice__key">E</span><span class="choice__text num">36</span><span class="choice__mark"></span></button></li>
+          </ul>
+          <p class="caption">No explanation yet &mdash; in GMATWiz, you attempt first, then we explain.</p>
+        </div>
+      </section>
+
+      <!-- WHAT YOU GET -->
+      <section class="panel panel--sunk stack-3">
+        <p class="eyebrow eyebrow--tick">After the diagnostic</p>
+        <ul class="conds" style="margin-top: var(--s2);">
+          <li class="cond is-met"><span class="cond__mark" aria-hidden="true"></span><span class="cond__label">A per-topic map of strengths and gaps</span><span class="cond__val">12 topics sampled</span></li>
+          <li class="cond is-met"><span class="cond__mark" aria-hidden="true"></span><span class="cond__label">A mastery-ordered plan: weak topics deep, strong topics light</span><span class="cond__val">auto-built</span></li>
+          <li class="cond is-met"><span class="cond__mark" aria-hidden="true"></span><span class="cond__label">One clear first action &mdash; no game-plan pressure</span><span class="cond__val">ready</span></li>
+        </ul>
+      </section>
+
+      <!-- PRIMARY ACTION -->
+      <section class="stack-3">
+        <a class="btn btn--primary btn--lg btn--block" href="today.html">Start the diagnostic &middot; ~20 min</a>
+        <p class="center caption">You can pause anytime. Nothing is scored until there&rsquo;s enough to stand behind.</p>
+      </section>
+
+    </div>
+  </main>
+</div>
+</body>
+</html>

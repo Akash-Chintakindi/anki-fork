@@ -1,0 +1,363 @@
+{
+  "topic_id": "gmat::quant::algebra::functions",
+  "slug": "functions",
+  "title": "Functions",
+  "domain": "Algebra",
+  "estimated_minutes": 22,
+  "prerequisites": [
+    "algebraic expressions",
+    "linear equations"
+  ],
+  "learning_objectives": [
+    "Read and use function notation f(x); evaluate by substitution.",
+    "Evaluate compositions f(g(x)) from the inside out.",
+    "Interpret GMAT-style custom operation symbols.",
+    "Solve for an input given an output, and find an unknown inner function."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do → we do → you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Evaluating expressions by substitution.",
+    "do_now": {
+      "instructions": "From memory, no calculator. 4 minutes.",
+      "items": [
+        {
+          "prompt": "If f(x) = 2x + 1, find f(3).",
+          "answer": "7.",
+          "targets": "function notation"
+        },
+        {
+          "prompt": "If g(x) = x^2, find g(−4).",
+          "answer": "16.",
+          "targets": "substituting a negative"
+        },
+        {
+          "prompt": "Evaluate 3a − 2 at a = 5.",
+          "answer": "13.",
+          "targets": "substitution"
+        },
+        {
+          "prompt": "If f(x) = x − 4, find f(4).",
+          "answer": "0.",
+          "targets": "evaluation"
+        },
+        {
+          "prompt": "In f(g(2)), what do you compute first?",
+          "answer": "g(2) first (inside out), then apply f.",
+          "targets": "order of composition"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Retrieves substitution (the only mechanical skill functions need) and the inside-out order that composition and custom symbols depend on.",
+      "if_students_struggle": "If notation feels alien, read f(3) as 'the rule f applied to 3' — substitute 3 wherever x appears."
+    },
+    "prior_knowledge_bridge": "A function is just a substitution rule with a name. You've evaluated expressions for years; f(x) only labels the rule so we can chain rules. Q5 sets up the one new habit: in f(g(x)) you work the inside first. Custom GMAT symbols (like a ◇ b) are the same idea wearing a costume.",
+    "learning_intention": "By the end you can evaluate functions and compositions, decode custom operation symbols, and solve for an input or an inner rule.",
+    "success_criteria": [
+      "I can evaluate f(x) for any input, including negatives.",
+      "I can compute f(g(x)) inside out.",
+      "I can apply a defined custom operation correctly."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00–4:00",
+        "move": "Do Now; silent retrieval."
+      },
+      {
+        "time": "4:00–6:00",
+        "move": "Check; read notation aloud as 'apply the rule to'."
+      },
+      {
+        "time": "6:00–8:00",
+        "move": "Bridge: composition is inside-out; custom symbols are disguised functions."
+      },
+      {
+        "time": "8:00–9:00",
+        "move": "Learning intention + success criteria."
+      },
+      {
+        "time": "9:00–10:00",
+        "move": "I do: f(g(2)) with f(x)=2x+3, g(x)=x^2."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "If f(x) = 2x + 3 and g(x) = x^2, what is f(g(2))?",
+    "options": {
+      "A": "7",
+      "B": "11",
+      "C": "14",
+      "D": "19",
+      "E": "49"
+    },
+    "correct": "B",
+    "explanation": "Inside out: g(2) = 2^2 = 4, then f(4) = 2(4) + 3 = 11.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "Composition works from the inside out — do g(2) first.",
+      "g(2) = 2^2 = 4.",
+      "Now apply f to that result: f(4) = 2·4 + 3 = 11."
+    ],
+    "key_takeaway": "For f(g(x)), evaluate the inner function first, then substitute that value into the outer function.",
+    "topic": "gmat::quant::algebra::functions",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Problem Solving"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "If f(x) = 3x − 5, find f(−2).",
+      "options": {
+        "A": "−11",
+        "B": "−1",
+        "C": "1",
+        "D": "11",
+        "E": "−6"
+      },
+      "correct": "A",
+      "explanation": "f(−2) = 3(−2) − 5 = −6 − 5 = −11.",
+      "difficulty": "easy",
+      "scaffold_hints": [
+        "Substitute x = −2 everywhere.",
+        "3(−2) = −6.",
+        "−6 − 5 = −11."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right — −11.",
+        "if_incorrect": "Keep the negative: 3 times −2 is −6, then subtract 5."
+      },
+      "topic": "gmat::quant::algebra::functions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    },
+    {
+      "id": "we_2",
+      "stem": "A custom operation is defined by a ◇ b = a^2 − b. What is 5 ◇ 3?",
+      "options": {
+        "A": "22",
+        "B": "13",
+        "C": "28",
+        "D": "2",
+        "E": "8"
+      },
+      "correct": "A",
+      "explanation": "Replace a with 5 and b with 3: 5^2 − 3 = 25 − 3 = 22.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "Match the symbols: a = 5, b = 3.",
+        "a^2 = 25.",
+        "25 − 3 = 22."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Yes — 22.",
+        "if_incorrect": "Square the first input (a), then subtract the second (b)."
+      },
+      "topic": "gmat::quant::algebra::functions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "If f(x) = x^2 + 1, what is f(3) − f(1)?",
+      "options": {
+        "A": "6",
+        "B": "8",
+        "C": "9",
+        "D": "10",
+        "E": "12"
+      },
+      "correct": "B",
+      "explanation": "f(3) = 10 and f(1) = 2, so f(3) − f(1) = 8.",
+      "difficulty": "medium",
+      "target_seconds": 60,
+      "topic": "gmat::quant::algebra::functions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "If g(x) = (x + 1)/2, for what value of x does g(x) = 5?",
+      "options": {
+        "A": "4",
+        "B": "9",
+        "C": "10",
+        "D": "11",
+        "E": "24"
+      },
+      "correct": "B",
+      "explanation": "(x + 1)/2 = 5 → x + 1 = 10 → x = 9.",
+      "difficulty": "medium",
+      "target_seconds": 75,
+      "topic": "gmat::quant::algebra::functions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "If f(x) = 2x − 1 and f(g(x)) = 4x + 3, what is g(x)?",
+      "options": {
+        "A": "2x + 2",
+        "B": "2x − 2",
+        "C": "4x + 4",
+        "D": "2x + 1",
+        "E": "x + 2"
+      },
+      "correct": "A",
+      "explanation": "f(g(x)) = 2·g(x) − 1 = 4x + 3 → 2g(x) = 4x + 4 → g(x) = 2x + 2.",
+      "difficulty": "hard",
+      "target_seconds": 105,
+      "topic": "gmat::quant::algebra::functions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_4",
+      "stem": "The operation ★ is defined by n★ = n^2 − n. What is (3★)★?",
+      "options": {
+        "A": "6",
+        "B": "30",
+        "C": "36",
+        "D": "42",
+        "E": "870"
+      },
+      "correct": "B",
+      "explanation": "3★ = 9 − 3 = 6; then 6★ = 36 − 6 = 30.",
+      "difficulty": "hard",
+      "target_seconds": 90,
+      "topic": "gmat::quant::algebra::functions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "sample_held_out_items": [
+      {
+        "id": "mc_1",
+        "stem": "If f(x) = 4 − x^2, find f(−3).",
+        "options": {
+          "A": "13",
+          "B": "1",
+          "C": "−5",
+          "D": "−13",
+          "E": "5"
+        },
+        "correct": "C",
+        "explanation": "f(−3) = 4 − (−3)^2 = 4 − 9 = −5.",
+        "difficulty": "medium",
+        "topic": "gmat::quant::algebra::functions",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      },
+      {
+        "id": "mc_2",
+        "stem": "If f(x) = 2x and g(x) = x + 4, what is g(f(3))?",
+        "options": {
+          "A": "10",
+          "B": "14",
+          "C": "9",
+          "D": "18",
+          "E": "22"
+        },
+        "correct": "A",
+        "explanation": "f(3) = 6, then g(6) = 6 + 4 = 10.",
+        "difficulty": "medium",
+        "topic": "gmat::quant::algebra::functions",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      }
+    ],
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "OpenStax, Intermediate Algebra 2e — Functions",
+      "url": "https://openstax.org/details/books/intermediate-algebra-2e",
+      "note": "Function notation, evaluation, and composition.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy — Functions",
+      "url": "https://www.khanacademy.org/math/algebra2",
+      "note": "Evaluating functions and composing them."
+    },
+    {
+      "name": "GMAC — GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Quantitative Reasoning scope."
+    }
+  ],
+  "tags": [
+    "algebra",
+    "functions",
+    "function-notation",
+    "composition",
+    "custom-operations"
+  ],
+  "schema_version": "1.0",
+  "section": "Quantitative Reasoning",
+  "question_type": "Problem Solving",
+  "exam": "GMAT Focus Edition"
+}

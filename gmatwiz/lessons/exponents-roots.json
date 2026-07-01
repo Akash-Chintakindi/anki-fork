@@ -1,0 +1,364 @@
+{
+  "topic_id": "gmat::quant::arithmetic::exponents_roots",
+  "slug": "exponents-roots",
+  "title": "Exponents & Roots",
+  "domain": "Arithmetic",
+  "estimated_minutes": 22,
+  "prerequisites": [
+    "number properties (prime factorization)",
+    "multiplication"
+  ],
+  "learning_objectives": [
+    "Apply the exponent rules: product, quotient, power-of-a-power, zero, and negative exponents.",
+    "Interpret roots as fractional exponents and simplify radicals.",
+    "Solve a^x = N by rewriting N as a power of a and matching exponents.",
+    "Compare powers by expressing them on a common base."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do → we do → you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Repeated multiplication and prime factorization.",
+    "do_now": {
+      "instructions": "From memory, no calculator. 4 minutes.",
+      "items": [
+        {
+          "prompt": "Compute 2^3 and 5^2.",
+          "answer": "8 and 25.",
+          "targets": "meaning of exponents"
+        },
+        {
+          "prompt": "Simplify x^2 · x^3.",
+          "answer": "x^5.",
+          "targets": "product rule"
+        },
+        {
+          "prompt": "What is √36?",
+          "answer": "6.",
+          "targets": "square roots"
+        },
+        {
+          "prompt": "What is x^0 for x ≠ 0?",
+          "answer": "1.",
+          "targets": "zero exponent"
+        },
+        {
+          "prompt": "Why is x^2 · x^3 = x^5, not x^6?",
+          "answer": "Multiplying powers of the same base ADDS exponents — you're counting total factors (2 + 3 = 5).",
+          "targets": "reasoning behind the product rule"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Retrieves the product rule, square roots, and the zero exponent — the building blocks for power-of-a-power, fractional exponents, and same-base comparisons today.",
+      "if_students_struggle": "If the product rule is fuzzy, expand it: x^2 · x^3 = (x·x)(x·x·x) = x^5. Counting factors makes 'add exponents' obvious."
+    },
+    "prior_knowledge_bridge": "Q5 is the engine of this whole topic: every exponent rule is just careful factor-counting, and prime factorization (last week) is how you put two different-looking powers on the same base. Today you'll extend 'add the exponents' to dividing, nesting, and fractional exponents (roots) — and use a common base to compare powers fast.",
+    "learning_intention": "By the end you can simplify expressions with the exponent rules, convert between roots and fractional exponents, and solve and compare exponential expressions by matching bases.",
+    "success_criteria": [
+      "I can simplify products, quotients, and powers of powers without errors.",
+      "I can rewrite a root as a fractional exponent and evaluate it.",
+      "I can compare powers by putting them on a common base."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00–4:00",
+        "move": "Do Now; silent retrieval."
+      },
+      {
+        "time": "4:00–6:00",
+        "move": "Check; expand x^2·x^3 to justify Q5."
+      },
+      {
+        "time": "6:00–8:00",
+        "move": "Bridge: same-base thinking via prime factorization."
+      },
+      {
+        "time": "8:00–9:00",
+        "move": "Learning intention + success criteria."
+      },
+      {
+        "time": "9:00–10:00",
+        "move": "I do: solve 2^x = 8 and 3^y = 81."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "If 2^x = 8 and 3^y = 81, what is x + y?",
+    "options": {
+      "A": "5",
+      "B": "6",
+      "C": "7",
+      "D": "12",
+      "E": "24"
+    },
+    "correct": "C",
+    "explanation": "Rewrite each side on its own base: 8 = 2^3 so x = 3; 81 = 3^4 so y = 4; x + y = 7.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "8 is a power of 2: 8 = 2^3, so x = 3.",
+      "81 is a power of 3: 81 = 3^4, so y = 4.",
+      "x + y = 3 + 4 = 7."
+    ],
+    "key_takeaway": "To solve a^x = N, rewrite N as a power of a, then match the exponents.",
+    "topic": "gmat::quant::arithmetic::exponents_roots",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Problem Solving"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "Simplify (x^3)^4 · x^2.",
+      "options": {
+        "A": "x^9",
+        "B": "x^14",
+        "C": "x^24",
+        "D": "x^20",
+        "E": "x^12"
+      },
+      "correct": "B",
+      "explanation": "Power of a power multiplies: (x^3)^4 = x^12. Then multiply like bases by adding: x^12 · x^2 = x^14.",
+      "difficulty": "easy",
+      "scaffold_hints": [
+        "Inner first: (x^3)^4 means multiply exponents → x^12.",
+        "Now you have x^12 · x^2.",
+        "Same base, multiplying → add exponents: 12 + 2."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right — x^14.",
+        "if_incorrect": "Multiply for power-of-a-power, then ADD for the product. Don't mix the two."
+      },
+      "topic": "gmat::quant::arithmetic::exponents_roots",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    },
+    {
+      "id": "we_2",
+      "stem": "Simplify √72.",
+      "options": {
+        "A": "6√2",
+        "B": "8√3",
+        "C": "36",
+        "D": "12",
+        "E": "9√2"
+      },
+      "correct": "A",
+      "explanation": "Pull out the largest perfect-square factor: 72 = 36 × 2, so √72 = √36 · √2 = 6√2.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "Find the largest perfect square dividing 72.",
+        "72 = 36 × 2 and 36 is a perfect square.",
+        "√(36·2) = √36 · √2 = 6√2."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Yes — 6√2.",
+        "if_incorrect": "Factor out a perfect square (36), not just any factor, so the root comes out whole."
+      },
+      "topic": "gmat::quant::arithmetic::exponents_roots",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "Compute 4^(3/2).",
+      "options": {
+        "A": "6",
+        "B": "8",
+        "C": "12",
+        "D": "16",
+        "E": "64"
+      },
+      "correct": "B",
+      "explanation": "A fractional exponent is root-then-power: 4^(3/2) = (√4)^3 = 2^3 = 8.",
+      "difficulty": "medium",
+      "target_seconds": 75,
+      "topic": "gmat::quant::arithmetic::exponents_roots",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "Simplify 3^5 / 3^2.",
+      "options": {
+        "A": "3",
+        "B": "9",
+        "C": "27",
+        "D": "81",
+        "E": "243"
+      },
+      "correct": "C",
+      "explanation": "Dividing like bases subtracts exponents: 3^(5−2) = 3^3 = 27.",
+      "difficulty": "medium",
+      "target_seconds": 60,
+      "topic": "gmat::quant::arithmetic::exponents_roots",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "If 2^(x+3) = 32, what is x?",
+      "options": {
+        "A": "1",
+        "B": "2",
+        "C": "3",
+        "D": "4",
+        "E": "5"
+      },
+      "correct": "B",
+      "explanation": "32 = 2^5, so x + 3 = 5, giving x = 2.",
+      "difficulty": "hard",
+      "target_seconds": 75,
+      "topic": "gmat::quant::arithmetic::exponents_roots",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_4",
+      "stem": "Which of the following is the greatest?",
+      "options": {
+        "A": "2^14",
+        "B": "4^9",
+        "C": "8^5",
+        "D": "16^4",
+        "E": "2^17"
+      },
+      "correct": "B",
+      "explanation": "Put everything on base 2: 2^14, 4^9 = 2^18, 8^5 = 2^15, 16^4 = 2^16, 2^17. The largest exponent is 18, so 4^9 is greatest.",
+      "difficulty": "hard",
+      "target_seconds": 105,
+      "topic": "gmat::quant::arithmetic::exponents_roots",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "sample_held_out_items": [
+      {
+        "id": "mc_1",
+        "stem": "Simplify (2^3)^2.",
+        "options": {
+          "A": "16",
+          "B": "32",
+          "C": "64",
+          "D": "128",
+          "E": "256"
+        },
+        "correct": "C",
+        "explanation": "Multiply exponents: (2^3)^2 = 2^6 = 64.",
+        "difficulty": "easy",
+        "topic": "gmat::quant::arithmetic::exponents_roots",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      },
+      {
+        "id": "mc_2",
+        "stem": "Compute 9^(1/2) + 27^(1/3).",
+        "options": {
+          "A": "5",
+          "B": "6",
+          "C": "9",
+          "D": "12",
+          "E": "18"
+        },
+        "correct": "B",
+        "explanation": "9^(1/2) = √9 = 3 and 27^(1/3) = ∛27 = 3; sum = 6.",
+        "difficulty": "medium",
+        "topic": "gmat::quant::arithmetic::exponents_roots",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      }
+    ],
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "OpenStax, Intermediate Algebra 2e — Exponents and Radicals",
+      "url": "https://openstax.org/details/books/intermediate-algebra-2e",
+      "note": "Exponent rules, rational exponents, simplifying radicals.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy — Exponents & radicals",
+      "url": "https://www.khanacademy.org/math/algebra",
+      "note": "Rules of exponents and working with roots."
+    },
+    {
+      "name": "GMAC — GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Quantitative Reasoning scope."
+    }
+  ],
+  "tags": [
+    "arithmetic",
+    "exponents",
+    "roots",
+    "radicals",
+    "fractional-exponents",
+    "same-base"
+  ],
+  "schema_version": "1.0",
+  "section": "Quantitative Reasoning",
+  "question_type": "Problem Solving",
+  "exam": "GMAT Focus Edition"
+}

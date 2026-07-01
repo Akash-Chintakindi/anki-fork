@@ -1,0 +1,363 @@
+{
+  "topic_id": "gmat::quant::arithmetic::percents",
+  "slug": "percents",
+  "title": "Percents",
+  "domain": "Arithmetic",
+  "estimated_minutes": 22,
+  "prerequisites": [
+    "fractions",
+    "decimals"
+  ],
+  "learning_objectives": [
+    "Convert among percents, fractions, and decimals.",
+    "Compute a percent of a number and find percent change (increase/decrease).",
+    "Handle successive (compound) percents by multiplying factors, not adding.",
+    "Reverse a percent: find the original from a part and its percent."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do → we do → you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Fractions and decimals — 'percent' means 'per hundred'.",
+    "do_now": {
+      "instructions": "From memory, no calculator. 4 minutes.",
+      "items": [
+        {
+          "prompt": "Write 25% as a fraction in lowest terms.",
+          "answer": "1/4.",
+          "targets": "percent → fraction"
+        },
+        {
+          "prompt": "What is 10% of 80?",
+          "answer": "8.",
+          "targets": "percent of a number"
+        },
+        {
+          "prompt": "Convert 0.45 to a percent.",
+          "answer": "45%.",
+          "targets": "decimal → percent"
+        },
+        {
+          "prompt": "Write 1/5 as a percent.",
+          "answer": "20%.",
+          "targets": "fraction → percent"
+        },
+        {
+          "prompt": "If a price goes up 50% then down 50%, are you back to the start?",
+          "answer": "No — the 50% drop is taken from the larger amount (100 → 150 → 75).",
+          "targets": "successive-percent misconception"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Retrieves conversions and 'percent of a number', and surfaces the #1 percent misconception (successive percents don't add) that today's lesson resolves.",
+      "if_students_struggle": "If 10% of 80 is hard, anchor '10% = move the decimal one place'; build 5% and 15% from there."
+    },
+    "prior_knowledge_bridge": "Q5 is the trap the GMAT sets constantly: people add percents. You can't, because each percent acts on a different base. Today you'll treat every percent as a multiplier (15% off = ×0.85) and chain them — the same equivalent-fraction thinking you used with decimals, now applied to change.",
+    "learning_intention": "By the end you can compute percent-of and percent-change, chain successive percents by multiplying, and reverse a percent to find the original amount.",
+    "success_criteria": [
+      "I can rewrite any percent as a multiplier (e.g., +20% = ×1.20).",
+      "I can compute percent change as change ÷ original.",
+      "I can find the original quantity when given a part and its percent."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00–4:00",
+        "move": "Do Now; silent retrieval."
+      },
+      {
+        "time": "4:00–6:00",
+        "move": "Check; act out 100 → 150 → 75 to kill the 'add percents' habit."
+      },
+      {
+        "time": "6:00–8:00",
+        "move": "Bridge: percent as a multiplier; chain multipliers."
+      },
+      {
+        "time": "8:00–9:00",
+        "move": "Learning intention + success criteria."
+      },
+      {
+        "time": "9:00–10:00",
+        "move": "I do: the double-discount shirt."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "A shirt priced at $80 is discounted 25%, then an additional 10% is taken off the reduced price. What is the final price?",
+    "options": {
+      "A": "$52",
+      "B": "$54",
+      "C": "$56",
+      "D": "$58",
+      "E": "$60"
+    },
+    "correct": "B",
+    "explanation": "Apply discounts in sequence: 80 × 0.75 = 60, then 60 × 0.90 = 54.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "25% off means you pay 75%: 80 × 0.75 = 60.",
+      "The next 10% comes off $60, not $80: 60 × 0.90 = 54.",
+      "Final price is $54 — equivalent to ×0.675, i.e., 32.5% off, not 35%."
+    ],
+    "key_takeaway": "Successive percents MULTIPLY (×0.75 then ×0.90 = ×0.675); they never simply add.",
+    "topic": "gmat::quant::arithmetic::percents",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Problem Solving"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "What is 15% of 240?",
+      "options": {
+        "A": "24",
+        "B": "30",
+        "C": "36",
+        "D": "40",
+        "E": "48"
+      },
+      "correct": "C",
+      "explanation": "10% of 240 = 24, and 5% = 12, so 15% = 24 + 12 = 36.",
+      "difficulty": "easy",
+      "scaffold_hints": [
+        "Find 10% first: move the decimal one place → 24.",
+        "5% is half of 10% → 12.",
+        "15% = 10% + 5% = 24 + 12."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right — building from 10% keeps it calculator-free.",
+        "if_incorrect": "Decompose: 15% = 10% + 5%. Find each, then add."
+      },
+      "topic": "gmat::quant::arithmetic::percents",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    },
+    {
+      "id": "we_2",
+      "stem": "A quantity increases from 50 to 65. What is the percent increase?",
+      "options": {
+        "A": "15%",
+        "B": "23%",
+        "C": "30%",
+        "D": "65%",
+        "E": "130%"
+      },
+      "correct": "C",
+      "explanation": "Percent change = change ÷ original = (65 − 50)/50 = 15/50 = 0.30 = 30%.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "Percent change uses the ORIGINAL as the base.",
+        "Change = 65 − 50 = 15.",
+        "15/50 = 0.30."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Yes — 30% increase.",
+        "if_incorrect": "Divide the change by the original (50), not by the new value (65)."
+      },
+      "topic": "gmat::quant::arithmetic::percents",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "If 40% of a number is 28, what is the number?",
+      "options": {
+        "A": "56",
+        "B": "64",
+        "C": "70",
+        "D": "112",
+        "E": "11.2"
+      },
+      "correct": "C",
+      "explanation": "0.40x = 28 → x = 28 ÷ 0.40 = 70.",
+      "difficulty": "medium",
+      "target_seconds": 75,
+      "topic": "gmat::quant::arithmetic::percents",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "A price rises 20% and then falls 20%. Compared with the original price, the result is:",
+      "options": {
+        "A": "no change",
+        "B": "a 4% increase",
+        "C": "a 4% decrease",
+        "D": "a 20% decrease",
+        "E": "a 40% increase"
+      },
+      "correct": "C",
+      "explanation": "1.20 × 0.80 = 0.96, which is a 4% decrease from the original.",
+      "difficulty": "medium",
+      "target_seconds": 75,
+      "topic": "gmat::quant::arithmetic::percents",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "30 is what percent of 24?",
+      "options": {
+        "A": "80%",
+        "B": "120%",
+        "C": "125%",
+        "D": "130%",
+        "E": "144%"
+      },
+      "correct": "C",
+      "explanation": "30 ÷ 24 = 1.25 = 125%.",
+      "difficulty": "hard",
+      "target_seconds": 75,
+      "topic": "gmat::quant::arithmetic::percents",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_4",
+      "stem": "In a group, 60% are women, and 25% of the women wear glasses. What percent of the whole group are women who wear glasses?",
+      "options": {
+        "A": "12%",
+        "B": "15%",
+        "C": "20%",
+        "D": "25%",
+        "E": "35%"
+      },
+      "correct": "B",
+      "explanation": "A percent OF a percent multiplies: 0.25 × 0.60 = 0.15 = 15%.",
+      "difficulty": "hard",
+      "target_seconds": 90,
+      "topic": "gmat::quant::arithmetic::percents",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "sample_held_out_items": [
+      {
+        "id": "mc_1",
+        "stem": "What is 35% of 80?",
+        "options": {
+          "A": "24",
+          "B": "28",
+          "C": "30",
+          "D": "32",
+          "E": "36"
+        },
+        "correct": "B",
+        "explanation": "10% = 8 → 30% = 24; 5% = 4; total 35% = 28.",
+        "difficulty": "easy",
+        "topic": "gmat::quant::arithmetic::percents",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      },
+      {
+        "id": "mc_2",
+        "stem": "A quantity decreases from 200 to 150. What is the percent decrease?",
+        "options": {
+          "A": "20%",
+          "B": "25%",
+          "C": "30%",
+          "D": "33%",
+          "E": "50%"
+        },
+        "correct": "B",
+        "explanation": "Change 50 over original 200 = 50/200 = 25%.",
+        "difficulty": "medium",
+        "topic": "gmat::quant::arithmetic::percents",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      }
+    ],
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "OpenStax, Prealgebra 2e — Percents",
+      "url": "https://openstax.org/details/books/prealgebra-2e",
+      "note": "Percent of a number, percent change, applications.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy — Percentages",
+      "url": "https://www.khanacademy.org/math/arithmetic",
+      "note": "Percent of, percent change, and word problems."
+    },
+    {
+      "name": "GMAC — GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Quantitative Reasoning scope."
+    }
+  ],
+  "tags": [
+    "arithmetic",
+    "percents",
+    "percent-change",
+    "successive-percents",
+    "reverse-percent"
+  ],
+  "schema_version": "1.0",
+  "section": "Quantitative Reasoning",
+  "question_type": "Problem Solving",
+  "exam": "GMAT Focus Edition"
+}

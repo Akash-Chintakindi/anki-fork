@@ -41,6 +41,9 @@ pub enum BoolKey {
     FsrsHealthCheck,
     FsrsLegacyEvaluate,
     LoadBalancerEnabled,
+    /// GMATWiz: when enabled, the review queue is reordered so weaker-topic
+    /// cards surface first (FSRS intervals are unchanged). Defaults to false.
+    TopicAwareScheduling,
     FsrsShortTermWithStepsEnabled,
     #[strum(to_string = "normalize_note_text")]
     NormalizeNoteText,

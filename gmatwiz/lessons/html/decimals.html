@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Decimals &middot; GMATWiz Quant</title>
+<style>
+:root{
+  --ink:#1a1813; --muted:#6b6358; --rule:#d9d2c5; --bg:#fbf9f4; --card:#fffdf8;
+  --accent:#7a3b2e; --accent2:#3a5a40; --link:#7a3b2e; --code:#2b2b2b;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:3rem 2rem 6rem;}
+.content{max-width:720px;}
+header.masthead{border-bottom:1px solid var(--rule); padding-bottom:1.2rem; margin-bottom:2rem;}
+.kicker{font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:0 0 .4rem;}
+h1{font-size:2.3rem; line-height:1.1; margin:.1rem 0 .6rem; font-weight:600; letter-spacing:-.01em;}
+.meta{color:var(--muted); font-size:.9rem; margin:0;}
+.meta b{color:var(--ink); font-weight:600;}
+h2{font-size:1.45rem; margin:2.8rem 0 .3rem; font-weight:600; letter-spacing:-.01em;}
+h2 .num{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:.5rem;}
+h3{font-size:1.06rem; margin:1.6rem 0 .4rem; font-weight:600;}
+.sub{color:var(--muted); font-style:italic; margin:.1rem 0 1rem; font-size:.95rem;}
+p{margin:.6rem 0;} ul,ol{margin:.5rem 0 .9rem; padding-left:1.3rem;} li{margin:.25rem 0;}
+a{color:var(--link); text-decoration:none; border-bottom:1px solid rgba(122,59,46,.35);}
+a:hover{border-bottom-color:var(--link);}
+.lead{font-size:1.08rem;}
+section{position:relative;}
+.note{font-size:.8rem; color:var(--muted); line-height:1.4;}
+.objectives{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1rem 1.2rem;}
+.objectives ul{margin:.3rem 0 0;}
+.intent{border-left:3px solid var(--accent2); padding:.4rem 0 .4rem 1rem; margin:1rem 0; font-size:1.05rem;}
+.donow{background:#2b2620; color:#f3ecde; border-radius:8px; padding:1.1rem 1.3rem; margin:1rem 0;}
+.donow .tag{font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:#d8b48a;}
+.donow ol{padding-left:1.2rem;} .donow li{margin:.4rem 0;}
+.donow .ans{color:#b9c6a9; font-style:italic; font-size:.86rem; display:block; margin-top:.15rem;}
+table{border-collapse:collapse; width:100%; font-size:.92rem; margin:.6rem 0 1rem;}
+th,td{text-align:left; padding:.45rem .6rem; border-bottom:1px solid var(--rule); vertical-align:top;}
+th{font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+td.t{white-space:nowrap; color:var(--accent); font-variant-numeric:tabular-nums; width:6.5rem;}
+.q{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1.1rem 1.3rem; margin:1.1rem 0;}
+.q .qid{font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+.q .qid .diff{float:right; color:var(--accent2);}
+.q .stem{font-size:1.03rem; margin:.35rem 0 .6rem;}
+.choices{list-style:none; padding:0; margin:.2rem 0 .4rem; counter-reset:c;}
+.choices li{padding:.32rem .6rem; border:1px solid var(--rule); border-radius:6px; margin:.3rem 0; background:#fff;}
+.choices li .lab{display:inline-block; width:1.5rem; font-weight:600; color:var(--accent);}
+.choices li.correct{border-color:var(--accent2); background:#eef3ec;}
+.choices li.correct .lab{color:var(--accent2);}
+details{margin:.5rem 0 .2rem; border-top:1px dashed var(--rule); padding-top:.5rem;}
+details>summary{cursor:pointer; font-size:.86rem; color:var(--accent); font-weight:600; list-style:none;}
+details>summary::-webkit-details-marker{display:none;}
+details>summary::before{content:"\25B8  "; color:var(--accent);}
+details[open]>summary::before{content:"\25BE  ";}
+.expl{font-size:.95rem; margin-top:.5rem;}
+.hints{font-size:.92rem;} .hints li{margin:.2rem 0;}
+.feedback{font-size:.9rem;} .feedback .ok{color:var(--accent2);} .feedback .no{color:var(--accent);}
+.appfirst{font-size:.78rem; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin:.2rem 0;}
+.mastery{background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--accent2); border-radius:8px; padding:1rem 1.2rem;}
+.pill{display:inline-block; font-size:.72rem; padding:.12rem .5rem; border:1px solid var(--rule); border-radius:999px; color:var(--muted); margin:.1rem .2rem .1rem 0;}
+footer{margin-top:3.5rem; border-top:1px solid var(--rule); padding-top:1rem; color:var(--muted); font-size:.82rem;}
+.src{background:#eef3ec; border:1px solid #cfe0cf; border-radius:8px; padding:.9rem 1.1rem; margin:1.2rem 0;}
+.src .tag{font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent2); font-weight:600;}
+.crumbs{font-size:.85rem; margin-bottom:1.2rem;}
+.ask{font-size:.9rem; background:#fff8ec; border:1px dashed #e0c590; border-radius:8px; padding:.7rem 1rem; margin:1.4rem 0;}
+@media print{ body{background:#fff} .wrap{padding:0} a{border:none} .donow{-webkit-print-color-adjust:exact; print-color-adjust:exact} }
+</style></head>
+<body><div class="wrap"><div class="content">
+  <div class="crumbs"><a href="index.html">&larr; All Quant topics</a> &middot; Arithmetic</div>
+  <header class="masthead">
+    <p class="kicker">GMATWiz &middot; GMAT Focus Edition &middot; Quantitative Reasoning (Problem Solving)</p>
+    <h1>Decimals</h1>
+    <p class="meta"><b>Topic id</b> <code>gmat::quant::arithmetic::decimals</code> &middot; <b>Domain</b> Arithmetic
+      &middot; <b>Prereqs</b> place value, fractions &middot; <b>~20 min</b></p>
+  </header>
+
+  <div class="objectives">
+    <p class="note"><b>Learning objectives</b></p>
+    <ul><li>Multiply and divide decimals by tracking decimal places and shifting by powers of 10.</li><li>Convert fluently among fractions, decimals, and percents.</li><li>Round and estimate to sanity-check the size of an answer.</li></ul>
+    <p class="note">Model: I do → we do → you do &middot; application-first (explanations revealed after an attempt) &middot; Rosenshine (daily review), Archer (I-do/we-do/you-do), SPOV2 application-first.</p>
+  </div>
+
+  
+    <section>
+      <h2><span class="num">1</span>Opening &mdash; retrieval &amp; bridge</h2>
+      <p class="sub">Builds on: Place value and the fraction ↔ decimal link.</p>
+      <div class="donow">
+        <div class="tag">Do Now &middot; from memory, no notes</div>
+        <p>From memory, no calculator. 4 minutes.</p>
+        <ol><li>Write 0.75 as a fraction in lowest terms.<span class="ans">3/4.</span></li><li>Compute 0.2 × 0.3.<span class="ans">0.06.</span></li><li>Round 3.467 to the nearest hundredth.<span class="ans">3.47.</span></li><li>What fraction equals 0.125?<span class="ans">1/8.</span></li><li>Why is 0.2 × 0.3 = 0.06, not 0.6?<span class="ans">Multiply the digits (2 × 3 = 6), then place the point by the TOTAL decimal places (1 + 1 = 2).</span></li></ol>
+      </div>
+      <p class="note"><b>Retrieval starter (5 min).</b> Retrieves decimal–fraction conversions and the decimal-place rule for multiplication — the foundation for the division and size-estimation problems coming up.
+      <br><b>If students struggle:</b> If place counting is shaky, model 0.2 × 0.3 as (2/10)(3/10) = 6/100 = 0.06 to anchor the rule in fractions.</p>
+      <h3>Prior-knowledge bridge</h3>
+      <p>Q5 explains the rule you&#x27;ll lean on all lesson: a decimal is just a fraction over a power of ten. Once you see 0.2 = 2/10, multiplying and dividing decimals becomes counting places and shifting by powers of 10 — and converting to fractions is often the fastest GMAT move.</p>
+      <h3>Learning intention</h3>
+      <p class="intent">By the end you can multiply and divide decimals reliably, convert among fractions/decimals/percents, and estimate to check an answer&#x27;s size.</p>
+      <p class="note"><b>You'll know you've got it when:</b></p>
+      <ul><li>I can divide by a decimal by shifting both numbers to make the divisor whole.</li><li>I can convert a decimal to a reduced fraction and back.</li><li>I can predict roughly how big an answer should be before computing.</li></ul>
+      <details><summary>Complete timed opening script</summary>
+        <table><thead><tr><th>Time</th><th>Move</th></tr></thead><tbody><tr><td class="t">0:00–4:00</td><td>Do Now; silent retrieval.</td></tr><tr><td class="t">4:00–6:00</td><td>Check; dwell on Q5&#x27;s place-value reasoning.</td></tr><tr><td class="t">6:00–8:00</td><td>Bridge: decimals are fractions over powers of 10; preview division by shifting.</td></tr><tr><td class="t">8:00–9:00</td><td>Learning intention + success criteria.</td></tr><tr><td class="t">9:00–10:00</td><td>I do: 0.0036 ÷ 0.04.</td></tr></tbody></table>
+      </details>
+    </section>
+
+  <section>
+    <h2><span class="num">2</span>I do &mdash; worked example</h2>
+    <p class="sub">Watch the reasoning modeled end to end before you try.</p>
+    
+    <div class="q">
+      <div class="qid">I DO &middot; worked example<span class="diff">medium</span></div>
+      <div class="stem">Which of the following is equal to 0.0036 ÷ 0.04?</div>
+      <ul class="choices"><li><span class="lab">A</span>0.9</li><li class="correct"><span class="lab">B</span>0.09</li><li><span class="lab">C</span>0.009</li><li><span class="lab">D</span>9</li><li><span class="lab">E</span>0.0009</li></ul>
+      <h3>Think-aloud</h3>
+      <ol><li>Dividing by a decimal is awkward; make the divisor a whole number.</li><li>Multiply BOTH by 100: 0.0036 → 0.36 and 0.04 → 4.</li><li>0.36 ÷ 4 = 0.09.</li><li>Size check: dividing by the small number 0.04 should give a small result — 0.09 fits.</li></ol>
+      <p class="expl"><b>Correct: B.</b> Multiply both numbers by 100 to make the divisor whole: 0.0036 ÷ 0.04 = 0.36 ÷ 4 = 0.09.</p>
+      <p class="note"><b>Takeaway.</b> To divide by a decimal, shift the decimal point in BOTH numbers until the divisor is a whole number.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>We do &mdash; guided practice</h2>
+    <p class="sub">Scaffolds and immediate feedback are one click away. Fade them as you gain confidence.</p>
+    
+    <div class="q">
+      <div class="qid">we_1 &middot; we do (guided)<span class="diff">easy</span></div>
+      <div class="stem">Compute 1.2 × 0.05.</div>
+      <ul class="choices"><li><span class="lab">A</span>0.6</li><li class="correct"><span class="lab">B</span>0.06</li><li><span class="lab">C</span>0.006</li><li><span class="lab">D</span>6.0</li><li><span class="lab">E</span>0.0006</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>Drop the decimals: 12 × 5 = 60.</li><li>Count decimal places in the factors: 1 (in 1.2) + 2 (in 0.05) = 3.</li><li>Place the point 3 from the right: 0.060 = 0.06.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Right — 60 with three decimal places is 0.06.<br>
+        <span class="no">If incorrect:</span> Count places in BOTH factors (1 + 2 = 3), not just one.</p>
+        <p class="expl"><b>Answer: B.</b> Ignore the points: 12 × 5 = 60. Total decimal places = 1 + 2 = 3, so 0.060 = 0.06.</p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">we_2 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">Write 7/8 as a decimal.</div>
+      <ul class="choices"><li><span class="lab">A</span>0.78</li><li class="correct"><span class="lab">B</span>0.875</li><li><span class="lab">C</span>0.825</li><li><span class="lab">D</span>0.88</li><li><span class="lab">E</span>0.7875</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>Recall 1/8 = 0.125.</li><li>7/8 = 7 × (1/8).</li><li>7 × 0.125 = 0.875.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Yes — 0.875.<br>
+        <span class="no">If incorrect:</span> Use the benchmark 1/8 = 0.125 and multiply by 7, or long-divide 7 ÷ 8.</p>
+        <p class="expl"><b>Answer: B.</b> 1/8 = 0.125, so 7/8 = 7 × 0.125 = 0.875 (or divide 7 ÷ 8 = 0.875).</p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>You do &mdash; independent application</h2>
+    <p class="sub">Application-first (SPOV2): commit to an answer, then reveal the explanation. Log every miss.</p>
+    
+    <div class="q">
+      <div class="qid">you_1 &middot; you do (independent) &middot; target 75s<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Compute 0.6 ÷ 0.0012.</div>
+      <ul class="choices"><li><span class="lab">A</span>5</li><li><span class="lab">B</span>50</li><li class="correct"><span class="lab">C</span>500</li><li><span class="lab">D</span>5000</li><li><span class="lab">E</span>0.5</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: C.</b> Shift both by 10,000: 6000 ÷ 12 = 500.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_2 &middot; you do (independent) &middot; target 75s<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Which fraction is equal to 0.0625?</div>
+      <ul class="choices"><li><span class="lab">A</span>1/8</li><li class="correct"><span class="lab">B</span>1/16</li><li><span class="lab">C</span>5/8</li><li><span class="lab">D</span>1/4</li><li><span class="lab">E</span>1/32</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: B.</b> 0.0625 = 625/10000 = 1/16 (and 1/16 = 0.0625).</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_3 &middot; you do (independent) &middot; target 90s<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">If n = 0.00025, then 1/n = ?</div>
+      <ul class="choices"><li><span class="lab">A</span>400</li><li class="correct"><span class="lab">B</span>4000</li><li><span class="lab">C</span>40000</li><li><span class="lab">D</span>250</li><li><span class="lab">E</span>2500</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: B.</b> 0.00025 = 25/100000, so 1/n = 100000/25 = 4000.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_4 &middot; you do (independent) &middot; target 90s<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Compute (0.03)² ÷ 0.0009.</div>
+      <ul class="choices"><li><span class="lab">A</span>0.1</li><li class="correct"><span class="lab">B</span>1</li><li><span class="lab">C</span>10</li><li><span class="lab">D</span>0.01</li><li><span class="lab">E</span>100</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: B.</b> (0.03)² = 0.0009, and 0.0009 ÷ 0.0009 = 1.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+  </section>
+
+  
+    <section>
+      <h2><span class="num">5</span>Mastery check</h2>
+      <div class="mastery">
+        <p>A topic is mastered at &gt;=85% correct on new/held-out-style questions across &gt;=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.</p>
+        <p class="note"><b>Threshold</b> 0.85 &middot; <b>spaced sessions</b> &ge; 2</p>
+        <ul><li>&gt;=85% correct on new/held-out-style items (not flashcard recall) per session</li><li>sustained across &gt;=2 spaced sessions with a delay between them</li><li>per-topic memory surfaced only after &gt;=20 graded reviews (PRD give-up rule)</li><li>per-topic performance surfaced only after &gt;=8 application attempts (PRD give-up rule)</li></ul>
+        <p class="note"><b>If not yet mastered:</b> Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -&gt; you-do loop before re-testing.</p>
+      </div>
+      <h3>Sample held-out check items</h3>
+    <div class="q">
+      <div class="qid">mc_1 &middot; held-out check<span class="diff">easy</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Compute 2.5 × 0.4.</div>
+      <ul class="choices"><li><span class="lab">A</span>0.1</li><li class="correct"><span class="lab">B</span>1</li><li><span class="lab">C</span>10</li><li><span class="lab">D</span>0.01</li><li><span class="lab">E</span>100</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: B.</b> 25 × 4 = 100; two total decimal places → 1.00 = 1.</p>
+        
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">mc_2 &middot; held-out check<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Write 0.16 as a fraction in lowest terms.</div>
+      <ul class="choices"><li><span class="lab">A</span>1/6</li><li class="correct"><span class="lab">B</span>4/25</li><li><span class="lab">C</span>1/16</li><li><span class="lab">D</span>2/25</li><li><span class="lab">E</span>16/25</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: B.</b> 0.16 = 16/100 = 4/25.</p>
+        
+      </details>
+    </div>
+    </section>
+
+  <div class="src">
+    <div class="tag">Primary source</div>
+    <p><a href="https://openstax.org/details/books/prealgebra-2e">OpenStax, Prealgebra 2e — Decimals</a> &mdash; Decimal operations, rounding, and fraction/decimal conversion.</p>
+    <p class='note'>Further reading:</p><ul><li><a href="https://www.khanacademy.org/math/arithmetic">Khan Academy — Decimals</a> &mdash; Multiplying/dividing decimals and converting to fractions.</li><li><a href="https://www.mba.com/exams/gmat-focus-edition">GMAC — GMAT Focus Edition (official exam overview)</a> &mdash; Official exam structure and Quantitative Reasoning scope.</li></ul>
+  </div>
+
+  <div class="ask">Stuck on any step? Ask your GMATWiz coach for a worked walkthrough &mdash; that's what it's here for.</div>
+
+  <footer>
+    <p>GMATWiz lesson &middot; <code>decimals.json</code> &middot; schema v1.0 &middot; authored content (OfficialFlag=false), reserved official items used only for late checkpoints.</p>
+  </footer>
+</div></div></body></html>

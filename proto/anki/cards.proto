@@ -52,6 +52,8 @@ message Card {
   optional float desired_retention = 21;
   optional float decay = 22;
   optional int64 last_review_time_secs = 23;
+  // GMATWiz: per-card topic mastery (0.0-1.0). Appended to keep field numbers stable.
+  optional float topic_mastery = 24;
   string custom_data = 19;
 }
 

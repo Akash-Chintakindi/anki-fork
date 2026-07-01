@@ -1,0 +1,364 @@
+{
+  "topic_id": "gmat::quant::arithmetic::probability",
+  "slug": "probability",
+  "title": "Probability",
+  "domain": "Arithmetic",
+  "estimated_minutes": 24,
+  "prerequisites": [
+    "fractions",
+    "counting & combinatorics"
+  ],
+  "learning_objectives": [
+    "Compute basic probability as favorable ÷ total equally likely outcomes.",
+    "Use the complement rule P(not A) = 1 − P(A), especially for 'at least one'.",
+    "Combine events: 'and' (multiply, independent) vs 'or' (add, then subtract overlap).",
+    "Handle without-replacement draws by updating counts."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do → we do → you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Fractions and counting outcomes.",
+    "do_now": {
+      "instructions": "From memory, no calculator. 4 minutes.",
+      "items": [
+        {
+          "prompt": "A fair die is rolled. P(rolling a 4)?",
+          "answer": "1/6.",
+          "targets": "basic probability"
+        },
+        {
+          "prompt": "A fair coin is flipped. P(heads)?",
+          "answer": "1/2.",
+          "targets": "equally likely outcomes"
+        },
+        {
+          "prompt": "A fair die is rolled. P(even number)?",
+          "answer": "3/6 = 1/2.",
+          "targets": "favorable ÷ total"
+        },
+        {
+          "prompt": "If P(rain) = 0.3, what is P(no rain)?",
+          "answer": "0.7 (the complement).",
+          "targets": "complement rule"
+        },
+        {
+          "prompt": "Two coin flips: why is P(two heads) = 1/4, not 1/2?",
+          "answer": "The flips are independent, so multiply: 1/2 × 1/2 = 1/4.",
+          "targets": "'and' of independent events"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Retrieves favorable-over-total, the complement, and the multiply-for-'and' rule — the three moves behind every problem today.",
+      "if_students_struggle": "If the multiply rule is unclear, list all four outcomes of two flips (HH, HT, TH, TT) to show P(HH) = 1/4."
+    },
+    "prior_knowledge_bridge": "Probability is just counting wrapped in a fraction: favorable outcomes over total outcomes (your counting skills). Q4 and Q5 add the two power tools — the complement (turn 'at least one' into '1 minus none') and multiplying for 'and'. Today you'll combine them, including draws without replacement where the counts change.",
+    "learning_intention": "By the end you can compute single-event probabilities, use the complement for 'at least one', and combine events with the 'and' (multiply) and 'or' (add minus overlap) rules.",
+    "success_criteria": [
+      "I can set up favorable ÷ total for an equally likely sample space.",
+      "I can solve 'at least one' problems via the complement.",
+      "I can chain dependent draws by updating the counts."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00–4:00",
+        "move": "Do Now; silent retrieval."
+      },
+      {
+        "time": "4:00–6:00",
+        "move": "Check; enumerate two-flip outcomes to justify Q5."
+      },
+      {
+        "time": "6:00–8:00",
+        "move": "Bridge: complement + multiply rule; preview without replacement."
+      },
+      {
+        "time": "8:00–9:00",
+        "move": "Learning intention + success criteria."
+      },
+      {
+        "time": "9:00–10:00",
+        "move": "I do: drawing two red marbles without replacement."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "A bag contains 4 red and 6 green marbles. Two marbles are drawn at random without replacement. What is the probability that both are red?",
+    "options": {
+      "A": "2/15",
+      "B": "4/25",
+      "C": "1/6",
+      "D": "2/5",
+      "E": "6/25"
+    },
+    "correct": "A",
+    "explanation": "P(both red) = (4/10)(3/9) = (2/5)(1/3) = 2/15. Without replacement, the second draw uses the reduced counts.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "First draw: 4 red out of 10 → 4/10 = 2/5.",
+      "No replacement: now 3 red remain out of 9 → 3/9 = 1/3.",
+      "'Both' means multiply: 2/5 × 1/3 = 2/15."
+    ],
+    "key_takeaway": "'And' (both happen) → multiply; without replacement, update the totals for the next draw.",
+    "topic": "gmat::quant::arithmetic::probability",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Problem Solving"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "A fair die is rolled once. What is the probability of rolling a number greater than 4?",
+      "options": {
+        "A": "1/6",
+        "B": "1/3",
+        "C": "1/2",
+        "D": "2/3",
+        "E": "1/4"
+      },
+      "correct": "B",
+      "explanation": "Favorable outcomes are 5 and 6 → 2 out of 6 = 1/3.",
+      "difficulty": "easy",
+      "scaffold_hints": [
+        "List the outcomes greater than 4: 5 and 6.",
+        "Total equally likely outcomes = 6.",
+        "2/6 reduces to 1/3."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right — 1/3.",
+        "if_incorrect": "'Greater than 4' excludes 4 itself; only 5 and 6 qualify."
+      },
+      "topic": "gmat::quant::arithmetic::probability",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    },
+    {
+      "id": "we_2",
+      "stem": "The probability that an event occurs is 3/7. What is the probability it does NOT occur?",
+      "options": {
+        "A": "3/7",
+        "B": "4/7",
+        "C": "3/4",
+        "D": "7/10",
+        "E": "1/7"
+      },
+      "correct": "B",
+      "explanation": "Complement: 1 − 3/7 = 4/7.",
+      "difficulty": "easy",
+      "scaffold_hints": [
+        "P(not A) = 1 − P(A).",
+        "1 = 7/7.",
+        "7/7 − 3/7 = 4/7."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Yes — 4/7.",
+        "if_incorrect": "Subtract the probability from 1 (written as 7/7)."
+      },
+      "topic": "gmat::quant::arithmetic::probability",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "A jar has 2 white, 3 black, and 5 red marbles. One marble is drawn at random. What is the probability it is NOT red?",
+      "options": {
+        "A": "1/2",
+        "B": "1/5",
+        "C": "3/10",
+        "D": "2/5",
+        "E": "7/10"
+      },
+      "correct": "A",
+      "explanation": "Not red = (2 + 3)/10 = 5/10 = 1/2 (equivalently 1 − 5/10).",
+      "difficulty": "medium",
+      "target_seconds": 60,
+      "topic": "gmat::quant::arithmetic::probability",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "Two fair coins are flipped. What is the probability of getting at least one head?",
+      "options": {
+        "A": "1/4",
+        "B": "1/2",
+        "C": "2/3",
+        "D": "3/4",
+        "E": "1"
+      },
+      "correct": "D",
+      "explanation": "Use the complement: P(no heads) = (1/2)(1/2) = 1/4, so P(at least one head) = 1 − 1/4 = 3/4.",
+      "difficulty": "medium",
+      "target_seconds": 75,
+      "topic": "gmat::quant::arithmetic::probability",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "A fair die is rolled twice. What is the probability that both rolls show a 6?",
+      "options": {
+        "A": "1/3",
+        "B": "1/12",
+        "C": "1/36",
+        "D": "1/18",
+        "E": "1/6"
+      },
+      "correct": "C",
+      "explanation": "Independent rolls multiply: (1/6)(1/6) = 1/36.",
+      "difficulty": "hard",
+      "target_seconds": 60,
+      "topic": "gmat::quant::arithmetic::probability",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_4",
+      "stem": "From a standard deck of 52 cards, one card is drawn. What is the probability it is a heart OR a king?",
+      "options": {
+        "A": "17/52",
+        "B": "15/52",
+        "C": "4/13",
+        "D": "1/4",
+        "E": "1/13"
+      },
+      "correct": "C",
+      "explanation": "P(heart or king) = 13/52 + 4/52 − 1/52 (the king of hearts is in both) = 16/52 = 4/13.",
+      "difficulty": "hard",
+      "target_seconds": 105,
+      "topic": "gmat::quant::arithmetic::probability",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "sample_held_out_items": [
+      {
+        "id": "mc_1",
+        "stem": "A spinner has 8 equal sections numbered 1–8. What is the probability of landing on a multiple of 3?",
+        "options": {
+          "A": "1/8",
+          "B": "1/4",
+          "C": "3/8",
+          "D": "1/3",
+          "E": "1/2"
+        },
+        "correct": "B",
+        "explanation": "Multiples of 3 up to 8 are 3 and 6 → 2/8 = 1/4.",
+        "difficulty": "medium",
+        "topic": "gmat::quant::arithmetic::probability",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      },
+      {
+        "id": "mc_2",
+        "stem": "A bag has 5 red and 3 blue marbles. Two are drawn without replacement. What is the probability the first is red and the second is blue?",
+        "options": {
+          "A": "15/64",
+          "B": "15/56",
+          "C": "8/15",
+          "D": "5/14",
+          "E": "1/2"
+        },
+        "correct": "B",
+        "explanation": "(5/8)(3/7) = 15/56; the totals drop after the first draw.",
+        "difficulty": "hard",
+        "topic": "gmat::quant::arithmetic::probability",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      }
+    ],
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "OpenStax, Introductory Statistics — Probability Topics",
+      "url": "https://openstax.org/details/books/introductory-statistics",
+      "note": "Sample spaces, complements, 'and'/'or', conditional probability.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy — Probability",
+      "url": "https://www.khanacademy.org/math/statistics-probability",
+      "note": "Basic, complementary, and compound probability."
+    },
+    {
+      "name": "GMAC — GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Quantitative Reasoning scope."
+    }
+  ],
+  "tags": [
+    "arithmetic",
+    "probability",
+    "complement",
+    "independent-events",
+    "without-replacement",
+    "or-rule"
+  ],
+  "schema_version": "1.0",
+  "section": "Quantitative Reasoning",
+  "question_type": "Problem Solving",
+  "exam": "GMAT Focus Edition"
+}

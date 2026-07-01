@@ -1,0 +1,366 @@
+{
+  "topic_id": "gmat::quant::algebra::word_problems",
+  "slug": "word-problems",
+  "title": "Word Problems: Rate, Work, Mixture & Interest",
+  "domain": "Algebra",
+  "estimated_minutes": 26,
+  "prerequisites": [
+    "linear equations",
+    "ratios & proportions",
+    "percents"
+  ],
+  "learning_objectives": [
+    "Use distance = rate × time, including total-time and relative-speed setups.",
+    "Solve work problems by adding rates (jobs per unit time).",
+    "Set up mixture/concentration problems by tracking the pure quantity.",
+    "Compute simple interest with I = P·r·t."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do → we do → you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Linear equations, rates/ratios, and percents.",
+    "do_now": {
+      "instructions": "From memory, no calculator. 4 minutes.",
+      "items": [
+        {
+          "prompt": "A car goes 180 miles in 3 hours. What is its speed?",
+          "answer": "60 mph.",
+          "targets": "rate = distance/time"
+        },
+        {
+          "prompt": "Find distance if rate = 50 mph and time = 4 h.",
+          "answer": "200 miles (d = rt).",
+          "targets": "the D = rt relationship"
+        },
+        {
+          "prompt": "If a worker finishes a job in 6 hours, what fraction is done in 1 hour?",
+          "answer": "1/6.",
+          "targets": "work as a rate"
+        },
+        {
+          "prompt": "5% simple interest on $200 for 1 year = ?",
+          "answer": "$10.",
+          "targets": "percent of an amount"
+        },
+        {
+          "prompt": "Two cars approach each other at 40 and 60 mph. How fast does the gap close?",
+          "answer": "100 mph — speeds add when moving toward each other.",
+          "targets": "relative speed"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Retrieves D = rt, work-as-rate, percent-of, and relative speed — the four setups behind today's classic word-problem types.",
+      "if_students_struggle": "If D = rt is shaky, drill the triangle (cover the unknown to get the formula) before composite problems."
+    },
+    "prior_knowledge_bridge": "Every word problem today is a translation exercise built on one relationship you already know: rate × time = amount (miles, jobs, dollars of interest). The art is choosing a variable, writing one honest equation, and solving it with your linear-equation skills. Q5's relative-speed idea unlocks the trickier travel problems.",
+    "learning_intention": "By the end you can translate rate, work, mixture, and interest scenarios into equations and solve them.",
+    "success_criteria": [
+      "I can set up and solve distance = rate × time problems, including total time.",
+      "I can add work rates to find combined or individual times.",
+      "I can track the pure quantity in a mixture and compute simple interest."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00–4:00",
+        "move": "Do Now; silent retrieval."
+      },
+      {
+        "time": "4:00–6:00",
+        "move": "Check; surface relative speed from Q5."
+      },
+      {
+        "time": "6:00–8:00",
+        "move": "Bridge: all types are rate × time = amount; pick a variable, write one equation."
+      },
+      {
+        "time": "8:00–9:00",
+        "move": "Learning intention + success criteria."
+      },
+      {
+        "time": "9:00–10:00",
+        "move": "I do: two pipes filling a tank together."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "Pipe A fills a tank in 4 hours and pipe B fills the same tank in 6 hours. Working together, how long do they take to fill the tank?",
+    "options": {
+      "A": "2.4 hours",
+      "B": "5 hours",
+      "C": "2 hours",
+      "D": "3 hours",
+      "E": "10 hours"
+    },
+    "correct": "A",
+    "explanation": "Add rates: 1/4 + 1/6 = 3/12 + 2/12 = 5/12 of the tank per hour. Time = 1 ÷ (5/12) = 12/5 = 2.4 hours.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "Convert each time to a rate: A does 1/4 tank per hour, B does 1/6.",
+      "Working together, rates ADD: 1/4 + 1/6 = 5/12 tank per hour.",
+      "Time = total work ÷ rate = 1 ÷ (5/12) = 12/5 = 2.4 hours (2 h 24 min)."
+    ],
+    "key_takeaway": "Work problems: add RATES (jobs per hour), never times. Combined time = 1 ÷ (sum of rates).",
+    "topic": "gmat::quant::algebra::word_problems",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Problem Solving"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "A cyclist rides 60 miles at a steady 15 mph. How long does the trip take?",
+      "options": {
+        "A": "3 hours",
+        "B": "4 hours",
+        "C": "5 hours",
+        "D": "45 hours",
+        "E": "900 hours"
+      },
+      "correct": "B",
+      "explanation": "time = distance ÷ rate = 60 ÷ 15 = 4 hours.",
+      "difficulty": "easy",
+      "scaffold_hints": [
+        "Rearrange d = rt to t = d/r.",
+        "60 ÷ 15.",
+        "= 4 hours."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right — 4 hours.",
+        "if_incorrect": "Divide distance by rate; don't multiply."
+      },
+      "topic": "gmat::quant::algebra::word_problems",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    },
+    {
+      "id": "we_2",
+      "stem": "What is the simple interest on $500 at 6% per year for 2 years?",
+      "options": {
+        "A": "$30",
+        "B": "$60",
+        "C": "$530",
+        "D": "$560",
+        "E": "$600"
+      },
+      "correct": "B",
+      "explanation": "I = P·r·t = 500 × 0.06 × 2 = $60.",
+      "difficulty": "easy",
+      "scaffold_hints": [
+        "Simple interest I = principal × rate × time.",
+        "500 × 0.06 = 30 per year.",
+        "× 2 years = 60."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Yes — $60 of interest.",
+        "if_incorrect": "The question asks for interest only, not the new balance ($560)."
+      },
+      "topic": "gmat::quant::algebra::word_problems",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "A car travels 150 miles at 50 mph, then 120 miles at 40 mph. What is the total travel time?",
+      "options": {
+        "A": "5 hours",
+        "B": "5.5 hours",
+        "C": "6 hours",
+        "D": "6.5 hours",
+        "E": "7 hours"
+      },
+      "correct": "C",
+      "explanation": "150/50 = 3 hours and 120/40 = 3 hours; total = 6 hours.",
+      "difficulty": "medium",
+      "target_seconds": 90,
+      "topic": "gmat::quant::algebra::word_problems",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "Two workers together paint a fence in 3 hours. One of them alone would take 5 hours. How long would the other take alone?",
+      "options": {
+        "A": "2 hours",
+        "B": "7.5 hours",
+        "C": "8 hours",
+        "D": "4 hours",
+        "E": "15 hours"
+      },
+      "correct": "B",
+      "explanation": "Combined rate 1/3; one is 1/5; the other = 1/3 − 1/5 = 2/15 fence/hour → time = 15/2 = 7.5 hours.",
+      "difficulty": "hard",
+      "target_seconds": 120,
+      "topic": "gmat::quant::algebra::word_problems",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "How many liters of pure water must be added to 10 liters of a 40% salt solution to dilute it to a 25% solution?",
+      "options": {
+        "A": "4",
+        "B": "5",
+        "C": "6",
+        "D": "8",
+        "E": "15"
+      },
+      "correct": "C",
+      "explanation": "Salt stays 0.40 × 10 = 4 L. Need 4/(10 + x) = 0.25 → 10 + x = 16 → x = 6 liters.",
+      "difficulty": "hard",
+      "target_seconds": 120,
+      "topic": "gmat::quant::algebra::word_problems",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_4",
+      "stem": "A boat travels 30 miles downstream in 2 hours and returns the same 30 miles upstream in 3 hours. What is the speed of the boat in still water?",
+      "options": {
+        "A": "10 mph",
+        "B": "11 mph",
+        "C": "12.5 mph",
+        "D": "13 mph",
+        "E": "15 mph"
+      },
+      "correct": "C",
+      "explanation": "Downstream b + c = 30/2 = 15; upstream b − c = 30/3 = 10. Adding: 2b = 25, so b = 12.5 mph.",
+      "difficulty": "hard",
+      "target_seconds": 120,
+      "topic": "gmat::quant::algebra::word_problems",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "sample_held_out_items": [
+      {
+        "id": "mc_1",
+        "stem": "A printer prints 24 pages per minute. How many minutes does it take to print 300 pages?",
+        "options": {
+          "A": "10",
+          "B": "12",
+          "C": "12.5",
+          "D": "13",
+          "E": "15"
+        },
+        "correct": "C",
+        "explanation": "300 ÷ 24 = 12.5 minutes.",
+        "difficulty": "easy",
+        "topic": "gmat::quant::algebra::word_problems",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      },
+      {
+        "id": "mc_2",
+        "stem": "Sam invests $800 at 5% simple annual interest. How much interest does he earn after 3 years?",
+        "options": {
+          "A": "$40",
+          "B": "$80",
+          "C": "$120",
+          "D": "$200",
+          "E": "$920"
+        },
+        "correct": "C",
+        "explanation": "I = P·r·t = 800 × 0.05 × 3 = $120.",
+        "difficulty": "medium",
+        "topic": "gmat::quant::algebra::word_problems",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      }
+    ],
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "OpenStax, Elementary Algebra 2e — Applications (rate, work, mixture, interest)",
+      "url": "https://openstax.org/details/books/elementary-algebra-2e",
+      "note": "Translating and solving classic word problems.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy — Rate & work word problems",
+      "url": "https://www.khanacademy.org/math/algebra",
+      "note": "Distance/rate/time, combined work, and mixtures."
+    },
+    {
+      "name": "GMAC — GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Quantitative Reasoning scope."
+    }
+  ],
+  "tags": [
+    "algebra",
+    "word-problems",
+    "rate-time-distance",
+    "work-rate",
+    "mixtures",
+    "simple-interest",
+    "relative-speed"
+  ],
+  "schema_version": "1.0",
+  "section": "Quantitative Reasoning",
+  "question_type": "Problem Solving",
+  "exam": "GMAT Focus Edition"
+}

@@ -64,6 +64,10 @@ service SchedulerService {
   // The number of days the calculated interval was fuzzed by on the previous
   // review (if any). Utilized by the FSRS add-on.
   rpc FuzzDelta(FuzzDeltaRequest) returns (FuzzDeltaResponse);
+  // GMATWiz: set per-card topic mastery for all cards tagged with `topic`,
+  // used by topic-aware scheduling. Appended to keep method indices stable.
+  rpc SetTopicMastery(SetTopicMasteryRequest)
+      returns (collection.OpChangesWithCount);
 }
 
 // Implicitly includes any of the above methods that are not listed in the
@@ -75,6 +79,12 @@ service BackendSchedulerService {
   rpc FsrsBenchmark(FsrsBenchmarkRequest) returns (FsrsBenchmarkResponse);
   // Used for exporting revlogs for algorithm research.
   rpc ExportDataset(ExportDatasetRequest) returns (generic.Empty);
+}
+
+// GMATWiz: set topic mastery for all cards tagged with `topic`.
+message SetTopicMasteryRequest {
+  string topic = 1;
+  float mastery = 2;
 }
 
 message SchedulingState {

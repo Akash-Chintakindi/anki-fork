@@ -108,6 +108,7 @@ impl TryFrom<anki_proto::cards::Card> for Card {
             desired_retention: c.desired_retention,
             decay: c.decay,
             last_review_time: c.last_review_time_secs.map(TimestampSecs),
+            topic_mastery: c.topic_mastery,
             custom_data: c.custom_data,
         })
     }
@@ -138,6 +139,7 @@ impl From<Card> for anki_proto::cards::Card {
             desired_retention: c.desired_retention,
             decay: c.decay,
             last_review_time_secs: c.last_review_time.map(|t| t.0),
+            topic_mastery: c.topic_mastery,
             custom_data: c.custom_data,
         }
     }

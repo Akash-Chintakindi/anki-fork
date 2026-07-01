@@ -1,0 +1,364 @@
+{
+  "topic_id": "gmat::quant::arithmetic::ratios_proportions",
+  "slug": "ratios-proportions",
+  "title": "Ratios & Proportions",
+  "domain": "Arithmetic",
+  "estimated_minutes": 22,
+  "prerequisites": [
+    "fractions",
+    "percents"
+  ],
+  "learning_objectives": [
+    "Simplify ratios and distinguish part-to-part from part-to-whole.",
+    "Model a ratio with a common multiplier (the 'parts' method).",
+    "Solve proportions by cross-multiplication and apply scaling.",
+    "Combine two ratios that share a term."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do → we do → you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Equivalent fractions and dividing a quantity.",
+    "do_now": {
+      "instructions": "From memory, no calculator. 4 minutes.",
+      "items": [
+        {
+          "prompt": "Simplify the ratio 18:24.",
+          "answer": "3:4.",
+          "targets": "simplifying ratios"
+        },
+        {
+          "prompt": "If a:b = 2:3 and a = 10, find b.",
+          "answer": "15.",
+          "targets": "scaling a ratio"
+        },
+        {
+          "prompt": "Split 30 in the ratio 2:3.",
+          "answer": "12 and 18.",
+          "targets": "parts method"
+        },
+        {
+          "prompt": "Solve 3/4 = x/20.",
+          "answer": "x = 15.",
+          "targets": "proportion / cross-multiply"
+        },
+        {
+          "prompt": "A recipe uses 2 cups flour to 3 cups sugar. Scale to 6 cups flour.",
+          "answer": "Multiply both by 3 → 6:9.",
+          "targets": "common-multiplier idea"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Retrieves simplifying, scaling, and cross-multiplication — the exact moves needed for the parts method and combined ratios today.",
+      "if_students_struggle": "If splitting 30 as 2:3 is hard, show 2+3 = 5 parts, 30/5 = 6 per part, then 12 and 18."
+    },
+    "prior_knowledge_bridge": "A ratio is a pair of equivalent fractions waiting to be scaled. In the Do-Now you scaled 2:3 by a multiplier; today you'll formalize that into the 'parts' method — sum the parts, find the value of one part, then scale every share — and chain ratios that share a term.",
+    "learning_intention": "By the end you can solve ratio and proportion problems with the parts method, scale with cross-multiplication, and combine ratios sharing a common term.",
+    "success_criteria": [
+      "I can turn a ratio into parts and find the value of one part.",
+      "I can solve a:b problems given a difference or a total.",
+      "I can combine a:b and b:c into a:c."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00–4:00",
+        "move": "Do Now; silent retrieval."
+      },
+      {
+        "time": "4:00–6:00",
+        "move": "Check; formalize 'parts' from Q3."
+      },
+      {
+        "time": "6:00–8:00",
+        "move": "Bridge: ratio = scalable equivalent fractions; preview combining ratios."
+      },
+      {
+        "time": "8:00–9:00",
+        "move": "Learning intention + success criteria."
+      },
+      {
+        "time": "9:00–10:00",
+        "move": "I do: boys:girls = 3:5 with 32 students."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "The ratio of boys to girls in a class is 3:5. If there are 32 students in total, how many are girls?",
+    "options": {
+      "A": "12",
+      "B": "15",
+      "C": "18",
+      "D": "20",
+      "E": "24"
+    },
+    "correct": "D",
+    "explanation": "Total parts = 3 + 5 = 8; each part = 32/8 = 4; girls = 5 × 4 = 20.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "The ratio 3:5 means the class is made of 3 + 5 = 8 equal parts.",
+      "32 students ÷ 8 parts = 4 students per part.",
+      "Girls are 5 parts: 5 × 4 = 20.",
+      "Check: boys = 3 × 4 = 12, and 12 + 20 = 32. ✓"
+    ],
+    "key_takeaway": "Parts method: value of one part = total ÷ (sum of ratio terms); then scale each share.",
+    "topic": "gmat::quant::arithmetic::ratios_proportions",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Problem Solving"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "If a : b = 4 : 7 and b = 21, what is a?",
+      "options": {
+        "A": "9",
+        "B": "12",
+        "C": "14",
+        "D": "15",
+        "E": "28"
+      },
+      "correct": "B",
+      "explanation": "b corresponds to 7 parts, so one part = 21/7 = 3; then a = 4 × 3 = 12.",
+      "difficulty": "easy",
+      "scaffold_hints": [
+        "The 21 matches the '7' in the ratio.",
+        "One part = 21 ÷ 7 = 3.",
+        "a = 4 parts = 4 × 3."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right — a = 12.",
+        "if_incorrect": "Find the value of one part first (21/7 = 3), then multiply by a's term (4)."
+      },
+      "topic": "gmat::quant::arithmetic::ratios_proportions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    },
+    {
+      "id": "we_2",
+      "stem": "Solve for x: 5/8 = x/40.",
+      "options": {
+        "A": "8",
+        "B": "15",
+        "C": "20",
+        "D": "25",
+        "E": "64"
+      },
+      "correct": "D",
+      "explanation": "Cross-multiply: 8x = 5 × 40 = 200, so x = 25.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "Cross-multiply: 8 · x = 5 · 40.",
+        "8x = 200.",
+        "x = 200/8."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Yes — x = 25.",
+        "if_incorrect": "Cross-multiply both diagonals and solve the resulting equation."
+      },
+      "topic": "gmat::quant::arithmetic::ratios_proportions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "A map's scale is 1 cm : 5 km. Two cities are 8.5 cm apart on the map. How far apart are they in reality?",
+      "options": {
+        "A": "13.5 km",
+        "B": "40 km",
+        "C": "42.5 km",
+        "D": "45 km",
+        "E": "1.7 km"
+      },
+      "correct": "C",
+      "explanation": "Each cm is 5 km, so 8.5 × 5 = 42.5 km.",
+      "difficulty": "medium",
+      "target_seconds": 75,
+      "topic": "gmat::quant::arithmetic::ratios_proportions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "$84 is divided among A, B, and C in the ratio 2 : 3 : 7. How much does C receive?",
+      "options": {
+        "A": "$14",
+        "B": "$21",
+        "C": "$42",
+        "D": "$49",
+        "E": "$56"
+      },
+      "correct": "D",
+      "explanation": "Parts = 2 + 3 + 7 = 12; each part = 84/12 = 7; C = 7 × 7 = $49.",
+      "difficulty": "medium",
+      "target_seconds": 90,
+      "topic": "gmat::quant::arithmetic::ratios_proportions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "The ratio of cats to dogs at a shelter is 5 : 3. If there are 16 more cats than dogs, how many dogs are there?",
+      "options": {
+        "A": "12",
+        "B": "18",
+        "C": "24",
+        "D": "30",
+        "E": "40"
+      },
+      "correct": "C",
+      "explanation": "Cats − dogs = 5 − 3 = 2 parts = 16, so one part = 8; dogs = 3 × 8 = 24.",
+      "difficulty": "hard",
+      "target_seconds": 90,
+      "topic": "gmat::quant::arithmetic::ratios_proportions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_4",
+      "stem": "If a : b = 2 : 3 and b : c = 4 : 5, what is a : c?",
+      "options": {
+        "A": "2 : 5",
+        "B": "8 : 15",
+        "C": "1 : 2",
+        "D": "6 : 5",
+        "E": "10 : 9"
+      },
+      "correct": "B",
+      "explanation": "Scale to a common b (LCM of 3 and 4 is 12): a:b = 8:12 and b:c = 12:15, so a:c = 8:15.",
+      "difficulty": "hard",
+      "target_seconds": 105,
+      "topic": "gmat::quant::arithmetic::ratios_proportions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "sample_held_out_items": [
+      {
+        "id": "mc_1",
+        "stem": "Simplify the ratio 45 : 27.",
+        "options": {
+          "A": "3 : 5",
+          "B": "5 : 3",
+          "C": "9 : 5",
+          "D": "9 : 7",
+          "E": "5 : 9"
+        },
+        "correct": "B",
+        "explanation": "Divide both terms by 9: 45:27 = 5:3.",
+        "difficulty": "easy",
+        "topic": "gmat::quant::arithmetic::ratios_proportions",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      },
+      {
+        "id": "mc_2",
+        "stem": "If 3 pencils cost $0.90, how much do 8 pencils cost at the same rate?",
+        "options": {
+          "A": "$2.10",
+          "B": "$2.40",
+          "C": "$2.70",
+          "D": "$3.00",
+          "E": "$7.20"
+        },
+        "correct": "B",
+        "explanation": "Unit price = 0.90/3 = $0.30; 8 × 0.30 = $2.40.",
+        "difficulty": "medium",
+        "topic": "gmat::quant::arithmetic::ratios_proportions",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      }
+    ],
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "OpenStax, Prealgebra 2e — Ratios and Rate / Proportions",
+      "url": "https://openstax.org/details/books/prealgebra-2e",
+      "note": "Ratios, unit rates, proportions, and applications.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy — Ratios, rates, and proportions",
+      "url": "https://www.khanacademy.org/math/arithmetic",
+      "note": "Parts method, scaling, and cross-multiplication."
+    },
+    {
+      "name": "GMAC — GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Quantitative Reasoning scope."
+    }
+  ],
+  "tags": [
+    "arithmetic",
+    "ratios",
+    "proportions",
+    "parts-method",
+    "scaling"
+  ],
+  "schema_version": "1.0",
+  "section": "Quantitative Reasoning",
+  "question_type": "Problem Solving",
+  "exam": "GMAT Focus Edition"
+}

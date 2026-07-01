@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sequences &middot; GMATWiz Quant</title>
+<style>
+:root{
+  --ink:#1a1813; --muted:#6b6358; --rule:#d9d2c5; --bg:#fbf9f4; --card:#fffdf8;
+  --accent:#7a3b2e; --accent2:#3a5a40; --link:#7a3b2e; --code:#2b2b2b;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:3rem 2rem 6rem;}
+.content{max-width:720px;}
+header.masthead{border-bottom:1px solid var(--rule); padding-bottom:1.2rem; margin-bottom:2rem;}
+.kicker{font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:0 0 .4rem;}
+h1{font-size:2.3rem; line-height:1.1; margin:.1rem 0 .6rem; font-weight:600; letter-spacing:-.01em;}
+.meta{color:var(--muted); font-size:.9rem; margin:0;}
+.meta b{color:var(--ink); font-weight:600;}
+h2{font-size:1.45rem; margin:2.8rem 0 .3rem; font-weight:600; letter-spacing:-.01em;}
+h2 .num{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:.5rem;}
+h3{font-size:1.06rem; margin:1.6rem 0 .4rem; font-weight:600;}
+.sub{color:var(--muted); font-style:italic; margin:.1rem 0 1rem; font-size:.95rem;}
+p{margin:.6rem 0;} ul,ol{margin:.5rem 0 .9rem; padding-left:1.3rem;} li{margin:.25rem 0;}
+a{color:var(--link); text-decoration:none; border-bottom:1px solid rgba(122,59,46,.35);}
+a:hover{border-bottom-color:var(--link);}
+.lead{font-size:1.08rem;}
+section{position:relative;}
+.note{font-size:.8rem; color:var(--muted); line-height:1.4;}
+.objectives{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1rem 1.2rem;}
+.objectives ul{margin:.3rem 0 0;}
+.intent{border-left:3px solid var(--accent2); padding:.4rem 0 .4rem 1rem; margin:1rem 0; font-size:1.05rem;}
+.donow{background:#2b2620; color:#f3ecde; border-radius:8px; padding:1.1rem 1.3rem; margin:1rem 0;}
+.donow .tag{font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:#d8b48a;}
+.donow ol{padding-left:1.2rem;} .donow li{margin:.4rem 0;}
+.donow .ans{color:#b9c6a9; font-style:italic; font-size:.86rem; display:block; margin-top:.15rem;}
+table{border-collapse:collapse; width:100%; font-size:.92rem; margin:.6rem 0 1rem;}
+th,td{text-align:left; padding:.45rem .6rem; border-bottom:1px solid var(--rule); vertical-align:top;}
+th{font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+td.t{white-space:nowrap; color:var(--accent); font-variant-numeric:tabular-nums; width:6.5rem;}
+.q{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1.1rem 1.3rem; margin:1.1rem 0;}
+.q .qid{font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+.q .qid .diff{float:right; color:var(--accent2);}
+.q .stem{font-size:1.03rem; margin:.35rem 0 .6rem;}
+.choices{list-style:none; padding:0; margin:.2rem 0 .4rem; counter-reset:c;}
+.choices li{padding:.32rem .6rem; border:1px solid var(--rule); border-radius:6px; margin:.3rem 0; background:#fff;}
+.choices li .lab{display:inline-block; width:1.5rem; font-weight:600; color:var(--accent);}
+.choices li.correct{border-color:var(--accent2); background:#eef3ec;}
+.choices li.correct .lab{color:var(--accent2);}
+details{margin:.5rem 0 .2rem; border-top:1px dashed var(--rule); padding-top:.5rem;}
+details>summary{cursor:pointer; font-size:.86rem; color:var(--accent); font-weight:600; list-style:none;}
+details>summary::-webkit-details-marker{display:none;}
+details>summary::before{content:"\25B8  "; color:var(--accent);}
+details[open]>summary::before{content:"\25BE  ";}
+.expl{font-size:.95rem; margin-top:.5rem;}
+.hints{font-size:.92rem;} .hints li{margin:.2rem 0;}
+.feedback{font-size:.9rem;} .feedback .ok{color:var(--accent2);} .feedback .no{color:var(--accent);}
+.appfirst{font-size:.78rem; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin:.2rem 0;}
+.mastery{background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--accent2); border-radius:8px; padding:1rem 1.2rem;}
+.pill{display:inline-block; font-size:.72rem; padding:.12rem .5rem; border:1px solid var(--rule); border-radius:999px; color:var(--muted); margin:.1rem .2rem .1rem 0;}
+footer{margin-top:3.5rem; border-top:1px solid var(--rule); padding-top:1rem; color:var(--muted); font-size:.82rem;}
+.src{background:#eef3ec; border:1px solid #cfe0cf; border-radius:8px; padding:.9rem 1.1rem; margin:1.2rem 0;}
+.src .tag{font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent2); font-weight:600;}
+.crumbs{font-size:.85rem; margin-bottom:1.2rem;}
+.ask{font-size:.9rem; background:#fff8ec; border:1px dashed #e0c590; border-radius:8px; padding:.7rem 1rem; margin:1.4rem 0;}
+@media print{ body{background:#fff} .wrap{padding:0} a{border:none} .donow{-webkit-print-color-adjust:exact; print-color-adjust:exact} }
+</style></head>
+<body><div class="wrap"><div class="content">
+  <div class="crumbs"><a href="index.html">&larr; All Quant topics</a> &middot; Algebra</div>
+  <header class="masthead">
+    <p class="kicker">GMATWiz &middot; GMAT Focus Edition &middot; Quantitative Reasoning (Problem Solving)</p>
+    <h1>Sequences</h1>
+    <p class="meta"><b>Topic id</b> <code>gmat::quant::algebra::sequences</code> &middot; <b>Domain</b> Algebra
+      &middot; <b>Prereqs</b> functions, algebraic expressions &middot; <b>~22 min</b></p>
+  </header>
+
+  <div class="objectives">
+    <p class="note"><b>Learning objectives</b></p>
+    <ul><li>Identify arithmetic (constant difference) vs geometric (constant ratio) sequences.</li><li>Use the arithmetic nth-term formula a_n = a_1 + (n − 1)d.</li><li>Use the geometric nth-term formula a_n = a_1 · r^(n−1).</li><li>Find the sum of an arithmetic sequence with (n/2)(first + last).</li></ul>
+    <p class="note">Model: I do → we do → you do &middot; application-first (explanations revealed after an attempt) &middot; Rosenshine (daily review), Archer (I-do/we-do/you-do), SPOV2 application-first.</p>
+  </div>
+
+  
+    <section>
+      <h2><span class="num">1</span>Opening &mdash; retrieval &amp; bridge</h2>
+      <p class="sub">Builds on: Function evaluation and recognizing patterns.</p>
+      <div class="donow">
+        <div class="tag">Do Now &middot; from memory, no notes</div>
+        <p>From memory, no calculator. 4 minutes.</p>
+        <ol><li>Next term: 3, 7, 11, 15, ___ .<span class="ans">19 (add 4).</span></li><li>Next term: 2, 6, 18, 54, ___ .<span class="ans">162 (multiply by 3).</span></li><li>Common difference of 5, 8, 11, 14?<span class="ans">3.</span></li><li>Common ratio of 1, 2, 4, 8?<span class="ans">2.</span></li><li>Why is a formula faster than listing to find the 100th term of 3, 7, 11, …?<span class="ans">A formula jumps straight to term 100 instead of writing 99 terms first.</span></li></ol>
+      </div>
+      <p class="note"><b>Retrieval starter (5 min).</b> Retrieves the difference/ratio distinction and the need for a direct formula — exactly what the nth-term rules provide today.
+      <br><b>If students struggle:</b> If difference vs ratio blurs, ask &#x27;add or multiply to advance?&#x27; — add = arithmetic, multiply = geometric.</p>
+      <h3>Prior-knowledge bridge</h3>
+      <p>A sequence is a function whose input is the term number n. You spotted the step rule in the Do-Now; today you turn that rule into a formula so you can leap to the 20th or 100th term without listing. Arithmetic adds a fixed d; geometric multiplies by a fixed r — same idea, different operation.</p>
+      <h3>Learning intention</h3>
+      <p class="intent">By the end you can find any term of an arithmetic or geometric sequence with its formula and sum an arithmetic sequence.</p>
+      <p class="note"><b>You'll know you've got it when:</b></p>
+      <ul><li>I can apply a_n = a_1 + (n − 1)d for arithmetic sequences.</li><li>I can apply a_n = a_1 · r^(n−1) for geometric sequences.</li><li>I can sum an arithmetic sequence with (n/2)(first + last).</li></ul>
+      <details><summary>Complete timed opening script</summary>
+        <table><thead><tr><th>Time</th><th>Move</th></tr></thead><tbody><tr><td class="t">0:00–4:00</td><td>Do Now; silent retrieval.</td></tr><tr><td class="t">4:00–6:00</td><td>Check; sort each Do-Now sequence as arithmetic or geometric.</td></tr><tr><td class="t">6:00–8:00</td><td>Bridge: term number is the input; derive the (n−1) multiplier.</td></tr><tr><td class="t">8:00–9:00</td><td>Learning intention + success criteria.</td></tr><tr><td class="t">9:00–10:00</td><td>I do: 20th term of 4, 7, 10, 13, …</td></tr></tbody></table>
+      </details>
+    </section>
+
+  <section>
+    <h2><span class="num">2</span>I do &mdash; worked example</h2>
+    <p class="sub">Watch the reasoning modeled end to end before you try.</p>
+    
+    <div class="q">
+      <div class="qid">I DO &middot; worked example<span class="diff">medium</span></div>
+      <div class="stem">In the arithmetic sequence 4, 7, 10, 13, …, what is the 20th term?</div>
+      <ul class="choices"><li><span class="lab">A</span>58</li><li><span class="lab">B</span>60</li><li class="correct"><span class="lab">C</span>61</li><li><span class="lab">D</span>64</li><li><span class="lab">E</span>67</li></ul>
+      <h3>Think-aloud</h3>
+      <ol><li>First term a_1 = 4; common difference d = 7 − 4 = 3.</li><li>Use a_n = a_1 + (n − 1)d.</li><li>a_20 = 4 + (20 − 1)(3) = 4 + 57 = 61.</li></ol>
+      <p class="expl"><b>Correct: C.</b> a_1 = 4, d = 3. a_20 = a_1 + (n − 1)d = 4 + 19·3 = 4 + 57 = 61.</p>
+      <p class="note"><b>Takeaway.</b> Arithmetic nth term: a_n = a_1 + (n − 1)d. The jump count is (n − 1), not n.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>We do &mdash; guided practice</h2>
+    <p class="sub">Scaffolds and immediate feedback are one click away. Fade them as you gain confidence.</p>
+    
+    <div class="q">
+      <div class="qid">we_1 &middot; we do (guided)<span class="diff">easy</span></div>
+      <div class="stem">Find the 10th term of the arithmetic sequence with a_1 = 5 and d = 4.</div>
+      <ul class="choices"><li><span class="lab">A</span>36</li><li><span class="lab">B</span>40</li><li class="correct"><span class="lab">C</span>41</li><li><span class="lab">D</span>45</li><li><span class="lab">E</span>49</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>Use a_n = a_1 + (n − 1)d.</li><li>n = 10 means 9 jumps of size 4.</li><li>5 + 9(4) = 41.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Right — 41.<br>
+        <span class="no">If incorrect:</span> Multiply d by (n − 1) = 9, not by 10.</p>
+        <p class="expl"><b>Answer: C.</b> a_10 = 5 + (10 − 1)(4) = 5 + 36 = 41.</p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">we_2 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">In the geometric sequence 3, 6, 12, 24, …, what is the next term after 24?</div>
+      <ul class="choices"><li><span class="lab">A</span>36</li><li><span class="lab">B</span>30</li><li class="correct"><span class="lab">C</span>48</li><li><span class="lab">D</span>96</li><li><span class="lab">E</span>27</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>Find the ratio between consecutive terms: 6/3 = 2.</li><li>Geometric sequences multiply by r each step.</li><li>24 × 2 = 48.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Yes — 48.<br>
+        <span class="no">If incorrect:</span> This sequence multiplies (×2), it doesn&#x27;t add a constant.</p>
+        <p class="expl"><b>Answer: C.</b> Common ratio r = 6/3 = 2; next term = 24 × 2 = 48.</p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>You do &mdash; independent application</h2>
+    <p class="sub">Application-first (SPOV2): commit to an answer, then reveal the explanation. Log every miss.</p>
+    
+    <div class="q">
+      <div class="qid">you_1 &middot; you do (independent) &middot; target 75s<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">What is the 15th term of 2, 5, 8, 11, …?</div>
+      <ul class="choices"><li><span class="lab">A</span>41</li><li><span class="lab">B</span>42</li><li class="correct"><span class="lab">C</span>44</li><li><span class="lab">D</span>45</li><li><span class="lab">E</span>47</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: C.</b> a_1 = 2, d = 3: a_15 = 2 + 14(3) = 2 + 42 = 44.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_2 &middot; you do (independent) &middot; target 90s<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">The first term of a geometric sequence is 5 and the 4th term is 40. What is the common ratio?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>2</li><li><span class="lab">B</span>3</li><li><span class="lab">C</span>4</li><li><span class="lab">D</span>8</li><li><span class="lab">E</span>1/2</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> a_4 = a_1 · r^3 = 5r^3 = 40 → r^3 = 8 → r = 2.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_3 &middot; you do (independent) &middot; target 75s<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">An arithmetic sequence has a_1 = 7 and a_5 = 23. What is the common difference?</div>
+      <ul class="choices"><li><span class="lab">A</span>3</li><li class="correct"><span class="lab">B</span>4</li><li><span class="lab">C</span>5</li><li><span class="lab">D</span>16</li><li><span class="lab">E</span>8</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: B.</b> a_5 = 7 + 4d = 23 → 4d = 16 → d = 4.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_4 &middot; you do (independent) &middot; target 105s<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">What is the sum of the first 10 terms of the arithmetic sequence 3, 7, 11, …?</div>
+      <ul class="choices"><li><span class="lab">A</span>165</li><li><span class="lab">B</span>195</li><li class="correct"><span class="lab">C</span>210</li><li><span class="lab">D</span>220</li><li><span class="lab">E</span>240</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: C.</b> a_10 = 3 + 9(4) = 39; sum = (10/2)(first + last) = 5(3 + 39) = 5·42 = 210.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+  </section>
+
+  
+    <section>
+      <h2><span class="num">5</span>Mastery check</h2>
+      <div class="mastery">
+        <p>A topic is mastered at &gt;=85% correct on new/held-out-style questions across &gt;=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.</p>
+        <p class="note"><b>Threshold</b> 0.85 &middot; <b>spaced sessions</b> &ge; 2</p>
+        <ul><li>&gt;=85% correct on new/held-out-style items (not flashcard recall) per session</li><li>sustained across &gt;=2 spaced sessions with a delay between them</li><li>per-topic memory surfaced only after &gt;=20 graded reviews (PRD give-up rule)</li><li>per-topic performance surfaced only after &gt;=8 application attempts (PRD give-up rule)</li></ul>
+        <p class="note"><b>If not yet mastered:</b> Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -&gt; you-do loop before re-testing.</p>
+      </div>
+      <h3>Sample held-out check items</h3>
+    <div class="q">
+      <div class="qid">mc_1 &middot; held-out check<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Find the 8th term of the arithmetic sequence with a_1 = 10 and d = −2.</div>
+      <ul class="choices"><li><span class="lab">A</span>4</li><li><span class="lab">B</span>−2</li><li class="correct"><span class="lab">C</span>−4</li><li><span class="lab">D</span>−6</li><li><span class="lab">E</span>24</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: C.</b> a_8 = 10 + 7(−2) = 10 − 14 = −4.</p>
+        
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">mc_2 &middot; held-out check<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">In a geometric sequence, a_1 = 2 and r = 3. What is a_4?</div>
+      <ul class="choices"><li><span class="lab">A</span>18</li><li><span class="lab">B</span>24</li><li class="correct"><span class="lab">C</span>54</li><li><span class="lab">D</span>162</li><li><span class="lab">E</span>216</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: C.</b> a_4 = a_1 · r^3 = 2 · 27 = 54.</p>
+        
+      </details>
+    </div>
+    </section>
+
+  <div class="src">
+    <div class="tag">Primary source</div>
+    <p><a href="https://openstax.org/details/books/intermediate-algebra-2e">OpenStax, Intermediate Algebra 2e — Sequences, Series</a> &mdash; Arithmetic and geometric sequences and sums.</p>
+    <p class='note'>Further reading:</p><ul><li><a href="https://www.khanacademy.org/math/algebra2">Khan Academy — Sequences</a> &mdash; Explicit formulas for arithmetic and geometric sequences.</li><li><a href="https://www.mba.com/exams/gmat-focus-edition">GMAC — GMAT Focus Edition (official exam overview)</a> &mdash; Official exam structure and Quantitative Reasoning scope.</li></ul>
+  </div>
+
+  <div class="ask">Stuck on any step? Ask your GMATWiz coach for a worked walkthrough &mdash; that's what it's here for.</div>
+
+  <footer>
+    <p>GMATWiz lesson &middot; <code>sequences.json</code> &middot; schema v1.0 &middot; authored content (OfficialFlag=false), reserved official items used only for late checkpoints.</p>
+  </footer>
+</div></div></body></html>

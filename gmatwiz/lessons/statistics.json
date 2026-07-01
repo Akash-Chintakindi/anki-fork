@@ -1,0 +1,366 @@
+{
+  "topic_id": "gmat::quant::arithmetic::statistics",
+  "slug": "statistics",
+  "title": "Descriptive Statistics",
+  "domain": "Arithmetic",
+  "estimated_minutes": 22,
+  "prerequisites": [
+    "addition & division (for averages)",
+    "ordering numbers"
+  ],
+  "learning_objectives": [
+    "Compute mean, median, mode, and range.",
+    "Use sum = mean × count to handle 'add/remove a value' and 'missing value' problems.",
+    "Reason about standard deviation as spread about the mean (no formula needed on the GMAT).",
+    "Compare measures of center for skewed data."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do → we do → you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Addition, division, and putting numbers in order.",
+    "do_now": {
+      "instructions": "From memory, no calculator. 4 minutes.",
+      "items": [
+        {
+          "prompt": "Find the mean of 4, 8, 9, 11.",
+          "answer": "8 (sum 32 ÷ 4).",
+          "targets": "mean"
+        },
+        {
+          "prompt": "Find the median of 3, 7, 9, 12, 20.",
+          "answer": "9 (middle value).",
+          "targets": "median"
+        },
+        {
+          "prompt": "Find the mode of 2, 3, 3, 5, 7.",
+          "answer": "3 (most frequent).",
+          "targets": "mode"
+        },
+        {
+          "prompt": "Find the range of 5, 9, 14, 21.",
+          "answer": "16 (21 − 5).",
+          "targets": "range"
+        },
+        {
+          "prompt": "If you add a value equal to the current mean, does the mean change?",
+          "answer": "No — adding the mean itself leaves the average unchanged.",
+          "targets": "how the mean responds to new data"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Retrieves the four basic measures and the key intuition (the mean is a balance point) that powers today's sum-based reasoning.",
+      "if_students_struggle": "If median is shaky with an even count, remind them to sort first and average the two middle values."
+    },
+    "prior_knowledge_bridge": "You computed means by adding then dividing. The GMAT rarely asks that directly — it gives you the average and asks you to work backward. The move is to flip the formula into sum = mean × count. Q5's insight (the mean is a balance point) is why that flip works, and it's the key to every 'missing value' and 'new average' question today.",
+    "learning_intention": "By the end you can compute mean/median/mode/range and use sum = mean × count to solve missing-value and changing-average problems, and reason qualitatively about standard deviation.",
+    "success_criteria": [
+      "I can convert between an average and a total using count.",
+      "I can find a missing value given an average.",
+      "I can say which of two data sets has the larger spread and why."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00–4:00",
+        "move": "Do Now; silent retrieval."
+      },
+      {
+        "time": "4:00–6:00",
+        "move": "Check; dwell on Q5 (balance-point intuition)."
+      },
+      {
+        "time": "6:00–8:00",
+        "move": "Bridge: flip mean = sum/count into sum = mean × count."
+      },
+      {
+        "time": "8:00–9:00",
+        "move": "Learning intention + success criteria."
+      },
+      {
+        "time": "9:00–10:00",
+        "move": "I do: new average after adding a value."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "The average (arithmetic mean) of 5 numbers is 12. If a sixth number, 30, is added to the set, what is the new average?",
+    "options": {
+      "A": "13",
+      "B": "14",
+      "C": "15",
+      "D": "16",
+      "E": "18"
+    },
+    "correct": "C",
+    "explanation": "Sum = mean × count = 12 × 5 = 60. New sum = 60 + 30 = 90 over 6 numbers, so the new average = 90/6 = 15.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "Convert the average to a sum: 12 × 5 = 60.",
+      "Add the new value: 60 + 30 = 90.",
+      "Divide by the new count: 90 ÷ 6 = 15."
+    ],
+    "key_takeaway": "Don't average the averages — turn the mean into a SUM (mean × count), adjust, then divide by the new count.",
+    "topic": "gmat::quant::arithmetic::statistics",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Problem Solving"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "Find the median of 4, 1, 7, 3, 9, 6.",
+      "options": {
+        "A": "4",
+        "B": "5",
+        "C": "6",
+        "D": "6.5",
+        "E": "7"
+      },
+      "correct": "B",
+      "explanation": "Sort: 1, 3, 4, 6, 7, 9. With 6 values the median is the average of the 3rd and 4th: (4 + 6)/2 = 5.",
+      "difficulty": "easy",
+      "scaffold_hints": [
+        "Always sort before finding a median.",
+        "Six values → no single middle; use the two middle ones.",
+        "Average the 3rd and 4th: (4 + 6)/2."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right — 5.",
+        "if_incorrect": "Sort first, then average the two middle values for an even-sized list."
+      },
+      "topic": "gmat::quant::arithmetic::statistics",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    },
+    {
+      "id": "we_2",
+      "stem": "The mean of 6 numbers is 10. What is their sum?",
+      "options": {
+        "A": "10",
+        "B": "16",
+        "C": "36",
+        "D": "60",
+        "E": "600"
+      },
+      "correct": "D",
+      "explanation": "Sum = mean × count = 10 × 6 = 60.",
+      "difficulty": "easy",
+      "scaffold_hints": [
+        "Mean = sum ÷ count.",
+        "Rearrange: sum = mean × count.",
+        "10 × 6."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Yes — 60.",
+        "if_incorrect": "Multiply the mean by how many numbers there are."
+      },
+      "topic": "gmat::quant::arithmetic::statistics",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "The average of 8 and x is 14. What is x?",
+      "options": {
+        "A": "6",
+        "B": "14",
+        "C": "18",
+        "D": "20",
+        "E": "22"
+      },
+      "correct": "D",
+      "explanation": "(8 + x)/2 = 14 → 8 + x = 28 → x = 20.",
+      "difficulty": "medium",
+      "target_seconds": 60,
+      "topic": "gmat::quant::arithmetic::statistics",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "For the set {3, 5, 5, 9, 13}, which is the largest: the mean, the median, or the mode?",
+      "options": {
+        "A": "mean",
+        "B": "median",
+        "C": "mode",
+        "D": "all equal",
+        "E": "cannot be determined"
+      },
+      "correct": "A",
+      "explanation": "Mean = 35/5 = 7; median = 5 (middle); mode = 5 (most frequent). The mean, 7, is largest.",
+      "difficulty": "medium",
+      "target_seconds": 90,
+      "topic": "gmat::quant::arithmetic::statistics",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "The average of 5 test scores is 82. Four of the scores are 78, 85, 90, and 75. What is the fifth score?",
+      "options": {
+        "A": "80",
+        "B": "82",
+        "C": "84",
+        "D": "86",
+        "E": "88"
+      },
+      "correct": "B",
+      "explanation": "Total = 82 × 5 = 410. The four given sum to 328, so the fifth = 410 − 328 = 82.",
+      "difficulty": "hard",
+      "target_seconds": 90,
+      "topic": "gmat::quant::arithmetic::statistics",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_4",
+      "stem": "Which set has the greater standard deviation?  P = {10, 10, 10, 10};  Q = {7, 9, 11, 13}.",
+      "options": {
+        "A": "P",
+        "B": "Q",
+        "C": "they are equal",
+        "D": "cannot be determined",
+        "E": "both are zero"
+      },
+      "correct": "B",
+      "explanation": "Standard deviation measures spread about the mean. P has no spread (SD = 0); Q's values vary about their mean, so Q has the greater SD.",
+      "difficulty": "hard",
+      "target_seconds": 75,
+      "topic": "gmat::quant::arithmetic::statistics",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "sample_held_out_items": [
+      {
+        "id": "mc_1",
+        "stem": "Find the mean of 6, 10, 14, 18, 22.",
+        "options": {
+          "A": "12",
+          "B": "14",
+          "C": "15",
+          "D": "16",
+          "E": "18"
+        },
+        "correct": "B",
+        "explanation": "Sum = 70; 70/5 = 14.",
+        "difficulty": "easy",
+        "topic": "gmat::quant::arithmetic::statistics",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      },
+      {
+        "id": "mc_2",
+        "stem": "The average of 4 numbers is 9. After one number is removed, the average of the remaining 3 is 8. What number was removed?",
+        "options": {
+          "A": "8",
+          "B": "9",
+          "C": "11",
+          "D": "12",
+          "E": "15"
+        },
+        "correct": "D",
+        "explanation": "Original sum = 36; remaining sum = 24; removed = 36 − 24 = 12.",
+        "difficulty": "medium",
+        "topic": "gmat::quant::arithmetic::statistics",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      }
+    ],
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "OpenStax, Introductory Statistics — Measures of center and spread",
+      "url": "https://openstax.org/details/books/introductory-statistics",
+      "note": "Mean, median, mode, range, and standard deviation.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy — Summarizing quantitative data",
+      "url": "https://www.khanacademy.org/math/statistics-probability",
+      "note": "Center, spread, and effects of changing data."
+    },
+    {
+      "name": "GMAC — GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Quantitative Reasoning scope."
+    }
+  ],
+  "tags": [
+    "arithmetic",
+    "statistics",
+    "mean",
+    "median",
+    "mode",
+    "range",
+    "standard-deviation",
+    "weighted-average"
+  ],
+  "schema_version": "1.0",
+  "section": "Quantitative Reasoning",
+  "question_type": "Problem Solving",
+  "exam": "GMAT Focus Edition"
+}

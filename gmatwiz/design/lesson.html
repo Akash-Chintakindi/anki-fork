@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GMATWiz — Lesson loop</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="shell">
+
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <span class="brand__mark" aria-hidden="true"></span>
+      <span class="brand__name">GMATWiz</span>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a class="nav__link" href="today.html">Today</a>
+      <a class="nav__link is-current" href="lesson.html">Lesson</a>
+      <a class="nav__link" href="review.html">Review</a>
+      <a class="nav__link" href="error-log.html">Error log</a>
+      <a class="nav__link" href="dashboard.html">Dashboard</a>
+    </nav>
+    <div class="topbar__aside">
+      <span class="glance mono"><span class="glance__dot is-live" aria-hidden="true"></span>Quadratics</span>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="col stack-6">
+
+      <!-- The loop is a real sequence: I do -> we do -> you do. Order is the lesson. -->
+      <section class="stack-3">
+        <p class="eyebrow eyebrow--tick">Algebra &middot; Quadratics &middot; word problems</p>
+        <ol class="phases" aria-label="Lesson stage: you do">
+          <li class="phase is-done"><span class="phase__tick">&check; I do</span><span class="phase__sub">Worked example</span></li>
+          <li class="phase is-done"><span class="phase__tick">&check; We do</span><span class="phase__sub">Guided, 6/6</span></li>
+          <li class="phase is-active"><span class="phase__tick">&rarr; You do</span><span class="phase__name">Independent</span><span class="phase__sub">Timed &middot; new item</span></li>
+        </ol>
+      </section>
+
+      <!-- Application-first: the problem IS the screen. Quiet timer, never a red countdown. -->
+      <section class="panel panel--feature stack-5" aria-labelledby="q-h">
+        <div class="row" style="grid-template-columns: 1fr auto; grid-auto-flow: initial; justify-content: space-between;">
+          <span class="tag tag--topic">New &middot; never seen</span>
+          <span class="mono caption" id="timer" aria-label="Time on this question">01:12</span>
+        </div>
+
+        <h2 class="stem" id="q-h">
+          A rectangular garden is <span class="num">3</span> meters longer than it is wide.
+          Its area is <span class="num">40</span> square meters. What is the width, in meters?
+        </h2>
+
+        <ul class="choices" id="choices">
+          <li><button class="choice" type="button" data-correct="false"><span class="choice__key">A</span><span class="choice__text num">4</span><span class="choice__mark" aria-hidden="true"></span></button></li>
+          <li><button class="choice" type="button" data-correct="true"><span class="choice__key">B</span><span class="choice__text num">5</span><span class="choice__mark" aria-hidden="true"></span></button></li>
+          <li><button class="choice" type="button" data-correct="false"><span class="choice__key">C</span><span class="choice__text num">6</span><span class="choice__mark" aria-hidden="true"></span></button></li>
+          <li><button class="choice" type="button" data-correct="false"><span class="choice__key">D</span><span class="choice__text num">8</span><span class="choice__mark" aria-hidden="true"></span></button></li>
+          <li><button class="choice" type="button" data-correct="false"><span class="choice__key">E</span><span class="choice__text num">10</span><span class="choice__mark" aria-hidden="true"></span></button></li>
+        </ul>
+
+        <!-- SIGNATURE BEHAVIOR: explanation is sealed until an attempt is made (SPOV 2) -->
+        <section class="seal" aria-live="polite">
+          <div class="seal__shut" id="seal-shut">
+            <span class="seal__icon" aria-hidden="true"></span>
+            <span>The explanation is sealed until you answer. Lessons build confidence; the attempt is what builds competence.</span>
+          </div>
+
+          <div class="seal__open panel panel--sunk stack-3" id="seal-open" hidden tabindex="-1">
+            <p class="eyebrow eyebrow--tick" id="verdict">Explanation</p>
+            <p>
+              Let the width be <span class="num">w</span>, so the length is
+              <span class="num">w&nbsp;+&nbsp;3</span>. Area gives
+              <span class="mono">w(w + 3) = 40</span>, i.e.
+              <span class="mono">w&sup2; + 3w &minus; 40 = 0</span>.
+            </p>
+            <p>
+              Factor: <span class="mono">(w &minus; 5)(w + 8) = 0</span>, so
+              <span class="num">w = 5</span> or <span class="num">w = &minus;8</span>.
+              A width can&rsquo;t be negative, so <b class="measure-num">w = 5</b>.
+              Check: <span class="mono">5 &times; 8 = 40</span>. &check;
+            </p>
+            <p class="caption">Trap A (&ldquo;4&rdquo;) comes from solving <span class="mono">w(w+3)=40</span> by guessing factors of 40 without forming the quadratic.</p>
+          </div>
+        </section>
+
+        <div class="row row--wrap" id="actions">
+          <button class="btn btn--primary btn--lg" id="submit" type="button" disabled>Submit answer</button>
+          <span class="caption muted" id="hint">Pick an option to submit.</span>
+        </div>
+      </section>
+
+      <!-- ERROR-LOG CAPTURE: appears only after a miss. One sharp prompt, minimal cost. -->
+      <section class="panel stack-5" id="capture" hidden tabindex="-1" aria-labelledby="cap-h">
+        <div class="stack-2">
+          <p class="eyebrow eyebrow--tick">Logged automatically</p>
+          <h2 class="h3" id="cap-h">Why did this one slip?</h2>
+          <p class="small muted">One tap. This turns the miss into a scheduled re-practice &mdash; you&rsquo;ll see it again at the right time.</p>
+        </div>
+        <div class="row row--wrap" role="group" aria-label="Error type">
+          <button class="chip" type="button">Content gap</button>
+          <button class="chip is-selected" type="button" aria-pressed="true">Reasoning flaw</button>
+          <button class="chip" type="button">Timing</button>
+          <button class="chip" type="button">Careless</button>
+          <button class="chip" type="button">Fell for trap</button>
+        </div>
+        <div class="field">
+          <label class="field__label" for="takeaway">Takeaway (optional, one line)</label>
+          <input class="input" id="takeaway" type="text" value="Form the quadratic first; don&rsquo;t guess factor pairs.">
+        </div>
+        <div class="row row--wrap">
+          <button class="btn btn--primary" type="button">Save &amp; continue</button>
+          <a class="btn btn--quiet" href="today.html">Skip for now</a>
+        </div>
+      </section>
+
+      <!-- POST-ATTEMPT NEXT STEP: appears after a correct answer -->
+      <section id="advance" hidden tabindex="-1">
+        <div class="panel panel--sunk row" style="grid-template-columns: 1fr auto; grid-auto-flow: initial; justify-content: space-between;">
+          <div>
+            <p class="eyebrow eyebrow--tick">Nice &mdash; that&rsquo;s independent practice working</p>
+            <p class="small muted" style="margin-top: var(--s2);">2 of 4 new items cleared. Mastery needs 85% across two spaced sessions.</p>
+          </div>
+          <a class="btn btn--primary" href="lesson.html">Next item</a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script>
+  (function () {
+    var choices = document.getElementById('choices');
+    var submit = document.getElementById('submit');
+    var hint = document.getElementById('hint');
+    var sealShut = document.getElementById('seal-shut');
+    var sealOpen = document.getElementById('seal-open');
+    var verdict = document.getElementById('verdict');
+    var capture = document.getElementById('capture');
+    var advance = document.getElementById('advance');
+    var selected = null;
+    var answered = false;
+
+    choices.addEventListener('click', function (e) {
+      if (answered) return;
+      var btn = e.target.closest('.choice');
+      if (!btn) return;
+      var all = choices.querySelectorAll('.choice');
+      for (var i = 0; i < all.length; i++) all[i].classList.remove('is-selected');
+      btn.classList.add('is-selected');
+      selected = btn;
+      submit.disabled = false;
+      hint.textContent = 'Ready when you are.';
+    });
+
+    submit.addEventListener('click', function () {
+      if (!selected || answered) return;
+      answered = true;
+      var correct = selected.getAttribute('data-correct') === 'true';
+
+      var all = choices.querySelectorAll('.choice');
+      for (var i = 0; i < all.length; i++) {
+        var c = all[i];
+        c.disabled = true;
+        if (c.getAttribute('data-correct') === 'true') {
+          c.classList.remove('is-selected');
+          c.classList.add('is-correct');
+          c.querySelector('.choice__mark').textContent = 'correct';
+        } else if (c === selected) {
+          c.classList.remove('is-selected');
+          c.classList.add('is-wrong');
+          c.querySelector('.choice__mark').textContent = 'your answer';
+        }
+      }
+
+      /* Unseal the explanation now that the attempt is in. */
+      sealShut.setAttribute('hidden', '');
+      sealOpen.removeAttribute('hidden');
+      verdict.textContent = correct ? 'Correct \u2014 here\u2019s the why' : 'Not quite \u2014 here\u2019s the why';
+
+      submit.setAttribute('hidden', '');
+      hint.setAttribute('hidden', '');
+
+      if (correct) {
+        advance.removeAttribute('hidden');
+        advance.focus();
+      } else {
+        capture.removeAttribute('hidden');
+        capture.focus();
+      }
+    });
+  })();
+</script>
+</body>
+</html>

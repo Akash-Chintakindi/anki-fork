@@ -1,0 +1,366 @@
+{
+  "topic_id": "gmat::quant::arithmetic::counting",
+  "slug": "counting-combinatorics",
+  "title": "Counting & Combinatorics",
+  "domain": "Arithmetic",
+  "estimated_minutes": 24,
+  "prerequisites": [
+    "multiplication principle",
+    "factorials"
+  ],
+  "learning_objectives": [
+    "Apply the fundamental counting principle (multiply independent choices).",
+    "Decide whether order matters: permutation vs combination.",
+    "Compute permutations P(n,k) and combinations C(n,k) without a calculator.",
+    "Handle simple restrictions (no repeats, fixed roles, by-category choices)."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do → we do → you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Multiplication and the idea of independent choices.",
+    "do_now": {
+      "instructions": "From memory, no calculator. 4 minutes.",
+      "items": [
+        {
+          "prompt": "How many 2-digit codes use digits 1–4 if repeats are allowed?",
+          "answer": "16 (4 × 4).",
+          "targets": "multiplication principle"
+        },
+        {
+          "prompt": "Compute 4! (4 factorial).",
+          "answer": "24.",
+          "targets": "factorials"
+        },
+        {
+          "prompt": "How many ways to arrange A, B, C in a row?",
+          "answer": "6 (3!).",
+          "targets": "arrangements"
+        },
+        {
+          "prompt": "Pick 1 of 3 shirts and 1 of 2 pants — how many outfits?",
+          "answer": "6 (3 × 2).",
+          "targets": "independent choices"
+        },
+        {
+          "prompt": "Choosing a 2-person team from a group — does order matter? Why?",
+          "answer": "No — {A,B} is the same team as {B,A}; that's a combination.",
+          "targets": "order vs no order"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Retrieves the multiplication principle, factorials, and the order-vs-no-order distinction that decides permutation versus combination.",
+      "if_students_struggle": "If factorials are shaky, write 4! = 4·3·2·1 explicitly and connect to arranging 4 items."
+    },
+    "prior_knowledge_bridge": "Everything in counting grows from the multiplication principle you just used for outfits. Q5 splits the world in two: when order matters you keep all arrangements (permutations); when it doesn't, you divide out the repeats (combinations). Today you'll pick the right tool and compute it by hand.",
+    "learning_intention": "By the end you can count outcomes with the multiplication principle and decide between permutations and combinations, computing each without a calculator.",
+    "success_criteria": [
+      "I can multiply independent choices to count outcomes.",
+      "I can tell whether a problem needs a permutation or a combination.",
+      "I can evaluate P(n,k) and C(n,k) by canceling factorials."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00–4:00",
+        "move": "Do Now; silent retrieval."
+      },
+      {
+        "time": "4:00–6:00",
+        "move": "Check; sort Q5 into the combination bucket."
+      },
+      {
+        "time": "6:00–8:00",
+        "move": "Bridge: permutations keep order; combinations divide it out."
+      },
+      {
+        "time": "8:00–9:00",
+        "move": "Learning intention + success criteria."
+      },
+      {
+        "time": "9:00–10:00",
+        "move": "I do: choose a committee of 3 from 7."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "A committee of 3 people is chosen from a group of 7. How many different committees are possible?",
+    "options": {
+      "A": "21",
+      "B": "35",
+      "C": "105",
+      "D": "210",
+      "E": "343"
+    },
+    "correct": "B",
+    "explanation": "A committee is unordered, so use a combination: C(7,3) = (7·6·5)/(3·2·1) = 210/6 = 35.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "Does order matter? No — a committee {A,B,C} is the same in any order. Use combinations.",
+      "C(7,3) = 7! / (3! · 4!) = (7·6·5)/(3·2·1).",
+      "Numerator 7·6·5 = 210; denominator 3·2·1 = 6.",
+      "210 / 6 = 35."
+    ],
+    "key_takeaway": "Order matters → permutation; order doesn't → combination. Committees, teams, and groups are combinations.",
+    "topic": "gmat::quant::arithmetic::counting",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Problem Solving"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "In how many ways can 5 people line up in a row?",
+      "options": {
+        "A": "20",
+        "B": "25",
+        "C": "60",
+        "D": "120",
+        "E": "720"
+      },
+      "correct": "D",
+      "explanation": "A line is an ordered arrangement of all 5: 5! = 5·4·3·2·1 = 120.",
+      "difficulty": "easy",
+      "scaffold_hints": [
+        "A row is ordered → permutation.",
+        "All five are arranged → 5!.",
+        "5·4·3·2·1."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right — 120.",
+        "if_incorrect": "Arranging all n distinct items in order is n!, not a combination."
+      },
+      "topic": "gmat::quant::arithmetic::counting",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    },
+    {
+      "id": "we_2",
+      "stem": "From 6 books, in how many ways can you choose 2 to take on a trip?",
+      "options": {
+        "A": "12",
+        "B": "15",
+        "C": "30",
+        "D": "36",
+        "E": "720"
+      },
+      "correct": "B",
+      "explanation": "Choosing (order irrelevant) → combination: C(6,2) = (6·5)/(2·1) = 15.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "Order doesn't matter for which 2 books → combination.",
+        "C(6,2) = (6·5)/(2·1).",
+        "30/2 = 15."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Yes — 15.",
+        "if_incorrect": "30 is the ordered count (P(6,2)); divide by 2! because the 2 books' order doesn't matter."
+      },
+      "topic": "gmat::quant::arithmetic::counting",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "A restaurant offers 4 appetizers, 5 main courses, and 3 desserts. How many different 3-course meals (one of each) are possible?",
+      "options": {
+        "A": "12",
+        "B": "35",
+        "C": "60",
+        "D": "120",
+        "E": "220"
+      },
+      "correct": "C",
+      "explanation": "Independent choices multiply: 4 × 5 × 3 = 60.",
+      "difficulty": "medium",
+      "target_seconds": 60,
+      "topic": "gmat::quant::arithmetic::counting",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "How many distinct arrangements are there of the letters in the word MATH?",
+      "options": {
+        "A": "4",
+        "B": "12",
+        "C": "16",
+        "D": "24",
+        "E": "256"
+      },
+      "correct": "D",
+      "explanation": "Four distinct letters arranged in order: 4! = 24.",
+      "difficulty": "medium",
+      "target_seconds": 60,
+      "topic": "gmat::quant::arithmetic::counting",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "A team of 2 is selected from 4 women and 3 men. How many teams have exactly 1 woman and 1 man?",
+      "options": {
+        "A": "6",
+        "B": "7",
+        "C": "10",
+        "D": "12",
+        "E": "21"
+      },
+      "correct": "D",
+      "explanation": "Choose 1 of 4 women and 1 of 3 men: 4 × 3 = 12.",
+      "difficulty": "hard",
+      "target_seconds": 90,
+      "topic": "gmat::quant::arithmetic::counting",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_4",
+      "stem": "How many 3-digit numbers can be formed from the digits 1, 2, 3, 4, 5 if no digit is repeated?",
+      "options": {
+        "A": "10",
+        "B": "15",
+        "C": "60",
+        "D": "120",
+        "E": "125"
+      },
+      "correct": "C",
+      "explanation": "No repeats: 5 choices, then 4, then 3 → 5·4·3 = 60 (this is P(5,3)).",
+      "difficulty": "hard",
+      "target_seconds": 90,
+      "topic": "gmat::quant::arithmetic::counting",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "sample_held_out_items": [
+      {
+        "id": "mc_1",
+        "stem": "Compute C(5,2).",
+        "options": {
+          "A": "5",
+          "B": "10",
+          "C": "20",
+          "D": "25",
+          "E": "120"
+        },
+        "correct": "B",
+        "explanation": "C(5,2) = (5·4)/(2·1) = 10.",
+        "difficulty": "easy",
+        "topic": "gmat::quant::arithmetic::counting",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      },
+      {
+        "id": "mc_2",
+        "stem": "In how many ways can 4 distinct paintings be hung in a row?",
+        "options": {
+          "A": "8",
+          "B": "12",
+          "C": "16",
+          "D": "24",
+          "E": "256"
+        },
+        "correct": "D",
+        "explanation": "Ordered arrangement of 4 distinct items = 4! = 24.",
+        "difficulty": "medium",
+        "topic": "gmat::quant::arithmetic::counting",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      }
+    ],
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "Khan Academy — Counting, permutations, and combinations",
+      "url": "https://www.khanacademy.org/math/precalculus",
+      "note": "Multiplication principle, P(n,k), C(n,k) with worked examples.",
+      "primary": true
+    },
+    {
+      "name": "OpenStax, Introductory Statistics — Counting principles",
+      "url": "https://openstax.org/details/books/introductory-statistics",
+      "note": "Factorials, permutations, and combinations."
+    },
+    {
+      "name": "GMAC — GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Quantitative Reasoning scope."
+    }
+  ],
+  "tags": [
+    "arithmetic",
+    "counting",
+    "combinatorics",
+    "permutations",
+    "combinations",
+    "factorial",
+    "multiplication-principle"
+  ],
+  "schema_version": "1.0",
+  "section": "Quantitative Reasoning",
+  "question_type": "Problem Solving",
+  "exam": "GMAT Focus Edition"
+}

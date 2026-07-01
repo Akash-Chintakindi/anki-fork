@@ -83,7 +83,13 @@ from aqt.webview import AnkiWebView, AnkiWebViewKind
 install_pylib_legacy()
 
 MainWindowState = Literal[
-    "startup", "deckBrowser", "overview", "review", "resetRequired", "profileManager"
+    "startup",
+    "deckBrowser",
+    "overview",
+    "review",
+    "resetRequired",
+    "profileManager",
+    "gmat",
 ]
 
 
@@ -772,6 +778,15 @@ class AnkiQt(QMainWindow):
     def _deckBrowserState(self, oldState: MainWindowState) -> None:
         self.deckBrowser.show()
 
+    def _gmatState(self, oldState: MainWindowState) -> None:
+        import aqt.gmat
+
+        aqt.gmat.render_gmat_screen(self)
+
+    def _gmatCleanup(self, newState: MainWindowState) -> None:
+        # restore the bottom bar that the GMATWiz screen hides
+        self.bottomWeb.show()
+
     def _selectedDeck(self) -> DeckDict | None:
         did = self.col.decks.selected()
         if not self.col.decks.name_if_exists(did):
@@ -1447,6 +1462,11 @@ title="{}" {}>{}</button>""".format(
         qconnect(m.actionNoteTypes.triggered, self.onNoteTypes)
         qconnect(m.action_check_for_updates.triggered, self.on_check_for_updates)
         qconnect(m.actionPreferences.triggered, self.onPrefs)
+
+        # GMATWiz Tools entries
+        import aqt.gmat
+
+        aqt.gmat.setup_gmat_menu(self)
 
         # View
         qconnect(

@@ -334,6 +334,7 @@ impl From<CardEntry> for Card {
             desired_retention: data.fsrs_desired_retention,
             decay: data.decay,
             last_review_time: data.last_review_time,
+            topic_mastery: data.topic_mastery,
             custom_data: data.custom_data,
         }
     }

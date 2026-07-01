@@ -10,6 +10,7 @@ members = [
   "build/configure",
   "build/ninja_gen",
   "build/runner",
+  "ffi",
   "ftl",
   "pylib/rsbridge",
   "rslib",

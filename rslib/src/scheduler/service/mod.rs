@@ -102,6 +102,14 @@ impl crate::services::SchedulerService for Collection {
             .map(Into::into)
     }
 
+    fn set_topic_mastery(
+        &mut self,
+        input: scheduler::SetTopicMasteryRequest,
+    ) -> Result<anki_proto::collection::OpChangesWithCount> {
+        self.set_topic_mastery(&input.topic, input.mastery)
+            .map(Into::into)
+    }
+
     fn bury_or_suspend_cards(
         &mut self,
         input: scheduler::BuryOrSuspendCardsRequest,

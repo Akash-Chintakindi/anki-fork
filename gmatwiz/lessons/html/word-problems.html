@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Word Problems: Rate, Work, Mixture &amp; Interest &middot; GMATWiz Quant</title>
+<style>
+:root{
+  --ink:#1a1813; --muted:#6b6358; --rule:#d9d2c5; --bg:#fbf9f4; --card:#fffdf8;
+  --accent:#7a3b2e; --accent2:#3a5a40; --link:#7a3b2e; --code:#2b2b2b;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:3rem 2rem 6rem;}
+.content{max-width:720px;}
+header.masthead{border-bottom:1px solid var(--rule); padding-bottom:1.2rem; margin-bottom:2rem;}
+.kicker{font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:0 0 .4rem;}
+h1{font-size:2.3rem; line-height:1.1; margin:.1rem 0 .6rem; font-weight:600; letter-spacing:-.01em;}
+.meta{color:var(--muted); font-size:.9rem; margin:0;}
+.meta b{color:var(--ink); font-weight:600;}
+h2{font-size:1.45rem; margin:2.8rem 0 .3rem; font-weight:600; letter-spacing:-.01em;}
+h2 .num{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:.5rem;}
+h3{font-size:1.06rem; margin:1.6rem 0 .4rem; font-weight:600;}
+.sub{color:var(--muted); font-style:italic; margin:.1rem 0 1rem; font-size:.95rem;}
+p{margin:.6rem 0;} ul,ol{margin:.5rem 0 .9rem; padding-left:1.3rem;} li{margin:.25rem 0;}
+a{color:var(--link); text-decoration:none; border-bottom:1px solid rgba(122,59,46,.35);}
+a:hover{border-bottom-color:var(--link);}
+.lead{font-size:1.08rem;}
+section{position:relative;}
+.note{font-size:.8rem; color:var(--muted); line-height:1.4;}
+.objectives{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1rem 1.2rem;}
+.objectives ul{margin:.3rem 0 0;}
+.intent{border-left:3px solid var(--accent2); padding:.4rem 0 .4rem 1rem; margin:1rem 0; font-size:1.05rem;}
+.donow{background:#2b2620; color:#f3ecde; border-radius:8px; padding:1.1rem 1.3rem; margin:1rem 0;}
+.donow .tag{font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:#d8b48a;}
+.donow ol{padding-left:1.2rem;} .donow li{margin:.4rem 0;}
+.donow .ans{color:#b9c6a9; font-style:italic; font-size:.86rem; display:block; margin-top:.15rem;}
+table{border-collapse:collapse; width:100%; font-size:.92rem; margin:.6rem 0 1rem;}
+th,td{text-align:left; padding:.45rem .6rem; border-bottom:1px solid var(--rule); vertical-align:top;}
+th{font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+td.t{white-space:nowrap; color:var(--accent); font-variant-numeric:tabular-nums; width:6.5rem;}
+.q{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1.1rem 1.3rem; margin:1.1rem 0;}
+.q .qid{font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+.q .qid .diff{float:right; color:var(--accent2);}
+.q .stem{font-size:1.03rem; margin:.35rem 0 .6rem;}
+.choices{list-style:none; padding:0; margin:.2rem 0 .4rem; counter-reset:c;}
+.choices li{padding:.32rem .6rem; border:1px solid var(--rule); border-radius:6px; margin:.3rem 0; background:#fff;}
+.choices li .lab{display:inline-block; width:1.5rem; font-weight:600; color:var(--accent);}
+.choices li.correct{border-color:var(--accent2); background:#eef3ec;}
+.choices li.correct .lab{color:var(--accent2);}
+details{margin:.5rem 0 .2rem; border-top:1px dashed var(--rule); padding-top:.5rem;}
+details>summary{cursor:pointer; font-size:.86rem; color:var(--accent); font-weight:600; list-style:none;}
+details>summary::-webkit-details-marker{display:none;}
+details>summary::before{content:"\25B8  "; color:var(--accent);}
+details[open]>summary::before{content:"\25BE  ";}
+.expl{font-size:.95rem; margin-top:.5rem;}
+.hints{font-size:.92rem;} .hints li{margin:.2rem 0;}
+.feedback{font-size:.9rem;} .feedback .ok{color:var(--accent2);} .feedback .no{color:var(--accent);}
+.appfirst{font-size:.78rem; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin:.2rem 0;}
+.mastery{background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--accent2); border-radius:8px; padding:1rem 1.2rem;}
+.pill{display:inline-block; font-size:.72rem; padding:.12rem .5rem; border:1px solid var(--rule); border-radius:999px; color:var(--muted); margin:.1rem .2rem .1rem 0;}
+footer{margin-top:3.5rem; border-top:1px solid var(--rule); padding-top:1rem; color:var(--muted); font-size:.82rem;}
+.src{background:#eef3ec; border:1px solid #cfe0cf; border-radius:8px; padding:.9rem 1.1rem; margin:1.2rem 0;}
+.src .tag{font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent2); font-weight:600;}
+.crumbs{font-size:.85rem; margin-bottom:1.2rem;}
+.ask{font-size:.9rem; background:#fff8ec; border:1px dashed #e0c590; border-radius:8px; padding:.7rem 1rem; margin:1.4rem 0;}
+@media print{ body{background:#fff} .wrap{padding:0} a{border:none} .donow{-webkit-print-color-adjust:exact; print-color-adjust:exact} }
+</style></head>
+<body><div class="wrap"><div class="content">
+  <div class="crumbs"><a href="index.html">&larr; All Quant topics</a> &middot; Algebra</div>
+  <header class="masthead">
+    <p class="kicker">GMATWiz &middot; GMAT Focus Edition &middot; Quantitative Reasoning (Problem Solving)</p>
+    <h1>Word Problems: Rate, Work, Mixture &amp; Interest</h1>
+    <p class="meta"><b>Topic id</b> <code>gmat::quant::algebra::word_problems</code> &middot; <b>Domain</b> Algebra
+      &middot; <b>Prereqs</b> linear equations, ratios &amp; proportions, percents &middot; <b>~26 min</b></p>
+  </header>
+
+  <div class="objectives">
+    <p class="note"><b>Learning objectives</b></p>
+    <ul><li>Use distance = rate × time, including total-time and relative-speed setups.</li><li>Solve work problems by adding rates (jobs per unit time).</li><li>Set up mixture/concentration problems by tracking the pure quantity.</li><li>Compute simple interest with I = P·r·t.</li></ul>
+    <p class="note">Model: I do → we do → you do &middot; application-first (explanations revealed after an attempt) &middot; Rosenshine (daily review), Archer (I-do/we-do/you-do), SPOV2 application-first.</p>
+  </div>
+
+  
+    <section>
+      <h2><span class="num">1</span>Opening &mdash; retrieval &amp; bridge</h2>
+      <p class="sub">Builds on: Linear equations, rates/ratios, and percents.</p>
+      <div class="donow">
+        <div class="tag">Do Now &middot; from memory, no notes</div>
+        <p>From memory, no calculator. 4 minutes.</p>
+        <ol><li>A car goes 180 miles in 3 hours. What is its speed?<span class="ans">60 mph.</span></li><li>Find distance if rate = 50 mph and time = 4 h.<span class="ans">200 miles (d = rt).</span></li><li>If a worker finishes a job in 6 hours, what fraction is done in 1 hour?<span class="ans">1/6.</span></li><li>5% simple interest on $200 for 1 year = ?<span class="ans">$10.</span></li><li>Two cars approach each other at 40 and 60 mph. How fast does the gap close?<span class="ans">100 mph — speeds add when moving toward each other.</span></li></ol>
+      </div>
+      <p class="note"><b>Retrieval starter (5 min).</b> Retrieves D = rt, work-as-rate, percent-of, and relative speed — the four setups behind today&#x27;s classic word-problem types.
+      <br><b>If students struggle:</b> If D = rt is shaky, drill the triangle (cover the unknown to get the formula) before composite problems.</p>
+      <h3>Prior-knowledge bridge</h3>
+      <p>Every word problem today is a translation exercise built on one relationship you already know: rate × time = amount (miles, jobs, dollars of interest). The art is choosing a variable, writing one honest equation, and solving it with your linear-equation skills. Q5&#x27;s relative-speed idea unlocks the trickier travel problems.</p>
+      <h3>Learning intention</h3>
+      <p class="intent">By the end you can translate rate, work, mixture, and interest scenarios into equations and solve them.</p>
+      <p class="note"><b>You'll know you've got it when:</b></p>
+      <ul><li>I can set up and solve distance = rate × time problems, including total time.</li><li>I can add work rates to find combined or individual times.</li><li>I can track the pure quantity in a mixture and compute simple interest.</li></ul>
+      <details><summary>Complete timed opening script</summary>
+        <table><thead><tr><th>Time</th><th>Move</th></tr></thead><tbody><tr><td class="t">0:00–4:00</td><td>Do Now; silent retrieval.</td></tr><tr><td class="t">4:00–6:00</td><td>Check; surface relative speed from Q5.</td></tr><tr><td class="t">6:00–8:00</td><td>Bridge: all types are rate × time = amount; pick a variable, write one equation.</td></tr><tr><td class="t">8:00–9:00</td><td>Learning intention + success criteria.</td></tr><tr><td class="t">9:00–10:00</td><td>I do: two pipes filling a tank together.</td></tr></tbody></table>
+      </details>
+    </section>
+
+  <section>
+    <h2><span class="num">2</span>I do &mdash; worked example</h2>
+    <p class="sub">Watch the reasoning modeled end to end before you try.</p>
+    
+    <div class="q">
+      <div class="qid">I DO &middot; worked example<span class="diff">medium</span></div>
+      <div class="stem">Pipe A fills a tank in 4 hours and pipe B fills the same tank in 6 hours. Working together, how long do they take to fill the tank?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>2.4 hours</li><li><span class="lab">B</span>5 hours</li><li><span class="lab">C</span>2 hours</li><li><span class="lab">D</span>3 hours</li><li><span class="lab">E</span>10 hours</li></ul>
+      <h3>Think-aloud</h3>
+      <ol><li>Convert each time to a rate: A does 1/4 tank per hour, B does 1/6.</li><li>Working together, rates ADD: 1/4 + 1/6 = 5/12 tank per hour.</li><li>Time = total work ÷ rate = 1 ÷ (5/12) = 12/5 = 2.4 hours (2 h 24 min).</li></ol>
+      <p class="expl"><b>Correct: A.</b> Add rates: 1/4 + 1/6 = 3/12 + 2/12 = 5/12 of the tank per hour. Time = 1 ÷ (5/12) = 12/5 = 2.4 hours.</p>
+      <p class="note"><b>Takeaway.</b> Work problems: add RATES (jobs per hour), never times. Combined time = 1 ÷ (sum of rates).</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>We do &mdash; guided practice</h2>
+    <p class="sub">Scaffolds and immediate feedback are one click away. Fade them as you gain confidence.</p>
+    
+    <div class="q">
+      <div class="qid">we_1 &middot; we do (guided)<span class="diff">easy</span></div>
+      <div class="stem">A cyclist rides 60 miles at a steady 15 mph. How long does the trip take?</div>
+      <ul class="choices"><li><span class="lab">A</span>3 hours</li><li class="correct"><span class="lab">B</span>4 hours</li><li><span class="lab">C</span>5 hours</li><li><span class="lab">D</span>45 hours</li><li><span class="lab">E</span>900 hours</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>Rearrange d = rt to t = d/r.</li><li>60 ÷ 15.</li><li>= 4 hours.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Right — 4 hours.<br>
+        <span class="no">If incorrect:</span> Divide distance by rate; don&#x27;t multiply.</p>
+        <p class="expl"><b>Answer: B.</b> time = distance ÷ rate = 60 ÷ 15 = 4 hours.</p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">we_2 &middot; we do (guided)<span class="diff">easy</span></div>
+      <div class="stem">What is the simple interest on $500 at 6% per year for 2 years?</div>
+      <ul class="choices"><li><span class="lab">A</span>$30</li><li class="correct"><span class="lab">B</span>$60</li><li><span class="lab">C</span>$530</li><li><span class="lab">D</span>$560</li><li><span class="lab">E</span>$600</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>Simple interest I = principal × rate × time.</li><li>500 × 0.06 = 30 per year.</li><li>× 2 years = 60.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Yes — $60 of interest.<br>
+        <span class="no">If incorrect:</span> The question asks for interest only, not the new balance ($560).</p>
+        <p class="expl"><b>Answer: B.</b> I = P·r·t = 500 × 0.06 × 2 = $60.</p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>You do &mdash; independent application</h2>
+    <p class="sub">Application-first (SPOV2): commit to an answer, then reveal the explanation. Log every miss.</p>
+    
+    <div class="q">
+      <div class="qid">you_1 &middot; you do (independent) &middot; target 90s<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A car travels 150 miles at 50 mph, then 120 miles at 40 mph. What is the total travel time?</div>
+      <ul class="choices"><li><span class="lab">A</span>5 hours</li><li><span class="lab">B</span>5.5 hours</li><li class="correct"><span class="lab">C</span>6 hours</li><li><span class="lab">D</span>6.5 hours</li><li><span class="lab">E</span>7 hours</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: C.</b> 150/50 = 3 hours and 120/40 = 3 hours; total = 6 hours.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_2 &middot; you do (independent) &middot; target 120s<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Two workers together paint a fence in 3 hours. One of them alone would take 5 hours. How long would the other take alone?</div>
+      <ul class="choices"><li><span class="lab">A</span>2 hours</li><li class="correct"><span class="lab">B</span>7.5 hours</li><li><span class="lab">C</span>8 hours</li><li><span class="lab">D</span>4 hours</li><li><span class="lab">E</span>15 hours</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: B.</b> Combined rate 1/3; one is 1/5; the other = 1/3 − 1/5 = 2/15 fence/hour → time = 15/2 = 7.5 hours.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_3 &middot; you do (independent) &middot; target 120s<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">How many liters of pure water must be added to 10 liters of a 40% salt solution to dilute it to a 25% solution?</div>
+      <ul class="choices"><li><span class="lab">A</span>4</li><li><span class="lab">B</span>5</li><li class="correct"><span class="lab">C</span>6</li><li><span class="lab">D</span>8</li><li><span class="lab">E</span>15</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: C.</b> Salt stays 0.40 × 10 = 4 L. Need 4/(10 + x) = 0.25 → 10 + x = 16 → x = 6 liters.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_4 &middot; you do (independent) &middot; target 120s<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A boat travels 30 miles downstream in 2 hours and returns the same 30 miles upstream in 3 hours. What is the speed of the boat in still water?</div>
+      <ul class="choices"><li><span class="lab">A</span>10 mph</li><li><span class="lab">B</span>11 mph</li><li class="correct"><span class="lab">C</span>12.5 mph</li><li><span class="lab">D</span>13 mph</li><li><span class="lab">E</span>15 mph</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: C.</b> Downstream b + c = 30/2 = 15; upstream b − c = 30/3 = 10. Adding: 2b = 25, so b = 12.5 mph.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+  </section>
+
+  
+    <section>
+      <h2><span class="num">5</span>Mastery check</h2>
+      <div class="mastery">
+        <p>A topic is mastered at &gt;=85% correct on new/held-out-style questions across &gt;=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.</p>
+        <p class="note"><b>Threshold</b> 0.85 &middot; <b>spaced sessions</b> &ge; 2</p>
+        <ul><li>&gt;=85% correct on new/held-out-style items (not flashcard recall) per session</li><li>sustained across &gt;=2 spaced sessions with a delay between them</li><li>per-topic memory surfaced only after &gt;=20 graded reviews (PRD give-up rule)</li><li>per-topic performance surfaced only after &gt;=8 application attempts (PRD give-up rule)</li></ul>
+        <p class="note"><b>If not yet mastered:</b> Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -&gt; you-do loop before re-testing.</p>
+      </div>
+      <h3>Sample held-out check items</h3>
+    <div class="q">
+      <div class="qid">mc_1 &middot; held-out check<span class="diff">easy</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A printer prints 24 pages per minute. How many minutes does it take to print 300 pages?</div>
+      <ul class="choices"><li><span class="lab">A</span>10</li><li><span class="lab">B</span>12</li><li class="correct"><span class="lab">C</span>12.5</li><li><span class="lab">D</span>13</li><li><span class="lab">E</span>15</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: C.</b> 300 ÷ 24 = 12.5 minutes.</p>
+        
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">mc_2 &middot; held-out check<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Sam invests $800 at 5% simple annual interest. How much interest does he earn after 3 years?</div>
+      <ul class="choices"><li><span class="lab">A</span>$40</li><li><span class="lab">B</span>$80</li><li class="correct"><span class="lab">C</span>$120</li><li><span class="lab">D</span>$200</li><li><span class="lab">E</span>$920</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: C.</b> I = P·r·t = 800 × 0.05 × 3 = $120.</p>
+        
+      </details>
+    </div>
+    </section>
+
+  <div class="src">
+    <div class="tag">Primary source</div>
+    <p><a href="https://openstax.org/details/books/elementary-algebra-2e">OpenStax, Elementary Algebra 2e — Applications (rate, work, mixture, interest)</a> &mdash; Translating and solving classic word problems.</p>
+    <p class='note'>Further reading:</p><ul><li><a href="https://www.khanacademy.org/math/algebra">Khan Academy — Rate &amp; work word problems</a> &mdash; Distance/rate/time, combined work, and mixtures.</li><li><a href="https://www.mba.com/exams/gmat-focus-edition">GMAC — GMAT Focus Edition (official exam overview)</a> &mdash; Official exam structure and Quantitative Reasoning scope.</li></ul>
+  </div>
+
+  <div class="ask">Stuck on any step? Ask your GMATWiz coach for a worked walkthrough &mdash; that's what it's here for.</div>
+
+  <footer>
+    <p>GMATWiz lesson &middot; <code>word-problems.json</code> &middot; schema v1.0 &middot; authored content (OfficialFlag=false), reserved official items used only for late checkpoints.</p>
+  </footer>
+</div></div></body></html>

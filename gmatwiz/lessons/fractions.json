@@ -1,0 +1,365 @@
+{
+  "topic_id": "gmat::quant::arithmetic::fractions",
+  "slug": "fractions",
+  "title": "Fractions",
+  "domain": "Arithmetic",
+  "estimated_minutes": 22,
+  "prerequisites": [
+    "number properties (factors, LCM)",
+    "whole-number division"
+  ],
+  "learning_objectives": [
+    "Add and subtract fractions using a common denominator; simplify results.",
+    "Multiply fractions and divide by multiplying by the reciprocal.",
+    "Convert between mixed numbers and improper fractions.",
+    "Find a fraction 'of' a quantity, including a fraction of what remains.",
+    "Compare fractions quickly using a common denominator or benchmarks."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do → we do → you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Factors and LCM (for common denominators) and division.",
+    "do_now": {
+      "instructions": "From memory, no calculator. 4 minutes.",
+      "items": [
+        {
+          "prompt": "Write 18/24 in lowest terms.",
+          "answer": "3/4 (divide top and bottom by 6).",
+          "targets": "simplifying via common factors"
+        },
+        {
+          "prompt": "Compute 3/8 + 1/8.",
+          "answer": "4/8 = 1/2.",
+          "targets": "same-denominator addition"
+        },
+        {
+          "prompt": "What is the LCM of 4 and 6?",
+          "answer": "12.",
+          "targets": "common denominators"
+        },
+        {
+          "prompt": "Convert 2 1/3 to an improper fraction.",
+          "answer": "7/3.",
+          "targets": "mixed → improper"
+        },
+        {
+          "prompt": "Why can't 1/3 + 1/4 equal 2/7?",
+          "answer": "The pieces are different sizes; you must use a common denominator first.",
+          "targets": "conceptual setup for today"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Retrieves simplifying, same-denominator addition, and LCM — the prerequisites for adding unlike fractions and for the 'fraction of a quantity' problems the GMAT loves.",
+      "if_students_struggle": "If LCM is shaky, recap with multiples lists (4: 4,8,12 …; 6: 6,12) before today's unlike-denominator work; the whole topic rides on it."
+    },
+    "prior_knowledge_bridge": "You added 3/8 + 1/8 easily because the pieces were the same size. The Do-Now's last question is the whole point of today: when denominators differ, you can't just add tops. You'll use the LCM skill you just retrieved to make the pieces the same size first — then multiply, divide, and take fractions of quantities the way GMAT word problems demand.",
+    "learning_intention": "By the end you can add, subtract, multiply, and divide fractions (including mixed numbers) and compute a fraction of a quantity — simplifying as you go.",
+    "success_criteria": [
+      "I can combine two unlike fractions by rewriting them over a common denominator.",
+      "I can divide fractions by multiplying by the reciprocal.",
+      "I can answer a 'fraction of a quantity' word problem in one clean setup."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00–4:00",
+        "move": "Do Now on screen; silent retrieval of Q1–5."
+      },
+      {
+        "time": "4:00–6:00",
+        "move": "Check answers; dwell on Q5 — different-sized pieces need a common denominator."
+      },
+      {
+        "time": "6:00–8:00",
+        "move": "Bridge: reuse LCM to make pieces equal; preview 'of' = multiply."
+      },
+      {
+        "time": "8:00–9:00",
+        "move": "State learning intention + success criteria."
+      },
+      {
+        "time": "9:00–10:00",
+        "move": "I do: the partially-emptied jar problem."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "A jar is 3/4 full of water. If 1/3 of the water is poured out, what fraction of the jar is now filled?",
+    "options": {
+      "A": "1/2",
+      "B": "5/12",
+      "C": "1/4",
+      "D": "7/12",
+      "E": "2/3"
+    },
+    "correct": "A",
+    "explanation": "Pouring out 1/3 of the water leaves 2/3 of it. Remaining = 2/3 × 3/4 = 6/12 = 1/2 of the jar.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "The jar starts at 3/4 full.",
+      "Removing 1/3 of the water leaves 2/3 of the water.",
+      "'Of' means multiply: 2/3 × 3/4 = (2×3)/(3×4) = 6/12.",
+      "Simplify 6/12 = 1/2. The jar is half full."
+    ],
+    "key_takeaway": "'Of' means multiply; 'a fraction of what's left' multiplies the leftover fraction, not the original amount.",
+    "topic": "gmat::quant::arithmetic::fractions",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Problem Solving"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "Compute 5/6 − 3/8.",
+      "options": {
+        "A": "1/4",
+        "B": "11/24",
+        "C": "1/2",
+        "D": "13/24",
+        "E": "7/24"
+      },
+      "correct": "B",
+      "explanation": "LCD of 6 and 8 is 24: 5/6 = 20/24 and 3/8 = 9/24, so 20/24 − 9/24 = 11/24.",
+      "difficulty": "easy",
+      "scaffold_hints": [
+        "Find the LCD of 6 and 8 — it's 24.",
+        "Rewrite: 5/6 = 20/24, 3/8 = 9/24.",
+        "Subtract the numerators over 24."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right — 20/24 − 9/24 = 11/24, already in lowest terms.",
+        "if_incorrect": "Don't subtract numerators and denominators separately. Convert both to /24 first."
+      },
+      "topic": "gmat::quant::arithmetic::fractions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    },
+    {
+      "id": "we_2",
+      "stem": "What is 2/3 ÷ 4/9?",
+      "options": {
+        "A": "8/27",
+        "B": "3/4",
+        "C": "3/2",
+        "D": "2/3",
+        "E": "6"
+      },
+      "correct": "C",
+      "explanation": "Dividing by a fraction = multiplying by its reciprocal: 2/3 ÷ 4/9 = 2/3 × 9/4 = 18/12 = 3/2.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "Keep–change–flip: dividing by 4/9 means multiplying by 9/4.",
+        "2/3 × 9/4. Cancel the 3 into the 9 first.",
+        "= 2 × 3 / 4 = 6/4 = 3/2."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Yes — reciprocal then simplify gives 3/2.",
+        "if_incorrect": "8/27 is the trap from multiplying instead of inverting. Flip the divisor: × 9/4."
+      },
+      "topic": "gmat::quant::arithmetic::fractions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "On a test, 3/5 of the questions are quantitative and 1/4 of the remaining questions are geometry. What fraction of all the questions are geometry?",
+      "options": {
+        "A": "1/10",
+        "B": "1/20",
+        "C": "3/20",
+        "D": "2/9",
+        "E": "1/5"
+      },
+      "correct": "A",
+      "explanation": "Remaining after quant = 1 − 3/5 = 2/5. Geometry = 1/4 × 2/5 = 2/20 = 1/10.",
+      "difficulty": "medium",
+      "target_seconds": 90,
+      "topic": "gmat::quant::arithmetic::fractions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "Which of these is the greatest: 5/8, 7/12, or 2/3?",
+      "options": {
+        "A": "5/8",
+        "B": "7/12",
+        "C": "2/3",
+        "D": "They are equal",
+        "E": "Cannot be determined"
+      },
+      "correct": "C",
+      "explanation": "Common denominator 24: 5/8 = 15/24, 7/12 = 14/24, 2/3 = 16/24. The largest is 2/3.",
+      "difficulty": "medium",
+      "target_seconds": 75,
+      "topic": "gmat::quant::arithmetic::fractions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "If 3/4 of a number is 18, what is 5/6 of the same number?",
+      "options": {
+        "A": "15",
+        "B": "20",
+        "C": "22",
+        "D": "24",
+        "E": "30"
+      },
+      "correct": "B",
+      "explanation": "If (3/4)x = 18 then x = 24. Then (5/6)(24) = 20.",
+      "difficulty": "hard",
+      "target_seconds": 90,
+      "topic": "gmat::quant::arithmetic::fractions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_4",
+      "stem": "A tank is 2/5 full. After adding 12 liters it is 7/10 full. What is the tank's full capacity, in liters?",
+      "options": {
+        "A": "30",
+        "B": "36",
+        "C": "40",
+        "D": "48",
+        "E": "60"
+      },
+      "correct": "C",
+      "explanation": "The added water is 7/10 − 2/5 = 7/10 − 4/10 = 3/10 of the tank = 12 L, so capacity = 12 ÷ 3/10 = 40 liters.",
+      "difficulty": "hard",
+      "target_seconds": 105,
+      "topic": "gmat::quant::arithmetic::fractions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "sample_held_out_items": [
+      {
+        "id": "mc_1",
+        "stem": "Compute 7/10 + 2/15.",
+        "options": {
+          "A": "5/6",
+          "B": "9/25",
+          "C": "3/5",
+          "D": "11/15",
+          "E": "9/30"
+        },
+        "correct": "A",
+        "explanation": "LCD 30: 7/10 = 21/30, 2/15 = 4/30; sum = 25/30 = 5/6.",
+        "difficulty": "medium",
+        "topic": "gmat::quant::arithmetic::fractions",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      },
+      {
+        "id": "mc_2",
+        "stem": "If 2/3 of a number is 10, what is the number?",
+        "options": {
+          "A": "20/3",
+          "B": "15",
+          "C": "20",
+          "D": "30",
+          "E": "7.5"
+        },
+        "correct": "B",
+        "explanation": "(2/3)x = 10 → x = 10 × 3/2 = 15.",
+        "difficulty": "easy",
+        "topic": "gmat::quant::arithmetic::fractions",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      }
+    ],
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "OpenStax, Prealgebra 2e — Fractions",
+      "url": "https://openstax.org/details/books/prealgebra-2e",
+      "note": "Operations with fractions, mixed numbers, and 'of' problems.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy — Fractions",
+      "url": "https://www.khanacademy.org/math/arithmetic",
+      "note": "Practice on add/subtract/multiply/divide and comparing fractions."
+    },
+    {
+      "name": "GMAC — GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Quantitative Reasoning scope."
+    }
+  ],
+  "tags": [
+    "arithmetic",
+    "fractions",
+    "common-denominator",
+    "reciprocal",
+    "fraction-of-quantity"
+  ],
+  "schema_version": "1.0",
+  "section": "Quantitative Reasoning",
+  "question_type": "Problem Solving",
+  "exam": "GMAT Focus Edition"
+}

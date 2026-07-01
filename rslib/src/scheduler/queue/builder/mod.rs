@@ -39,6 +39,8 @@ pub(crate) struct DueCard {
     pub original_deck_id: DeckId,
     pub kind: DueCardKind,
     pub reps: u32,
+    /// GMATWiz: per-card topic mastery (0.0-1.0); None when unset.
+    pub topic_mastery: Option<f32>,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -123,6 +125,8 @@ struct Context {
     seen_note_ids: HashMap<NoteId, BuryMode>,
     deck_map: HashMap<DeckId, Deck>,
     fsrs: bool,
+    /// GMATWiz: reorder review queue so weaker-topic cards surface first.
+    topic_aware: bool,
 }
 
 impl QueueBuilder {
@@ -179,8 +183,24 @@ impl QueueBuilder {
                 seen_note_ids: HashMap::new(),
                 deck_map,
                 fsrs: col.get_config_bool(BoolKey::Fsrs),
+                topic_aware: col.get_config_bool(BoolKey::TopicAwareScheduling),
             },
         })
+    }
+
+    /// GMATWiz: stable-sort gathered review cards so lower topic mastery (weaker
+    /// topics) comes first. Stable, so FSRS ordering is preserved within equal
+    /// mastery; only the surfacing order changes, never the stored intervals.
+    pub(super) fn apply_topic_aware_order(&mut self) {
+        if !self.context.topic_aware {
+            return;
+        }
+        // None (unset) is treated as fully mastered so untagged cards stay last.
+        self.review.sort_by(|a, b| {
+            let am = a.topic_mastery.unwrap_or(f32::INFINITY);
+            let bm = b.topic_mastery.unwrap_or(f32::INFINITY);
+            am.partial_cmp(&bm).unwrap_or(std::cmp::Ordering::Equal)
+        });
     }
 
     pub(super) fn build(mut self, learn_ahead_secs: i64) -> CardQueues {
@@ -286,6 +306,7 @@ impl Collection {
             .update_active_decks(&queues.context.root_deck)?;
 
         queues.gather_cards(self)?;
+        queues.apply_topic_aware_order();
 
         let queues = queues.build(self.learn_ahead_secs() as i64);
 

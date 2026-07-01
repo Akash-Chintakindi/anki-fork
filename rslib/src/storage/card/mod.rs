@@ -95,6 +95,7 @@ fn row_to_card(row: &Row) -> result::Result<Card, rusqlite::Error> {
         desired_retention: data.fsrs_desired_retention,
         decay: data.decay,
         last_review_time: data.last_review_time,
+        topic_mastery: data.topic_mastery,
         custom_data: data.custom_data,
     })
 }
@@ -268,6 +269,7 @@ impl super::SqliteStorage {
                 current_deck_id: row.get(4)?,
                 original_deck_id: row.get(5)?,
                 reps: row.get(6)?,
+                topic_mastery: None,
                 kind: DueCardKind::Learning,
             })
         }
@@ -300,6 +302,7 @@ impl super::SqliteStorage {
         };
         let mut rows = stmt.query(params![queue as i8, timing.days_elapsed])?;
         while let Some(row) = rows.next()? {
+            let data: CardData = row.get(8)?;
             if !func(DueCard {
                 id: row.get(0)?,
                 note_id: row.get(1)?,
@@ -308,6 +311,7 @@ impl super::SqliteStorage {
                 current_deck_id: row.get(5)?,
                 original_deck_id: row.get(6)?,
                 reps: row.get(7)?,
+                topic_mastery: data.topic_mastery,
                 kind,
             })? {
                 break;

@@ -1,0 +1,197 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "gmatwiz/lessons/schema.json",
+  "title": "GMATWiz Lesson Topic",
+  "description": "Schema for a single GMAT Focus Quant (Problem Solving) lesson topic. One file per leaf topic. The mastery loop is application-first (SPOV2): in you_do items the explanation is withheld until after a first attempt. Every practice item maps 1:1 onto the PRD Section 8 'GMAT PS' notetype (Stem, OptionA..E, Correct, Explanation, Topic, Difficulty, Source, OfficialFlag) so the app can import items directly.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "topic_id",
+    "slug",
+    "title",
+    "section",
+    "question_type",
+    "domain",
+    "exam",
+    "prerequisites",
+    "learning_objectives",
+    "pedagogical_model",
+    "opening",
+    "i_do",
+    "we_do",
+    "you_do",
+    "mastery_check",
+    "citations"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": { "type": "string" },
+    "topic_id": {
+      "type": "string",
+      "description": "Leaf topic id in the PRD Section 5 taxonomy, e.g. gmat::quant::algebra::quadratics",
+      "pattern": "^gmat::quant::(arithmetic|algebra)::[a-z_]+$"
+    },
+    "slug": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "title": { "type": "string" },
+    "section": { "type": "string", "enum": ["Quantitative Reasoning"] },
+    "question_type": { "type": "string", "enum": ["Problem Solving"] },
+    "domain": { "type": "string", "enum": ["Arithmetic", "Algebra"] },
+    "exam": { "type": "string" },
+    "estimated_minutes": { "type": "number" },
+    "prerequisites": { "type": "array", "items": { "type": "string" } },
+    "learning_objectives": { "type": "array", "items": { "type": "string" } },
+    "pedagogical_model": {
+      "type": "object",
+      "required": ["frameworks", "sequence", "application_first", "explanation_policy"],
+      "properties": {
+        "frameworks": { "type": "array", "items": { "type": "string" } },
+        "sequence": { "type": "string" },
+        "application_first": { "type": "boolean" },
+        "explanation_policy": { "type": "string", "enum": ["revealed_after_attempt"] }
+      }
+    },
+    "opening": {
+      "type": "object",
+      "description": "Retrieval-practice lesson opening (Rosenshine P1 daily review; Ausubel advance organiser; Agarwal retrieval).",
+      "required": ["builds_on", "do_now", "retrieval_starter", "prior_knowledge_bridge", "learning_intention", "success_criteria", "opening_script"],
+      "properties": {
+        "builds_on": { "type": "string" },
+        "do_now": {
+          "type": "object",
+          "required": ["instructions", "items"],
+          "properties": {
+            "instructions": { "type": "string" },
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["prompt", "answer"],
+                "properties": {
+                  "prompt": { "type": "string" },
+                  "answer": { "type": "string" },
+                  "targets": { "type": "string", "description": "Which prerequisite this retrieval question targets" }
+                }
+              }
+            }
+          }
+        },
+        "retrieval_starter": {
+          "type": "object",
+          "properties": {
+            "duration_minutes": { "type": "number" },
+            "purpose": { "type": "string" },
+            "if_students_struggle": { "type": "string" }
+          }
+        },
+        "prior_knowledge_bridge": { "type": "string" },
+        "learning_intention": { "type": "string" },
+        "success_criteria": { "type": "array", "items": { "type": "string" } },
+        "opening_script": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["time", "move"],
+            "properties": {
+              "time": { "type": "string" },
+              "move": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "i_do": {
+      "allOf": [{ "$ref": "#/definitions/item" }],
+      "description": "Single worked example (teacher models reasoning, think-aloud).",
+      "required": ["think_aloud_steps", "key_takeaway"]
+    },
+    "we_do": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 3,
+      "items": {
+        "allOf": [{ "$ref": "#/definitions/item" }],
+        "required": ["scaffold_hints", "immediate_feedback", "explanation"]
+      }
+    },
+    "you_do": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 5,
+      "items": {
+        "allOf": [{ "$ref": "#/definitions/item" }],
+        "required": ["explanation", "reveal_explanation_after_attempt", "error_log_error_types"]
+      }
+    },
+    "mastery_check": {
+      "type": "object",
+      "required": ["definition", "threshold", "min_spaced_sessions", "conditions"],
+      "properties": {
+        "definition": { "type": "string" },
+        "threshold": { "type": "number" },
+        "min_spaced_sessions": { "type": "integer" },
+        "conditions": { "type": "array", "items": { "type": "string" } },
+        "on_fail": { "type": "string" },
+        "sample_held_out_items": { "type": "array", "items": { "$ref": "#/definitions/item" } }
+      }
+    },
+    "citations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "url"],
+        "properties": {
+          "name": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "note": { "type": "string" },
+          "primary": { "type": "boolean" }
+        }
+      }
+    },
+    "tags": { "type": "array", "items": { "type": "string" } }
+  },
+  "definitions": {
+    "item": {
+      "type": "object",
+      "description": "A Problem Solving item. Field names map onto the PRD 'GMAT PS' notetype.",
+      "required": ["id", "stem", "options", "correct", "topic", "difficulty", "source", "official_flag"],
+      "properties": {
+        "id": { "type": "string" },
+        "stem": { "type": "string", "description": "Maps to notetype field: Stem" },
+        "options": {
+          "type": "object",
+          "description": "Maps to notetype fields OptionA..OptionE",
+          "required": ["A", "B", "C", "D", "E"],
+          "properties": {
+            "A": { "type": "string" },
+            "B": { "type": "string" },
+            "C": { "type": "string" },
+            "D": { "type": "string" },
+            "E": { "type": "string" }
+          }
+        },
+        "correct": { "type": "string", "enum": ["A", "B", "C", "D", "E"], "description": "Maps to notetype field: Correct" },
+        "explanation": { "type": "string", "description": "Maps to notetype field: Explanation" },
+        "topic": { "type": "string", "description": "Maps to notetype field: Topic (the leaf topic_id)" },
+        "difficulty": { "type": "string", "enum": ["easy", "medium", "hard"], "description": "Maps to notetype field: Difficulty" },
+        "source": { "type": "string", "description": "Maps to notetype field: Source" },
+        "official_flag": { "type": "boolean", "description": "Maps to notetype field: OfficialFlag. Always false for authored content." },
+        "target_seconds": { "type": "integer", "description": "Pacing target for timed independent practice" },
+        "think_aloud_steps": { "type": "array", "items": { "type": "string" } },
+        "key_takeaway": { "type": "string" },
+        "scaffold_hints": { "type": "array", "items": { "type": "string" }, "description": "Faded prompts; reveal one at a time" },
+        "immediate_feedback": {
+          "type": "object",
+          "properties": {
+            "if_correct": { "type": "string" },
+            "if_incorrect": { "type": "string" }
+          }
+        },
+        "reveal_explanation_after_attempt": { "type": "boolean" },
+        "error_log_error_types": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["content gap", "reasoning flaw", "timing", "careless", "trap"] }
+        }
+      }
+    }
+  }
+}

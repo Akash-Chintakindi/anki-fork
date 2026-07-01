@@ -21,6 +21,9 @@ service CollectionService {
   rpc SetWantsAbort(generic.Empty) returns (generic.Empty);
   rpc SetLoadBalancerEnabled(generic.Bool) returns (OpChanges);
   rpc GetCustomColours(generic.Empty) returns (GetCustomColoursResponse);
+  // GMATWiz gating-milestone RPC: proves the proto -> Rust -> Python pipeline
+  // end to end. Appended last to keep service method indices stable.
+  rpc GmatwizHello(generic.Empty) returns (generic.String);
 }
 
 // Implicitly includes any of the above methods that are not listed in the

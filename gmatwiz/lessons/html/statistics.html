@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Descriptive Statistics &middot; GMATWiz Quant</title>
+<style>
+:root{
+  --ink:#1a1813; --muted:#6b6358; --rule:#d9d2c5; --bg:#fbf9f4; --card:#fffdf8;
+  --accent:#7a3b2e; --accent2:#3a5a40; --link:#7a3b2e; --code:#2b2b2b;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:3rem 2rem 6rem;}
+.content{max-width:720px;}
+header.masthead{border-bottom:1px solid var(--rule); padding-bottom:1.2rem; margin-bottom:2rem;}
+.kicker{font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:0 0 .4rem;}
+h1{font-size:2.3rem; line-height:1.1; margin:.1rem 0 .6rem; font-weight:600; letter-spacing:-.01em;}
+.meta{color:var(--muted); font-size:.9rem; margin:0;}
+.meta b{color:var(--ink); font-weight:600;}
+h2{font-size:1.45rem; margin:2.8rem 0 .3rem; font-weight:600; letter-spacing:-.01em;}
+h2 .num{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:.5rem;}
+h3{font-size:1.06rem; margin:1.6rem 0 .4rem; font-weight:600;}
+.sub{color:var(--muted); font-style:italic; margin:.1rem 0 1rem; font-size:.95rem;}
+p{margin:.6rem 0;} ul,ol{margin:.5rem 0 .9rem; padding-left:1.3rem;} li{margin:.25rem 0;}
+a{color:var(--link); text-decoration:none; border-bottom:1px solid rgba(122,59,46,.35);}
+a:hover{border-bottom-color:var(--link);}
+.lead{font-size:1.08rem;}
+section{position:relative;}
+.note{font-size:.8rem; color:var(--muted); line-height:1.4;}
+.objectives{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1rem 1.2rem;}
+.objectives ul{margin:.3rem 0 0;}
+.intent{border-left:3px solid var(--accent2); padding:.4rem 0 .4rem 1rem; margin:1rem 0; font-size:1.05rem;}
+.donow{background:#2b2620; color:#f3ecde; border-radius:8px; padding:1.1rem 1.3rem; margin:1rem 0;}
+.donow .tag{font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:#d8b48a;}
+.donow ol{padding-left:1.2rem;} .donow li{margin:.4rem 0;}
+.donow .ans{color:#b9c6a9; font-style:italic; font-size:.86rem; display:block; margin-top:.15rem;}
+table{border-collapse:collapse; width:100%; font-size:.92rem; margin:.6rem 0 1rem;}
+th,td{text-align:left; padding:.45rem .6rem; border-bottom:1px solid var(--rule); vertical-align:top;}
+th{font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+td.t{white-space:nowrap; color:var(--accent); font-variant-numeric:tabular-nums; width:6.5rem;}
+.q{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1.1rem 1.3rem; margin:1.1rem 0;}
+.q .qid{font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+.q .qid .diff{float:right; color:var(--accent2);}
+.q .stem{font-size:1.03rem; margin:.35rem 0 .6rem;}
+.choices{list-style:none; padding:0; margin:.2rem 0 .4rem; counter-reset:c;}
+.choices li{padding:.32rem .6rem; border:1px solid var(--rule); border-radius:6px; margin:.3rem 0; background:#fff;}
+.choices li .lab{display:inline-block; width:1.5rem; font-weight:600; color:var(--accent);}
+.choices li.correct{border-color:var(--accent2); background:#eef3ec;}
+.choices li.correct .lab{color:var(--accent2);}
+details{margin:.5rem 0 .2rem; border-top:1px dashed var(--rule); padding-top:.5rem;}
+details>summary{cursor:pointer; font-size:.86rem; color:var(--accent); font-weight:600; list-style:none;}
+details>summary::-webkit-details-marker{display:none;}
+details>summary::before{content:"\25B8  "; color:var(--accent);}
+details[open]>summary::before{content:"\25BE  ";}
+.expl{font-size:.95rem; margin-top:.5rem;}
+.hints{font-size:.92rem;} .hints li{margin:.2rem 0;}
+.feedback{font-size:.9rem;} .feedback .ok{color:var(--accent2);} .feedback .no{color:var(--accent);}
+.appfirst{font-size:.78rem; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin:.2rem 0;}
+.mastery{background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--accent2); border-radius:8px; padding:1rem 1.2rem;}
+.pill{display:inline-block; font-size:.72rem; padding:.12rem .5rem; border:1px solid var(--rule); border-radius:999px; color:var(--muted); margin:.1rem .2rem .1rem 0;}
+footer{margin-top:3.5rem; border-top:1px solid var(--rule); padding-top:1rem; color:var(--muted); font-size:.82rem;}
+.src{background:#eef3ec; border:1px solid #cfe0cf; border-radius:8px; padding:.9rem 1.1rem; margin:1.2rem 0;}
+.src .tag{font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent2); font-weight:600;}
+.crumbs{font-size:.85rem; margin-bottom:1.2rem;}
+.ask{font-size:.9rem; background:#fff8ec; border:1px dashed #e0c590; border-radius:8px; padding:.7rem 1rem; margin:1.4rem 0;}
+@media print{ body{background:#fff} .wrap{padding:0} a{border:none} .donow{-webkit-print-color-adjust:exact; print-color-adjust:exact} }
+</style></head>
+<body><div class="wrap"><div class="content">
+  <div class="crumbs"><a href="index.html">&larr; All Quant topics</a> &middot; Arithmetic</div>
+  <header class="masthead">
+    <p class="kicker">GMATWiz &middot; GMAT Focus Edition &middot; Quantitative Reasoning (Problem Solving)</p>
+    <h1>Descriptive Statistics</h1>
+    <p class="meta"><b>Topic id</b> <code>gmat::quant::arithmetic::statistics</code> &middot; <b>Domain</b> Arithmetic
+      &middot; <b>Prereqs</b> addition &amp; division (for averages), ordering numbers &middot; <b>~22 min</b></p>
+  </header>
+
+  <div class="objectives">
+    <p class="note"><b>Learning objectives</b></p>
+    <ul><li>Compute mean, median, mode, and range.</li><li>Use sum = mean × count to handle &#x27;add/remove a value&#x27; and &#x27;missing value&#x27; problems.</li><li>Reason about standard deviation as spread about the mean (no formula needed on the GMAT).</li><li>Compare measures of center for skewed data.</li></ul>
+    <p class="note">Model: I do → we do → you do &middot; application-first (explanations revealed after an attempt) &middot; Rosenshine (daily review), Archer (I-do/we-do/you-do), SPOV2 application-first.</p>
+  </div>
+
+  
+    <section>
+      <h2><span class="num">1</span>Opening &mdash; retrieval &amp; bridge</h2>
+      <p class="sub">Builds on: Addition, division, and putting numbers in order.</p>
+      <div class="donow">
+        <div class="tag">Do Now &middot; from memory, no notes</div>
+        <p>From memory, no calculator. 4 minutes.</p>
+        <ol><li>Find the mean of 4, 8, 9, 11.<span class="ans">8 (sum 32 ÷ 4).</span></li><li>Find the median of 3, 7, 9, 12, 20.<span class="ans">9 (middle value).</span></li><li>Find the mode of 2, 3, 3, 5, 7.<span class="ans">3 (most frequent).</span></li><li>Find the range of 5, 9, 14, 21.<span class="ans">16 (21 − 5).</span></li><li>If you add a value equal to the current mean, does the mean change?<span class="ans">No — adding the mean itself leaves the average unchanged.</span></li></ol>
+      </div>
+      <p class="note"><b>Retrieval starter (5 min).</b> Retrieves the four basic measures and the key intuition (the mean is a balance point) that powers today&#x27;s sum-based reasoning.
+      <br><b>If students struggle:</b> If median is shaky with an even count, remind them to sort first and average the two middle values.</p>
+      <h3>Prior-knowledge bridge</h3>
+      <p>You computed means by adding then dividing. The GMAT rarely asks that directly — it gives you the average and asks you to work backward. The move is to flip the formula into sum = mean × count. Q5&#x27;s insight (the mean is a balance point) is why that flip works, and it&#x27;s the key to every &#x27;missing value&#x27; and &#x27;new average&#x27; question today.</p>
+      <h3>Learning intention</h3>
+      <p class="intent">By the end you can compute mean/median/mode/range and use sum = mean × count to solve missing-value and changing-average problems, and reason qualitatively about standard deviation.</p>
+      <p class="note"><b>You'll know you've got it when:</b></p>
+      <ul><li>I can convert between an average and a total using count.</li><li>I can find a missing value given an average.</li><li>I can say which of two data sets has the larger spread and why.</li></ul>
+      <details><summary>Complete timed opening script</summary>
+        <table><thead><tr><th>Time</th><th>Move</th></tr></thead><tbody><tr><td class="t">0:00–4:00</td><td>Do Now; silent retrieval.</td></tr><tr><td class="t">4:00–6:00</td><td>Check; dwell on Q5 (balance-point intuition).</td></tr><tr><td class="t">6:00–8:00</td><td>Bridge: flip mean = sum/count into sum = mean × count.</td></tr><tr><td class="t">8:00–9:00</td><td>Learning intention + success criteria.</td></tr><tr><td class="t">9:00–10:00</td><td>I do: new average after adding a value.</td></tr></tbody></table>
+      </details>
+    </section>
+
+  <section>
+    <h2><span class="num">2</span>I do &mdash; worked example</h2>
+    <p class="sub">Watch the reasoning modeled end to end before you try.</p>
+    
+    <div class="q">
+      <div class="qid">I DO &middot; worked example<span class="diff">medium</span></div>
+      <div class="stem">The average (arithmetic mean) of 5 numbers is 12. If a sixth number, 30, is added to the set, what is the new average?</div>
+      <ul class="choices"><li><span class="lab">A</span>13</li><li><span class="lab">B</span>14</li><li class="correct"><span class="lab">C</span>15</li><li><span class="lab">D</span>16</li><li><span class="lab">E</span>18</li></ul>
+      <h3>Think-aloud</h3>
+      <ol><li>Convert the average to a sum: 12 × 5 = 60.</li><li>Add the new value: 60 + 30 = 90.</li><li>Divide by the new count: 90 ÷ 6 = 15.</li></ol>
+      <p class="expl"><b>Correct: C.</b> Sum = mean × count = 12 × 5 = 60. New sum = 60 + 30 = 90 over 6 numbers, so the new average = 90/6 = 15.</p>
+      <p class="note"><b>Takeaway.</b> Don&#x27;t average the averages — turn the mean into a SUM (mean × count), adjust, then divide by the new count.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>We do &mdash; guided practice</h2>
+    <p class="sub">Scaffolds and immediate feedback are one click away. Fade them as you gain confidence.</p>
+    
+    <div class="q">
+      <div class="qid">we_1 &middot; we do (guided)<span class="diff">easy</span></div>
+      <div class="stem">Find the median of 4, 1, 7, 3, 9, 6.</div>
+      <ul class="choices"><li><span class="lab">A</span>4</li><li class="correct"><span class="lab">B</span>5</li><li><span class="lab">C</span>6</li><li><span class="lab">D</span>6.5</li><li><span class="lab">E</span>7</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>Always sort before finding a median.</li><li>Six values → no single middle; use the two middle ones.</li><li>Average the 3rd and 4th: (4 + 6)/2.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Right — 5.<br>
+        <span class="no">If incorrect:</span> Sort first, then average the two middle values for an even-sized list.</p>
+        <p class="expl"><b>Answer: B.</b> Sort: 1, 3, 4, 6, 7, 9. With 6 values the median is the average of the 3rd and 4th: (4 + 6)/2 = 5.</p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">we_2 &middot; we do (guided)<span class="diff">easy</span></div>
+      <div class="stem">The mean of 6 numbers is 10. What is their sum?</div>
+      <ul class="choices"><li><span class="lab">A</span>10</li><li><span class="lab">B</span>16</li><li><span class="lab">C</span>36</li><li class="correct"><span class="lab">D</span>60</li><li><span class="lab">E</span>600</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>Mean = sum ÷ count.</li><li>Rearrange: sum = mean × count.</li><li>10 × 6.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Yes — 60.<br>
+        <span class="no">If incorrect:</span> Multiply the mean by how many numbers there are.</p>
+        <p class="expl"><b>Answer: D.</b> Sum = mean × count = 10 × 6 = 60.</p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>You do &mdash; independent application</h2>
+    <p class="sub">Application-first (SPOV2): commit to an answer, then reveal the explanation. Log every miss.</p>
+    
+    <div class="q">
+      <div class="qid">you_1 &middot; you do (independent) &middot; target 60s<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">The average of 8 and x is 14. What is x?</div>
+      <ul class="choices"><li><span class="lab">A</span>6</li><li><span class="lab">B</span>14</li><li><span class="lab">C</span>18</li><li class="correct"><span class="lab">D</span>20</li><li><span class="lab">E</span>22</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: D.</b> (8 + x)/2 = 14 → 8 + x = 28 → x = 20.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_2 &middot; you do (independent) &middot; target 90s<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">For the set {3, 5, 5, 9, 13}, which is the largest: the mean, the median, or the mode?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>mean</li><li><span class="lab">B</span>median</li><li><span class="lab">C</span>mode</li><li><span class="lab">D</span>all equal</li><li><span class="lab">E</span>cannot be determined</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> Mean = 35/5 = 7; median = 5 (middle); mode = 5 (most frequent). The mean, 7, is largest.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_3 &middot; you do (independent) &middot; target 90s<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">The average of 5 test scores is 82. Four of the scores are 78, 85, 90, and 75. What is the fifth score?</div>
+      <ul class="choices"><li><span class="lab">A</span>80</li><li class="correct"><span class="lab">B</span>82</li><li><span class="lab">C</span>84</li><li><span class="lab">D</span>86</li><li><span class="lab">E</span>88</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: B.</b> Total = 82 × 5 = 410. The four given sum to 328, so the fifth = 410 − 328 = 82.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_4 &middot; you do (independent) &middot; target 75s<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Which set has the greater standard deviation?  P = {10, 10, 10, 10};  Q = {7, 9, 11, 13}.</div>
+      <ul class="choices"><li><span class="lab">A</span>P</li><li class="correct"><span class="lab">B</span>Q</li><li><span class="lab">C</span>they are equal</li><li><span class="lab">D</span>cannot be determined</li><li><span class="lab">E</span>both are zero</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: B.</b> Standard deviation measures spread about the mean. P has no spread (SD = 0); Q&#x27;s values vary about their mean, so Q has the greater SD.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+  </section>
+
+  
+    <section>
+      <h2><span class="num">5</span>Mastery check</h2>
+      <div class="mastery">
+        <p>A topic is mastered at &gt;=85% correct on new/held-out-style questions across &gt;=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.</p>
+        <p class="note"><b>Threshold</b> 0.85 &middot; <b>spaced sessions</b> &ge; 2</p>
+        <ul><li>&gt;=85% correct on new/held-out-style items (not flashcard recall) per session</li><li>sustained across &gt;=2 spaced sessions with a delay between them</li><li>per-topic memory surfaced only after &gt;=20 graded reviews (PRD give-up rule)</li><li>per-topic performance surfaced only after &gt;=8 application attempts (PRD give-up rule)</li></ul>
+        <p class="note"><b>If not yet mastered:</b> Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -&gt; you-do loop before re-testing.</p>
+      </div>
+      <h3>Sample held-out check items</h3>
+    <div class="q">
+      <div class="qid">mc_1 &middot; held-out check<span class="diff">easy</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Find the mean of 6, 10, 14, 18, 22.</div>
+      <ul class="choices"><li><span class="lab">A</span>12</li><li class="correct"><span class="lab">B</span>14</li><li><span class="lab">C</span>15</li><li><span class="lab">D</span>16</li><li><span class="lab">E</span>18</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: B.</b> Sum = 70; 70/5 = 14.</p>
+        
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">mc_2 &middot; held-out check<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">The average of 4 numbers is 9. After one number is removed, the average of the remaining 3 is 8. What number was removed?</div>
+      <ul class="choices"><li><span class="lab">A</span>8</li><li><span class="lab">B</span>9</li><li><span class="lab">C</span>11</li><li class="correct"><span class="lab">D</span>12</li><li><span class="lab">E</span>15</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: D.</b> Original sum = 36; remaining sum = 24; removed = 36 − 24 = 12.</p>
+        
+      </details>
+    </div>
+    </section>
+
+  <div class="src">
+    <div class="tag">Primary source</div>
+    <p><a href="https://openstax.org/details/books/introductory-statistics">OpenStax, Introductory Statistics — Measures of center and spread</a> &mdash; Mean, median, mode, range, and standard deviation.</p>
+    <p class='note'>Further reading:</p><ul><li><a href="https://www.khanacademy.org/math/statistics-probability">Khan Academy — Summarizing quantitative data</a> &mdash; Center, spread, and effects of changing data.</li><li><a href="https://www.mba.com/exams/gmat-focus-edition">GMAC — GMAT Focus Edition (official exam overview)</a> &mdash; Official exam structure and Quantitative Reasoning scope.</li></ul>
+  </div>
+
+  <div class="ask">Stuck on any step? Ask your GMATWiz coach for a worked walkthrough &mdash; that's what it's here for.</div>
+
+  <footer>
+    <p>GMATWiz lesson &middot; <code>statistics.json</code> &middot; schema v1.0 &middot; authored content (OfficialFlag=false), reserved official items used only for late checkpoints.</p>
+  </footer>
+</div></div></body></html>

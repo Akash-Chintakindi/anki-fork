@@ -1,0 +1,363 @@
+{
+  "topic_id": "gmat::quant::arithmetic::decimals",
+  "slug": "decimals",
+  "title": "Decimals",
+  "domain": "Arithmetic",
+  "estimated_minutes": 20,
+  "prerequisites": [
+    "place value",
+    "fractions"
+  ],
+  "learning_objectives": [
+    "Multiply and divide decimals by tracking decimal places and shifting by powers of 10.",
+    "Convert fluently among fractions, decimals, and percents.",
+    "Round and estimate to sanity-check the size of an answer."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do → we do → you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Place value and the fraction ↔ decimal link.",
+    "do_now": {
+      "instructions": "From memory, no calculator. 4 minutes.",
+      "items": [
+        {
+          "prompt": "Write 0.75 as a fraction in lowest terms.",
+          "answer": "3/4.",
+          "targets": "decimal → fraction"
+        },
+        {
+          "prompt": "Compute 0.2 × 0.3.",
+          "answer": "0.06.",
+          "targets": "decimal multiplication"
+        },
+        {
+          "prompt": "Round 3.467 to the nearest hundredth.",
+          "answer": "3.47.",
+          "targets": "rounding"
+        },
+        {
+          "prompt": "What fraction equals 0.125?",
+          "answer": "1/8.",
+          "targets": "common decimal–fraction pairs"
+        },
+        {
+          "prompt": "Why is 0.2 × 0.3 = 0.06, not 0.6?",
+          "answer": "Multiply the digits (2 × 3 = 6), then place the point by the TOTAL decimal places (1 + 1 = 2).",
+          "targets": "place-value reasoning for today"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Retrieves decimal–fraction conversions and the decimal-place rule for multiplication — the foundation for the division and size-estimation problems coming up.",
+      "if_students_struggle": "If place counting is shaky, model 0.2 × 0.3 as (2/10)(3/10) = 6/100 = 0.06 to anchor the rule in fractions."
+    },
+    "prior_knowledge_bridge": "Q5 explains the rule you'll lean on all lesson: a decimal is just a fraction over a power of ten. Once you see 0.2 = 2/10, multiplying and dividing decimals becomes counting places and shifting by powers of 10 — and converting to fractions is often the fastest GMAT move.",
+    "learning_intention": "By the end you can multiply and divide decimals reliably, convert among fractions/decimals/percents, and estimate to check an answer's size.",
+    "success_criteria": [
+      "I can divide by a decimal by shifting both numbers to make the divisor whole.",
+      "I can convert a decimal to a reduced fraction and back.",
+      "I can predict roughly how big an answer should be before computing."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00–4:00",
+        "move": "Do Now; silent retrieval."
+      },
+      {
+        "time": "4:00–6:00",
+        "move": "Check; dwell on Q5's place-value reasoning."
+      },
+      {
+        "time": "6:00–8:00",
+        "move": "Bridge: decimals are fractions over powers of 10; preview division by shifting."
+      },
+      {
+        "time": "8:00–9:00",
+        "move": "Learning intention + success criteria."
+      },
+      {
+        "time": "9:00–10:00",
+        "move": "I do: 0.0036 ÷ 0.04."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "Which of the following is equal to 0.0036 ÷ 0.04?",
+    "options": {
+      "A": "0.9",
+      "B": "0.09",
+      "C": "0.009",
+      "D": "9",
+      "E": "0.0009"
+    },
+    "correct": "B",
+    "explanation": "Multiply both numbers by 100 to make the divisor whole: 0.0036 ÷ 0.04 = 0.36 ÷ 4 = 0.09.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "Dividing by a decimal is awkward; make the divisor a whole number.",
+      "Multiply BOTH by 100: 0.0036 → 0.36 and 0.04 → 4.",
+      "0.36 ÷ 4 = 0.09.",
+      "Size check: dividing by the small number 0.04 should give a small result — 0.09 fits."
+    ],
+    "key_takeaway": "To divide by a decimal, shift the decimal point in BOTH numbers until the divisor is a whole number.",
+    "topic": "gmat::quant::arithmetic::decimals",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Problem Solving"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "Compute 1.2 × 0.05.",
+      "options": {
+        "A": "0.6",
+        "B": "0.06",
+        "C": "0.006",
+        "D": "6.0",
+        "E": "0.0006"
+      },
+      "correct": "B",
+      "explanation": "Ignore the points: 12 × 5 = 60. Total decimal places = 1 + 2 = 3, so 0.060 = 0.06.",
+      "difficulty": "easy",
+      "scaffold_hints": [
+        "Drop the decimals: 12 × 5 = 60.",
+        "Count decimal places in the factors: 1 (in 1.2) + 2 (in 0.05) = 3.",
+        "Place the point 3 from the right: 0.060 = 0.06."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right — 60 with three decimal places is 0.06.",
+        "if_incorrect": "Count places in BOTH factors (1 + 2 = 3), not just one."
+      },
+      "topic": "gmat::quant::arithmetic::decimals",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    },
+    {
+      "id": "we_2",
+      "stem": "Write 7/8 as a decimal.",
+      "options": {
+        "A": "0.78",
+        "B": "0.875",
+        "C": "0.825",
+        "D": "0.88",
+        "E": "0.7875"
+      },
+      "correct": "B",
+      "explanation": "1/8 = 0.125, so 7/8 = 7 × 0.125 = 0.875 (or divide 7 ÷ 8 = 0.875).",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "Recall 1/8 = 0.125.",
+        "7/8 = 7 × (1/8).",
+        "7 × 0.125 = 0.875."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Yes — 0.875.",
+        "if_incorrect": "Use the benchmark 1/8 = 0.125 and multiply by 7, or long-divide 7 ÷ 8."
+      },
+      "topic": "gmat::quant::arithmetic::decimals",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "Compute 0.6 ÷ 0.0012.",
+      "options": {
+        "A": "5",
+        "B": "50",
+        "C": "500",
+        "D": "5000",
+        "E": "0.5"
+      },
+      "correct": "C",
+      "explanation": "Shift both by 10,000: 6000 ÷ 12 = 500.",
+      "difficulty": "medium",
+      "target_seconds": 75,
+      "topic": "gmat::quant::arithmetic::decimals",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "Which fraction is equal to 0.0625?",
+      "options": {
+        "A": "1/8",
+        "B": "1/16",
+        "C": "5/8",
+        "D": "1/4",
+        "E": "1/32"
+      },
+      "correct": "B",
+      "explanation": "0.0625 = 625/10000 = 1/16 (and 1/16 = 0.0625).",
+      "difficulty": "medium",
+      "target_seconds": 75,
+      "topic": "gmat::quant::arithmetic::decimals",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "If n = 0.00025, then 1/n = ?",
+      "options": {
+        "A": "400",
+        "B": "4000",
+        "C": "40000",
+        "D": "250",
+        "E": "2500"
+      },
+      "correct": "B",
+      "explanation": "0.00025 = 25/100000, so 1/n = 100000/25 = 4000.",
+      "difficulty": "hard",
+      "target_seconds": 90,
+      "topic": "gmat::quant::arithmetic::decimals",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_4",
+      "stem": "Compute (0.03)² ÷ 0.0009.",
+      "options": {
+        "A": "0.1",
+        "B": "1",
+        "C": "10",
+        "D": "0.01",
+        "E": "100"
+      },
+      "correct": "B",
+      "explanation": "(0.03)² = 0.0009, and 0.0009 ÷ 0.0009 = 1.",
+      "difficulty": "hard",
+      "target_seconds": 90,
+      "topic": "gmat::quant::arithmetic::decimals",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "sample_held_out_items": [
+      {
+        "id": "mc_1",
+        "stem": "Compute 2.5 × 0.4.",
+        "options": {
+          "A": "0.1",
+          "B": "1",
+          "C": "10",
+          "D": "0.01",
+          "E": "100"
+        },
+        "correct": "B",
+        "explanation": "25 × 4 = 100; two total decimal places → 1.00 = 1.",
+        "difficulty": "easy",
+        "topic": "gmat::quant::arithmetic::decimals",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      },
+      {
+        "id": "mc_2",
+        "stem": "Write 0.16 as a fraction in lowest terms.",
+        "options": {
+          "A": "1/6",
+          "B": "4/25",
+          "C": "1/16",
+          "D": "2/25",
+          "E": "16/25"
+        },
+        "correct": "B",
+        "explanation": "0.16 = 16/100 = 4/25.",
+        "difficulty": "medium",
+        "topic": "gmat::quant::arithmetic::decimals",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      }
+    ],
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "OpenStax, Prealgebra 2e — Decimals",
+      "url": "https://openstax.org/details/books/prealgebra-2e",
+      "note": "Decimal operations, rounding, and fraction/decimal conversion.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy — Decimals",
+      "url": "https://www.khanacademy.org/math/arithmetic",
+      "note": "Multiplying/dividing decimals and converting to fractions."
+    },
+    {
+      "name": "GMAC — GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Quantitative Reasoning scope."
+    }
+  ],
+  "tags": [
+    "arithmetic",
+    "decimals",
+    "place-value",
+    "conversion",
+    "estimation"
+  ],
+  "schema_version": "1.0",
+  "section": "Quantitative Reasoning",
+  "question_type": "Problem Solving",
+  "exam": "GMAT Focus Edition"
+}

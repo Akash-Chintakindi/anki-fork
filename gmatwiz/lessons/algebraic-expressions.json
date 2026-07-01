@@ -1,0 +1,366 @@
+{
+  "topic_id": "gmat::quant::algebra::algebraic_expressions",
+  "slug": "algebraic-expressions",
+  "title": "Algebraic Expressions & Exponent Rules",
+  "domain": "Algebra",
+  "estimated_minutes": 22,
+  "prerequisites": [
+    "exponents & roots",
+    "number properties"
+  ],
+  "learning_objectives": [
+    "Combine like terms and distribute correctly, watching signs.",
+    "Multiply binomials with FOIL and recognize special products.",
+    "Factor out a GCF and factor a difference of squares.",
+    "Evaluate expressions by substitution and use identities like (a+b)^2."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do → we do → you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Exponent rules and the order of operations.",
+    "do_now": {
+      "instructions": "From memory, no calculator. 4 minutes.",
+      "items": [
+        {
+          "prompt": "Simplify 3x + 5x − 2x.",
+          "answer": "6x.",
+          "targets": "combining like terms"
+        },
+        {
+          "prompt": "Expand 2(x + 4).",
+          "answer": "2x + 8.",
+          "targets": "distributing"
+        },
+        {
+          "prompt": "Simplify x^2 · x^3.",
+          "answer": "x^5.",
+          "targets": "product rule"
+        },
+        {
+          "prompt": "Evaluate 2a + 3 when a = 4.",
+          "answer": "11.",
+          "targets": "substitution"
+        },
+        {
+          "prompt": "Why can't 3x + 2y be simplified to 5xy?",
+          "answer": "They are unlike terms — only terms with the same variable part combine.",
+          "targets": "what 'like terms' means"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Retrieves like terms, distribution, the product rule, and substitution — the moves you'll chain into FOIL and factoring today.",
+      "if_students_struggle": "If distribution slips, model the sign trap: −2(x − 5) = −2x + 10, not −2x − 10."
+    },
+    "prior_knowledge_bridge": "Q5 pins down the one rule beginners break: you can only combine like terms. Distribution and FOIL are just organized ways to create like terms and then collect them; factoring is running that machine in reverse. Today you'll expand, factor, and evaluate — the algebra plumbing behind every equation later in the course.",
+    "learning_intention": "By the end you can expand products with FOIL, factor out common factors and differences of squares, and evaluate expressions accurately.",
+    "success_criteria": [
+      "I can distribute a negative without sign errors.",
+      "I can multiply two binomials and collect the middle term.",
+      "I can factor out a GCF and recognize a^2 − b^2."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00–4:00",
+        "move": "Do Now; silent retrieval."
+      },
+      {
+        "time": "4:00–6:00",
+        "move": "Check; stress the sign in distribution."
+      },
+      {
+        "time": "6:00–8:00",
+        "move": "Bridge: FOIL makes like terms; factoring reverses it."
+      },
+      {
+        "time": "8:00–9:00",
+        "move": "Learning intention + success criteria."
+      },
+      {
+        "time": "9:00–10:00",
+        "move": "I do: expand (x + 3)(x − 5)."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "Expand and simplify: (x + 3)(x − 5).",
+    "options": {
+      "A": "x^2 − 2x − 15",
+      "B": "x^2 + 2x − 15",
+      "C": "x^2 − 8x − 15",
+      "D": "x^2 − 2x + 15",
+      "E": "x^2 − 15"
+    },
+    "correct": "A",
+    "explanation": "FOIL then combine: x·x + x·(−5) + 3·x + 3·(−5) = x^2 − 5x + 3x − 15 = x^2 − 2x − 15.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "First: x · x = x^2.",
+      "Outer: x · (−5) = −5x. Inner: 3 · x = 3x.",
+      "Last: 3 · (−5) = −15.",
+      "Combine the middle terms: −5x + 3x = −2x, giving x^2 − 2x − 15."
+    ],
+    "key_takeaway": "FOIL: multiply every term in the first factor by every term in the second, then collect the like (middle) terms.",
+    "topic": "gmat::quant::algebra::algebraic_expressions",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Problem Solving"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "Simplify: 4(2x − 3) − 2(x − 5).",
+      "options": {
+        "A": "6x − 2",
+        "B": "6x − 22",
+        "C": "6x + 2",
+        "D": "10x − 2",
+        "E": "6x − 7"
+      },
+      "correct": "A",
+      "explanation": "Distribute: 8x − 12 − 2x + 10. Combine: (8x − 2x) + (−12 + 10) = 6x − 2.",
+      "difficulty": "easy",
+      "scaffold_hints": [
+        "Distribute both groups first.",
+        "Mind the sign: −2(x − 5) = −2x + 10.",
+        "Combine x-terms and constants separately."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right — 6x − 2.",
+        "if_incorrect": "The −2 multiplies BOTH terms, turning −5 into +10. Re-do that distribution."
+      },
+      "topic": "gmat::quant::algebra::algebraic_expressions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    },
+    {
+      "id": "we_2",
+      "stem": "Factor completely: 6x^2 + 9x.",
+      "options": {
+        "A": "3x(2x + 3)",
+        "B": "3(2x^2 + 3x)",
+        "C": "x(6x + 9)",
+        "D": "3x(2x + 9)",
+        "E": "6x(x + 3)"
+      },
+      "correct": "A",
+      "explanation": "GCF of 6x^2 and 9x is 3x: 6x^2 + 9x = 3x(2x + 3).",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "What is the greatest common factor of 6x^2 and 9x?",
+        "Numbers share 3; both terms share an x → 3x.",
+        "6x^2 ÷ 3x = 2x and 9x ÷ 3x = 3."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Yes — 3x(2x + 3), fully factored.",
+        "if_incorrect": "Pull out the FULL common factor (3x), not just 3 or just x."
+      },
+      "topic": "gmat::quant::algebra::algebraic_expressions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "If x = 2 and y = −3, evaluate 3x^2 − 2y.",
+      "options": {
+        "A": "6",
+        "B": "12",
+        "C": "18",
+        "D": "24",
+        "E": "30"
+      },
+      "correct": "C",
+      "explanation": "3(2)^2 − 2(−3) = 3·4 + 6 = 12 + 6 = 18.",
+      "difficulty": "medium",
+      "target_seconds": 60,
+      "topic": "gmat::quant::algebra::algebraic_expressions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "Expand (2x − 1)^2.",
+      "options": {
+        "A": "4x^2 − 1",
+        "B": "4x^2 + 1",
+        "C": "4x^2 − 4x + 1",
+        "D": "4x^2 − 2x + 1",
+        "E": "2x^2 − 4x + 1"
+      },
+      "correct": "C",
+      "explanation": "(2x − 1)^2 = (2x)^2 − 2(2x)(1) + 1^2 = 4x^2 − 4x + 1.",
+      "difficulty": "medium",
+      "target_seconds": 75,
+      "topic": "gmat::quant::algebra::algebraic_expressions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "Simplify (6x^3 y^2) / (2x y^2).",
+      "options": {
+        "A": "3x^2",
+        "B": "3x^2 y",
+        "C": "3x^3",
+        "D": "3x^2 y^4",
+        "E": "4x^2"
+      },
+      "correct": "A",
+      "explanation": "6/2 = 3; x^3/x = x^2; y^2/y^2 = 1. Result: 3x^2.",
+      "difficulty": "hard",
+      "target_seconds": 75,
+      "topic": "gmat::quant::algebra::algebraic_expressions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_4",
+      "stem": "If a + b = 7 and ab = 12, what is a^2 + b^2?",
+      "options": {
+        "A": "13",
+        "B": "25",
+        "C": "37",
+        "D": "49",
+        "E": "61"
+      },
+      "correct": "B",
+      "explanation": "a^2 + b^2 = (a + b)^2 − 2ab = 49 − 24 = 25.",
+      "difficulty": "hard",
+      "target_seconds": 90,
+      "topic": "gmat::quant::algebra::algebraic_expressions",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "sample_held_out_items": [
+      {
+        "id": "mc_1",
+        "stem": "Simplify 5(x − 2) + 3x.",
+        "options": {
+          "A": "8x − 10",
+          "B": "8x − 2",
+          "C": "8x − 7",
+          "D": "5x − 10",
+          "E": "8x + 10"
+        },
+        "correct": "A",
+        "explanation": "5x − 10 + 3x = 8x − 10.",
+        "difficulty": "easy",
+        "topic": "gmat::quant::algebra::algebraic_expressions",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      },
+      {
+        "id": "mc_2",
+        "stem": "Factor: x^2 − 9.",
+        "options": {
+          "A": "(x − 3)^2",
+          "B": "(x − 3)(x + 3)",
+          "C": "(x − 9)(x + 1)",
+          "D": "(x + 3)^2",
+          "E": "x(x − 9)"
+        },
+        "correct": "B",
+        "explanation": "Difference of squares: x^2 − 9 = (x − 3)(x + 3).",
+        "difficulty": "medium",
+        "topic": "gmat::quant::algebra::algebraic_expressions",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      }
+    ],
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "OpenStax, Elementary Algebra 2e — Polynomials & Factoring",
+      "url": "https://openstax.org/details/books/elementary-algebra-2e",
+      "note": "Like terms, special products, GCF and difference-of-squares factoring.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy — Algebraic expressions",
+      "url": "https://www.khanacademy.org/math/algebra",
+      "note": "Distributing, multiplying binomials, and factoring."
+    },
+    {
+      "name": "GMAC — GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Quantitative Reasoning scope."
+    }
+  ],
+  "tags": [
+    "algebra",
+    "expressions",
+    "foil",
+    "factoring",
+    "exponent-rules",
+    "substitution",
+    "difference-of-squares"
+  ],
+  "schema_version": "1.0",
+  "section": "Quantitative Reasoning",
+  "question_type": "Problem Solving",
+  "exam": "GMAT Focus Edition"
+}

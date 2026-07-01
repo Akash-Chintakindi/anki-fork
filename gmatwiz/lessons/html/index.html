@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GMATWiz &middot; Quant Problem Solving lessons</title>
+<style>
+:root{
+  --ink:#1a1813; --muted:#6b6358; --rule:#d9d2c5; --bg:#fbf9f4; --card:#fffdf8;
+  --accent:#7a3b2e; --accent2:#3a5a40; --link:#7a3b2e; --code:#2b2b2b;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:3rem 2rem 6rem;}
+.content{max-width:720px;}
+header.masthead{border-bottom:1px solid var(--rule); padding-bottom:1.2rem; margin-bottom:2rem;}
+.kicker{font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:0 0 .4rem;}
+h1{font-size:2.3rem; line-height:1.1; margin:.1rem 0 .6rem; font-weight:600; letter-spacing:-.01em;}
+.meta{color:var(--muted); font-size:.9rem; margin:0;}
+.meta b{color:var(--ink); font-weight:600;}
+h2{font-size:1.45rem; margin:2.8rem 0 .3rem; font-weight:600; letter-spacing:-.01em;}
+h2 .num{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:.5rem;}
+h3{font-size:1.06rem; margin:1.6rem 0 .4rem; font-weight:600;}
+.sub{color:var(--muted); font-style:italic; margin:.1rem 0 1rem; font-size:.95rem;}
+p{margin:.6rem 0;} ul,ol{margin:.5rem 0 .9rem; padding-left:1.3rem;} li{margin:.25rem 0;}
+a{color:var(--link); text-decoration:none; border-bottom:1px solid rgba(122,59,46,.35);}
+a:hover{border-bottom-color:var(--link);}
+.lead{font-size:1.08rem;}
+section{position:relative;}
+.note{font-size:.8rem; color:var(--muted); line-height:1.4;}
+.objectives{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1rem 1.2rem;}
+.objectives ul{margin:.3rem 0 0;}
+.intent{border-left:3px solid var(--accent2); padding:.4rem 0 .4rem 1rem; margin:1rem 0; font-size:1.05rem;}
+.donow{background:#2b2620; color:#f3ecde; border-radius:8px; padding:1.1rem 1.3rem; margin:1rem 0;}
+.donow .tag{font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:#d8b48a;}
+.donow ol{padding-left:1.2rem;} .donow li{margin:.4rem 0;}
+.donow .ans{color:#b9c6a9; font-style:italic; font-size:.86rem; display:block; margin-top:.15rem;}
+table{border-collapse:collapse; width:100%; font-size:.92rem; margin:.6rem 0 1rem;}
+th,td{text-align:left; padding:.45rem .6rem; border-bottom:1px solid var(--rule); vertical-align:top;}
+th{font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+td.t{white-space:nowrap; color:var(--accent); font-variant-numeric:tabular-nums; width:6.5rem;}
+.q{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1.1rem 1.3rem; margin:1.1rem 0;}
+.q .qid{font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+.q .qid .diff{float:right; color:var(--accent2);}
+.q .stem{font-size:1.03rem; margin:.35rem 0 .6rem;}
+.choices{list-style:none; padding:0; margin:.2rem 0 .4rem; counter-reset:c;}
+.choices li{padding:.32rem .6rem; border:1px solid var(--rule); border-radius:6px; margin:.3rem 0; background:#fff;}
+.choices li .lab{display:inline-block; width:1.5rem; font-weight:600; color:var(--accent);}
+.choices li.correct{border-color:var(--accent2); background:#eef3ec;}
+.choices li.correct .lab{color:var(--accent2);}
+details{margin:.5rem 0 .2rem; border-top:1px dashed var(--rule); padding-top:.5rem;}
+details>summary{cursor:pointer; font-size:.86rem; color:var(--accent); font-weight:600; list-style:none;}
+details>summary::-webkit-details-marker{display:none;}
+details>summary::before{content:"\25B8  "; color:var(--accent);}
+details[open]>summary::before{content:"\25BE  ";}
+.expl{font-size:.95rem; margin-top:.5rem;}
+.hints{font-size:.92rem;} .hints li{margin:.2rem 0;}
+.feedback{font-size:.9rem;} .feedback .ok{color:var(--accent2);} .feedback .no{color:var(--accent);}
+.appfirst{font-size:.78rem; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin:.2rem 0;}
+.mastery{background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--accent2); border-radius:8px; padding:1rem 1.2rem;}
+.pill{display:inline-block; font-size:.72rem; padding:.12rem .5rem; border:1px solid var(--rule); border-radius:999px; color:var(--muted); margin:.1rem .2rem .1rem 0;}
+footer{margin-top:3.5rem; border-top:1px solid var(--rule); padding-top:1rem; color:var(--muted); font-size:.82rem;}
+.src{background:#eef3ec; border:1px solid #cfe0cf; border-radius:8px; padding:.9rem 1.1rem; margin:1.2rem 0;}
+.src .tag{font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent2); font-weight:600;}
+.crumbs{font-size:.85rem; margin-bottom:1.2rem;}
+.ask{font-size:.9rem; background:#fff8ec; border:1px dashed #e0c590; border-radius:8px; padding:.7rem 1rem; margin:1.4rem 0;}
+@media print{ body{background:#fff} .wrap{padding:0} a{border:none} .donow{-webkit-print-color-adjust:exact; print-color-adjust:exact} }
+</style></head>
+<body><div class="wrap"><div class="content">
+  <header class="masthead">
+    <p class="kicker">GMATWiz &middot; GMAT Focus Edition &middot; Quantitative Reasoning</p>
+    <h1>Quant Problem Solving &mdash; lesson library</h1>
+    <p class="meta">18 leaf topics &middot; retrieval opening &rarr; I-do / we-do / you-do &rarr; mastery check &middot; application-first (SPOV2).</p>
+  </header>
+  <p class="lead">Each lesson opens with a low-stakes retrieval starter, models one worked example, fades support through guided practice, then puts you on new exam-style items where the explanation is withheld until you commit to an answer.</p>
+  <h2>Arithmetic</h2><table><thead><tr><th>Topic</th><th>Topic id</th><th>Items</th></tr></thead><tbody><tr><td><a href="number-properties.html">Number Properties</a></td><td><code>gmat::quant::arithmetic::number_properties</code></td><td>2 we &middot; 4 you</td></tr><tr><td><a href="fractions.html">Fractions</a></td><td><code>gmat::quant::arithmetic::fractions</code></td><td>2 we &middot; 4 you</td></tr><tr><td><a href="decimals.html">Decimals</a></td><td><code>gmat::quant::arithmetic::decimals</code></td><td>2 we &middot; 4 you</td></tr><tr><td><a href="percents.html">Percents</a></td><td><code>gmat::quant::arithmetic::percents</code></td><td>2 we &middot; 4 you</td></tr><tr><td><a href="ratios-proportions.html">Ratios &amp; Proportions</a></td><td><code>gmat::quant::arithmetic::ratios_proportions</code></td><td>2 we &middot; 4 you</td></tr><tr><td><a href="exponents-roots.html">Exponents &amp; Roots</a></td><td><code>gmat::quant::arithmetic::exponents_roots</code></td><td>2 we &middot; 4 you</td></tr><tr><td><a href="statistics.html">Descriptive Statistics</a></td><td><code>gmat::quant::arithmetic::statistics</code></td><td>2 we &middot; 4 you</td></tr><tr><td><a href="sets.html">Sets &amp; Venn Diagrams</a></td><td><code>gmat::quant::arithmetic::sets</code></td><td>2 we &middot; 4 you</td></tr><tr><td><a href="counting-combinatorics.html">Counting &amp; Combinatorics</a></td><td><code>gmat::quant::arithmetic::counting</code></td><td>2 we &middot; 4 you</td></tr><tr><td><a href="probability.html">Probability</a></td><td><code>gmat::quant::arithmetic::probability</code></td><td>2 we &middot; 4 you</td></tr></tbody></table><h2>Algebra</h2><table><thead><tr><th>Topic</th><th>Topic id</th><th>Items</th></tr></thead><tbody><tr><td><a href="algebraic-expressions.html">Algebraic Expressions &amp; Exponent Rules</a></td><td><code>gmat::quant::algebra::algebraic_expressions</code></td><td>2 we &middot; 4 you</td></tr><tr><td><a href="linear-equations.html">Linear Equations &amp; Systems</a></td><td><code>gmat::quant::algebra::linear_equations</code></td><td>2 we &middot; 4 you</td></tr><tr><td><a href="quadratics.html">Quadratic Equations</a></td><td><code>gmat::quant::algebra::quadratics</code></td><td>2 we &middot; 4 you</td></tr><tr><td><a href="inequalities.html">Inequalities</a></td><td><code>gmat::quant::algebra::inequalities</code></td><td>2 we &middot; 4 you</td></tr><tr><td><a href="absolute-value.html">Absolute Value</a></td><td><code>gmat::quant::algebra::absolute_value</code></td><td>2 we &middot; 4 you</td></tr><tr><td><a href="functions.html">Functions</a></td><td><code>gmat::quant::algebra::functions</code></td><td>2 we &middot; 4 you</td></tr><tr><td><a href="sequences.html">Sequences</a></td><td><code>gmat::quant::algebra::sequences</code></td><td>2 we &middot; 4 you</td></tr><tr><td><a href="word-problems.html">Word Problems: Rate, Work, Mixture &amp; Interest</a></td><td><code>gmat::quant::algebra::word_problems</code></td><td>2 we &middot; 4 you</td></tr></tbody></table>
+  <footer><p>Authored for learning. Official questions are reserved as late-stage checkpoints (PRD Section 13).</p></footer>
+</div></div></body></html>

@@ -1,0 +1,364 @@
+{
+  "topic_id": "gmat::quant::algebra::absolute_value",
+  "slug": "absolute-value",
+  "title": "Absolute Value",
+  "domain": "Algebra",
+  "estimated_minutes": 22,
+  "prerequisites": [
+    "inequalities",
+    "the number line"
+  ],
+  "learning_objectives": [
+    "Interpret |x| as distance from zero (always ≥ 0).",
+    "Solve |A| = c by splitting into A = c and A = −c.",
+    "Solve |A| < c as a band (−c < A < c) and |A| > c as two rays.",
+    "Count integer solutions of absolute-value inequalities."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do → we do → you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "The number line and solving equations/inequalities.",
+    "do_now": {
+      "instructions": "From memory, no calculator. 4 minutes.",
+      "items": [
+        {
+          "prompt": "Compute |−7|.",
+          "answer": "7.",
+          "targets": "absolute value as magnitude"
+        },
+        {
+          "prompt": "Compute |3 − 10|.",
+          "answer": "7.",
+          "targets": "evaluate inside first"
+        },
+        {
+          "prompt": "Solve |x| = 5.",
+          "answer": "x = 5 or x = −5.",
+          "targets": "two-case structure"
+        },
+        {
+          "prompt": "Can |x| ever be negative?",
+          "answer": "No — it's a distance, so it's ≥ 0.",
+          "targets": "range of absolute value"
+        },
+        {
+          "prompt": "Why does |x| = 5 have two solutions?",
+          "answer": "Both 5 and −5 are distance 5 from 0.",
+          "targets": "distance interpretation"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Retrieves the distance meaning of |x| and the two-solution idea, which generalize into the two-case method for equations and inequalities today.",
+      "if_students_struggle": "If two cases feel arbitrary, mark 5 and −5 on a number line and note both sit 5 units from 0."
+    },
+    "prior_knowledge_bridge": "Absolute value is distance from zero — that single idea (Q5) explains everything today. '= c' means two points (c and −c); '< c' means everything within c of zero (a band); '> c' means everything farther than c (two outward rays). You'll turn each into the plain equations and inequalities you already solve.",
+    "learning_intention": "By the end you can solve absolute-value equations with two cases and absolute-value inequalities as bands or two rays.",
+    "success_criteria": [
+      "I can split |A| = c into A = c and A = −c.",
+      "I can rewrite |A| < c as −c < A < c.",
+      "I can rewrite |A| > c as A > c or A < −c."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00–4:00",
+        "move": "Do Now; silent retrieval."
+      },
+      {
+        "time": "4:00–6:00",
+        "move": "Check; place ±5 on a number line for Q5."
+      },
+      {
+        "time": "6:00–8:00",
+        "move": "Bridge: distance → equation two cases and inequality band/rays."
+      },
+      {
+        "time": "8:00–9:00",
+        "move": "Learning intention + success criteria."
+      },
+      {
+        "time": "9:00–10:00",
+        "move": "I do: solve |2x − 3| = 7."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "Solve for x: |2x − 3| = 7.",
+    "options": {
+      "A": "x = 5 or x = −2",
+      "B": "x = 5 or x = 2",
+      "C": "x = −5 or x = 2",
+      "D": "x = 5",
+      "E": "x = 2 or x = −2"
+    },
+    "correct": "A",
+    "explanation": "The inside is 7 or −7. Case 1: 2x − 3 = 7 → x = 5. Case 2: 2x − 3 = −7 → x = −2.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "|something| = 7 means that something is 7 or −7.",
+      "Case 1: 2x − 3 = 7 → 2x = 10 → x = 5.",
+      "Case 2: 2x − 3 = −7 → 2x = −4 → x = −2.",
+      "Two solutions: x = 5 and x = −2."
+    ],
+    "key_takeaway": "|A| = c (with c ≥ 0) always splits into A = c or A = −c — two cases.",
+    "topic": "gmat::quant::algebra::absolute_value",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Problem Solving"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "Solve: |x + 4| = 9.",
+      "options": {
+        "A": "x = 5 or −13",
+        "B": "x = 5 or 13",
+        "C": "x = −5 or 13",
+        "D": "x = 5",
+        "E": "x = −13"
+      },
+      "correct": "A",
+      "explanation": "x + 4 = 9 → x = 5; or x + 4 = −9 → x = −13.",
+      "difficulty": "easy",
+      "scaffold_hints": [
+        "The inside equals 9 or −9.",
+        "x + 4 = 9 → x = 5.",
+        "x + 4 = −9 → x = −13."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right — x = 5 or −13.",
+        "if_incorrect": "Don't forget the negative case: x + 4 = −9 gives x = −13."
+      },
+      "topic": "gmat::quant::algebra::absolute_value",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    },
+    {
+      "id": "we_2",
+      "stem": "Solve: |x| < 3.",
+      "options": {
+        "A": "x < 3",
+        "B": "x > 3",
+        "C": "−3 < x < 3",
+        "D": "x < −3 or x > 3",
+        "E": "x ≤ 3"
+      },
+      "correct": "C",
+      "explanation": "Distance from 0 less than 3 means x is between −3 and 3: −3 < x < 3.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "|x| < 3 means x is within 3 units of zero.",
+        "That's an interval around 0.",
+        "−3 < x < 3."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Yes — the band −3 < x < 3.",
+        "if_incorrect": "'Less than' makes a single band between −c and c, not two separate rays."
+      },
+      "topic": "gmat::quant::algebra::absolute_value",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "Solve: |3x| = 12.",
+      "options": {
+        "A": "x = 4",
+        "B": "x = 4 or −4",
+        "C": "x = 36 or −36",
+        "D": "x = 12 or −12",
+        "E": "x = 3 or −3"
+      },
+      "correct": "B",
+      "explanation": "3x = 12 or 3x = −12 → x = 4 or x = −4.",
+      "difficulty": "medium",
+      "target_seconds": 60,
+      "topic": "gmat::quant::algebra::absolute_value",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "How many integer solutions does |x| < 4 have?",
+      "options": {
+        "A": "3",
+        "B": "4",
+        "C": "6",
+        "D": "7",
+        "E": "8"
+      },
+      "correct": "D",
+      "explanation": "−4 < x < 4 gives integers −3, −2, −1, 0, 1, 2, 3 → 7 values.",
+      "difficulty": "medium",
+      "target_seconds": 75,
+      "topic": "gmat::quant::algebra::absolute_value",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "Solve: |x − 5| > 2.",
+      "options": {
+        "A": "3 < x < 7",
+        "B": "x > 7 or x < 3",
+        "C": "x > 3",
+        "D": "x < 7",
+        "E": "x > 7 or x < −3"
+      },
+      "correct": "B",
+      "explanation": "x − 5 > 2 (x > 7) or x − 5 < −2 (x < 3).",
+      "difficulty": "hard",
+      "target_seconds": 90,
+      "topic": "gmat::quant::algebra::absolute_value",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_4",
+      "stem": "Solve: |2x + 1| ≤ 5.",
+      "options": {
+        "A": "−3 ≤ x ≤ 2",
+        "B": "−2 ≤ x ≤ 3",
+        "C": "x ≤ 2",
+        "D": "−3 ≤ x ≤ 3",
+        "E": "x ≥ −3"
+      },
+      "correct": "A",
+      "explanation": "−5 ≤ 2x + 1 ≤ 5 → −6 ≤ 2x ≤ 4 → −3 ≤ x ≤ 2.",
+      "difficulty": "hard",
+      "target_seconds": 105,
+      "topic": "gmat::quant::algebra::absolute_value",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "sample_held_out_items": [
+      {
+        "id": "mc_1",
+        "stem": "Solve: |x − 2| = 6.",
+        "options": {
+          "A": "x = 8 or −4",
+          "B": "x = 8 or 4",
+          "C": "x = −8 or 4",
+          "D": "x = 8",
+          "E": "x = 4 or −4"
+        },
+        "correct": "A",
+        "explanation": "x − 2 = 6 → x = 8; or x − 2 = −6 → x = −4.",
+        "difficulty": "medium",
+        "topic": "gmat::quant::algebra::absolute_value",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      },
+      {
+        "id": "mc_2",
+        "stem": "The solution to |x| ≥ 2 is:",
+        "options": {
+          "A": "−2 ≤ x ≤ 2",
+          "B": "x ≤ −2 or x ≥ 2",
+          "C": "x ≥ 2",
+          "D": "x ≤ 2",
+          "E": "x ≥ −2"
+        },
+        "correct": "B",
+        "explanation": "Distance from 0 at least 2 → x ≤ −2 or x ≥ 2 (two outward rays).",
+        "difficulty": "medium",
+        "topic": "gmat::quant::algebra::absolute_value",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      }
+    ],
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "OpenStax, Intermediate Algebra 2e — Absolute Value Equations & Inequalities",
+      "url": "https://openstax.org/details/books/intermediate-algebra-2e",
+      "note": "Two-case equations and band/ray inequalities.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy — Absolute value equations & inequalities",
+      "url": "https://www.khanacademy.org/math/algebra",
+      "note": "Distance interpretation and solving."
+    },
+    {
+      "name": "GMAC — GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Quantitative Reasoning scope."
+    }
+  ],
+  "tags": [
+    "algebra",
+    "absolute-value",
+    "two-case",
+    "distance",
+    "compound-inequality"
+  ],
+  "schema_version": "1.0",
+  "section": "Quantitative Reasoning",
+  "question_type": "Problem Solving",
+  "exam": "GMAT Focus Edition"
+}

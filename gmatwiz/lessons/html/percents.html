@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Percents &middot; GMATWiz Quant</title>
+<style>
+:root{
+  --ink:#1a1813; --muted:#6b6358; --rule:#d9d2c5; --bg:#fbf9f4; --card:#fffdf8;
+  --accent:#7a3b2e; --accent2:#3a5a40; --link:#7a3b2e; --code:#2b2b2b;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:3rem 2rem 6rem;}
+.content{max-width:720px;}
+header.masthead{border-bottom:1px solid var(--rule); padding-bottom:1.2rem; margin-bottom:2rem;}
+.kicker{font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:0 0 .4rem;}
+h1{font-size:2.3rem; line-height:1.1; margin:.1rem 0 .6rem; font-weight:600; letter-spacing:-.01em;}
+.meta{color:var(--muted); font-size:.9rem; margin:0;}
+.meta b{color:var(--ink); font-weight:600;}
+h2{font-size:1.45rem; margin:2.8rem 0 .3rem; font-weight:600; letter-spacing:-.01em;}
+h2 .num{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:.5rem;}
+h3{font-size:1.06rem; margin:1.6rem 0 .4rem; font-weight:600;}
+.sub{color:var(--muted); font-style:italic; margin:.1rem 0 1rem; font-size:.95rem;}
+p{margin:.6rem 0;} ul,ol{margin:.5rem 0 .9rem; padding-left:1.3rem;} li{margin:.25rem 0;}
+a{color:var(--link); text-decoration:none; border-bottom:1px solid rgba(122,59,46,.35);}
+a:hover{border-bottom-color:var(--link);}
+.lead{font-size:1.08rem;}
+section{position:relative;}
+.note{font-size:.8rem; color:var(--muted); line-height:1.4;}
+.objectives{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1rem 1.2rem;}
+.objectives ul{margin:.3rem 0 0;}
+.intent{border-left:3px solid var(--accent2); padding:.4rem 0 .4rem 1rem; margin:1rem 0; font-size:1.05rem;}
+.donow{background:#2b2620; color:#f3ecde; border-radius:8px; padding:1.1rem 1.3rem; margin:1rem 0;}
+.donow .tag{font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:#d8b48a;}
+.donow ol{padding-left:1.2rem;} .donow li{margin:.4rem 0;}
+.donow .ans{color:#b9c6a9; font-style:italic; font-size:.86rem; display:block; margin-top:.15rem;}
+table{border-collapse:collapse; width:100%; font-size:.92rem; margin:.6rem 0 1rem;}
+th,td{text-align:left; padding:.45rem .6rem; border-bottom:1px solid var(--rule); vertical-align:top;}
+th{font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+td.t{white-space:nowrap; color:var(--accent); font-variant-numeric:tabular-nums; width:6.5rem;}
+.q{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1.1rem 1.3rem; margin:1.1rem 0;}
+.q .qid{font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+.q .qid .diff{float:right; color:var(--accent2);}
+.q .stem{font-size:1.03rem; margin:.35rem 0 .6rem;}
+.choices{list-style:none; padding:0; margin:.2rem 0 .4rem; counter-reset:c;}
+.choices li{padding:.32rem .6rem; border:1px solid var(--rule); border-radius:6px; margin:.3rem 0; background:#fff;}
+.choices li .lab{display:inline-block; width:1.5rem; font-weight:600; color:var(--accent);}
+.choices li.correct{border-color:var(--accent2); background:#eef3ec;}
+.choices li.correct .lab{color:var(--accent2);}
+details{margin:.5rem 0 .2rem; border-top:1px dashed var(--rule); padding-top:.5rem;}
+details>summary{cursor:pointer; font-size:.86rem; color:var(--accent); font-weight:600; list-style:none;}
+details>summary::-webkit-details-marker{display:none;}
+details>summary::before{content:"\25B8  "; color:var(--accent);}
+details[open]>summary::before{content:"\25BE  ";}
+.expl{font-size:.95rem; margin-top:.5rem;}
+.hints{font-size:.92rem;} .hints li{margin:.2rem 0;}
+.feedback{font-size:.9rem;} .feedback .ok{color:var(--accent2);} .feedback .no{color:var(--accent);}
+.appfirst{font-size:.78rem; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin:.2rem 0;}
+.mastery{background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--accent2); border-radius:8px; padding:1rem 1.2rem;}
+.pill{display:inline-block; font-size:.72rem; padding:.12rem .5rem; border:1px solid var(--rule); border-radius:999px; color:var(--muted); margin:.1rem .2rem .1rem 0;}
+footer{margin-top:3.5rem; border-top:1px solid var(--rule); padding-top:1rem; color:var(--muted); font-size:.82rem;}
+.src{background:#eef3ec; border:1px solid #cfe0cf; border-radius:8px; padding:.9rem 1.1rem; margin:1.2rem 0;}
+.src .tag{font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent2); font-weight:600;}
+.crumbs{font-size:.85rem; margin-bottom:1.2rem;}
+.ask{font-size:.9rem; background:#fff8ec; border:1px dashed #e0c590; border-radius:8px; padding:.7rem 1rem; margin:1.4rem 0;}
+@media print{ body{background:#fff} .wrap{padding:0} a{border:none} .donow{-webkit-print-color-adjust:exact; print-color-adjust:exact} }
+</style></head>
+<body><div class="wrap"><div class="content">
+  <div class="crumbs"><a href="index.html">&larr; All Quant topics</a> &middot; Arithmetic</div>
+  <header class="masthead">
+    <p class="kicker">GMATWiz &middot; GMAT Focus Edition &middot; Quantitative Reasoning (Problem Solving)</p>
+    <h1>Percents</h1>
+    <p class="meta"><b>Topic id</b> <code>gmat::quant::arithmetic::percents</code> &middot; <b>Domain</b> Arithmetic
+      &middot; <b>Prereqs</b> fractions, decimals &middot; <b>~22 min</b></p>
+  </header>
+
+  <div class="objectives">
+    <p class="note"><b>Learning objectives</b></p>
+    <ul><li>Convert among percents, fractions, and decimals.</li><li>Compute a percent of a number and find percent change (increase/decrease).</li><li>Handle successive (compound) percents by multiplying factors, not adding.</li><li>Reverse a percent: find the original from a part and its percent.</li></ul>
+    <p class="note">Model: I do → we do → you do &middot; application-first (explanations revealed after an attempt) &middot; Rosenshine (daily review), Archer (I-do/we-do/you-do), SPOV2 application-first.</p>
+  </div>
+
+  
+    <section>
+      <h2><span class="num">1</span>Opening &mdash; retrieval &amp; bridge</h2>
+      <p class="sub">Builds on: Fractions and decimals — &#x27;percent&#x27; means &#x27;per hundred&#x27;.</p>
+      <div class="donow">
+        <div class="tag">Do Now &middot; from memory, no notes</div>
+        <p>From memory, no calculator. 4 minutes.</p>
+        <ol><li>Write 25% as a fraction in lowest terms.<span class="ans">1/4.</span></li><li>What is 10% of 80?<span class="ans">8.</span></li><li>Convert 0.45 to a percent.<span class="ans">45%.</span></li><li>Write 1/5 as a percent.<span class="ans">20%.</span></li><li>If a price goes up 50% then down 50%, are you back to the start?<span class="ans">No — the 50% drop is taken from the larger amount (100 → 150 → 75).</span></li></ol>
+      </div>
+      <p class="note"><b>Retrieval starter (5 min).</b> Retrieves conversions and &#x27;percent of a number&#x27;, and surfaces the #1 percent misconception (successive percents don&#x27;t add) that today&#x27;s lesson resolves.
+      <br><b>If students struggle:</b> If 10% of 80 is hard, anchor &#x27;10% = move the decimal one place&#x27;; build 5% and 15% from there.</p>
+      <h3>Prior-knowledge bridge</h3>
+      <p>Q5 is the trap the GMAT sets constantly: people add percents. You can&#x27;t, because each percent acts on a different base. Today you&#x27;ll treat every percent as a multiplier (15% off = ×0.85) and chain them — the same equivalent-fraction thinking you used with decimals, now applied to change.</p>
+      <h3>Learning intention</h3>
+      <p class="intent">By the end you can compute percent-of and percent-change, chain successive percents by multiplying, and reverse a percent to find the original amount.</p>
+      <p class="note"><b>You'll know you've got it when:</b></p>
+      <ul><li>I can rewrite any percent as a multiplier (e.g., +20% = ×1.20).</li><li>I can compute percent change as change ÷ original.</li><li>I can find the original quantity when given a part and its percent.</li></ul>
+      <details><summary>Complete timed opening script</summary>
+        <table><thead><tr><th>Time</th><th>Move</th></tr></thead><tbody><tr><td class="t">0:00–4:00</td><td>Do Now; silent retrieval.</td></tr><tr><td class="t">4:00–6:00</td><td>Check; act out 100 → 150 → 75 to kill the &#x27;add percents&#x27; habit.</td></tr><tr><td class="t">6:00–8:00</td><td>Bridge: percent as a multiplier; chain multipliers.</td></tr><tr><td class="t">8:00–9:00</td><td>Learning intention + success criteria.</td></tr><tr><td class="t">9:00–10:00</td><td>I do: the double-discount shirt.</td></tr></tbody></table>
+      </details>
+    </section>
+
+  <section>
+    <h2><span class="num">2</span>I do &mdash; worked example</h2>
+    <p class="sub">Watch the reasoning modeled end to end before you try.</p>
+    
+    <div class="q">
+      <div class="qid">I DO &middot; worked example<span class="diff">medium</span></div>
+      <div class="stem">A shirt priced at $80 is discounted 25%, then an additional 10% is taken off the reduced price. What is the final price?</div>
+      <ul class="choices"><li><span class="lab">A</span>$52</li><li class="correct"><span class="lab">B</span>$54</li><li><span class="lab">C</span>$56</li><li><span class="lab">D</span>$58</li><li><span class="lab">E</span>$60</li></ul>
+      <h3>Think-aloud</h3>
+      <ol><li>25% off means you pay 75%: 80 × 0.75 = 60.</li><li>The next 10% comes off $60, not $80: 60 × 0.90 = 54.</li><li>Final price is $54 — equivalent to ×0.675, i.e., 32.5% off, not 35%.</li></ol>
+      <p class="expl"><b>Correct: B.</b> Apply discounts in sequence: 80 × 0.75 = 60, then 60 × 0.90 = 54.</p>
+      <p class="note"><b>Takeaway.</b> Successive percents MULTIPLY (×0.75 then ×0.90 = ×0.675); they never simply add.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>We do &mdash; guided practice</h2>
+    <p class="sub">Scaffolds and immediate feedback are one click away. Fade them as you gain confidence.</p>
+    
+    <div class="q">
+      <div class="qid">we_1 &middot; we do (guided)<span class="diff">easy</span></div>
+      <div class="stem">What is 15% of 240?</div>
+      <ul class="choices"><li><span class="lab">A</span>24</li><li><span class="lab">B</span>30</li><li class="correct"><span class="lab">C</span>36</li><li><span class="lab">D</span>40</li><li><span class="lab">E</span>48</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>Find 10% first: move the decimal one place → 24.</li><li>5% is half of 10% → 12.</li><li>15% = 10% + 5% = 24 + 12.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Right — building from 10% keeps it calculator-free.<br>
+        <span class="no">If incorrect:</span> Decompose: 15% = 10% + 5%. Find each, then add.</p>
+        <p class="expl"><b>Answer: C.</b> 10% of 240 = 24, and 5% = 12, so 15% = 24 + 12 = 36.</p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">we_2 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">A quantity increases from 50 to 65. What is the percent increase?</div>
+      <ul class="choices"><li><span class="lab">A</span>15%</li><li><span class="lab">B</span>23%</li><li class="correct"><span class="lab">C</span>30%</li><li><span class="lab">D</span>65%</li><li><span class="lab">E</span>130%</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>Percent change uses the ORIGINAL as the base.</li><li>Change = 65 − 50 = 15.</li><li>15/50 = 0.30.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Yes — 30% increase.<br>
+        <span class="no">If incorrect:</span> Divide the change by the original (50), not by the new value (65).</p>
+        <p class="expl"><b>Answer: C.</b> Percent change = change ÷ original = (65 − 50)/50 = 15/50 = 0.30 = 30%.</p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>You do &mdash; independent application</h2>
+    <p class="sub">Application-first (SPOV2): commit to an answer, then reveal the explanation. Log every miss.</p>
+    
+    <div class="q">
+      <div class="qid">you_1 &middot; you do (independent) &middot; target 75s<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">If 40% of a number is 28, what is the number?</div>
+      <ul class="choices"><li><span class="lab">A</span>56</li><li><span class="lab">B</span>64</li><li class="correct"><span class="lab">C</span>70</li><li><span class="lab">D</span>112</li><li><span class="lab">E</span>11.2</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: C.</b> 0.40x = 28 → x = 28 ÷ 0.40 = 70.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_2 &middot; you do (independent) &middot; target 75s<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A price rises 20% and then falls 20%. Compared with the original price, the result is:</div>
+      <ul class="choices"><li><span class="lab">A</span>no change</li><li><span class="lab">B</span>a 4% increase</li><li class="correct"><span class="lab">C</span>a 4% decrease</li><li><span class="lab">D</span>a 20% decrease</li><li><span class="lab">E</span>a 40% increase</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: C.</b> 1.20 × 0.80 = 0.96, which is a 4% decrease from the original.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_3 &middot; you do (independent) &middot; target 75s<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">30 is what percent of 24?</div>
+      <ul class="choices"><li><span class="lab">A</span>80%</li><li><span class="lab">B</span>120%</li><li class="correct"><span class="lab">C</span>125%</li><li><span class="lab">D</span>130%</li><li><span class="lab">E</span>144%</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: C.</b> 30 ÷ 24 = 1.25 = 125%.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_4 &middot; you do (independent) &middot; target 90s<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">In a group, 60% are women, and 25% of the women wear glasses. What percent of the whole group are women who wear glasses?</div>
+      <ul class="choices"><li><span class="lab">A</span>12%</li><li class="correct"><span class="lab">B</span>15%</li><li><span class="lab">C</span>20%</li><li><span class="lab">D</span>25%</li><li><span class="lab">E</span>35%</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: B.</b> A percent OF a percent multiplies: 0.25 × 0.60 = 0.15 = 15%.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+  </section>
+
+  
+    <section>
+      <h2><span class="num">5</span>Mastery check</h2>
+      <div class="mastery">
+        <p>A topic is mastered at &gt;=85% correct on new/held-out-style questions across &gt;=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.</p>
+        <p class="note"><b>Threshold</b> 0.85 &middot; <b>spaced sessions</b> &ge; 2</p>
+        <ul><li>&gt;=85% correct on new/held-out-style items (not flashcard recall) per session</li><li>sustained across &gt;=2 spaced sessions with a delay between them</li><li>per-topic memory surfaced only after &gt;=20 graded reviews (PRD give-up rule)</li><li>per-topic performance surfaced only after &gt;=8 application attempts (PRD give-up rule)</li></ul>
+        <p class="note"><b>If not yet mastered:</b> Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -&gt; you-do loop before re-testing.</p>
+      </div>
+      <h3>Sample held-out check items</h3>
+    <div class="q">
+      <div class="qid">mc_1 &middot; held-out check<span class="diff">easy</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">What is 35% of 80?</div>
+      <ul class="choices"><li><span class="lab">A</span>24</li><li class="correct"><span class="lab">B</span>28</li><li><span class="lab">C</span>30</li><li><span class="lab">D</span>32</li><li><span class="lab">E</span>36</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: B.</b> 10% = 8 → 30% = 24; 5% = 4; total 35% = 28.</p>
+        
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">mc_2 &middot; held-out check<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A quantity decreases from 200 to 150. What is the percent decrease?</div>
+      <ul class="choices"><li><span class="lab">A</span>20%</li><li class="correct"><span class="lab">B</span>25%</li><li><span class="lab">C</span>30%</li><li><span class="lab">D</span>33%</li><li><span class="lab">E</span>50%</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: B.</b> Change 50 over original 200 = 50/200 = 25%.</p>
+        
+      </details>
+    </div>
+    </section>
+
+  <div class="src">
+    <div class="tag">Primary source</div>
+    <p><a href="https://openstax.org/details/books/prealgebra-2e">OpenStax, Prealgebra 2e — Percents</a> &mdash; Percent of a number, percent change, applications.</p>
+    <p class='note'>Further reading:</p><ul><li><a href="https://www.khanacademy.org/math/arithmetic">Khan Academy — Percentages</a> &mdash; Percent of, percent change, and word problems.</li><li><a href="https://www.mba.com/exams/gmat-focus-edition">GMAC — GMAT Focus Edition (official exam overview)</a> &mdash; Official exam structure and Quantitative Reasoning scope.</li></ul>
+  </div>
+
+  <div class="ask">Stuck on any step? Ask your GMATWiz coach for a worked walkthrough &mdash; that's what it's here for.</div>
+
+  <footer>
+    <p>GMATWiz lesson &middot; <code>percents.json</code> &middot; schema v1.0 &middot; authored content (OfficialFlag=false), reserved official items used only for late checkpoints.</p>
+  </footer>
+</div></div></body></html>

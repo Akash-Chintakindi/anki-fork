@@ -1,0 +1,367 @@
+{
+  "topic_id": "gmat::quant::arithmetic::number_properties",
+  "slug": "number-properties",
+  "title": "Number Properties",
+  "domain": "Arithmetic",
+  "estimated_minutes": 22,
+  "prerequisites": [
+    "whole-number multiplication & division facts",
+    "place value"
+  ],
+  "learning_objectives": [
+    "Apply even/odd and sign rules to predict the result of an expression.",
+    "Use divisibility rules (2, 3, 5, 6, 9, 10) and the idea that divisibility by a composite means divisibility by its prime parts.",
+    "Prime-factorize an integer and use it to count factors and find GCD/LCM.",
+    "Translate 'must be true' number-property statements into fast tests."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do → we do → you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Whole-number multiplication/division facts and place value.",
+    "do_now": {
+      "instructions": "No notes, no calculator. Answer from memory in 4 minutes.",
+      "items": [
+        {
+          "prompt": "List all positive factors of 24.",
+          "answer": "1, 2, 3, 4, 6, 8, 12, 24",
+          "targets": "factors"
+        },
+        {
+          "prompt": "Is 51 prime? Show why in one product.",
+          "answer": "No: 51 = 3 × 17.",
+          "targets": "primes / composites"
+        },
+        {
+          "prompt": "Compute 7 × 8 and 9 × 6.",
+          "answer": "56 and 54.",
+          "targets": "multiplication fluency"
+        },
+        {
+          "prompt": "Is 0 even or odd?",
+          "answer": "Even (0 = 2 × 0).",
+          "targets": "even/odd definition"
+        },
+        {
+          "prompt": "What must be true for a number to be divisible by 6?",
+          "answer": "Divisible by 2 AND by 3.",
+          "targets": "divisibility composition"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Surfaces factors, primes, even/odd, and the key idea that divisibility by a composite equals divisibility by its prime parts — exactly the tools today extends to factor-counting and GCD/LCM.",
+      "if_students_struggle": "If factors of 24 are shaky, rebuild with a factor-pair ladder (1×24, 2×12, 3×8, 4×6) before moving on; today's factor counting depends on it."
+    },
+    "prior_knowledge_bridge": "You just found the factors of 24 by trial. That works for small numbers, but the GMAT asks about numbers like 72 — or 2³ × 3² × 5 — where listing is far too slow. Today we replace listing with prime factorization, the 'DNA' of an integer, which lets you count factors and find GCD/LCM in seconds.",
+    "learning_intention": "By the end you can prime-factorize an integer and use it to count its factors, find GCD/LCM, and settle 'must be true' even/odd and divisibility questions without listing.",
+    "success_criteria": [
+      "I can write any integer up to ~200 as a product of primes.",
+      "I can count an integer's positive factors from its prime factorization.",
+      "I can predict the even/odd and the sign of an expression and justify it."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00–4:00",
+        "move": "Do Now on screen; learners answer Q1–5 from memory, silent, no notes."
+      },
+      {
+        "time": "4:00–6:00",
+        "move": "Cold-call answers; spotlight Q5 — 'divisible by 6' = divisible by 2 AND 3."
+      },
+      {
+        "time": "6:00–8:00",
+        "move": "Bridge: listing factors of 72 is slow; introduce prime factorization as the shortcut."
+      },
+      {
+        "time": "8:00–9:00",
+        "move": "State learning intention + success criteria on the board."
+      },
+      {
+        "time": "9:00–10:00",
+        "move": "Move to I do: count the factors of 72 by reasoning aloud."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "How many distinct positive factors does 72 have?",
+    "options": {
+      "A": "6",
+      "B": "8",
+      "C": "10",
+      "D": "12",
+      "E": "14"
+    },
+    "correct": "D",
+    "explanation": "72 = 2³ × 3². The number of positive factors is (3+1)(2+1) = 4 × 3 = 12.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "Prime-factorize: 72 = 8 × 9 = 2³ × 3².",
+      "Any factor uses 0–3 twos (4 choices) and 0–2 threes (3 choices).",
+      "Independent choices multiply: 4 × 3 = 12 factors.",
+      "Spot-check by listing: 1, 2, 3, 4, 6, 8, 9, 12, 18, 24, 36, 72 — twelve."
+    ],
+    "key_takeaway": "Number of positive factors = product of (each prime's exponent + 1).",
+    "topic": "gmat::quant::arithmetic::number_properties",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Problem Solving"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "If a is odd and b is even, which of the following must be ODD?",
+      "options": {
+        "A": "a + b",
+        "B": "ab",
+        "C": "b − 2",
+        "D": "a + b + 1",
+        "E": "2a"
+      },
+      "correct": "A",
+      "explanation": "a is odd and b is even, so a + b = odd + even = odd. ab and 2a have an even factor (even); b − 2 is even − even = even; a + b + 1 flips a + b to even. Only a + b is odd.",
+      "difficulty": "easy",
+      "scaffold_hints": [
+        "Parity rules: even ± even = even; odd ± even = odd.",
+        "Anything multiplied by an even number is even.",
+        "Test with a = 3, b = 2 and check each option's parity."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right — odd + even is always odd; the ×even and +even options are forced even.",
+        "if_incorrect": "Re-check parity: B and E have an even factor (even); C subtracts an even number (stays even); D adds 1 to an odd, making it even."
+      },
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    },
+    {
+      "id": "we_2",
+      "stem": "What is the greatest common divisor (GCD) of 48 and 60?",
+      "options": {
+        "A": "4",
+        "B": "6",
+        "C": "12",
+        "D": "16",
+        "E": "24"
+      },
+      "correct": "C",
+      "explanation": "48 = 2⁴ × 3 and 60 = 2² × 3 × 5. The GCD takes each SHARED prime at its LOWEST power: 2² × 3 = 12.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "Prime-factorize both numbers first.",
+        "GCD uses only the primes they share, each at its smaller exponent.",
+        "Shared primes: 2 (lowest power 2²) and 3 (lowest power 3¹)."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Yes — 2² × 3 = 12 divides both, and nothing larger does.",
+        "if_incorrect": "Don't multiply every prime. 5 appears only in 60, so it can't be in the GCD; use shared primes at their lowest exponent."
+      },
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "If the product of two integers is odd, which of the following MUST be true?",
+      "options": {
+        "A": "Both integers are odd",
+        "B": "Both integers are even",
+        "C": "Exactly one integer is even",
+        "D": "Their product is divisible by 2",
+        "E": "At least one integer is even"
+      },
+      "correct": "A",
+      "explanation": "A product is odd only when every factor is odd; a single even factor would make the product even. So both integers must be odd. Every other option requires or implies an even factor.",
+      "difficulty": "medium",
+      "target_seconds": 75,
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "Which of the following is a multiple of BOTH 4 and 6?",
+      "options": {
+        "A": "18",
+        "B": "28",
+        "C": "36",
+        "D": "42",
+        "E": "54"
+      },
+      "correct": "C",
+      "explanation": "A number divisible by both 4 and 6 must be divisible by their LCM, 12. Only 36 = 12 × 3 qualifies (18, 28, 42, 54 each fail divisibility by 4 or by 6).",
+      "difficulty": "medium",
+      "target_seconds": 75,
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "If n = 2³ × 3² × 5, how many distinct positive factors does n have?",
+      "options": {
+        "A": "6",
+        "B": "10",
+        "C": "12",
+        "D": "18",
+        "E": "24"
+      },
+      "correct": "E",
+      "explanation": "Factor count = product of (exponent + 1) over all primes: (3+1)(2+1)(1+1) = 4 × 3 × 2 = 24.",
+      "difficulty": "hard",
+      "target_seconds": 90,
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_4",
+      "stem": "If p and q are distinct prime numbers, each greater than 2, which of the following MUST be even?",
+      "options": {
+        "A": "p + q",
+        "B": "pq",
+        "C": "2p + 1",
+        "D": "pq + 2",
+        "E": "p + q + 1"
+      },
+      "correct": "A",
+      "explanation": "Primes greater than 2 are odd. Odd + odd = even, so p + q is even. pq is odd; pq + 2 stays odd; 2p + 1 is odd; p + q + 1 is even + 1 = odd. Only p + q must be even.",
+      "difficulty": "hard",
+      "target_seconds": 90,
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "sample_held_out_items": [
+      {
+        "id": "mc_1",
+        "stem": "What is the least common multiple (LCM) of 9 and 12?",
+        "options": {
+          "A": "18",
+          "B": "24",
+          "C": "36",
+          "D": "72",
+          "E": "108"
+        },
+        "correct": "C",
+        "explanation": "9 = 3² and 12 = 2² × 3. The LCM takes each prime at its HIGHEST power: 2² × 3² = 36.",
+        "difficulty": "medium",
+        "topic": "gmat::quant::arithmetic::number_properties",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      },
+      {
+        "id": "mc_2",
+        "stem": "How many distinct prime factors does 84 have?",
+        "options": {
+          "A": "2",
+          "B": "3",
+          "C": "4",
+          "D": "5",
+          "E": "6"
+        },
+        "correct": "B",
+        "explanation": "84 = 2² × 3 × 7. The distinct primes are 2, 3, and 7 — three of them (count distinct primes, not total factors).",
+        "difficulty": "medium",
+        "topic": "gmat::quant::arithmetic::number_properties",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      }
+    ],
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "OpenStax, Prealgebra 2e — Integers, factors, multiples, primes",
+      "url": "https://openstax.org/details/books/prealgebra-2e",
+      "note": "Free peer-reviewed text: divisibility, primes, LCM/GCD.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy — Factors and multiples",
+      "url": "https://www.khanacademy.org/math/arithmetic",
+      "note": "Short videos + practice on factors, primes, divisibility."
+    },
+    {
+      "name": "GMAC — GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Quantitative Reasoning scope."
+    }
+  ],
+  "tags": [
+    "arithmetic",
+    "number-properties",
+    "divisibility",
+    "primes",
+    "factors",
+    "gcd",
+    "lcm",
+    "even-odd"
+  ],
+  "schema_version": "1.0",
+  "section": "Quantitative Reasoning",
+  "question_type": "Problem Solving",
+  "exam": "GMAT Focus Edition"
+}

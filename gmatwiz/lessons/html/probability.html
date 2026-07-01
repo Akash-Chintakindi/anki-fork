@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Probability &middot; GMATWiz Quant</title>
+<style>
+:root{
+  --ink:#1a1813; --muted:#6b6358; --rule:#d9d2c5; --bg:#fbf9f4; --card:#fffdf8;
+  --accent:#7a3b2e; --accent2:#3a5a40; --link:#7a3b2e; --code:#2b2b2b;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:3rem 2rem 6rem;}
+.content{max-width:720px;}
+header.masthead{border-bottom:1px solid var(--rule); padding-bottom:1.2rem; margin-bottom:2rem;}
+.kicker{font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:0 0 .4rem;}
+h1{font-size:2.3rem; line-height:1.1; margin:.1rem 0 .6rem; font-weight:600; letter-spacing:-.01em;}
+.meta{color:var(--muted); font-size:.9rem; margin:0;}
+.meta b{color:var(--ink); font-weight:600;}
+h2{font-size:1.45rem; margin:2.8rem 0 .3rem; font-weight:600; letter-spacing:-.01em;}
+h2 .num{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:.5rem;}
+h3{font-size:1.06rem; margin:1.6rem 0 .4rem; font-weight:600;}
+.sub{color:var(--muted); font-style:italic; margin:.1rem 0 1rem; font-size:.95rem;}
+p{margin:.6rem 0;} ul,ol{margin:.5rem 0 .9rem; padding-left:1.3rem;} li{margin:.25rem 0;}
+a{color:var(--link); text-decoration:none; border-bottom:1px solid rgba(122,59,46,.35);}
+a:hover{border-bottom-color:var(--link);}
+.lead{font-size:1.08rem;}
+section{position:relative;}
+.note{font-size:.8rem; color:var(--muted); line-height:1.4;}
+.objectives{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1rem 1.2rem;}
+.objectives ul{margin:.3rem 0 0;}
+.intent{border-left:3px solid var(--accent2); padding:.4rem 0 .4rem 1rem; margin:1rem 0; font-size:1.05rem;}
+.donow{background:#2b2620; color:#f3ecde; border-radius:8px; padding:1.1rem 1.3rem; margin:1rem 0;}
+.donow .tag{font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:#d8b48a;}
+.donow ol{padding-left:1.2rem;} .donow li{margin:.4rem 0;}
+.donow .ans{color:#b9c6a9; font-style:italic; font-size:.86rem; display:block; margin-top:.15rem;}
+table{border-collapse:collapse; width:100%; font-size:.92rem; margin:.6rem 0 1rem;}
+th,td{text-align:left; padding:.45rem .6rem; border-bottom:1px solid var(--rule); vertical-align:top;}
+th{font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+td.t{white-space:nowrap; color:var(--accent); font-variant-numeric:tabular-nums; width:6.5rem;}
+.q{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1.1rem 1.3rem; margin:1.1rem 0;}
+.q .qid{font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+.q .qid .diff{float:right; color:var(--accent2);}
+.q .stem{font-size:1.03rem; margin:.35rem 0 .6rem;}
+.choices{list-style:none; padding:0; margin:.2rem 0 .4rem; counter-reset:c;}
+.choices li{padding:.32rem .6rem; border:1px solid var(--rule); border-radius:6px; margin:.3rem 0; background:#fff;}
+.choices li .lab{display:inline-block; width:1.5rem; font-weight:600; color:var(--accent);}
+.choices li.correct{border-color:var(--accent2); background:#eef3ec;}
+.choices li.correct .lab{color:var(--accent2);}
+details{margin:.5rem 0 .2rem; border-top:1px dashed var(--rule); padding-top:.5rem;}
+details>summary{cursor:pointer; font-size:.86rem; color:var(--accent); font-weight:600; list-style:none;}
+details>summary::-webkit-details-marker{display:none;}
+details>summary::before{content:"\25B8  "; color:var(--accent);}
+details[open]>summary::before{content:"\25BE  ";}
+.expl{font-size:.95rem; margin-top:.5rem;}
+.hints{font-size:.92rem;} .hints li{margin:.2rem 0;}
+.feedback{font-size:.9rem;} .feedback .ok{color:var(--accent2);} .feedback .no{color:var(--accent);}
+.appfirst{font-size:.78rem; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin:.2rem 0;}
+.mastery{background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--accent2); border-radius:8px; padding:1rem 1.2rem;}
+.pill{display:inline-block; font-size:.72rem; padding:.12rem .5rem; border:1px solid var(--rule); border-radius:999px; color:var(--muted); margin:.1rem .2rem .1rem 0;}
+footer{margin-top:3.5rem; border-top:1px solid var(--rule); padding-top:1rem; color:var(--muted); font-size:.82rem;}
+.src{background:#eef3ec; border:1px solid #cfe0cf; border-radius:8px; padding:.9rem 1.1rem; margin:1.2rem 0;}
+.src .tag{font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent2); font-weight:600;}
+.crumbs{font-size:.85rem; margin-bottom:1.2rem;}
+.ask{font-size:.9rem; background:#fff8ec; border:1px dashed #e0c590; border-radius:8px; padding:.7rem 1rem; margin:1.4rem 0;}
+@media print{ body{background:#fff} .wrap{padding:0} a{border:none} .donow{-webkit-print-color-adjust:exact; print-color-adjust:exact} }
+</style></head>
+<body><div class="wrap"><div class="content">
+  <div class="crumbs"><a href="index.html">&larr; All Quant topics</a> &middot; Arithmetic</div>
+  <header class="masthead">
+    <p class="kicker">GMATWiz &middot; GMAT Focus Edition &middot; Quantitative Reasoning (Problem Solving)</p>
+    <h1>Probability</h1>
+    <p class="meta"><b>Topic id</b> <code>gmat::quant::arithmetic::probability</code> &middot; <b>Domain</b> Arithmetic
+      &middot; <b>Prereqs</b> fractions, counting &amp; combinatorics &middot; <b>~24 min</b></p>
+  </header>
+
+  <div class="objectives">
+    <p class="note"><b>Learning objectives</b></p>
+    <ul><li>Compute basic probability as favorable ÷ total equally likely outcomes.</li><li>Use the complement rule P(not A) = 1 − P(A), especially for &#x27;at least one&#x27;.</li><li>Combine events: &#x27;and&#x27; (multiply, independent) vs &#x27;or&#x27; (add, then subtract overlap).</li><li>Handle without-replacement draws by updating counts.</li></ul>
+    <p class="note">Model: I do → we do → you do &middot; application-first (explanations revealed after an attempt) &middot; Rosenshine (daily review), Archer (I-do/we-do/you-do), SPOV2 application-first.</p>
+  </div>
+
+  
+    <section>
+      <h2><span class="num">1</span>Opening &mdash; retrieval &amp; bridge</h2>
+      <p class="sub">Builds on: Fractions and counting outcomes.</p>
+      <div class="donow">
+        <div class="tag">Do Now &middot; from memory, no notes</div>
+        <p>From memory, no calculator. 4 minutes.</p>
+        <ol><li>A fair die is rolled. P(rolling a 4)?<span class="ans">1/6.</span></li><li>A fair coin is flipped. P(heads)?<span class="ans">1/2.</span></li><li>A fair die is rolled. P(even number)?<span class="ans">3/6 = 1/2.</span></li><li>If P(rain) = 0.3, what is P(no rain)?<span class="ans">0.7 (the complement).</span></li><li>Two coin flips: why is P(two heads) = 1/4, not 1/2?<span class="ans">The flips are independent, so multiply: 1/2 × 1/2 = 1/4.</span></li></ol>
+      </div>
+      <p class="note"><b>Retrieval starter (5 min).</b> Retrieves favorable-over-total, the complement, and the multiply-for-&#x27;and&#x27; rule — the three moves behind every problem today.
+      <br><b>If students struggle:</b> If the multiply rule is unclear, list all four outcomes of two flips (HH, HT, TH, TT) to show P(HH) = 1/4.</p>
+      <h3>Prior-knowledge bridge</h3>
+      <p>Probability is just counting wrapped in a fraction: favorable outcomes over total outcomes (your counting skills). Q4 and Q5 add the two power tools — the complement (turn &#x27;at least one&#x27; into &#x27;1 minus none&#x27;) and multiplying for &#x27;and&#x27;. Today you&#x27;ll combine them, including draws without replacement where the counts change.</p>
+      <h3>Learning intention</h3>
+      <p class="intent">By the end you can compute single-event probabilities, use the complement for &#x27;at least one&#x27;, and combine events with the &#x27;and&#x27; (multiply) and &#x27;or&#x27; (add minus overlap) rules.</p>
+      <p class="note"><b>You'll know you've got it when:</b></p>
+      <ul><li>I can set up favorable ÷ total for an equally likely sample space.</li><li>I can solve &#x27;at least one&#x27; problems via the complement.</li><li>I can chain dependent draws by updating the counts.</li></ul>
+      <details><summary>Complete timed opening script</summary>
+        <table><thead><tr><th>Time</th><th>Move</th></tr></thead><tbody><tr><td class="t">0:00–4:00</td><td>Do Now; silent retrieval.</td></tr><tr><td class="t">4:00–6:00</td><td>Check; enumerate two-flip outcomes to justify Q5.</td></tr><tr><td class="t">6:00–8:00</td><td>Bridge: complement + multiply rule; preview without replacement.</td></tr><tr><td class="t">8:00–9:00</td><td>Learning intention + success criteria.</td></tr><tr><td class="t">9:00–10:00</td><td>I do: drawing two red marbles without replacement.</td></tr></tbody></table>
+      </details>
+    </section>
+
+  <section>
+    <h2><span class="num">2</span>I do &mdash; worked example</h2>
+    <p class="sub">Watch the reasoning modeled end to end before you try.</p>
+    
+    <div class="q">
+      <div class="qid">I DO &middot; worked example<span class="diff">medium</span></div>
+      <div class="stem">A bag contains 4 red and 6 green marbles. Two marbles are drawn at random without replacement. What is the probability that both are red?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>2/15</li><li><span class="lab">B</span>4/25</li><li><span class="lab">C</span>1/6</li><li><span class="lab">D</span>2/5</li><li><span class="lab">E</span>6/25</li></ul>
+      <h3>Think-aloud</h3>
+      <ol><li>First draw: 4 red out of 10 → 4/10 = 2/5.</li><li>No replacement: now 3 red remain out of 9 → 3/9 = 1/3.</li><li>&#x27;Both&#x27; means multiply: 2/5 × 1/3 = 2/15.</li></ol>
+      <p class="expl"><b>Correct: A.</b> P(both red) = (4/10)(3/9) = (2/5)(1/3) = 2/15. Without replacement, the second draw uses the reduced counts.</p>
+      <p class="note"><b>Takeaway.</b> &#x27;And&#x27; (both happen) → multiply; without replacement, update the totals for the next draw.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>We do &mdash; guided practice</h2>
+    <p class="sub">Scaffolds and immediate feedback are one click away. Fade them as you gain confidence.</p>
+    
+    <div class="q">
+      <div class="qid">we_1 &middot; we do (guided)<span class="diff">easy</span></div>
+      <div class="stem">A fair die is rolled once. What is the probability of rolling a number greater than 4?</div>
+      <ul class="choices"><li><span class="lab">A</span>1/6</li><li class="correct"><span class="lab">B</span>1/3</li><li><span class="lab">C</span>1/2</li><li><span class="lab">D</span>2/3</li><li><span class="lab">E</span>1/4</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>List the outcomes greater than 4: 5 and 6.</li><li>Total equally likely outcomes = 6.</li><li>2/6 reduces to 1/3.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Right — 1/3.<br>
+        <span class="no">If incorrect:</span> &#x27;Greater than 4&#x27; excludes 4 itself; only 5 and 6 qualify.</p>
+        <p class="expl"><b>Answer: B.</b> Favorable outcomes are 5 and 6 → 2 out of 6 = 1/3.</p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">we_2 &middot; we do (guided)<span class="diff">easy</span></div>
+      <div class="stem">The probability that an event occurs is 3/7. What is the probability it does NOT occur?</div>
+      <ul class="choices"><li><span class="lab">A</span>3/7</li><li class="correct"><span class="lab">B</span>4/7</li><li><span class="lab">C</span>3/4</li><li><span class="lab">D</span>7/10</li><li><span class="lab">E</span>1/7</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>P(not A) = 1 − P(A).</li><li>1 = 7/7.</li><li>7/7 − 3/7 = 4/7.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Yes — 4/7.<br>
+        <span class="no">If incorrect:</span> Subtract the probability from 1 (written as 7/7).</p>
+        <p class="expl"><b>Answer: B.</b> Complement: 1 − 3/7 = 4/7.</p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>You do &mdash; independent application</h2>
+    <p class="sub">Application-first (SPOV2): commit to an answer, then reveal the explanation. Log every miss.</p>
+    
+    <div class="q">
+      <div class="qid">you_1 &middot; you do (independent) &middot; target 60s<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A jar has 2 white, 3 black, and 5 red marbles. One marble is drawn at random. What is the probability it is NOT red?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>1/2</li><li><span class="lab">B</span>1/5</li><li><span class="lab">C</span>3/10</li><li><span class="lab">D</span>2/5</li><li><span class="lab">E</span>7/10</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> Not red = (2 + 3)/10 = 5/10 = 1/2 (equivalently 1 − 5/10).</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_2 &middot; you do (independent) &middot; target 75s<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Two fair coins are flipped. What is the probability of getting at least one head?</div>
+      <ul class="choices"><li><span class="lab">A</span>1/4</li><li><span class="lab">B</span>1/2</li><li><span class="lab">C</span>2/3</li><li class="correct"><span class="lab">D</span>3/4</li><li><span class="lab">E</span>1</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: D.</b> Use the complement: P(no heads) = (1/2)(1/2) = 1/4, so P(at least one head) = 1 − 1/4 = 3/4.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_3 &middot; you do (independent) &middot; target 60s<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A fair die is rolled twice. What is the probability that both rolls show a 6?</div>
+      <ul class="choices"><li><span class="lab">A</span>1/3</li><li><span class="lab">B</span>1/12</li><li class="correct"><span class="lab">C</span>1/36</li><li><span class="lab">D</span>1/18</li><li><span class="lab">E</span>1/6</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: C.</b> Independent rolls multiply: (1/6)(1/6) = 1/36.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_4 &middot; you do (independent) &middot; target 105s<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">From a standard deck of 52 cards, one card is drawn. What is the probability it is a heart OR a king?</div>
+      <ul class="choices"><li><span class="lab">A</span>17/52</li><li><span class="lab">B</span>15/52</li><li class="correct"><span class="lab">C</span>4/13</li><li><span class="lab">D</span>1/4</li><li><span class="lab">E</span>1/13</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: C.</b> P(heart or king) = 13/52 + 4/52 − 1/52 (the king of hearts is in both) = 16/52 = 4/13.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+  </section>
+
+  
+    <section>
+      <h2><span class="num">5</span>Mastery check</h2>
+      <div class="mastery">
+        <p>A topic is mastered at &gt;=85% correct on new/held-out-style questions across &gt;=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.</p>
+        <p class="note"><b>Threshold</b> 0.85 &middot; <b>spaced sessions</b> &ge; 2</p>
+        <ul><li>&gt;=85% correct on new/held-out-style items (not flashcard recall) per session</li><li>sustained across &gt;=2 spaced sessions with a delay between them</li><li>per-topic memory surfaced only after &gt;=20 graded reviews (PRD give-up rule)</li><li>per-topic performance surfaced only after &gt;=8 application attempts (PRD give-up rule)</li></ul>
+        <p class="note"><b>If not yet mastered:</b> Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -&gt; you-do loop before re-testing.</p>
+      </div>
+      <h3>Sample held-out check items</h3>
+    <div class="q">
+      <div class="qid">mc_1 &middot; held-out check<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A spinner has 8 equal sections numbered 1–8. What is the probability of landing on a multiple of 3?</div>
+      <ul class="choices"><li><span class="lab">A</span>1/8</li><li class="correct"><span class="lab">B</span>1/4</li><li><span class="lab">C</span>3/8</li><li><span class="lab">D</span>1/3</li><li><span class="lab">E</span>1/2</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: B.</b> Multiples of 3 up to 8 are 3 and 6 → 2/8 = 1/4.</p>
+        
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">mc_2 &middot; held-out check<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A bag has 5 red and 3 blue marbles. Two are drawn without replacement. What is the probability the first is red and the second is blue?</div>
+      <ul class="choices"><li><span class="lab">A</span>15/64</li><li class="correct"><span class="lab">B</span>15/56</li><li><span class="lab">C</span>8/15</li><li><span class="lab">D</span>5/14</li><li><span class="lab">E</span>1/2</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: B.</b> (5/8)(3/7) = 15/56; the totals drop after the first draw.</p>
+        
+      </details>
+    </div>
+    </section>
+
+  <div class="src">
+    <div class="tag">Primary source</div>
+    <p><a href="https://openstax.org/details/books/introductory-statistics">OpenStax, Introductory Statistics — Probability Topics</a> &mdash; Sample spaces, complements, &#x27;and&#x27;/&#x27;or&#x27;, conditional probability.</p>
+    <p class='note'>Further reading:</p><ul><li><a href="https://www.khanacademy.org/math/statistics-probability">Khan Academy — Probability</a> &mdash; Basic, complementary, and compound probability.</li><li><a href="https://www.mba.com/exams/gmat-focus-edition">GMAC — GMAT Focus Edition (official exam overview)</a> &mdash; Official exam structure and Quantitative Reasoning scope.</li></ul>
+  </div>
+
+  <div class="ask">Stuck on any step? Ask your GMATWiz coach for a worked walkthrough &mdash; that's what it's here for.</div>
+
+  <footer>
+    <p>GMATWiz lesson &middot; <code>probability.json</code> &middot; schema v1.0 &middot; authored content (OfficialFlag=false), reserved official items used only for late checkpoints.</p>
+  </footer>
+</div></div></body></html>

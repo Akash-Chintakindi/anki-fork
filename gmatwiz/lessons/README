@@ -1,0 +1,109 @@
+GMATWiz - GMAT Focus Quant (Problem Solving) lesson library
+============================================================
+
+WHAT THIS IS
+------------
+Authored lesson content for the Quantitative Reasoning section of the
+GMAT Focus Edition (Problem Solving only: arithmetic + algebra; no
+geometry, no Data Sufficiency - per PRD Section 5). Every topic is a
+self-contained lesson built on the same schema and the same evidence-
+based learning model. Content is authored (OfficialFlag=false); scarce
+official questions are reserved as late-stage checkpoints (PRD 13).
+
+PEDAGOGICAL MODEL (PRD Section 2 + Section 9; skills applied)
+------------
+1. Retrieval-practice OPENING (lesson-opening-designer skill):
+   - Do-Now retrieval from memory targeting the exact prerequisites
+     today's topic depends on (Rosenshine Principle 1; Agarwal 2012).
+   - Prior-knowledge BRIDGE that states the connection explicitly
+     (Ausubel advance organiser; Marzano).
+   - LEARNING INTENTION describing learning, not activity (Hattie),
+     plus student-facing success criteria.
+2. Mastery loop I DO -> WE DO -> YOU DO (Archer; PRD 9.2):
+   - I do:  one worked example with think-aloud reasoning.
+   - We do: 2-3 guided items with faded scaffolds + immediate feedback.
+   - You do: 3-5 independent, new exam-style items.
+3. APPLICATION-FIRST (SPOV2, PRD Section 2): in you_do, the explanation
+   is withheld until AFTER an attempt (reveal_explanation_after_attempt).
+   Application creates competence; lessons only create confidence.
+4. ERROR LOG (required, PRD Section 10): every miss carries error-type
+   tags (content gap / reasoning flaw / timing / careless / trap) and
+   becomes spaced re-practice.
+5. MASTERY = >=85% correct on new/held-out items across >=2 spaced
+   sessions with delay (PRD Section 9.2) - not flashcard recall alone.
+
+SCHEMA (see schema.json - JSON Schema draft-07)
+------------
+Each <slug>.json has: schema_version, topic_id, slug, title, section,
+question_type, domain, exam, estimated_minutes, prerequisites,
+learning_objectives, pedagogical_model, opening{do_now, retrieval_starter,
+prior_knowledge_bridge, learning_intention, success_criteria,
+opening_script}, i_do, we_do[], you_do[], mastery_check, citations[], tags[].
+
+Every practice item (i_do, we_do[], you_do[], held-out samples) maps 1:1
+onto the PRD Section 8 'GMAT PS' notetype so the app can import directly:
+  Stem=stem  OptionA..E=options.A..E  Correct=correct  Explanation=explanation
+  Topic=topic  Difficulty=difficulty  Source=source  OfficialFlag=official_flag
+
+COVERAGE (18 leaf topics, 126 practice items)
+------------
+Arithmetic:
+  - Number Properties          gmat::quant::arithmetic::number_properties
+      json: number-properties.json     html: html/number-properties.html
+  - Fractions                  gmat::quant::arithmetic::fractions
+      json: fractions.json             html: html/fractions.html
+  - Decimals                   gmat::quant::arithmetic::decimals
+      json: decimals.json              html: html/decimals.html
+  - Percents                   gmat::quant::arithmetic::percents
+      json: percents.json              html: html/percents.html
+  - Ratios & Proportions       gmat::quant::arithmetic::ratios_proportions
+      json: ratios-proportions.json    html: html/ratios-proportions.html
+  - Exponents & Roots          gmat::quant::arithmetic::exponents_roots
+      json: exponents-roots.json       html: html/exponents-roots.html
+  - Descriptive Statistics     gmat::quant::arithmetic::statistics
+      json: statistics.json            html: html/statistics.html
+  - Sets & Venn Diagrams       gmat::quant::arithmetic::sets
+      json: sets.json                  html: html/sets.html
+  - Counting & Combinatorics   gmat::quant::arithmetic::counting
+      json: counting-combinatorics.json html: html/counting-combinatorics.html
+  - Probability                gmat::quant::arithmetic::probability
+      json: probability.json           html: html/probability.html
+
+Algebra:
+  - Algebraic Expressions & Exponent Rules gmat::quant::algebra::algebraic_expressions
+      json: algebraic-expressions.json html: html/algebraic-expressions.html
+  - Linear Equations & Systems gmat::quant::algebra::linear_equations
+      json: linear-equations.json      html: html/linear-equations.html
+  - Quadratic Equations        gmat::quant::algebra::quadratics
+      json: quadratics.json            html: html/quadratics.html
+  - Inequalities               gmat::quant::algebra::inequalities
+      json: inequalities.json          html: html/inequalities.html
+  - Absolute Value             gmat::quant::algebra::absolute_value
+      json: absolute-value.json        html: html/absolute-value.html
+  - Functions                  gmat::quant::algebra::functions
+      json: functions.json             html: html/functions.html
+  - Sequences                  gmat::quant::algebra::sequences
+      json: sequences.json             html: html/sequences.html
+  - Word Problems: Rate, Work, Mixture & Interest gmat::quant::algebra::word_problems
+      json: word-problems.json         html: html/word-problems.html
+
+FILES
+------------
+  schema.json     JSON Schema (draft-07) for a topic file
+  index.json      manifest: topics, paths, counts, notetype mapping
+  <slug>.json     one lesson per topic (18 files)
+  html/<slug>.html  self-contained Tufte-clean review page per topic
+  html/index.html   hub linking every topic page
+  build.py        authoring source of truth; regenerates all of the above
+  README          this file
+
+REGENERATE
+------------
+  cd gmatwiz/lessons && python3 build.py
+  (writes only inside gmatwiz/lessons/; touches no repo source.)
+
+CITATIONS
+------------
+Each lesson links a high-trust primary source (OpenStax open textbooks,
+Khan Academy, and mba.com for exam structure). See each topic's HTML
+'Primary source' box and the citations[] array in its JSON.

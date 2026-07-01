@@ -1,0 +1,4 @@
+module GmatwizFFI {
+    header "gmatwiz_ffi.h"
+    export *
+}

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GMATWiz — Review</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+<style>
+  /* Review is a focus mode: chrome shrinks to a thin progress rule + an exit. */
+  .review-bar {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--s5);
+    padding: var(--s3) var(--s5);
+    border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; background-color: var(--paper); z-index: 20;
+  }
+  .review-progress { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 3px; height: 10px; align-items: center; }
+  .review-progress span { height: 4px; border-radius: 2px; background-color: var(--surface-sunk); }
+  .review-progress span.is-done { background-color: var(--indicator); height: 6px; }
+  .review-progress span.is-now { background-color: var(--ink); height: 10px; border-radius: 2px; }
+  .review-stage { display: grid; place-items: center; min-height: calc(100vh - 56px); padding: var(--s6) var(--s5) var(--s8); }
+  .card-recall { width: 100%; max-width: 600px; text-align: center; }
+  .grades { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s2); }
+  .grade {
+    display: grid; gap: 2px; justify-items: center;
+    padding: var(--s3) var(--s2);
+    border-radius: var(--r);
+    border: 1px solid var(--line-strong);
+    background-color: var(--surface);
+    cursor: pointer;
+  }
+  .grade:hover { border-color: var(--ink); }
+  .grade__k { font-family: var(--font-ui); font-weight: 650; font-size: var(--t-small); }
+  .grade__i { font-family: var(--font-readout); font-size: var(--t-eyebrow); color: var(--ink-faint); }
+  .grade--good { border-color: var(--indicator); background-color: var(--indicator-tint); }
+  .grade--good .grade__k { color: var(--indicator-ink); }
+  .grade--again .grade__k { color: var(--clay-ink); }
+  @media (max-width: 560px) {
+    .grades { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+  <header class="review-bar">
+    <a class="brand" href="index.html">
+      <span class="brand__mark" aria-hidden="true"></span>
+      <span class="brand__name">GMATWiz</span>
+    </a>
+    <div class="review-progress" aria-label="Review progress: card 7 of 12">
+      <span class="is-done"></span><span class="is-done"></span><span class="is-done"></span>
+      <span class="is-done"></span><span class="is-done"></span><span class="is-done"></span>
+      <span class="is-now"></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <a class="link link--quiet" href="today.html">Exit</a>
+  </header>
+
+  <main class="review-stage">
+    <div class="card-recall stack-6">
+
+      <div class="stack-3">
+        <span class="tag tag--topic">Algebra &middot; Quadratics</span>
+        <h1 class="stem voice" style="font-size: var(--t-h2);">
+          For <span class="mono">ax&sup2; + bx + c = 0</span>, what are the sum and product of the roots?
+        </h1>
+      </div>
+
+      <!-- BEFORE REVEAL -->
+      <div id="front">
+        <button class="btn btn--ghost btn--lg" id="show" type="button">Show answer <kbd>Space</kbd></button>
+      </div>
+
+      <!-- AFTER REVEAL -->
+      <div id="back" hidden tabindex="-1" class="stack-6">
+        <div class="panel panel--sunk">
+          <p class="measure__readout mono" style="margin: 0; font-size: var(--t-h2);">
+            sum = &minus;b / a<br>product = c / a
+          </p>
+        </div>
+
+        <div class="stack-3">
+          <p class="eyebrow">How well did that come back?</p>
+          <div class="grades" role="group" aria-label="Grade your recall">
+            <button class="grade grade--again" type="button"><span class="grade__k">Again</span><span class="grade__i">&lt; 1 min</span></button>
+            <button class="grade" type="button"><span class="grade__k">Hard</span><span class="grade__i">8 hr</span></button>
+            <button class="grade grade--good" type="button"><span class="grade__k">Good</span><span class="grade__i">2 days</span></button>
+            <button class="grade" type="button"><span class="grade__k">Easy</span><span class="grade__i">5 days</span></button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer style="text-align:center; padding: 0 var(--s5) var(--s6);">
+    <p class="caption">Ordered under the hood to surface weak topics first &mdash; you just answer. No timer pressure on recall.</p>
+  </footer>
+
+<script>
+  (function () {
+    var show = document.getElementById('show');
+    var front = document.getElementById('front');
+    var back = document.getElementById('back');
+
+    function reveal() {
+      if (!back.hasAttribute('hidden')) return;
+      front.setAttribute('hidden', '');
+      back.removeAttribute('hidden');
+      back.focus();
+    }
+    show.addEventListener('click', reveal);
+    document.addEventListener('keydown', function (e) {
+      if (e.code === 'Space' && back.hasAttribute('hidden')) { e.preventDefault(); reveal(); }
+    });
+
+    var grades = back.querySelectorAll('.grade');
+    for (var i = 0; i < grades.length; i++) {
+      grades[i].addEventListener('click', function () {
+        /* Prototype: acknowledge, then advance. Real app calls the scheduler. */
+        window.location.href = 'review.html';
+      });
+    }
+  })();
+</script>
+</body>
+</html>

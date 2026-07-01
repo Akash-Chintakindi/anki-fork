@@ -97,6 +97,9 @@ pub struct Card {
     pub(crate) desired_retention: Option<f32>,
     pub(crate) decay: Option<f32>,
     pub(crate) last_review_time: Option<TimestampSecs>,
+    /// GMATWiz: per-card topic mastery in 0.0-1.0 (lower = weaker). Drives
+    /// topic-aware scheduling. Independent of FSRS memory state.
+    pub(crate) topic_mastery: Option<f32>,
     /// JSON object or empty; exposed through the reviewer for persisting custom
     /// state
     pub(crate) custom_data: String,
@@ -149,6 +152,7 @@ impl Default for Card {
             desired_retention: None,
             decay: None,
             last_review_time: None,
+            topic_mastery: None,
             custom_data: String::new(),
         }
     }

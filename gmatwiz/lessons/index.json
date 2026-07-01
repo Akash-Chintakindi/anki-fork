@@ -1,0 +1,338 @@
+{
+  "schema_version": "1.0",
+  "exam": "GMAT Focus Edition",
+  "section": "Quantitative Reasoning",
+  "question_type": "Problem Solving",
+  "generated_by": "gmatwiz/lessons/build.py",
+  "schema_file": "schema.json",
+  "pedagogical_model": {
+    "opening": "retrieval practice (Rosenshine P1; Ausubel; Agarwal)",
+    "loop": "I do -> we do -> you do (Archer; PRD Section 9)",
+    "application_first": "SPOV2 toggle: you_do explanations revealed after attempt",
+    "mastery": ">=85% on new items across >=2 spaced sessions (PRD Section 9.2)"
+  },
+  "notetype_mapping": {
+    "note": "Each practice item maps onto the PRD Section 8 'GMAT PS' notetype.",
+    "Stem": "item.stem",
+    "OptionA..OptionE": "item.options.A .. item.options.E",
+    "Correct": "item.correct",
+    "Explanation": "item.explanation",
+    "Topic": "item.topic",
+    "Difficulty": "item.difficulty",
+    "Source": "item.source",
+    "OfficialFlag": "item.official_flag"
+  },
+  "counts": {
+    "topics": 18,
+    "arithmetic": 10,
+    "algebra": 8,
+    "practice_items": 126
+  },
+  "topics": [
+    {
+      "topic_id": "gmat::quant::arithmetic::number_properties",
+      "slug": "number-properties",
+      "title": "Number Properties",
+      "domain": "Arithmetic",
+      "json": "number-properties.json",
+      "html": "html/number-properties.html",
+      "prerequisites": [
+        "whole-number multiplication & division facts",
+        "place value"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 4,
+        "held_out_samples": 2
+      }
+    },
+    {
+      "topic_id": "gmat::quant::arithmetic::fractions",
+      "slug": "fractions",
+      "title": "Fractions",
+      "domain": "Arithmetic",
+      "json": "fractions.json",
+      "html": "html/fractions.html",
+      "prerequisites": [
+        "number properties (factors, LCM)",
+        "whole-number division"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 4,
+        "held_out_samples": 2
+      }
+    },
+    {
+      "topic_id": "gmat::quant::arithmetic::decimals",
+      "slug": "decimals",
+      "title": "Decimals",
+      "domain": "Arithmetic",
+      "json": "decimals.json",
+      "html": "html/decimals.html",
+      "prerequisites": [
+        "place value",
+        "fractions"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 4,
+        "held_out_samples": 2
+      }
+    },
+    {
+      "topic_id": "gmat::quant::arithmetic::percents",
+      "slug": "percents",
+      "title": "Percents",
+      "domain": "Arithmetic",
+      "json": "percents.json",
+      "html": "html/percents.html",
+      "prerequisites": [
+        "fractions",
+        "decimals"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 4,
+        "held_out_samples": 2
+      }
+    },
+    {
+      "topic_id": "gmat::quant::arithmetic::ratios_proportions",
+      "slug": "ratios-proportions",
+      "title": "Ratios & Proportions",
+      "domain": "Arithmetic",
+      "json": "ratios-proportions.json",
+      "html": "html/ratios-proportions.html",
+      "prerequisites": [
+        "fractions",
+        "percents"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 4,
+        "held_out_samples": 2
+      }
+    },
+    {
+      "topic_id": "gmat::quant::arithmetic::exponents_roots",
+      "slug": "exponents-roots",
+      "title": "Exponents & Roots",
+      "domain": "Arithmetic",
+      "json": "exponents-roots.json",
+      "html": "html/exponents-roots.html",
+      "prerequisites": [
+        "number properties (prime factorization)",
+        "multiplication"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 4,
+        "held_out_samples": 2
+      }
+    },
+    {
+      "topic_id": "gmat::quant::arithmetic::statistics",
+      "slug": "statistics",
+      "title": "Descriptive Statistics",
+      "domain": "Arithmetic",
+      "json": "statistics.json",
+      "html": "html/statistics.html",
+      "prerequisites": [
+        "addition & division (for averages)",
+        "ordering numbers"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 4,
+        "held_out_samples": 2
+      }
+    },
+    {
+      "topic_id": "gmat::quant::arithmetic::sets",
+      "slug": "sets",
+      "title": "Sets & Venn Diagrams",
+      "domain": "Arithmetic",
+      "json": "sets.json",
+      "html": "html/sets.html",
+      "prerequisites": [
+        "addition & subtraction",
+        "percents (for proportion-of-group overlaps)"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 4,
+        "held_out_samples": 2
+      }
+    },
+    {
+      "topic_id": "gmat::quant::arithmetic::counting",
+      "slug": "counting-combinatorics",
+      "title": "Counting & Combinatorics",
+      "domain": "Arithmetic",
+      "json": "counting-combinatorics.json",
+      "html": "html/counting-combinatorics.html",
+      "prerequisites": [
+        "multiplication principle",
+        "factorials"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 4,
+        "held_out_samples": 2
+      }
+    },
+    {
+      "topic_id": "gmat::quant::arithmetic::probability",
+      "slug": "probability",
+      "title": "Probability",
+      "domain": "Arithmetic",
+      "json": "probability.json",
+      "html": "html/probability.html",
+      "prerequisites": [
+        "fractions",
+        "counting & combinatorics"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 4,
+        "held_out_samples": 2
+      }
+    },
+    {
+      "topic_id": "gmat::quant::algebra::algebraic_expressions",
+      "slug": "algebraic-expressions",
+      "title": "Algebraic Expressions & Exponent Rules",
+      "domain": "Algebra",
+      "json": "algebraic-expressions.json",
+      "html": "html/algebraic-expressions.html",
+      "prerequisites": [
+        "exponents & roots",
+        "number properties"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 4,
+        "held_out_samples": 2
+      }
+    },
+    {
+      "topic_id": "gmat::quant::algebra::linear_equations",
+      "slug": "linear-equations",
+      "title": "Linear Equations & Systems",
+      "domain": "Algebra",
+      "json": "linear-equations.json",
+      "html": "html/linear-equations.html",
+      "prerequisites": [
+        "algebraic expressions"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 4,
+        "held_out_samples": 2
+      }
+    },
+    {
+      "topic_id": "gmat::quant::algebra::quadratics",
+      "slug": "quadratics",
+      "title": "Quadratic Equations",
+      "domain": "Algebra",
+      "json": "quadratics.json",
+      "html": "html/quadratics.html",
+      "prerequisites": [
+        "algebraic expressions (factoring)",
+        "linear equations"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 4,
+        "held_out_samples": 2
+      }
+    },
+    {
+      "topic_id": "gmat::quant::algebra::inequalities",
+      "slug": "inequalities",
+      "title": "Inequalities",
+      "domain": "Algebra",
+      "json": "inequalities.json",
+      "html": "html/inequalities.html",
+      "prerequisites": [
+        "linear equations"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 4,
+        "held_out_samples": 2
+      }
+    },
+    {
+      "topic_id": "gmat::quant::algebra::absolute_value",
+      "slug": "absolute-value",
+      "title": "Absolute Value",
+      "domain": "Algebra",
+      "json": "absolute-value.json",
+      "html": "html/absolute-value.html",
+      "prerequisites": [
+        "inequalities",
+        "the number line"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 4,
+        "held_out_samples": 2
+      }
+    },
+    {
+      "topic_id": "gmat::quant::algebra::functions",
+      "slug": "functions",
+      "title": "Functions",
+      "domain": "Algebra",
+      "json": "functions.json",
+      "html": "html/functions.html",
+      "prerequisites": [
+        "algebraic expressions",
+        "linear equations"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 4,
+        "held_out_samples": 2
+      }
+    },
+    {
+      "topic_id": "gmat::quant::algebra::sequences",
+      "slug": "sequences",
+      "title": "Sequences",
+      "domain": "Algebra",
+      "json": "sequences.json",
+      "html": "html/sequences.html",
+      "prerequisites": [
+        "functions",
+        "algebraic expressions"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 4,
+        "held_out_samples": 2
+      }
+    },
+    {
+      "topic_id": "gmat::quant::algebra::word_problems",
+      "slug": "word-problems",
+      "title": "Word Problems: Rate, Work, Mixture & Interest",
+      "domain": "Algebra",
+      "json": "word-problems.json",
+      "html": "html/word-problems.html",
+      "prerequisites": [
+        "linear equations",
+        "ratios & proportions",
+        "percents"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 4,
+        "held_out_samples": 2
+      }
+    }
+  ]
+}

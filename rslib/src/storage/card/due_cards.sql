@@ -5,7 +5,8 @@ SELECT id,
   cast(mod AS integer),
   did,
   odid,
-  reps
+  reps,
+  data
 FROM cards
 WHERE did IN (
     SELECT id

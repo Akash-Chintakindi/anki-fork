@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GMATWiz — Design system &amp; prototypes</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+<style>
+  .screens { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s4); }
+  .screen-card {
+    display: grid; gap: var(--s2);
+    padding: var(--s5);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background-color: var(--surface);
+    color: var(--ink);
+    transition: border-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+  }
+  .screen-card:hover { border-color: var(--indicator); transform: translateY(-2px); text-decoration: none; }
+  .screen-card__no { font-family: var(--font-readout); font-size: var(--t-caption); color: var(--ink-faint); }
+  .screen-card__name { font-family: var(--font-voice); font-size: var(--t-lead); font-weight: 600; }
+  .screen-card__desc { font-size: var(--t-small); color: var(--ink-soft); }
+  .swatches { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--s3); }
+  .sw { display: grid; gap: var(--s2); }
+  .sw__chip { height: 56px; border-radius: var(--r); border: 1px solid var(--line); }
+  .sw__name { font-family: var(--font-readout); font-size: var(--t-eyebrow); letter-spacing: 0.04em; }
+  .sw__hex { font-family: var(--font-readout); font-size: var(--t-eyebrow); color: var(--ink-faint); }
+  .specimen > * { margin: 0; }
+  @media (max-width: 860px) { .screens { grid-template-columns: 1fr; } .swatches { grid-template-columns: repeat(3, 1fr); } }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <span class="brand__mark" aria-hidden="true"></span>
+      <span class="brand__name">GMATWiz</span>
+    </a>
+    <div></div>
+    <div class="topbar__aside"><span class="glance mono">Design prototype</span></div>
+  </header>
+
+  <main class="page">
+    <div class="col col--wide stack-7">
+
+      <section class="stack-3">
+        <p class="eyebrow eyebrow--tick">GMATWiz &middot; visual identity</p>
+        <h1 class="display voice" style="font-size: 2.5rem;">The instrument, not the hype machine.</h1>
+        <p class="lead muted" style="max-width: 60ch;">
+          GMATWiz treats competence the way a good lab treats a measurement: with a
+          reading, a margin of error, and the discipline to say &ldquo;not yet&rdquo; when the
+          data is thin. The interface is built to feel like a precise, calm instrument.
+        </p>
+      </section>
+
+      <!-- The signature, shown in both of its states -->
+      <section class="stack-5">
+        <p class="eyebrow eyebrow--tick">The signature element &mdash; &ldquo;The Measure&rdquo;</p>
+        <div class="grid-2">
+          <figure class="measure panel" aria-label="Example reading, shown">
+            <div class="measure__head">
+              <span class="measure__label">A reading we can stand behind</span>
+              <span class="measure__sure">high <span class="pips" aria-hidden="true"><span class="pip is-on"></span><span class="pip is-on"></span><span class="pip is-on"></span></span></span>
+            </div>
+            <p class="measure__readout">82<span class="measure__unit">%</span><span class="measure__range">78&ndash;86%</span></p>
+            <div class="measure__scale">
+              <div class="measure__rule" aria-hidden="true"></div>
+              <div class="measure__band" style="left: 78%; width: 8%;" aria-hidden="true"></div>
+              <div class="measure__point" style="left: 82%;" aria-hidden="true"><span class="measure__flag">82%</span></div>
+              <div class="measure__axis" aria-hidden="true"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+            </div>
+            <p class="caption" style="margin-top: var(--s3);">Band width = uncertainty. The needle is the point estimate. It narrows as evidence grows.</p>
+          </figure>
+
+          <figure class="measure is-abstain panel" aria-label="Example reading, abstaining">
+            <div class="measure__head">
+              <span class="measure__label">A reading we refuse to fake</span>
+              <span class="measure__sure">&mdash; <span class="pips" aria-hidden="true"><span class="pip is-on--slate"></span><span class="pip"></span><span class="pip"></span></span></span>
+            </div>
+            <p class="measure__readout">No score yet</p>
+            <div class="measure__scale">
+              <div class="measure__rule" aria-hidden="true"></div>
+              <div class="measure__band" style="left: 22%; width: 56%;" aria-hidden="true"></div>
+              <span class="measure__ghostlabel">Not enough data</span>
+              <div class="measure__axis" aria-hidden="true"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+            </div>
+            <p class="caption" style="margin-top: var(--s3);">No needle, dashed ghost band. Abstention is a designed state, not an error.</p>
+          </figure>
+        </div>
+      </section>
+
+      <!-- Prototype screens -->
+      <section class="stack-5">
+        <p class="eyebrow eyebrow--tick">Prototype screens</p>
+        <nav class="screens" aria-label="Prototype screens">
+          <a class="screen-card" href="onboarding.html">
+            <span class="screen-card__no">01</span>
+            <span class="screen-card__name">Onboarding &amp; diagnostic</span>
+            <span class="screen-card__desc">Leads with the gauge abstaining. Exam date, weekly time, a framed 20-min pretest.</span>
+          </a>
+          <a class="screen-card" href="today.html">
+            <span class="screen-card__no">02</span>
+            <span class="screen-card__name">Today</span>
+            <span class="screen-card__desc">One clear next action. Bypassable daily rhythm, no streaks, quiet progress.</span>
+          </a>
+          <a class="screen-card" href="lesson.html">
+            <span class="screen-card__no">03</span>
+            <span class="screen-card__name">Lesson loop</span>
+            <span class="screen-card__desc">I do &middot; we do &middot; you do. The explanation is sealed until you attempt.</span>
+          </a>
+          <a class="screen-card" href="review.html">
+            <span class="screen-card__no">04</span>
+            <span class="screen-card__name">Review session</span>
+            <span class="screen-card__desc">Focus mode: chrome shrinks to a thin rule. Spaced recall, calm grading.</span>
+          </a>
+          <a class="screen-card" href="error-log.html">
+            <span class="screen-card__no">05</span>
+            <span class="screen-card__name">Error log</span>
+            <span class="screen-card__desc">Required review, framed kindly. One-tap &ldquo;why,&rdquo; then scheduled re-practice.</span>
+          </a>
+          <a class="screen-card" href="dashboard.html">
+            <span class="screen-card__no">06</span>
+            <span class="screen-card__name">Dashboard</span>
+            <span class="screen-card__desc">Memory, Performance, Readiness &mdash; three separate readings, two abstaining.</span>
+          </a>
+        </nav>
+      </section>
+
+      <!-- Palette -->
+      <section class="stack-5">
+        <p class="eyebrow eyebrow--tick">Palette</p>
+        <div class="swatches">
+          <div class="sw"><div class="sw__chip" style="background:#EAE6DD;"></div><span class="sw__name">Limestone</span><span class="sw__hex">#EAE6DD</span></div>
+          <div class="sw"><div class="sw__chip" style="background:#211F19;"></div><span class="sw__name">Graphite</span><span class="sw__hex">#211F19</span></div>
+          <div class="sw"><div class="sw__chip" style="background:#2E6E5E;"></div><span class="sw__name">Verdigris</span><span class="sw__hex">#2E6E5E</span></div>
+          <div class="sw"><div class="sw__chip" style="background:#A8503F;"></div><span class="sw__name">Clay</span><span class="sw__hex">#A8503F</span></div>
+          <div class="sw"><div class="sw__chip" style="background:#8A6A22;"></div><span class="sw__name">Brass</span><span class="sw__hex">#8A6A22</span></div>
+          <div class="sw"><div class="sw__chip" style="background:#56666C;"></div><span class="sw__name">Slate</span><span class="sw__hex">#56666C</span></div>
+        </div>
+        <p class="caption">Verdigris is the only saturated color and is rationed: the needle, the primary action, &ldquo;correct,&rdquo; &ldquo;go.&rdquo;</p>
+      </section>
+
+      <!-- Type -->
+      <section class="stack-5">
+        <p class="eyebrow eyebrow--tick">Three voices, three typefaces</p>
+        <div class="grid-3">
+          <div class="panel specimen stack-2">
+            <p class="caption">Voice &middot; serif (Georgia)</p>
+            <p class="voice" style="font-size: var(--t-h2);">We measure. We don&rsquo;t guess.</p>
+            <p class="caption faint">Headlines &amp; the tutor&rsquo;s questions.</p>
+          </div>
+          <div class="panel specimen stack-2">
+            <p class="caption">Readout &middot; mono</p>
+            <p class="mono" style="font-size: var(--t-h2);">645 &middot; 615&ndash;675</p>
+            <p class="caption faint">Every number, range, axis, timer.</p>
+          </div>
+          <div class="panel specimen stack-2">
+            <p class="caption">UI &middot; system sans</p>
+            <p style="font-size: var(--t-h3); font-weight: 650;">Begin guided practice</p>
+            <p class="caption faint">Quiet chrome: nav, buttons, controls.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel panel--sunk stack-2">
+        <p class="eyebrow eyebrow--tick">Files</p>
+        <p class="small mono">tokens.css &middot; app.css &middot; onboarding.html &middot; today.html &middot; lesson.html &middot; review.html &middot; error-log.html &middot; dashboard.html &middot; README.txt</p>
+        <p class="caption">Self-contained: no CDNs, no web fonts fetched. Conservative CSS/JS for the chrome77/es2020 webview. See README.txt for the thesis and Anki-integration map.</p>
+      </section>
+
+    </div>
+  </main>
+</div>
+</body>
+</html>

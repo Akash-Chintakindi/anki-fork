@@ -1,0 +1,365 @@
+{
+  "topic_id": "gmat::quant::arithmetic::sets",
+  "slug": "sets",
+  "title": "Sets & Venn Diagrams",
+  "domain": "Arithmetic",
+  "estimated_minutes": 22,
+  "prerequisites": [
+    "addition & subtraction",
+    "percents (for proportion-of-group overlaps)"
+  ],
+  "learning_objectives": [
+    "Use union, intersection, and complement correctly.",
+    "Apply the two-set formula |A∪B| = |A| + |B| − |A∩B| and account for 'neither'.",
+    "Translate overlap word problems into a Venn structure (only-A, only-B, both, neither).",
+    "Find 'only one group' counts from totals and overlaps."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do → we do → you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Adding and subtracting counts; reading 'and/or'.",
+    "do_now": {
+      "instructions": "From memory, no calculator. 4 minutes.",
+      "items": [
+        {
+          "prompt": "A = {1,2,3,4}, B = {3,4,5}. List A ∩ B.",
+          "answer": "{3, 4}.",
+          "targets": "intersection"
+        },
+        {
+          "prompt": "For the same sets, list A ∪ B.",
+          "answer": "{1, 2, 3, 4, 5}.",
+          "targets": "union"
+        },
+        {
+          "prompt": "How many elements are in that A ∪ B?",
+          "answer": "5.",
+          "targets": "counting a union"
+        },
+        {
+          "prompt": "Of 30 students, 18 play a sport. How many do not?",
+          "answer": "12 (the complement).",
+          "targets": "complement / 'neither'"
+        },
+        {
+          "prompt": "If 18 like tea and 15 like coffee in a class of 30, why isn't the total 33?",
+          "answer": "People who like BOTH are counted twice; the overlap is double-counted.",
+          "targets": "the double-counting idea behind today"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Retrieves union/intersection/complement and exposes the double-counting problem that inclusion–exclusion fixes.",
+      "if_students_struggle": "If union vs intersection blurs, anchor: 'or' = union (everything), 'and' = intersection (overlap only)."
+    },
+    "prior_knowledge_bridge": "Q5 names today's whole idea: when you add two group sizes, the people in both get counted twice. The fix is to subtract the overlap once — that's the two-set formula. Combined with 'neither', it turns any overlap word problem into a quick arithmetic setup.",
+    "learning_intention": "By the end you can solve two-set overlap problems with |A∪B| = |A| + |B| − |A∩B|, include a 'neither' group, and extract 'only-A' counts.",
+    "success_criteria": [
+      "I can find the overlap when given two group sizes and the union (or total and neither).",
+      "I can find how many are in exactly one group.",
+      "I can lay out only-A / only-B / both / neither and have them sum to the total."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00–4:00",
+        "move": "Do Now; silent retrieval."
+      },
+      {
+        "time": "4:00–6:00",
+        "move": "Check; dramatize the double-count in Q5."
+      },
+      {
+        "time": "6:00–8:00",
+        "move": "Bridge: subtract the overlap once → the formula."
+      },
+      {
+        "time": "8:00–9:00",
+        "move": "Learning intention + success criteria."
+      },
+      {
+        "time": "9:00–10:00",
+        "move": "I do: languages with a 'neither' group."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "In a group of 40 people, 25 speak French, 18 speak Spanish, and 7 speak both languages. How many speak neither?",
+    "options": {
+      "A": "2",
+      "B": "4",
+      "C": "6",
+      "D": "11",
+      "E": "15"
+    },
+    "correct": "B",
+    "explanation": "Speakers of at least one = 25 + 18 − 7 = 36. Neither = total − union = 40 − 36 = 4.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "First find how many speak at least one language (the union).",
+      "|F ∪ S| = |F| + |S| − |both| = 25 + 18 − 7 = 36.",
+      "Neither = total − union = 40 − 36 = 4."
+    ],
+    "key_takeaway": "Total = only-A + only-B + both + neither; equivalently Total = |A| + |B| − |both| + neither.",
+    "topic": "gmat::quant::arithmetic::sets",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Problem Solving"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "In a class of 30, 20 study math and 14 study physics; 8 study both. How many study at least one of the two?",
+      "options": {
+        "A": "22",
+        "B": "24",
+        "C": "26",
+        "D": "28",
+        "E": "34"
+      },
+      "correct": "C",
+      "explanation": "|M ∪ P| = 20 + 14 − 8 = 26.",
+      "difficulty": "easy",
+      "scaffold_hints": [
+        "Add the two groups, then remove the overlap once.",
+        "20 + 14 = 34.",
+        "Subtract both (8): 34 − 8 = 26."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right — subtracting the overlap once avoids double counting.",
+        "if_incorrect": "34 double-counts the 8 who do both; subtract them once."
+      },
+      "topic": "gmat::quant::arithmetic::sets",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    },
+    {
+      "id": "we_2",
+      "stem": "Of 50 people, 30 own a car, 25 own a bike, and 10 own neither. How many own both?",
+      "options": {
+        "A": "5",
+        "B": "10",
+        "C": "15",
+        "D": "20",
+        "E": "25"
+      },
+      "correct": "C",
+      "explanation": "Own at least one = 50 − 10 = 40. Then 40 = 30 + 25 − both, so both = 55 − 40 = 15.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "Find 'at least one' first: total − neither = 50 − 10 = 40.",
+        "Now use 40 = 30 + 25 − both.",
+        "both = 55 − 40."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Yes — 15 own both.",
+        "if_incorrect": "Subtract 'neither' from the total to get the union, then solve for the overlap."
+      },
+      "topic": "gmat::quant::arithmetic::sets",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "In a survey of 60 people, 35 like apples and 40 like bananas. Every person likes at least one. How many like both?",
+      "options": {
+        "A": "5",
+        "B": "10",
+        "C": "15",
+        "D": "20",
+        "E": "25"
+      },
+      "correct": "C",
+      "explanation": "Union = 60 (everyone likes at least one), so both = 35 + 40 − 60 = 15.",
+      "difficulty": "medium",
+      "target_seconds": 75,
+      "topic": "gmat::quant::arithmetic::sets",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "Set A has 12 elements, set B has 18 elements, and A ∩ B has 5 elements. How many elements are in A ∪ B?",
+      "options": {
+        "A": "23",
+        "B": "25",
+        "C": "30",
+        "D": "35",
+        "E": "5"
+      },
+      "correct": "B",
+      "explanation": "|A ∪ B| = 12 + 18 − 5 = 25.",
+      "difficulty": "medium",
+      "target_seconds": 60,
+      "topic": "gmat::quant::arithmetic::sets",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "In a class of 36, every student takes art, music, or both. 22 take art and 20 take music. How many take ONLY art?",
+      "options": {
+        "A": "14",
+        "B": "16",
+        "C": "18",
+        "D": "6",
+        "E": "22"
+      },
+      "correct": "B",
+      "explanation": "Both = 22 + 20 − 36 = 6; only art = 22 − 6 = 16.",
+      "difficulty": "hard",
+      "target_seconds": 90,
+      "topic": "gmat::quant::arithmetic::sets",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_4",
+      "stem": "Of 100 people, 60 drink coffee, 50 drink tea, and 30 drink both. How many drink coffee but NOT tea?",
+      "options": {
+        "A": "20",
+        "B": "30",
+        "C": "40",
+        "D": "50",
+        "E": "10"
+      },
+      "correct": "B",
+      "explanation": "Coffee but not tea = |coffee| − |both| = 60 − 30 = 30. (The union is 80 and 20 drink neither — consistent.)",
+      "difficulty": "hard",
+      "target_seconds": 75,
+      "topic": "gmat::quant::arithmetic::sets",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Problem Solving",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "sample_held_out_items": [
+      {
+        "id": "mc_1",
+        "stem": "A = {2, 4, 6, 8} and B = {4, 8, 12}. How many elements are in A ∪ B?",
+        "options": {
+          "A": "3",
+          "B": "4",
+          "C": "5",
+          "D": "6",
+          "E": "7"
+        },
+        "correct": "C",
+        "explanation": "Union = {2, 4, 6, 8, 12}; |A ∪ B| = 4 + 3 − 2 = 5 (4 and 8 are shared).",
+        "difficulty": "easy",
+        "topic": "gmat::quant::arithmetic::sets",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      },
+      {
+        "id": "mc_2",
+        "stem": "Of 80 people, 45 read fiction, 38 read nonfiction, and 12 read neither. How many read both?",
+        "options": {
+          "A": "9",
+          "B": "12",
+          "C": "15",
+          "D": "18",
+          "E": "21"
+        },
+        "correct": "C",
+        "explanation": "At least one = 80 − 12 = 68; both = 45 + 38 − 68 = 15.",
+        "difficulty": "medium",
+        "topic": "gmat::quant::arithmetic::sets",
+        "source": "GMATWiz authored",
+        "official_flag": false,
+        "question_type": "Problem Solving"
+      }
+    ],
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "OpenStax, Introductory Statistics — Venn diagrams & set operations",
+      "url": "https://openstax.org/details/books/introductory-statistics",
+      "note": "Unions, intersections, and complements in the probability chapter.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy — Basic set operations",
+      "url": "https://www.khanacademy.org/math/statistics-probability",
+      "note": "Venn diagrams and counting overlaps."
+    },
+    {
+      "name": "GMAC — GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Quantitative Reasoning scope."
+    }
+  ],
+  "tags": [
+    "arithmetic",
+    "sets",
+    "venn",
+    "inclusion-exclusion",
+    "overlap",
+    "union",
+    "intersection"
+  ],
+  "schema_version": "1.0",
+  "section": "Quantitative Reasoning",
+  "question_type": "Problem Solving",
+  "exam": "GMAT Focus Edition"
+}

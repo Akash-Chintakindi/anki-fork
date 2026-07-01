@@ -1,0 +1,21 @@
+[package]
+name = "gmatwiz_ffi"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+rust-version.workspace = true
+description = "GMATWiz C FFI over the shared Anki Rust engine (desktop and iOS share this engine)"
+
+[lib]
+name = "gmatwiz_ffi"
+crate-type = ["staticlib", "cdylib"]
+path = "src/lib.rs"
+
+[dependencies]
+anki.workspace = true
+
+[features]
+rustls = ["anki/rustls"]
+native-tls = ["anki/native-tls"]
