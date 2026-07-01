@@ -8,6 +8,35 @@
 
 import Foundation
 import SwiftUI
+import WebKit
+
+/// Shared filesystem locations for the writable collection and the bundled
+/// GMATWiz web app + content, used by both the native tabs and the WKWebView.
+enum GmatPaths {
+    /// Copies the bundled read-only `gmat.anki2` into Documents once and returns
+    /// the writable path (single source of truth for the collection location).
+    static func writableCollectionPath() -> String {
+        let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let dest = dir.appendingPathComponent("gmat.anki2")
+        if !FileManager.default.fileExists(atPath: dest.path),
+           let src = Bundle.main.url(forResource: "gmat", withExtension: "anki2") {
+            try? FileManager.default.copyItem(at: src, to: dest)
+        }
+        return dest.path
+    }
+
+    /// Bundle folder holding the built SvelteKit SPA (index.html + _app/), added
+    /// as a folder reference (web/sveltekit) in project.yml.
+    static func webRoot() -> URL? {
+        Bundle.main.resourceURL?.appendingPathComponent("web/sveltekit")
+    }
+
+    /// Bundle path to the gmatwiz/ folder (lessons/ + content/) = the engine's
+    /// `resourceDir`. Added as a folder reference (gmatwiz) in project.yml.
+    static func resourceDir() -> String? {
+        Bundle.main.resourceURL?.appendingPathComponent("gmatwiz").path
+    }
+}
 
 /// Copies the bundled read-only collection into a writable location once, and
 /// exposes review state + answering through the shared engine.
@@ -38,15 +67,7 @@ final class ReviewModel: ObservableObject {
         scores = GmatwizEngine.scores(c)
     }
 
-    private func writableCollectionPath() -> String {
-        let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let dest = dir.appendingPathComponent("gmat.anki2")
-        if !FileManager.default.fileExists(atPath: dest.path),
-           let src = Bundle.main.url(forResource: "gmat", withExtension: "anki2") {
-            try? FileManager.default.copyItem(at: src, to: dest)
-        }
-        return dest.path
-    }
+    private func writableCollectionPath() -> String { GmatPaths.writableCollectionPath() }
 
     func open() {
         let path = writableCollectionPath()
@@ -123,18 +144,137 @@ final class ReviewModel: ObservableObject {
 }
 
 struct ContentView: View {
-    @StateObject private var model = ReviewModel()
-    @State private var tab: Int =
-        ProcessInfo.processInfo.arguments.contains("--gmat-tab-readiness") ? 1 : 0
+    // The whole app IS the SvelteKit "GMATWiz" web UI (same as desktop) embedded
+    // in a WKWebView over the shared Rust engine. It owns the single collection
+    // handle; the older native ReviewView/DashboardView remain in this file but
+    // are intentionally not mounted (one SQLite writer per .anki2 file).
+    var body: some View {
+        WebAppView()
+            .ignoresSafeArea(edges: .bottom)
+    }
+}
+
+/// Owns the loopback server + the one long-lived collection handle it dispatches
+/// to. The server is started once; the collection is opened for the server's
+/// lifetime and every endpoint call is serialized on a private queue (the
+/// loopback server is multi-threaded, the collection is single-threaded).
+final class WebAppController: ObservableObject {
+    @Published private(set) var port: UInt16 = 0
+    @Published private(set) var status = "Starting GMATWiz…"
+
+    // Retained so the collection + server outlive every request; the collection
+    // handle is also captured by the endpoint closure below.
+    private var server: WebServer?
+    private var collection: GmatCollectionHandle?
+    private let engineQueue = DispatchQueue(label: "com.gmatwiz.engine")
+    private var started = false
+
+    func startIfNeeded() {
+        guard !started else { return }
+        started = true
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            self?.startServer()
+        }
+    }
+
+    private func startServer() {
+        let path = GmatPaths.writableCollectionPath()
+        guard let handle = GmatwizEngine.openCollection(path: path) else {
+            publish(status: "Failed to open collection")
+            return
+        }
+        guard let webRoot = GmatPaths.webRoot(),
+              FileManager.default.fileExists(atPath: webRoot.appendingPathComponent("index.html").path) else {
+            publish(status: "Bundled web app missing (run ios/sync-resources.sh)")
+            return
+        }
+        let resourceDir = GmatPaths.resourceDir() ?? ""
+        collection = handle
+
+        // Capture the handle + queue by value: no shared mutable state crosses
+        // threads, and the handle lives as long as the server's closure. Every
+        // engine call is serialized on engineQueue; a nil result maps to "{}"
+        // (200) so the SvelteKit client's res.text() -> JSON.parse works.
+        let engineQueue = self.engineQueue
+        let server = WebServer(webRoot: webRoot) { method, body in
+            engineQueue.sync {
+                GmatwizEngine.endpoint(
+                    handle, name: method, body: body, resourceDir: resourceDir) ?? "{}"
+            }
+        }
+
+        do {
+            let boundPort = try server.start()
+            self.server = server
+            publish(port: boundPort, status: boundPort == 0 ? "Server failed to bind a port" : "")
+        } catch {
+            publish(status: "Server error: \(error.localizedDescription)")
+        }
+    }
+
+    private func publish(port: UInt16? = nil, status message: String) {
+        DispatchQueue.main.async { [weak self] in
+            if let port { self?.port = port }
+            self?.status = message
+        }
+    }
+}
+
+/// The embedded SvelteKit "GMATWiz" app. Starts the loopback server once, then
+/// loads http://127.0.0.1:<port>/gmat in a WKWebView.
+struct WebAppView: View {
+    @StateObject private var controller = WebAppController()
 
     var body: some View {
-        TabView(selection: $tab) {
-            ReviewView(model: model)
-                .tabItem { Label("Practice", systemImage: "square.and.pencil") }
-                .tag(0)
-            DashboardView(model: model)
-                .tabItem { Label("Readiness", systemImage: "gauge.medium") }
-                .tag(1)
+        Group {
+            if controller.port != 0,
+               let url = URL(string: "http://127.0.0.1:\(controller.port)/gmat") {
+                WebView(url: url)
+                    .ignoresSafeArea(edges: .bottom)
+            } else {
+                VStack(spacing: 12) {
+                    ProgressView()
+                    Text(controller.status)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .padding()
+            }
+        }
+        .onAppear { controller.startIfNeeded() }
+    }
+}
+
+/// Thin SwiftUI wrapper over WKWebView.
+struct WebView: UIViewRepresentable {
+    let url: URL
+
+    func makeCoordinator() -> Coordinator { Coordinator() }
+
+    func makeUIView(context: Context) -> WKWebView {
+        let config = WKWebViewConfiguration()
+        config.websiteDataStore = .default()
+        let webView = WKWebView(frame: .zero, configuration: config)
+        webView.navigationDelegate = context.coordinator
+        webView.allowsBackForwardNavigationGestures = true
+        webView.scrollView.contentInsetAdjustmentBehavior = .always
+        webView.load(URLRequest(url: url))
+        return webView
+    }
+
+    func updateUIView(_ webView: WKWebView, context: Context) {
+        if webView.url == nil {
+            webView.load(URLRequest(url: url))
+        }
+    }
+
+    final class Coordinator: NSObject, WKNavigationDelegate {
+        func webView(_ w: WKWebView, didFail _: WKNavigation!, withError e: Error) {
+            NSLog("GMATWiz web load failed: %@", e.localizedDescription)
+        }
+        func webView(_ w: WKWebView, didFailProvisionalNavigation _: WKNavigation!, withError e: Error) {
+            NSLog("GMATWiz web load failed: %@", e.localizedDescription)
         }
     }
 }

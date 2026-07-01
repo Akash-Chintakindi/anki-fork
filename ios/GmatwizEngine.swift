@@ -222,6 +222,22 @@ enum GmatwizEngine {
         return try? JSONDecoder().decode(GmatScores.self, from: data)
     }
 
+    /// Dispatch a GMATWiz web endpoint (e.g. "gmatOverview", "gmatToday") against
+    /// the open collection, so the embedded SvelteKit app drives every feature
+    /// through the same engine the desktop uses. `name` has no `/_anki/` prefix,
+    /// `body` is the POST body (JSON or ""), and `resourceDir` is the bundled
+    /// gmatwiz/ folder (lessons/ + content/). Returns the JSON response, or nil.
+    static func endpoint(
+        _ collection: GmatCollectionHandle,
+        name: String,
+        body: String,
+        resourceDir: String
+    ) -> String? {
+        guard let c = gmatwiz_endpoint(collection.ptr, name, body, resourceDir) else { return nil }
+        defer { gmatwiz_string_free(c) }
+        return String(cString: c)
+    }
+
     /// Sync the collection at `path` against a self-hosted Anki sync server so the
     /// phone shares ONE collection with the desktop. The caller must release any
     /// open collection handle for this path first (SQLite is single-writer).

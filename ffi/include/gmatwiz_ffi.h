@@ -70,6 +70,16 @@ int gmatwiz_collection_answer(GmatCollection *handle, int64_t card_id, bool corr
 // Free with gmatwiz_string_free.
 char *gmatwiz_collection_scores(GmatCollection *handle);
 
+// Dispatches a GMATWiz web endpoint (e.g. "gmatOverview", "gmatToday") against
+// the open collection so the embedded SvelteKit app can drive every feature.
+// `body` is the POST body JSON (may be empty); `resource_dir` is the bundled
+// gmatwiz/ folder (lessons/ + content/). Returns a JSON string (free with
+// gmatwiz_string_free), or NULL on error.
+char *gmatwiz_endpoint(GmatCollection *handle,
+                       const char *name,
+                       const char *body,
+                       const char *resource_dir);
+
 // Syncs the collection at `path` against a self-hosted Anki sync server, then
 // closes it, so the phone shares one collection with the desktop. Returns a JSON
 // status string (free with gmatwiz_string_free), or NULL on error. The caller

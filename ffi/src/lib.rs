@@ -241,6 +241,43 @@ pub unsafe extern "C" fn gmatwiz_collection_scores(
     }
 }
 
+/// Dispatch a GMATWiz web endpoint against the open collection, so the embedded
+/// SvelteKit app (in an iOS WKWebView) can drive EVERY feature the desktop has
+/// through the same engine. `name` is the endpoint (e.g. "gmatOverview"),
+/// `body` is the POST body JSON (or empty), and `resource_dir` points at the
+/// bundled `gmatwiz/` folder (lessons/ + content/). Returns a JSON string (free
+/// with `gmatwiz_string_free`), or null on error.
+///
+/// # Safety
+/// `handle` must be a valid collection; the C strings must be valid/NUL-terminated.
+#[no_mangle]
+pub unsafe extern "C" fn gmatwiz_endpoint(
+    handle: *mut GmatCollection,
+    name: *const c_char,
+    body: *const c_char,
+    resource_dir: *const c_char,
+) -> *mut c_char {
+    if handle.is_null() || name.is_null() {
+        return ptr::null_mut();
+    }
+    let s = |p: *const c_char| -> String {
+        if p.is_null() {
+            String::new()
+        } else {
+            CStr::from_ptr(p).to_string_lossy().into_owned()
+        }
+    };
+    match (*handle)
+        .col
+        .gmat_endpoint(&s(name), &s(body), &s(resource_dir))
+    {
+        Ok(json) => to_c_string(json),
+        Err(err) => to_c_string(
+            serde_json::json!({ "error": format!("{err:?}") }).to_string(),
+        ),
+    }
+}
+
 /// Sync the collection at `path` against a self-hosted Anki sync server, then
 /// close it, so the phone shares one collection with the desktop. Returns a JSON
 /// status string (free with `gmatwiz_string_free`), or null on error.

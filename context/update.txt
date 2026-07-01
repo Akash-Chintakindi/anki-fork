@@ -29,7 +29,9 @@ GIT HISTORY (branch: gmatwiz)
   b39072a4f  user-upload question importer (JSON/CSV)
   68440716b  toolbar declutter + Decks/Stats/Sync integrated into GMATWiz
   5c3231ff2  desktop Sync auto-targets the self-hosted server
-  (this commit) wizard-theme UI revamp: hide native toolbar, merge Progress
+  6f55f614e  wizard-theme UI revamp: hide native toolbar, merge Progress
+  67f9ffbc5  clearer answer states + richer gold spellfall
+  (this commit) FULL app on iOS: embed the SvelteKit wizard UI in a WKWebView
 (Base upstream commit: b00308e55.)
 
 -------------------------------------------------------------------------------
@@ -131,18 +133,43 @@ THE THREE SCORES (honesty rule: point + range + evidence + give-up abstention)
   official scores when logged (bias offset, raw + calibrated both shown).
 
 -------------------------------------------------------------------------------
-DONE - MOBILE (iOS Simulator)
+DONE - MOBILE (iOS Simulator) - FULL FEATURE PARITY WITH DESKTOP
 -------------------------------------------------------------------------------
-- The SHARED Anki Rust engine cross-compiles to iOS (arm64 sim), incl. C deps
-  (bundled SQLite, ring, zstd). No scheduler rewritten in Swift.
-- ffi/ crate: C API over the engine (open collection, next card, answer, scores).
-  Built into out/ios/GmatwizFFI.xcframework.
-- ios/: XcodeGen project (project.yml) + SwiftUI app "GMATWizPhone":
-  * Practice tab: opens the real GMAT::Quant collection, fetches a scheduled
-    card, answers it -> records a REAL review; FSRS reschedules (verified:
-    New 42->41, card -> Learn).
-  * Readiness tab: the same three scores, computed in the shared engine
-    (rslib gmat_scores_json), honestly abstaining on a fresh deck.
+- The iOS app now embeds the SAME SvelteKit "GMATWiz" wizard UI as desktop in a
+  WKWebView, so EVERY feature (Today/Learn/lessons/Practice/Progress/Error Log/
+  diagnostic/mock/calibration) works on the phone - one UI codebase, no native
+  reimplementation. Verified rendering + endpoints in the simulator.
+- HOW IT WORKS (Option A):
+  * ios/WebServer.swift: a dependency-free loopback HTTP/1.1 server (Network
+    framework, ephemeral 127.0.0.1 port) serves the bundled SPA (index.html +
+    /_app/*) and routes POST /_anki/gmat* to the engine. It also returns a
+    minimal generic.Json for i18nResources (so the SvelteKit runtime boots with
+    no translations - our UI uses literal strings) and empty protobuf for other
+    non-gmat backend calls. (A WKURLSchemeHandler can't carry POST bodies, hence
+    a loopback server, mirroring desktop's mediasrv.)
+  * rslib/src/gmatwiz.rs `Collection::gmat_endpoint(name, body, resource_dir)`:
+    a Rust port of the 21 Python mediasrv gmat_* handlers (same JSON shapes the
+    SvelteKit UI expects), reading bundled lessons/content from resource_dir and
+    reusing gmat_scores_json / gmat_mobile_answer / set_topic_mastery. Config
+    writes via set_config_json; day-cutoff via timing_today().
+    KNOWN GAP: gmatMarkLearned records learned + returns scheduled:0 (the
+    desktop's you-do card import isn't ported to rslib yet - TODO(mobile)); the
+    concept-gap repair skips lesson-item scheduling for the same reason.
+  * ffi: gmatwiz_endpoint(handle,name,body,resource_dir) bridges Swift->engine.
+  * ios/ContentView.swift: the app IS the WebAppView (single collection handle,
+    engine calls serialized on a queue). Old native ReviewView/DashboardView
+    remain in the file but are not mounted (avoids a 2nd SQLite writer).
+  * ios/sync-resources.sh: copies out/qt/_aqt/data/web/sveltekit + gmatwiz/
+    {lessons,content} into ios/Resources/ (bundled as folder refs); run before
+    xcodegen. project.yml adds NSAllowsLocalNetworking for the loopback.
+- BUILD/RUN (simulator):
+    ./ninja qt && bash ios/sync-resources.sh && bash ios/build-ios.sh
+    cd ios && xcodegen generate --spec project.yml && cd ..
+    xcodebuild -project ios/GMATWizPhone.xcodeproj -scheme GMATWizPhone \
+      -sdk iphonesimulator -configuration Debug -derivedDataPath ios/build \
+      -destination 'generic/platform=iOS Simulator' ARCHS=arm64 build
+    xcrun simctl install booted ios/build/Build/Products/Debug-iphonesimulator/GMATWizPhone.app
+    xcrun simctl launch booted com.gmatwiz.phone
 - Engine helpers live in rslib/src/gmatwiz.rs (single place, all engine logic).
 
 -------------------------------------------------------------------------------

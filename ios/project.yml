@@ -16,13 +16,34 @@ targets:
       - path: GMATWizPhone
       - path: GmatwizEngine.swift
       - path: ContentView.swift
+      - path: WebServer.swift
+      # Folder references (blue folders) so the built SvelteKit SPA keeps its
+      # _app/immutable/... layout and the gmatwiz content keeps lessons/ + content/.
+      # Populate these with ios/sync-resources.sh before generating/building.
+      - path: Resources/web
+        type: folder
+        buildPhase: resources
+      - path: Resources/gmatwiz
+        type: folder
+        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.gmatwiz.phone
         TARGETED_DEVICE_FAMILY: "1,2"
-        GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_CFBundleDisplayName: GMATWiz
-        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+    info:
+      path: Info.plist
+      properties:
+        CFBundleDisplayName: GMATWiz
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        # The embedded web app loads over http://127.0.0.1:<port>. Loopback is
+        # exempt from the Local Network prompt, but WKWebView still enforces ATS,
+        # so allow local networking (covers 127.0.0.1/localhost/*.local).
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
     dependencies:
       - framework: ../out/ios/GmatwizFFI.xcframework
         embed: true
