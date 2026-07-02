@@ -3,7 +3,7 @@ GMATWiz - PROJECT UPDATE (state of the build)
 Companion to context.txt (codebase map) and PRD.md (product plan).
 Repo: /Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork
 Branch: gmatwiz   (nothing pushed to any remote)
-Last updated: 2026-07-01
+Last updated: 2026-07-01 (accounts + Firestore per-user state sync)
 ===============================================================================
 
 WHAT GMATWIZ IS
@@ -258,5 +258,40 @@ KEY FILES ADDED/CHANGED (beyond context.txt's map)
   ffi/                                 - C FFI crate over the shared engine
   ios/                                 - SwiftUI app (Practice + Readiness)
   gmatwiz/content/, gmatwiz/lessons/, gmatwiz/design/  - content/lessons/design
+  ts/routes/gmat/auth.ts               - Firebase email/password sign-in gate
+  ts/routes/gmat/sync.ts               - per-user state sync (SyncProvider iface)
+  ts/routes/gmat/firebaseConfig.ts     - Firebase web config (project: gmatwiz)
+  firestore.rules                      - per-user Firestore access rules
   PRD.md, PRD.pdf, context.txt, POST_XCODE_TODO.md
+===============================================================================
+
+-------------------------------------------------------------------------------
+DONE - ACCOUNTS & CROSS-DEVICE STATE SYNC (Firebase)
+-------------------------------------------------------------------------------
+- Sign-in gate (Firebase email/password) wraps the app on BOTH desktop + mobile
+  (they render the same SvelteKit UI). If firebaseConfig.apiKey is blank the gate
+  is off and the app runs standalone (backward compatible).
+- Per-user state sync via Firestore, keyed by the Firebase uid, behind a small
+  SyncProvider interface (ts/routes/gmat/sync.ts) so a Cloud Storage full-file
+  provider can drop in later without touching the app:
+    * On login  -> pull users/{uid}: if it exists, apply it to this device's
+      config (gmatImportState); if the account is brand-new, reset local state
+      (gmatResetState) so it starts at the DIAGNOSTIC.
+    * On changes (answer, miss/guess log, plan, lesson, mock, official score)
+      -> debounced push of this device's state up (gmatExportState -> save).
+  New-account flow is therefore: sign up -> (no remote doc) -> diagnostic ->
+  plan unlocks the app; the same account on another device pulls that plan.
+- What syncs = the GMATWiz config JSON only (plan, profile, diagnosis/mastery,
+  mocks, official scores, learned-lesson markers, error log, repair topics,
+  timed-drill + lesson-scheduled flags, topic-aware toggle). NOTE: the SRS
+  card/revlog history is per-device (not in this state blob) - that's the honest
+  limit of config-only sync; a Cloud Storage provider (Blaze) would sync the
+  whole collection file later. Switching is additive (new provider class only).
+- Native state endpoints (same JSON shape on both platforms):
+    desktop  qt/aqt/mediasrv.py : gmatExportState / gmatImportState / gmatResetState
+    mobile   rslib/src/gmatwiz.rs (gmat_endpoint) : same three
+- ACTION REQUIRED once: publish firestore.rules (Firebase console -> Firestore ->
+  Rules -> paste -> Publish, or `firebase deploy --only firestore:rules`).
+  Until then Firestore denies reads/writes and sync silently no-ops (local app
+  still works).
 ===============================================================================

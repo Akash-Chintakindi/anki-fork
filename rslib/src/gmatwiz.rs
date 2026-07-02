@@ -40,6 +40,22 @@ const TARGET_RETENTION: f64 = 0.9;
 // GMAT Focus Quant pacing: 21 questions in 45 minutes ~= 128s per question.
 const GMAT_TARGET_MS: i64 = 128_000;
 
+// The GMATWiz app state stored in collection config JSON. These (plus the
+// `topicAwareScheduling` bool) are what we sync across devices via Firestore -
+// NOT the whole collection. Keep in lock-step with the desktop mediasrv shape.
+const GMAT_STATE_KEYS: &[&str] = &[
+    "gmatProfile",
+    "gmatPlan",
+    "gmatDiagnosis",
+    "gmatMocks",
+    "gmatOfficialScores",
+    "gmatLearned",
+    "gmatErrorLog",
+    "gmatRepairTopics",
+    "gmatTimedDrill",
+    "gmatLessonScheduled",
+];
+
 /// Timing risk classification for one first-exposure attempt (Brainlift: wrong,
 /// SLOW, or guessed questions are all future scheduled learning events):
 /// - "rushed_wrong": wrong in under half the target pace (careless signal)
@@ -1997,6 +2013,47 @@ impl Collection {
             // desktop sync). No mobile equivalent - the phone syncs via
             // gmat_sync_collection_at and has its own stats/decks UI.
             "gmatOpenStats" | "gmatOpenDecks" | "gmatSyncNow" => json!({ "ok": true }).to_string(),
+            // Cross-device state sync (Firestore): export/import/reset ONLY the
+            // GMATWiz config JSON, never the whole collection. Same shape the web
+            // client + desktop mediasrv use: { "state": { <key>: <val|null>, ... } }.
+            "gmatExportState" => {
+                let mut state = serde_json::Map::new();
+                for key in GMAT_STATE_KEYS {
+                    state.insert(
+                        (*key).to_string(),
+                        self.get_config_optional::<Value, _>(*key)
+                            .unwrap_or(Value::Null),
+                    );
+                }
+                state.insert(
+                    "topicAwareScheduling".to_string(),
+                    json!(self
+                        .get_config_optional::<bool, _>("topicAwareScheduling")
+                        .unwrap_or(false)),
+                );
+                json!({ "state": Value::Object(state) }).to_string()
+            }
+            "gmatImportState" => {
+                let body = parse_body(body);
+                let state = &body["state"];
+                for key in GMAT_STATE_KEYS {
+                    let value = &state[*key];
+                    if !value.is_null() {
+                        self.gmat_put_config(key, value)?;
+                    }
+                }
+                if let Some(b) = state["topicAwareScheduling"].as_bool() {
+                    self.set_config_bool(BoolKey::TopicAwareScheduling, b, false)?;
+                }
+                json!({ "ok": true }).to_string()
+            }
+            "gmatResetState" => {
+                for key in GMAT_STATE_KEYS {
+                    self.remove_config(key)?;
+                }
+                self.set_config_bool(BoolKey::TopicAwareScheduling, false, false)?;
+                json!({ "ok": true }).to_string()
+            }
             _ => return Option::<String>::None.or_invalid(format!("unknown gmat endpoint: {name}")),
         };
         Ok(out)

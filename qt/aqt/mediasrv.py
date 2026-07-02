@@ -1190,6 +1190,58 @@ def gmat_stats() -> bytes:
     ).encode("utf-8")
 
 
+# GMATWiz per-user state that syncs across devices (config JSON only; the SRS
+# card/revlog state is not part of this Firestore state-sync).
+GMAT_STATE_KEYS = [
+    "gmatProfile",
+    "gmatPlan",
+    "gmatDiagnosis",
+    "gmatMocks",
+    "gmatOfficialScores",
+    "gmatLearned",
+    "gmatErrorLog",
+    "gmatRepairTopics",
+    "gmatTimedDrill",
+    "gmatLessonScheduled",
+]
+
+
+def gmat_export_state() -> bytes:
+    """All GMATWiz per-user state (config JSON) for cross-device sync."""
+    col = aqt.mw.col
+    state = {k: col.get_config(k, None) for k in GMAT_STATE_KEYS}
+    state["topicAwareScheduling"] = bool(col.get_config("topicAwareScheduling", False))
+    return json.dumps({"state": state}).encode("utf-8")
+
+
+def gmat_import_state() -> bytes:
+    """Apply a synced state blob to this collection's config."""
+    col = aqt.mw.col
+    try:
+        body = json.loads(request.data or b"{}")
+    except Exception:
+        body = {}
+    state = body.get("state", {}) or {}
+    for key in GMAT_STATE_KEYS:
+        if state.get(key) is not None:
+            col.set_config(key, state[key])
+    if "topicAwareScheduling" in state:
+        col.set_config("topicAwareScheduling", bool(state["topicAwareScheduling"]))
+    return json.dumps({"ok": True}).encode("utf-8")
+
+
+def gmat_reset_state() -> bytes:
+    """Clear GMATWiz state so a new account starts at the diagnostic."""
+    col = aqt.mw.col
+    for key in GMAT_STATE_KEYS:
+        try:
+            col.remove_config(key)
+        except Exception:
+            col.set_config(key, None)
+    col.set_config("topicAwareScheduling", False)
+    return json.dumps({"ok": True}).encode("utf-8")
+
+
 def gmat_official_scores() -> bytes:
     """Return the user's logged official/practice-test scores (most recent first)."""
     col = aqt.mw.col
@@ -1873,6 +1925,9 @@ post_handler_list = [
     gmat_open_decks,
     gmat_sync_now,
     gmat_stats,
+    gmat_export_state,
+    gmat_import_state,
+    gmat_reset_state,
     get_deck_configs_for_update,
     update_deck_configs,
     get_scheduling_states_with_context,
@@ -2023,6 +2078,9 @@ def _check_dynamic_request_permissions():
         "/_anki/gmatOpenDecks",
         "/_anki/gmatSyncNow",
         "/_anki/gmatStats",
+        "/_anki/gmatExportState",
+        "/_anki/gmatImportState",
+        "/_anki/gmatResetState",
     ):
         pass
     else:

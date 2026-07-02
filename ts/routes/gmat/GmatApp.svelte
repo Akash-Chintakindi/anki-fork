@@ -54,6 +54,7 @@ chrome77/es2020 webview.
         renderMath,
     } from "./api";
     import { authEnabled, onUser, signIn, signUp, signOutUser, type AuthUser } from "./auth";
+    import { pullAccountState, scheduleStatePush } from "./sync";
 
     export let overview: GmatOverview;
 
@@ -103,6 +104,11 @@ chrome77/es2020 webview.
 
     async function doSignOut(): Promise<void> {
         await signOutUser();
+    }
+
+    /** Debounced push of this device's state to the signed-in account. */
+    function pushIfAuthed(): void {
+        if (authUser) scheduleStatePush(authUser.uid);
     }
 
     // Ambient "spellfall": GMAT math glyphs drifting behind the app (the
@@ -312,6 +318,7 @@ chrome77/es2020 webview.
         officialScores = await fetchOfficialScores();
         const fresh = await refreshOverview();
         if (fresh) overview = fresh;
+        pushIfAuthed();
     }
 
     async function startBlock(block: TodayBlock): Promise<void> {
@@ -349,6 +356,7 @@ chrome77/es2020 webview.
         }
         // Record a REAL review through the scheduler (Good if right, Again if wrong).
         await answerCard(card.card_id, isCorrect, answerMs);
+        pushIfAuthed();
     }
 
     /** One-prompt error-log capture: why did the miss happen? */
@@ -363,6 +371,7 @@ chrome77/es2020 webview.
             why,
             ms: answerMs,
         });
+        pushIfAuthed();
     }
 
     /** Correct, but only by guessing - honesty beats a lucky streak. */
@@ -377,6 +386,7 @@ chrome77/es2020 webview.
             why: "guess",
             ms: answerMs,
         });
+        pushIfAuthed();
     }
 
     function optionState(key: string): string {
@@ -467,6 +477,7 @@ chrome77/es2020 webview.
         await submitPretest(pretestResults);
         const fresh = await refreshOverview();
         if (fresh) overview = fresh;
+        pushIfAuthed();
         submitting = false;
         view = "plan";
     }
@@ -547,6 +558,7 @@ chrome77/es2020 webview.
         lessonTopics = (await fetchLessonsIndex()).topics;
         const fresh = await refreshOverview();
         if (fresh) overview = fresh;
+        pushIfAuthed();
         await go(target);
     }
 
@@ -716,13 +728,29 @@ chrome77/es2020 webview.
     async function finishMockReport(): Promise<void> {
         const fresh = await refreshOverview();
         if (fresh) overview = fresh;
+        pushIfAuthed();
         await go("home");
     }
 
     onMount(() => {
-        const unsub = onUser((u) => {
+        const unsub = onUser(async (u) => {
             authUser = u;
             authReady = true;
+            if (!u) return;
+            // Load this account's data (or reset to a fresh start if brand-new),
+            // then refresh the app so the right screen/plan shows on this device.
+            try {
+                await pullAccountState(u.uid);
+            } catch (e) {
+                console.error("GMATWiz account load failed", e);
+            }
+            const fresh = await refreshOverview();
+            if (fresh) overview = fresh;
+            if (overview.plan) {
+                lessonTopics = (await fetchLessonsIndex()).topics;
+                today = await fetchToday();
+            }
+            view = "home";
         });
         if (overview.plan) {
             fetchLessonsIndex().then((r) => (lessonTopics = r.topics));

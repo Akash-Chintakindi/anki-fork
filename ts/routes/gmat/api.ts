@@ -355,6 +355,26 @@ export async function syncNow(): Promise<void> {
     await postJson("gmatSyncNow", null);
 }
 
+// ---- cross-device state (config JSON) sync ----
+
+export type GmatState = Record<string, unknown>;
+
+/** Export this device's GMATWiz state (plan/progress/mocks/errors/... as config). */
+export async function exportState(): Promise<GmatState> {
+    const data = await postJson<{ state: GmatState }>("gmatExportState", { state: {} });
+    return data.state ?? {};
+}
+
+/** Apply a synced state blob to this device's collection. */
+export async function importState(state: GmatState): Promise<void> {
+    await postJson("gmatImportState", null, { state });
+}
+
+/** Clear GMATWiz state so a new account starts at the diagnostic. */
+export async function resetState(): Promise<void> {
+    await postJson("gmatResetState", null);
+}
+
 export async function fetchOfficialScores(): Promise<OfficialScore[]> {
     const data = await postJson<{ scores: OfficialScore[] }>("gmatOfficialScores", {
         scores: [],
