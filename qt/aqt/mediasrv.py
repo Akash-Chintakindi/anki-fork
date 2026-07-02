@@ -1606,6 +1606,12 @@ def _gmat_build_today(col) -> dict:
     mocks = col.get_config("gmatMocks", []) or []
     last_mock_ts = mocks[-1].get("ts", 0) if mocks else 0
     days_to_exam = pacing.get("days_to_exam")
+    learned = int(pacing.get("topics_learned") or 0)
+    total = int(pacing.get("topics_total") or 0)
+    learning_ok = pacing.get("status") == "learning_complete" or (
+        total > 0 and learned / total >= GMAT_TEST_MIN_LEARNED_FRAC
+    )
+    near_exam = days_to_exam is not None and days_to_exam <= GMAT_TEST_EXAM_WINDOW_DAYS
 
     test_block = None
     if days_to_exam is not None:
@@ -1617,7 +1623,11 @@ def _gmat_build_today(col) -> dict:
                 cadence_days = 7
             else:
                 cadence_days = 10
-            if (now_ts - last_mock_ts) > cadence_days * 86400:
+            if (
+                (now_ts - last_mock_ts) > cadence_days * 86400
+                and near_exam
+                and learning_ok
+            ):
                 test_block = {
                     "kind": "mock",
                     "title": "Practice test",
@@ -1632,7 +1642,11 @@ def _gmat_build_today(col) -> dict:
     else:
         mock_due = (
             pacing.get("status") == "learning_complete"
-            or (days_to_exam is not None and days_to_exam <= 21)
+            or (
+                days_to_exam is not None
+                and days_to_exam <= 21
+                and learning_ok
+            )
         ) and (now_ts - last_mock_ts) > 7 * 86400
         if mock_due:
             blocks.append(
@@ -1858,6 +1872,11 @@ def gmat_mark_learned() -> bytes:
 # Display-only mirror of rslib/src/gmatwiz.rs GMAT_TARGET_MS (the engine owns
 # the persistent timing analytics; this only shapes the immediate mock report).
 GMAT_MOCK_TARGET_MS = 128_000
+# A full-length practice test only makes sense once the student has learned a
+# meaningful slice of the syllabus AND is within striking distance of the exam -
+# never on day one. (Tunable.)
+GMAT_TEST_MIN_LEARNED_FRAC = 0.5
+GMAT_TEST_EXAM_WINDOW_DAYS = 28
 
 
 def gmat_mock_questions() -> bytes:

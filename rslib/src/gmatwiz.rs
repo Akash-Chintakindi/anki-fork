@@ -39,6 +39,11 @@ const QUANT_TOPIC_TOTAL: f64 = 18.0;
 const TARGET_RETENTION: f64 = 0.9;
 // GMAT Focus Quant pacing: 21 questions in 45 minutes ~= 128s per question.
 const GMAT_TARGET_MS: i64 = 128_000;
+// A full-length practice test only makes sense once the student has learned a
+// meaningful slice of the syllabus AND is within striking distance of the exam -
+// never on day one. (Tunable.)
+const GMAT_TEST_MIN_LEARNED_FRAC: f64 = 0.5;
+const GMAT_TEST_EXAM_WINDOW_DAYS: i64 = 28;
 
 // The GMATWiz app state stored in collection config JSON. These (plus the
 // `topicAwareScheduling` bool) are what we sync across devices via Firestore -
@@ -1651,6 +1656,14 @@ impl Collection {
             .and_then(|v| v.as_i64())
             .unwrap_or(0);
         let days_to_exam = pacing["days_to_exam"].as_i64();
+        let topics_learned = pacing["topics_learned"].as_i64().unwrap_or(0);
+        let topics_total = pacing["topics_total"].as_i64().unwrap_or(0);
+        let learning_ok = pacing["status"].as_str() == Some("learning_complete")
+            || (topics_total > 0
+                && topics_learned as f64 / topics_total as f64 >= GMAT_TEST_MIN_LEARNED_FRAC);
+        let near_exam = days_to_exam
+            .map(|d| d <= GMAT_TEST_EXAM_WINDOW_DAYS)
+            .unwrap_or(false);
 
         let mut test_block: Option<Value> = None;
         if let Some(dte) = days_to_exam {
@@ -1662,7 +1675,7 @@ impl Collection {
                 } else {
                     10
                 };
-                if (now_ts - last_mock_ts) > cadence_days * 86_400 {
+                if (now_ts - last_mock_ts) > cadence_days * 86_400 && near_exam && learning_ok {
                     let label = form["label"].as_str().unwrap_or("").to_string();
                     test_block = Some(json!({
                         "kind": "mock",
@@ -1680,7 +1693,7 @@ impl Collection {
             blocks.push(block);
         } else {
             let mock_due = (pacing["status"].as_str() == Some("learning_complete")
-                || days_to_exam.map(|d| d <= 21).unwrap_or(false))
+                || (days_to_exam.map(|d| d <= 21).unwrap_or(false) && learning_ok))
                 && (now_ts - last_mock_ts) > 7 * 86_400;
             if mock_due {
                 blocks.push(json!({

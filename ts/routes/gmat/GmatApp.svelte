@@ -393,13 +393,6 @@ chrome77/es2020 webview.
         pushIfAuthed();
     }
 
-    function optionState(key: string): string {
-        if (!revealed) return selected === key ? "sel" : "";
-        if (card && key === card.correct) return "correct";
-        if (key === selected) return "wrong";
-        return "muted";
-    }
-
     // ---- diagnostic / plan flow ----
     function fmtTime(s: number): string {
         const safe = Math.max(0, s);
@@ -517,13 +510,6 @@ chrome77/es2020 webview.
                 correct: lessonItem.correct,
             });
         }
-    }
-
-    function lessonOptionState(key: string): string {
-        if (!lessonRevealed) return lessonSelected === key ? "sel" : "";
-        if (lessonItem && key === lessonItem.correct) return "correct";
-        if (key === lessonSelected) return "wrong";
-        return "muted";
     }
 
     async function advanceLesson(): Promise<void> {
@@ -1091,7 +1077,11 @@ chrome77/es2020 webview.
                         {#each optionEntries as [key, value]}
                             <li>
                                 <button
-                                    class="opt {optionState(key)}"
+                                    class="opt"
+                                    class:sel={!revealed && selected === key}
+                                    class:correct={revealed && card && card.correct === key}
+                                    class:wrong={revealed && selected === key && !(card && card.correct === key)}
+                                    class:muted={revealed && !(card && card.correct === key) && selected !== key}
                                     disabled={revealed}
                                     on:click={() => choose(key)}
                                 >
@@ -1678,16 +1668,6 @@ chrome77/es2020 webview.
                     <section class="q-card">
                         <p class="eyebrow">Worked example (I do)</p>
                         <h1 class="stem">{@html renderMath(lessonItem.stem)}</h1>
-                        <ul class="opts">
-                            {#each lessonOptions as [key, value]}
-                                <li>
-                                    <div class="opt {key === lessonItem.correct ? 'correct' : 'muted'}">
-                                        <span class="opt-key">{key}</span>
-                                        <span>{@html renderMath(value)}</span>
-                                    </div>
-                                </li>
-                            {/each}
-                        </ul>
                         {#if lessonItem.think_aloud_steps?.length}
                             <p class="eyebrow">Think aloud</p>
                             <ol class="steps">
@@ -1696,6 +1676,10 @@ chrome77/es2020 webview.
                                 {/each}
                             </ol>
                         {/if}
+                        <div class="verdict ok">
+                            <strong>Answer: {lessonItem.correct}</strong>
+                            <span>{@html renderMath(lessonItem.options[lessonItem.correct])}</span>
+                        </div>
                         {#if lessonItem.key_takeaway}
                             <p class="explain">
                                 <strong>Takeaway:</strong> {@html renderMath(lessonItem.key_takeaway)}
@@ -1713,7 +1697,16 @@ chrome77/es2020 webview.
                             {#each lessonOptions as [key, value]}
                                 <li>
                                     <button
-                                        class="opt {lessonOptionState(key)}"
+                                        class="opt"
+                                        class:sel={!lessonRevealed && lessonSelected === key}
+                                        class:correct={lessonRevealed &&
+                                            lessonItem.correct === key}
+                                        class:wrong={lessonRevealed &&
+                                            lessonSelected === key &&
+                                            lessonItem.correct !== key}
+                                        class:muted={lessonRevealed &&
+                                            lessonItem.correct !== key &&
+                                            lessonSelected !== key}
                                         disabled={lessonRevealed}
                                         on:click={() => chooseLesson(key)}
                                     >
