@@ -141,6 +141,10 @@ chrome77/es2020 webview.
         ? today.blocks.reduce((sum, b) => sum + b.est_minutes, 0)
         : 0;
 
+    // A new account (no plan yet) must take the diagnostic before the rest of
+    // the app unlocks: sign up -> diagnostic -> dashboard + everything else.
+    $: locked = !overview.plan;
+
     // ---- teaching / lesson state ----
     let lessonTopics: LessonTopic[] = [];
     let lesson: Lesson | null = null;
@@ -247,6 +251,10 @@ chrome77/es2020 webview.
 
     async function go(next: View): Promise<void> {
         stopTimer();
+        // Until the diagnostic produces a plan, only the Today gate is reachable.
+        if (locked && ["learn", "lesson", "practice", "dashboard", "errors"].includes(next)) {
+            next = "home";
+        }
         view = next;
         if (next === "practice") await loadNextCard();
         if (next === "errors") {
@@ -835,16 +843,18 @@ chrome77/es2020 webview.
         </div>
         <nav class="nav">
             <button class:active={view === "home"} on:click={() => go("home")}>Today</button>
-            <button
-                class:active={view === "learn" || view === "lesson"}
-                on:click={() => go("learn")}>Learn</button
-            >
-            <button class:active={view === "practice"} on:click={() => go("practice")}>Practice</button>
-            <button
-                class:active={view === "dashboard"}
-                on:click={() => go("dashboard")}>Progress</button
-            >
-            <button class:active={view === "errors"} on:click={() => go("errors")}>Error Log</button>
+            {#if !locked}
+                <button
+                    class:active={view === "learn" || view === "lesson"}
+                    on:click={() => go("learn")}>Learn</button
+                >
+                <button class:active={view === "practice"} on:click={() => go("practice")}>Practice</button>
+                <button
+                    class:active={view === "dashboard"}
+                    on:click={() => go("dashboard")}>Progress</button
+                >
+                <button class:active={view === "errors"} on:click={() => go("errors")}>Error Log</button>
+            {/if}
             <span class="nav-spacer" aria-hidden="true"></span>
             <button class="nav-util" disabled={syncing} on:click={runSync} title="Sync with your other devices">
                 {syncing ? "Syncing…" : "Sync"}
