@@ -1,0 +1,21 @@
+GMATWiz - Wednesday proof: commit
+captured: Wed Jul  1 21:22:47 CDT 2026
+
+branch: gmatwiz
+HEAD:   bea02fa3bd49cd3983f00dc63475b8354dcca0c1
+
+git status (should be clean or only proof/ untracked):
+ M ts/routes/gmat/GmatApp.svelte
+?? proof/
+
+recent history:
+bea02fa3b feat(gmatwiz): per-user cross-device state sync via Firestore
+4c212dde8 feat(gmatwiz): gate the app until the diagnostic is done (new-account flow)
+cbdb76131 feat(gmatwiz): wire Firebase project config (activates the sign-in gate)
+752efe411 feat(gmatwiz): scaffold Firebase email/password sign-in gate (dormant)
+228f716b4 feat(gmatwiz): full app on iOS - embed the SvelteKit wizard UI in a WKWebView
+67f9ffbc5 fix(gmatwiz): clearer answer states + richer gold spellfall
+6f55f614e feat(gmatwiz): wizard-theme UI revamp; hide native toolbar; merge Progress
+5c3231ff2 feat(gmatwiz): desktop Sync auto-targets the self-hosted server
+68440716b feat(gmatwiz): declutter toolbar; integrate Decks/Stats/Sync into the app
+b39072a4f feat(gmatwiz): user-upload question importer (JSON/CSV)

@@ -1,0 +1,31 @@
+GMATWiz - Wednesday proof: build
+=================================
+This file verifies the source tree builds. The command used is exactly what
+`./run` uses to build before launching:
+
+    ./ninja pylib qt
+
+Run below was INCREMENTAL (the tree was already built this session), so ninja
+reports "up to date" / a sub-second finish. That proves the graph is consistent
+and nothing is broken, but it is not a from-scratch build.
+
+For the graded "clean-build recording", do a from-scratch build on camera:
+
+    cd anki-fork
+    rm -rf out            # wipe all build outputs
+    ./tools/install-n2    # (first time only) fetch the ninja build tool
+    ./run                 # runs `./ninja pylib qt` from clean, then launches
+
+A from-scratch build compiles the Rust engine (rslib), the Python wheels, and
+the SvelteKit UI, and typically takes ~10-20 min on a laptop. See
+proof/RECORDING_GUIDE.md.
+
+Incremental verification output
+-------------------------------
+$ ./ninja pylib qt
+    Finished `release` profile [optimized] target(s) in 0.58s
+build:configure
+n2: ran 1 task, now up to date
+
+Build succeeded in 0.37s.
+EXIT=0

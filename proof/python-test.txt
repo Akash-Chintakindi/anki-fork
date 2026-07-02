@@ -1,0 +1,16 @@
+GMATWiz - Wednesday proof: Python test that drives the Rust change
+captured: Wed Jul  1 21:24:46 CDT 2026
+HEAD: bea02fa3bd49cd3983f00dc63475b8354dcca0c1
+cmd: PYTHONPATH=out/pylib ANKI_TEST_MODE=1 out/pyenv/bin/python -m pytest -p no:cacheprovider pylib/tests/test_gmatwiz.py -v
+
+============================= test session starts ==============================
+platform darwin -- Python 3.13.13, pytest-8.4.1, pluggy-1.6.0 -- /Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork/out/pyenv/bin/python
+rootdir: /Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork/pylib
+configfile: pyproject.toml
+plugins: mock-3.15.1, anyio-4.13.0
+collecting ... collected 2 items
+
+pylib/tests/test_gmatwiz.py::test_set_topic_mastery_roundtrip_and_undo PASSED [ 50%]
+pylib/tests/test_gmatwiz.py::test_topic_aware_scheduling_toggle_is_off_by_default PASSED [100%]
+
+============================== 2 passed in 0.24s ===============================

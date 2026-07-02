@@ -917,7 +917,6 @@ chrome77/es2020 webview.
                 {:else if !overview.plan}
                     <div class="action-head">
                         <span class="eyebrow">Next action</span>
-                        <span class="pill">{overview.total} questions</span>
                     </div>
                     <h2 class="action-title">Take your diagnostic</h2>
                     <p class="muted">

@@ -1,0 +1,31 @@
+GMATWiz - Wednesday proof: Rust unit tests
+captured: Wed Jul  1 21:23:36 CDT 2026
+HEAD: bea02fa3bd49cd3983f00dc63475b8354dcca0c1
+
+=== cargo test -p anki --features rustls scheduler::topic_aware ===
+[1m[92m   Compiling[0m anki_proto v0.0.0 (/Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork/rslib/proto)
+[1m[92m   Compiling[0m anki v0.0.0 (/Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork/rslib)
+[1m[92m    Finished[0m `test` profile [unoptimized + debuginfo] target(s) in 16.94s
+[1m[92m     Running[0m unittests src/lib.rs (out/rust/debug/deps/anki-d54e437c64238e77)
+
+running 4 tests
+test scheduler::topic_aware::test::set_topic_mastery_persists_and_counts ... ok
+test scheduler::topic_aware::test::set_topic_mastery_is_undoable ... ok
+test scheduler::topic_aware::test::weak_topic_surfaces_first_when_enabled ... ok
+test scheduler::topic_aware::test::intervals_unchanged_regardless_of_toggle ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 522 filtered out; finished in 0.04s
+
+
+=== cargo test -p anki --features rustls gmatwiz::test ===
+[1m[92m   Compiling[0m anki_proto v0.0.0 (/Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork/rslib/proto)
+[1m[92m   Compiling[0m anki v0.0.0 (/Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork/rslib)
+[1m[92m    Finished[0m `test` profile [unoptimized + debuginfo] target(s) in 7.92s
+[1m[92m     Running[0m unittests src/lib.rs (out/rust/debug/deps/anki-d54e437c64238e77)
+
+running 2 tests
+test gmatwiz::test::time_flags_separate_careless_from_fragile ... ok
+test gmatwiz::test::accuracy_to_quant_anchors_and_clamps ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 524 filtered out; finished in 0.00s
+

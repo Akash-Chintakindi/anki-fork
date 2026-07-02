@@ -24,3 +24,8 @@ ts/.svelte-kit
 docs/_build/
 docs/autoapi/
 .complexipy_cache
+# GMATWiz proof pack: keep the small text logs, ignore heavy media/installers
+proof/*.mov
+proof/*.mp4
+proof/*.dmg
+proof/*.zip
