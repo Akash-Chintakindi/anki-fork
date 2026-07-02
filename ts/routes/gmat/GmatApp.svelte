@@ -28,6 +28,7 @@ chrome77/es2020 webview.
         MockReport,
         OfficialScore,
         GmatStats,
+        TestLibrary,
     } from "./api";
     import {
         logError,
@@ -45,16 +46,17 @@ chrome77/es2020 webview.
         fetchToday,
         fetchMockPool,
         submitMock,
+        fetchTests,
+        fetchTestQuestions,
         fetchOfficialScores,
         saveOfficialScore,
         fetchStats,
         openFullStats,
         openDecks,
-        syncNow,
         renderMath,
     } from "./api";
     import { authEnabled, onUser, signIn, signUp, signOutUser, type AuthUser } from "./auth";
-    import { pullAccountState, scheduleStatePush } from "./sync";
+    import { pullAccountState, scheduleStatePush, startAutoSync, stopAutoSync } from "./sync";
 
     export let overview: GmatOverview;
 
@@ -68,13 +70,12 @@ chrome77/es2020 webview.
         | "plan"
         | "learn"
         | "lesson"
-        | "mock";
+        | "mock"
+        | "tests";
     let view: View = "home";
 
     // ---- progress (integrated Stats) ----
     let stats: GmatStats | null = null;
-    let syncing = false;
-    let syncMsg = "";
 
     // ---- auth (Firebase; dormant until firebaseConfig has a real apiKey) ----
     let authUser: AuthUser | null = null;
@@ -214,6 +215,17 @@ chrome77/es2020 webview.
     let mockWhy: (ErrorWhy | null)[] = []; // per-miss classification on the report
     let mockSubmitting = false;
     let mockMissResults: MockResult[] = []; // misses to classify on the report
+    // when this mock is a fixed practice-test form (vs. the adaptive mock), the
+    // form is served in order and recorded as taken on submit.
+    let mockFormId: string | null = null;
+    let mockFormYear: string | null = null;
+    let mockLabel = "";
+
+    // ---- practice-test library (full-length timed forms, grouped by year) ----
+    let tests: TestLibrary | null = null;
+    $: testYears = tests
+        ? Object.keys(tests.years).sort((a, b) => b.localeCompare(a))
+        : [];
 
     $: optionEntries = card ? Object.entries(card.options) : [];
     $: sessionAccuracy = answered > 0 ? Math.round((correctCount / answered) * 100) : 0;
@@ -258,11 +270,15 @@ chrome77/es2020 webview.
     async function go(next: View): Promise<void> {
         stopTimer();
         // Until the diagnostic produces a plan, only the Today gate is reachable.
-        if (locked && ["learn", "lesson", "practice", "dashboard", "errors"].includes(next)) {
+        if (
+            locked &&
+            ["learn", "lesson", "practice", "dashboard", "errors", "tests"].includes(next)
+        ) {
             next = "home";
         }
         view = next;
         if (next === "practice") await loadNextCard();
+        if (next === "tests") tests = await fetchTests();
         if (next === "errors") {
             errors = await fetchErrorLog();
             if (!lessonTopics.length) {
@@ -282,19 +298,6 @@ chrome77/es2020 webview.
                 stats = await fetchStats();
             }
         }
-    }
-
-    async function runSync(): Promise<void> {
-        if (syncing) return;
-        syncing = true;
-        syncMsg = "Syncing…";
-        try {
-            await syncNow();
-            syncMsg = "Sync started";
-        } catch (_e) {
-            syncMsg = "Sync failed";
-        }
-        syncing = false;
     }
 
     async function submitOfficialScore(): Promise<void> {
@@ -325,7 +328,8 @@ chrome77/es2020 webview.
         if ((block.kind === "learn" || block.kind === "repair") && block.topic) {
             await openLesson(block.topic);
         } else if (block.kind === "mock") {
-            await startMock();
+            // a library-sourced block runs its specific form; otherwise adaptive mock
+            await startMock(block.form_id);
         } else {
             await go("practice");
         }
@@ -564,6 +568,7 @@ chrome77/es2020 webview.
 
     // ---- error log: filters + repair-now ----
     let errorFilter: "all" | ErrorWhy = "all";
+    let errInfoOpen = false; // toggles the "how error types work" explainer
     $: filteredErrors =
         errorFilter === "all" ? errors : errors.filter((e) => (e.why || "") === errorFilter);
     $: hasLessonFor = new Set(lessonTopics.map((t) => t.topic_id));
@@ -578,23 +583,44 @@ chrome77/es2020 webview.
     }
 
     // ---- mock exam (timed section, exam conditions) ----
-    async function startMock(): Promise<void> {
+    // With no formId this is the adaptive mock (pool + adaptive ladder). With a
+    // formId it runs a fixed practice-test form: the same timed UI, but the pool
+    // is served in its given order and the result is recorded against the form.
+    async function startMock(formId?: string, year?: string): Promise<void> {
         stopTimer();
         mockPhase = "intro";
         mockReport = null;
         view = "mock";
-        const data = await fetchMockPool();
-        mockPool = data.pool;
-        mockCount = Math.min(data.count, data.pool.length);
-        mockSecondsLeft = data.seconds;
+        if (formId) {
+            mockFormId = formId;
+            mockFormYear = year ?? null;
+            const data = await fetchTestQuestions(formId);
+            mockPool = data.pool;
+            mockCount = data.pool.length || data.count;
+            mockSecondsLeft = data.seconds;
+            mockLabel = data.label ?? "";
+        } else {
+            mockFormId = null;
+            mockFormYear = null;
+            mockLabel = "";
+            const data = await fetchMockPool();
+            mockPool = data.pool;
+            mockCount = Math.min(data.count, data.pool.length);
+            mockSecondsLeft = data.seconds;
+        }
     }
 
     const MOCK_DIFFS = ["easy", "medium", "hard"];
 
     /** Simple adaptive ladder: correct -> harder, wrong -> easier. Prefers the
-        least-used topic at the current difficulty; falls back gracefully. */
+        least-used topic at the current difficulty; falls back gracefully.
+        For a fixed practice-test form we bypass the ladder entirely and serve the
+        pool in its given order (one at a time, reusing the timer/flag machinery). */
     function pickMockQuestion(): MockQuestion | null {
         if (!mockPool.length) return null;
+        if (mockFormId) {
+            return mockPool[mockItems.length] ?? null;
+        }
         const wantDiff = MOCK_DIFFS[mockDiffIdx];
         const usage = new Map<string, number>();
         for (const it of mockItems) {
@@ -699,7 +725,11 @@ chrome77/es2020 webview.
             chosen: it.answer ?? "",
             correct_key: it.q.correct,
         }));
-        mockReport = await submitMock(results);
+        mockReport = await submitMock(
+            results,
+            mockFormId ?? undefined,
+            mockFormYear ?? undefined,
+        );
         mockMissResults = results.filter((r) => !r.correct);
         mockWhy = mockMissResults.map(() => null);
         mockPhase = "report";
@@ -732,11 +762,26 @@ chrome77/es2020 webview.
         await go("home");
     }
 
+    /** Refresh the on-screen data from local state WITHOUT changing the current
+     * view - used both after login and when auto-sync applies a remote change,
+     * so a background sync never yanks you out of what you're doing. */
+    async function applyRemoteState(): Promise<void> {
+        const fresh = await refreshOverview();
+        if (fresh) overview = fresh;
+        if (overview.plan) {
+            lessonTopics = (await fetchLessonsIndex()).topics;
+            today = await fetchToday();
+        }
+    }
+
     onMount(() => {
         const unsub = onUser(async (u) => {
             authUser = u;
             authReady = true;
-            if (!u) return;
+            if (!u) {
+                stopAutoSync();
+                return;
+            }
             // Load this account's data (or reset to a fresh start if brand-new),
             // then refresh the app so the right screen/plan shows on this device.
             try {
@@ -744,19 +789,20 @@ chrome77/es2020 webview.
             } catch (e) {
                 console.error("GMATWiz account load failed", e);
             }
-            const fresh = await refreshOverview();
-            if (fresh) overview = fresh;
-            if (overview.plan) {
-                lessonTopics = (await fetchLessonsIndex()).topics;
-                today = await fetchToday();
-            }
+            await applyRemoteState();
             view = "home";
+            // Cross-device sync runs automatically: pull newer remote state on a
+            // short interval; local changes still push on mutation.
+            startAutoSync(u.uid, () => void applyRemoteState());
         });
         if (overview.plan) {
             fetchLessonsIndex().then((r) => (lessonTopics = r.topics));
             fetchToday().then((t) => (today = t));
         }
-        return unsub;
+        return () => {
+            unsub();
+            stopAutoSync();
+        };
     });
 </script>
 
@@ -884,9 +930,6 @@ chrome77/es2020 webview.
                 <button class:active={view === "errors"} on:click={() => go("errors")}>Error Log</button>
             {/if}
             <span class="nav-spacer" aria-hidden="true"></span>
-            <button class="nav-util" disabled={syncing} on:click={runSync} title="Sync with your other devices">
-                {syncing ? "Syncing…" : "Sync"}
-            </button>
             {#if authEnabled && authUser}
                 <button class="nav-util" on:click={doSignOut} title={authUser.email ?? "Sign out"}>
                     Sign out
@@ -1275,7 +1318,7 @@ chrome77/es2020 webview.
                                 No timed mocks yet &mdash; a mock section is the only way to check
                                 this projection against exam conditions.
                             </p>
-                            <button class="ghost" on:click={startMock}>Take a timed mock</button>
+                            <button class="ghost" on:click={() => startMock()}>Take a timed mock</button>
                         {/if}
                         <p class="next">Total (205-805): {overview.readiness.total_reason}</p>
                     {:else}
@@ -1302,6 +1345,18 @@ chrome77/es2020 webview.
                     {/if}
                 </section>
             </div>
+
+            <section class="action-card tests-cta">
+                <div class="action-head">
+                    <span class="eyebrow">Practice tests</span>
+                    <span class="pill">full-length</span>
+                </div>
+                <p class="muted">
+                    Sit a complete timed section under exam conditions &mdash; the truest check on
+                    your Readiness projection, form by form.
+                </p>
+                <button class="primary" on:click={() => go("tests")}>Browse practice tests</button>
+            </section>
 
             <section class="coverage">
                 <div class="coverage-head">
@@ -1725,7 +1780,13 @@ chrome77/es2020 webview.
     {:else if view === "mock"}
         <main class="col">
             {#if mockPhase === "intro"}
-                <p class="eyebrow">Mock section &mdash; exam conditions</p>
+                <p class="eyebrow">
+                    {#if mockFormId}
+                        Practice test{#if mockLabel} &middot; {mockLabel}{/if}
+                    {:else}
+                        Mock section &mdash; exam conditions
+                    {/if}
+                </p>
                 <h1 class="display">45 minutes. 21 questions. No feedback.</h1>
                 <p class="lede">
                     This simulates the GMAT Focus Quant section: timed, adaptive (harder when you're
@@ -1927,11 +1988,123 @@ chrome77/es2020 webview.
                 </button>
             {/if}
         </main>
+    {:else if view === "tests"}
+        <main class="col">
+            <p class="eyebrow">Practice tests &mdash; full-length, timed</p>
+            <h1 class="display">Sit a real one.</h1>
+            <p class="lede">
+                Complete 21-question sections under exam conditions. Each form runs on the same
+                timed engine as a mock and calibrates your Readiness against reality.
+            </p>
+            {#if !tests || testYears.length === 0}
+                <section class="q-card empty">
+                    <p>No practice tests available yet. New forms show up here as they're added.</p>
+                </section>
+            {:else}
+                {#each testYears as year}
+                    <section class="action-card">
+                        <div class="action-head">
+                            <span class="eyebrow">{year}</span>
+                            <span class="pill">{tests.years[year].length} forms</span>
+                        </div>
+                        <ul class="test-list">
+                            {#each tests.years[year] as f}
+                                <li class="test-row" class:taken={f.taken}>
+                                    <div class="test-meta">
+                                        <span class="test-label">{f.label}</span>
+                                        <span class="muted">
+                                            {f.count} questions &middot; timed 45:00
+                                        </span>
+                                    </div>
+                                    {#if f.taken}
+                                        <div class="test-score">
+                                            {#if f.q != null}
+                                                <span class="readout">Q{f.q}</span>
+                                            {/if}
+                                            {#if f.accuracy != null}
+                                                <span class="muted">
+                                                    {Math.round(f.accuracy * 100)}%
+                                                </span>
+                                            {/if}
+                                            <button
+                                                class="tb-go"
+                                                on:click={() => startMock(f.id, f.year)}
+                                            >
+                                                Retake
+                                            </button>
+                                        </div>
+                                    {:else}
+                                        <button
+                                            class="primary test-start"
+                                            on:click={() => startMock(f.id, f.year)}
+                                        >
+                                            Start
+                                        </button>
+                                    {/if}
+                                </li>
+                            {/each}
+                        </ul>
+                    </section>
+                {/each}
+            {/if}
+        </main>
     {:else}
         <main class="col">
             <p class="eyebrow">Error log &mdash; required review</p>
-            <h1 class="display">Your mistakes, made useful.</h1>
+            <div class="err-header">
+                <h1 class="display">Your mistakes, made useful.</h1>
+                <button
+                    class="info-btn"
+                    aria-label="How error types work"
+                    aria-expanded={errInfoOpen}
+                    on:click={() => (errInfoOpen = !errInfoOpen)}
+                >
+                    i
+                </button>
+            </div>
             <p class="lede">Understanding the pattern behind a miss is how you stop repeating it.</p>
+
+            {#if errInfoOpen}
+                <section class="err-explainer">
+                    <p class="eyebrow">How each label steers your plan</p>
+                    <p class="ex-base">
+                        <strong>Every wrong answer</strong>, before you pick a reason: the
+                        scheduler logs an <em>Again</em> so the card resurfaces soon, and that
+                        topic's mastery takes one step down (a small EMA nudge).
+                    </p>
+                    <ul class="ex-list">
+                        <li>
+                            <span class="pill why-careless">silly mistake</span>
+                            <span
+                                >Logged only &mdash; no extra penalty. Trust the automatic
+                                resurfacing to catch it.</span
+                            >
+                        </li>
+                        <li>
+                            <span class="pill why-concept_gap">conceptual</span>
+                            <span
+                                >An <strong>extra</strong> mastery penalty, your lesson for that
+                                topic is re-queued, and a high-priority
+                                <strong>Repair</strong> block is added to Today.</span
+                            >
+                        </li>
+                        <li>
+                            <span class="pill why-timing">time</span>
+                            <span
+                                >No mastery change; schedules a timed drill (~2:08 per question
+                                pace) in Today's practice.</span
+                            >
+                        </li>
+                        <li>
+                            <span class="pill why-guess">guessed</span>
+                            <span
+                                >The &ldquo;I guessed&rdquo; link on a correct answer cancels the
+                                lucky-correct mastery bump, so your score stays honest.</span
+                            >
+                        </li>
+                    </ul>
+                </section>
+            {/if}
 
             {#if errors.length === 0}
                 <section class="q-card empty">
@@ -2242,13 +2415,9 @@ chrome77/es2020 webview.
         border-radius: 8px;
         cursor: pointer;
     }
-    .nav-util:hover:not(:disabled) {
+    .nav-util:hover {
         color: var(--indicator-ink);
         border-color: var(--indicator-ink);
-    }
-    .nav-util:disabled {
-        opacity: 0.5;
-        cursor: default;
     }
     .nav button {
         appearance: none;
@@ -2504,6 +2673,124 @@ chrome77/es2020 webview.
     .why-concept_gap { background: var(--clay-tint); }
     .why-timing { background: var(--indicator-tint); }
     .why-guess { background: var(--sunk); }
+
+    /* error-log explainer (the "i" toggle) */
+    .err-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .err-header .display {
+        flex: 1;
+        min-width: 0;
+    }
+    .info-btn {
+        appearance: none;
+        flex: none;
+        width: 28px;
+        height: 28px;
+        margin-top: 4px;
+        display: grid;
+        place-items: center;
+        border-radius: 999px;
+        border: 1px solid var(--line-strong);
+        background: var(--surface);
+        color: var(--gold-ink);
+        font-family: var(--voice);
+        font-style: italic;
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 1;
+        cursor: pointer;
+    }
+    .info-btn:hover,
+    .info-btn[aria-expanded="true"] {
+        border-color: var(--gold-ink);
+        color: var(--gold);
+        box-shadow: var(--gold-glow);
+    }
+    .err-explainer {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px 20px;
+        box-shadow: var(--shadow);
+        margin-bottom: 22px;
+    }
+    .ex-base {
+        font-size: 14px;
+        line-height: 1.55;
+        color: var(--ink-soft);
+        margin: 0 0 14px;
+    }
+    .ex-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .ex-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        font-size: 13.5px;
+        line-height: 1.5;
+        color: var(--ink-soft);
+    }
+    .ex-list .pill {
+        flex: none;
+        margin-top: 1px;
+    }
+
+    /* practice-test library */
+    .tests-cta {
+        border-left: 3px solid var(--gold-ink);
+    }
+    .test-list {
+        list-style: none;
+        margin: 6px 0 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .test-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--line-strong);
+        border-radius: 12px;
+        background: var(--surface);
+    }
+    .test-row.taken {
+        border-left-color: var(--emerald-ink);
+    }
+    .test-meta {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    .test-label {
+        font-family: var(--ui);
+        font-weight: 600;
+        font-size: 15px;
+    }
+    .test-score {
+        flex: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .test-start {
+        flex: none;
+        margin-top: 0;
+    }
     .overpace {
         color: var(--clay-ink);
     }

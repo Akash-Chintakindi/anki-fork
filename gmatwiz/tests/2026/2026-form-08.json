@@ -1,0 +1,345 @@
+{
+  "id": "2026-form-08",
+  "year": 2026,
+  "label": "2026 Practice Test 8",
+  "seconds": 2700,
+  "target_ms": 128000,
+  "items": [
+    {
+      "stem": "$2,000 is invested at 5% simple annual interest. How much interest is earned after 3 years?",
+      "options": {
+        "A": "$100",
+        "B": "$200",
+        "C": "$300",
+        "D": "$315",
+        "E": "$350"
+      },
+      "correct": "C",
+      "explanation": "Simple interest = principal x rate x time = 2000 x 0.05 x 3 = $300.",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "medium",
+      "source": "GMATWiz original (authored)",
+      "license": "authored-gmatwiz"
+    },
+    {
+      "stem": "An electric pole, 14 metres high, casts a shadow of 10 metres. Find the height of a tree that casts a shadow of 15 metres under similar conditions.",
+      "options": {
+        "A": "21",
+        "B": "22",
+        "C": "20",
+        "D": "23",
+        "E": "24"
+      },
+      "correct": "A",
+      "explanation": "direct proportion x1/y1=x2/y2\n14/10=15/x\n(14/10) 15=x\n21 = x\nAnswer:A",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "Roy was suffering from severe headaches. He went to see his doctor and the doctor gave him 5 tablets asking him to take one tablet every 15 minutes. How much time will it take Roy to consume all the 5 tablets?",
+      "options": {
+        "A": "45 Min",
+        "B": "75 Min",
+        "C": "90 Min",
+        "D": "120 Min",
+        "E": "60 Min"
+      },
+      "correct": "E",
+      "explanation": "Tablet 1 will be taken in 0 min.\nTablet 2 will be taken in 15 min.\nTablet 3 will be taken in 30 min.\nTablet 4 will be taken in 45 min.\nTablet 5 will be taken in 60 min.",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "The average (arithmetic mean) of 6 numbers is 10. When a seventh number is added to the list, the average becomes 12. What is the seventh number?",
+      "options": {
+        "A": "14",
+        "B": "18",
+        "C": "20",
+        "D": "22",
+        "E": "24"
+      },
+      "correct": "E",
+      "explanation": "Sum of the first 6 is 6 x 10 = 60. After adding the 7th, the sum is 7 x 12 = 84. The seventh number is 84 - 60 = 24.",
+      "topic": "gmat::quant::arithmetic::statistics",
+      "difficulty": "hard",
+      "source": "GMATWiz original (authored)",
+      "license": "authored-gmatwiz"
+    },
+    {
+      "stem": "x men working x hours per day can do x units of a work in x days. How much work can be completed by y men working y hours per day in y days?",
+      "options": {
+        "A": "x2/y2 units",
+        "B": "y3/x2 units",
+        "C": "x3/y2 units",
+        "D": "y2/x2 units",
+        "E": "None of these"
+      },
+      "correct": "B",
+      "explanation": "Amount of work completed by 1 man in 1 day, working 1 hours a day = x/x3=1/x2\nAmount of work y men in y days, working y hours a day = y3 × (1/x2) = y3/x2 . Answer : Option B",
+      "topic": "gmat::quant::algebra::quadratics",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "Three friends Alan, Roger and Peter attempt to answer a question on an exam. Alan randomly guesses the answer, giving him a 1/5 probability of guessing correctly. Roger cheats by looking at the paper of the student in front of him, giving him a 2/3 probability of answering correctly. And Peter dutifully performs the calculations, then marks the answer, giving him a 5/6 probability of a correct answer. What is the probability that the question is answered correctly, but not via cheating?",
+      "options": {
+        "A": "1/18",
+        "B": "1/9",
+        "C": "23/90",
+        "D": "5/18",
+        "E": "13/45"
+      },
+      "correct": "A",
+      "explanation": "Prob(Alan) = 1/5\nProb(Roger) without cheating = 2/3-1 = 1/3\nProb(Peter) = 5/6\nTotal Probability = 1/5*1/3*/5/6 = 1/18\nAnswer is A",
+      "topic": "gmat::quant::arithmetic::probability",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "On a normal day Bill usually averages about 15 mph when riding his bicycle. On a windy day, his speed is reduced by 4 mph. How far can Bill travel on a windy day in 21 minutes? Round to the nearest hundredth.",
+      "options": {
+        "A": "2 miles",
+        "B": "2.25 miles",
+        "C": "3.25 miles",
+        "D": "3.85 miles",
+        "E": "2.85 miles"
+      },
+      "correct": "D",
+      "explanation": "15 mph - 4 mph= 11 mph\n11 mph x (21/60)= 3.85 miles\nAnswer D",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "Hoses A and B spout water at different constant rates, and hose A can fill a certain pool in 8 hours. Hose A filled the pool alone for the first 2 hours and the two hoses, working together, then finished filling the pool in another 3 hours. How many hours would it have taken hose B, working alone, to fill the entire pool?",
+      "options": {
+        "A": "8",
+        "B": "15",
+        "C": "12",
+        "D": "6",
+        "E": "3"
+      },
+      "correct": "A",
+      "explanation": "Since hose A can fill the pool in 8 hours, then in 2 + 3 = 5 hours it will fill 5/8th of the pool. Thus the remaining 3/8th is filled by hose B in 3 hours. This means that hose B,working alone, to fill the entire pool will need 3*8/3 = 8 hours.\nAnswer: A.",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "A train M leaves City A at 5 am and reaches City B at 9am. Another train N leaves City B at 7am and reaches City A at 1030am. At what time do the 2 trains cross one another?",
+      "options": {
+        "A": "1 hr 23 min",
+        "B": "1 hr 15 min",
+        "C": "1 hr 8 min",
+        "D": "56 min",
+        "E": "55 min"
+      },
+      "correct": "D",
+      "explanation": "Let the distance between the cities be x\nThey meet after y hrs after 7am\nM covers x in 4hrs\nN covers x in 3 1/2 i.e 7/2 hrs\nspeed of M =x/4\nspeed of N = 2x/7\nDistance covered by M in y+2 hrs + Distance covered by N in\ny hrs is x\nx/4 (y+2) +2x/7(y)=x\ny=14/15hr or 56 min\nAnswer : D.",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "Anna has 4 books. If she decide to arrange the 4 books in every possible combination and moved just one book every minute, how long would it taken by her ?",
+      "options": {
+        "A": "22 minutes",
+        "B": "30 minutes",
+        "C": "15 minutes",
+        "D": "24 minutes",
+        "E": "35 minutes"
+      },
+      "correct": "D",
+      "explanation": "Number of ways of arranging 4 books = 4 ! = 4 x 3 x 2 x 1 = 24.\nSo, total time taken = 24 minutes\nAnswer: D",
+      "topic": "gmat::quant::arithmetic::counting",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "My wall contains 8 red colour ties, 13 violet colour ties,10 blue colour ties, 5 pink colour ties, 4 green colour ties. If electricity is gone and I want at least two ties of same colour then how many ties I should take out from my rack?",
+      "options": {
+        "A": "2",
+        "B": "3",
+        "C": "4",
+        "D": "5",
+        "E": "6"
+      },
+      "correct": "E",
+      "explanation": "5 ties will get you one of different colored ties in the worst case. Thus, one more tie and you will have at least one pair. Thus, 6 is the correct answer.\nANSWER:E",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "An aeroplane flies along the four sides of a square at the speeds of 200, 400, 600 and 800km/hr. Find the average speed of the plane around the field?",
+      "options": {
+        "A": "384",
+        "B": "562",
+        "C": "458",
+        "D": "156",
+        "E": "452"
+      },
+      "correct": "A",
+      "explanation": "Let the each side of the square is x km\naverage speed of plane is y km/hr\n(x/200)+(x/400)+(x/600)+(x/800) = 4x/y\n25x/2400 = 4x/y\ny= 384 km/hr\nAnswer is A",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "easy",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "What is the value of 2/3 + 1/6 ?",
+      "options": {
+        "A": "1/2",
+        "B": "2/3",
+        "C": "5/6",
+        "D": "1",
+        "E": "7/6"
+      },
+      "correct": "C",
+      "explanation": "Use a common denominator of 6: 2/3 = 4/6, so 4/6 + 1/6 = 5/6.",
+      "topic": "gmat::quant::arithmetic::fractions",
+      "difficulty": "easy",
+      "source": "GMATWiz original (authored)",
+      "license": "authored-gmatwiz"
+    },
+    {
+      "stem": "The monthly salary S of a shop assistant is the sum of a fixed salary of $500 plus 5% of all monthly sales. What should the monthly sales be so that her monthly salary reaches $1500?",
+      "options": {
+        "A": "$50000",
+        "B": "$40000",
+        "C": "$30000",
+        "D": "$20000",
+        "E": "None of these"
+      },
+      "correct": "D",
+      "explanation": "Let S be the total monthly salary and x be the monthly sales, hence\nS = 500 + 5% * x\nFind sales x so that S = 1500, hence\n1500 = 500 + 5% * x = 500 + 0.05 x\nSolve for x\nx = (1500 - 500) / 0.05 = $20000\nAnswer D",
+      "topic": "gmat::quant::arithmetic::percents",
+      "difficulty": "easy",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "Mr.Sam takes 17 hours to go by train to a certain city and return by car. He loses 4 hours if he goes both ways by train. How long would he have taken if he had traveled by car in both ways?",
+      "options": {
+        "A": "22 hrs",
+        "B": "18 hrs",
+        "C": "16 hrs",
+        "D": "20 hrs",
+        "E": "13 hrs"
+      },
+      "correct": "E",
+      "explanation": "Going one way by train and one way by car, he takes 17 hours.\nGoing both ways by train, he takes 4 hours more => The train takes 4 hours more one way\nTherefore travelling both ways by car, he takes 4 hours less than 17\n=> He takes 17-4 = 13 hours.\nE)",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "If x + y = 10 and x - y = 4, what is the value of xy?",
+      "options": {
+        "A": "16",
+        "B": "21",
+        "C": "24",
+        "D": "25",
+        "E": "40"
+      },
+      "correct": "B",
+      "explanation": "Adding the equations gives 2x = 14, so x = 7; then y = 3. Therefore xy = 7 x 3 = 21.",
+      "topic": "gmat::quant::algebra::linear_equations",
+      "difficulty": "medium",
+      "source": "GMATWiz original (authored)",
+      "license": "authored-gmatwiz"
+    },
+    {
+      "stem": "During one season, a tennis team won 20 matches and lost 30% of their matches. What was the number of matches that the team lost?",
+      "options": {
+        "A": "70",
+        "B": "30",
+        "C": "3",
+        "D": "7",
+        "E": "5"
+      },
+      "correct": "C",
+      "explanation": "Knowing that the team lost 30 % of their matches, it has won 70 % of their matches\nTotal matches = 20 / (70/ 100) = 14\nHence number of matches that the team lost = 20 x 14/100 = 3=C",
+      "topic": "gmat::quant::arithmetic::percents",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "A sales person gets a 10% commission on each sale he makes. How many sales of $250 each must he make in order to reach a salary of at least $1000?",
+      "options": {
+        "A": "15",
+        "B": "24",
+        "C": "25",
+        "D": "40",
+        "E": "52"
+      },
+      "correct": "D",
+      "explanation": "10% of 250 = 25.\nTotal salary required = 1000\nEarning from single sale = 25\n# of sales = 1000/25 =40\nSo 40 sales\nD is the correct choice",
+      "topic": "gmat::quant::arithmetic::percents",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "A certain liquid passes through a drain at a rate of w/25 gallons every x seconds. At that rate, how many minutes will it take y gallons to pass through the drain?",
+      "options": {
+        "A": "y/(1200xy)",
+        "B": "20xy/w",
+        "C": "5xy/(12w)",
+        "D": "w/(3xy)",
+        "E": "3y/(wx)"
+      },
+      "correct": "C",
+      "explanation": "Time needed for w/25 gallons of liquid to pass through a drain = x seconds\nTime needed for w gallons of liquid to pass through a drain = 25x seconds\nTime needed for y gallons of liquid to pass through a drain = (25x/w)*y = 25xy/w seconds\n= (25xy/w )/60 = 5xy/(12w) mins\nAnswer C",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "The difference between the squares of two numbers is 256000 and the sum of the numbers is 1000. The numbers are",
+      "options": {
+        "A": "600, 400",
+        "B": "628, 372",
+        "C": "640, 360",
+        "D": "None of these",
+        "E": "Cannot be determined"
+      },
+      "correct": "B",
+      "explanation": "Let the numbers be x and y.\nThen, x^2 - y^2 = 256000 and x + y = 1000.\nOn dividing we get : x - y = 256.\n‹=›Solving x + y = 1000 and x - y = 256,\n‹=›we get : x = 628 and y = 372.\nAnswer B",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "Five dozen toys are packed in a box and 98 boxes are kept in a tempo. How many tempos can lift 29400 toys in one round ?",
+      "options": {
+        "A": "4",
+        "B": "5",
+        "C": "7",
+        "D": "6",
+        "E": "8"
+      },
+      "correct": "B",
+      "explanation": "Five dozen = 5 x 12 = 60\n⇒ No of toys can be kept in 1 box = 60\n∴ No of toys can be kept in 98 boxes = 60 x 98 = 5880\n∴ 29400 toys can be lifted by = 29400 / 5880 = 5 tempos\nOption: B",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    }
+  ]
+}

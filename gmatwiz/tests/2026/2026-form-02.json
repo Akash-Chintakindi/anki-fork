@@ -1,0 +1,345 @@
+{
+  "id": "2026-form-02",
+  "year": 2026,
+  "label": "2026 Practice Test 2",
+  "seconds": 2700,
+  "target_ms": 128000,
+  "items": [
+    {
+      "stem": "Last year, a Home Appliance Store sold an average(arithmetic mean) of 42 microwave ovens per month. In the first 10 months of this year,the store has sold an average(arithmetic mean) of only 20 microwave ovens per month. What was the average number of microwave ovens sold per month during the entire 22 months period ?",
+      "options": {
+        "A": "21",
+        "B": "30",
+        "C": "31",
+        "D": "32",
+        "E": "None of the above"
+      },
+      "correct": "D",
+      "explanation": "42×12+20×10 /12+10=504+200/22=704/22=32\nAnswer D",
+      "topic": "gmat::quant::arithmetic::statistics",
+      "difficulty": "hard",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "Of the 200 students in a school, at least 45% attended the prom night and at least 35% took part in the debating session. What is the maximum number of students who could have neither attended the prom night nor the debating session?",
+      "options": {
+        "A": "27",
+        "B": "81",
+        "C": "90",
+        "D": "99",
+        "E": "110"
+      },
+      "correct": "E",
+      "explanation": "To maximize the number of students who did neither, we should minimize the number of students who debated or attended the prom.\nLet's assume that all 35% of students who debated also attended the prom.\nThen 35% did both, 10% only attended prom, and 55% did neither.\n0.55*200 = 110\nThe answer is E.",
+      "topic": "gmat::quant::arithmetic::sets",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "Alice wants to put up fencing around three sides of her rectangular yard and leave one side of 10 meters unfenced. If the yard has an area of 240 square meters, how many meters of fencing does she need?",
+      "options": {
+        "A": "58",
+        "B": "62",
+        "C": "66",
+        "D": "70",
+        "E": "74"
+      },
+      "correct": "A",
+      "explanation": "The sides of the rectangle have a length of 10 and L.\nThe area is 10*L=240 so L=24.\nShe needs fencing with a length of 10+2*24=58 meters.\nThe answer is A.",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "What is the units digit of 7^53?",
+      "options": {
+        "A": "1",
+        "B": "3",
+        "C": "7",
+        "D": "9",
+        "E": "5"
+      },
+      "correct": "C",
+      "explanation": "The units digit of powers of 7 cycles in a period of 4: 7, 9, 3, 1, then repeats. Since 53 = 4(13) + 1, the units digit matches that of 7^1, which is 7.",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "GMATWiz original (authored)",
+      "license": "authored-gmatwiz"
+    },
+    {
+      "stem": "A bee bypasses 0.05% of flowers it flies by because it can sense they don't have any nectar in them. How many flowers will the bee fly by to bypass 8 flowers?",
+      "options": {
+        "A": "2000",
+        "B": "4000",
+        "C": "8000",
+        "D": "16000",
+        "E": "32000"
+      },
+      "correct": "D",
+      "explanation": "Let the number of flowers to be flown by be x.\nThen, .05% of x=8\n(5/100)*(1/100)*x=8\nx=16000\nAnswer is D",
+      "topic": "gmat::quant::arithmetic::percents",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "A jeep travels a certain distance taking 6 hours in the forward journey. During the return journey, it increased its speed by 12km/hr and took 4 hours. What is the distance travelled by the jeep?",
+      "options": {
+        "A": "126km",
+        "B": "144km",
+        "C": "127km",
+        "D": "228km",
+        "E": "128km"
+      },
+      "correct": "B",
+      "explanation": "Let 'x' be the distance and 'y' be the speed of the forward journey. Then, we have 6v=d and 4(v+12)=d\n=> v=d/6 and v=d/4 - 12\n=> d/6 = d/4 - 12\n=> d/12 = 12\n=> d=144\nAnswer: B",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "A cyclist travels at 12 miles per hour. How many minutes will it take to travel 48 miles?",
+      "options": {
+        "A": "1",
+        "B": "240",
+        "C": "30",
+        "D": "60",
+        "E": "120"
+      },
+      "correct": "B",
+      "explanation": "At 12 miles per hour, to cover 48 miles the cyclist will need 4 hours or 240 minutes.\nAnswer: B.",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "If one third of 3/4 of a number is 21. Then, find the number?",
+      "options": {
+        "A": "84",
+        "B": "66",
+        "C": "28",
+        "D": "19",
+        "E": "11"
+      },
+      "correct": "A",
+      "explanation": "x * 1/3 * 3/4 =21 => x = 84\nAnswer: A",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "A point on the edge of a fan blade that is rotating in a plane 10 centimeters from the center of the fan. What is the distance traveled, in centimeters, by this point after 30 seconds when the fan runs at the rate of 300 revolutions per minutes?",
+      "options": {
+        "A": "750pi",
+        "B": "1500pi",
+        "C": "1875pi",
+        "D": "3000pi",
+        "E": "7500pi"
+      },
+      "correct": "D",
+      "explanation": "60 seconds - 300 revolutions\n30 seconds - 150 revolutions\ndistance travelled in 1 revolution = 2*pi*r\ndistance travelled in 150 revolutions = 300*pi*r\n= 3000pi\nAnswer is D.",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "A train running at a speed of 100 miles/hour, takes 10 hours to reach its destination. After covering quarter of the distance, it starts raining and the train has to be slowed to speed of 75 miles/hour. What is the total journey duration?",
+      "options": {
+        "A": "10",
+        "B": "11.5",
+        "C": "12.5",
+        "D": "13.5",
+        "E": "15"
+      },
+      "correct": "C",
+      "explanation": "Distance to destination = 100 X 10 = 1000 miles.\nDistance remaining when it starts to rain = 1000 - 250 = 750 miles.\nSpeed for remaining distance = 75 miles / hour.\nTime taken to cover remaining distance = 750 / 75 = 10 hours.\nTotal duration of the journey = 2.5 + 10 = 12.5 hours.\nThe correct option is C.",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "hard",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "If 27 bottles of soda cost A cents, how much will B bottles cost in dollars?",
+      "options": {
+        "A": "AB/2700",
+        "B": "27/AB",
+        "C": "AB/270",
+        "D": "2700/AB",
+        "E": "100AB/27"
+      },
+      "correct": "A",
+      "explanation": "27 bottles cost A cents or A/100 dollars\n1 bottle will cost = A/100/27 = A/2700\nB bottles in dollars = B*A/2700 = AB/2700\nHence, answer will be A.",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "At a certain factory, 10 percent of the staplers produced on Monday were defective and 2 percent of the non-defective staplers were rejected by mistake. If 72 of the non-defective staplers were rejected, what was the number of staplers produced that day?",
+      "options": {
+        "A": "4,000",
+        "B": "4,200",
+        "C": "4,500",
+        "D": "4,800",
+        "E": "5,000"
+      },
+      "correct": "A",
+      "explanation": "We're told that 10% of staplers in a factory are defective.\nX = Total staplers\n0.1X = defective staplers\n0.9X = normal staplers\nNext, we're told that 2% of the normal staplers were rejected by mistake and that this = 72 staplers.\n0.9X(0.02) = 72\n0.018X = 72\n18X = 72,000\nX = 4,000\nFinal Answer:\nA",
+      "topic": "gmat::quant::arithmetic::percents",
+      "difficulty": "easy",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "All 250 files on Sam's hard drive are infected by either a virus or a worm or both. The number of files that are infected only by a worm is 2.5 times the number of files that are infected by both a virus and a worm. If 50% of the files were not infected by a virus, how many of Sam's files were NOT infected by a worm?",
+      "options": {
+        "A": "50",
+        "B": "70",
+        "C": "75",
+        "D": "100",
+        "E": "125"
+      },
+      "correct": "C",
+      "explanation": "n(Total) = 250\nn(only worm) = 125(50% of total)\nn(only worm ) = 2.5 * n(both worm and virus)\nSo,\nn(both worn and virus) = 125/2.5 = 50\nn(Total) = n(only worm) + n(both worm and virus) + n(only virus)\nn(only virus) = 250-125-50 = 75\nHence, the files not infected by worm is n(Only virus) = 75\nANSWER :(Option C)",
+      "topic": "gmat::quant::arithmetic::percents",
+      "difficulty": "hard",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "A ship went on a voyage. After it had traveled 180 miles a plane started with 10 times the speed of the ship. Find the distance when they meet from starting point.",
+      "options": {
+        "A": "238",
+        "B": "289",
+        "C": "200",
+        "D": "287",
+        "E": "187"
+      },
+      "correct": "C",
+      "explanation": "Let the speed of the ship = m miles/hr. and plane took 't' hours to meet the ship\nThen, m×t is the distance ship traveled after plane started\nSo we have, mt + 180 = 10mt\n⇒ 9mt = 180\n⇒ mt = 20\nHence distance = 180 + 20 = 200 miles\nAnswer:C",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "Suppose you can travel from a place M to a place N by 3 buses, from place N to place O by 4 buses, from place O to place P by 1 buses and from place P to place Q by 3 buses. In how many ways can you travel from M to Q ?",
+      "options": {
+        "A": "24",
+        "B": "36",
+        "C": "72",
+        "D": "84",
+        "E": "None"
+      },
+      "correct": "B",
+      "explanation": "The bus from M to N can be selected in 3 ways. The bus from N to O can be selected in 4 ways. The bus from O to P can be selected in 1 way. The bus from P to Q can be selected in 3 ways. So, by the General Counting Principle, one can travel from M to Q in 3*4*1*3= 36 ways\nAnswer B",
+      "topic": "gmat::quant::arithmetic::counting",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "If 2^x = 32, what is the value of x?",
+      "options": {
+        "A": "4",
+        "B": "5",
+        "C": "6",
+        "D": "8",
+        "E": "16"
+      },
+      "correct": "B",
+      "explanation": "Write 32 as a power of 2: 32 = 2^5, so x = 5.",
+      "topic": "gmat::quant::arithmetic::exponents_roots",
+      "difficulty": "medium",
+      "source": "GMATWiz original (authored)",
+      "license": "authored-gmatwiz"
+    },
+    {
+      "stem": "Last year, 34 percent of Ace Book Company's sales revenue came from the sale of novels. Of the remaining revenue, 1/3 was from the sale of biographies. The company's revenue from the sale of novels was approximately, how many times its revenue from the sale of biographies?",
+      "options": {
+        "A": "1.3",
+        "B": "1.5",
+        "C": "2.1",
+        "D": "2.5",
+        "E": "3.1"
+      },
+      "correct": "B",
+      "explanation": "Percentage of revenue from novels = 34%\nRemaining revenue = 66%\nSale of biographies = 1/3 of 66% = 22%\nSale of novels / sale of biographies\n= 34/22\napprox 1.5\nAnswer B",
+      "topic": "gmat::quant::arithmetic::percents",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "When the positive integer n is divided by 7, the remainder is 4. What is the remainder when 3n is divided by 7?",
+      "options": {
+        "A": "1",
+        "B": "2",
+        "C": "3",
+        "D": "4",
+        "E": "5"
+      },
+      "correct": "E",
+      "explanation": "If n leaves remainder 4 on division by 7, then 3n leaves the same remainder as 3(4) = 12. Since 12 = 7 + 5, the remainder is 5. (Check with n = 11: 3(11) = 33 = 28 + 5.)",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "easy",
+      "source": "GMATWiz original (authored)",
+      "license": "authored-gmatwiz"
+    },
+    {
+      "stem": "A club consists of members whose ages are in A.P. The common difference being 3 months. If the youngest member of the club is just 7 years old and the sum of the ages of all the members is 250, then number of members in the club are :",
+      "options": {
+        "A": "18",
+        "B": "20",
+        "C": "25",
+        "D": "26",
+        "E": "27"
+      },
+      "correct": "C",
+      "explanation": "Let, n be the number of members in the club.Then,\n250 =(n x [2×7+(n+1)×3/12]) / 2.\nn =25.\nHence, the number of members in the club is 25.\nAnswer : C",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "The ratio of boys to girls in a class is 3 to 5. If there are 24 boys, how many girls are there?",
+      "options": {
+        "A": "15",
+        "B": "30",
+        "C": "36",
+        "D": "40",
+        "E": "45"
+      },
+      "correct": "D",
+      "explanation": "Each ratio unit equals 24 / 3 = 8 students. Girls = 5 units = 5 x 8 = 40.",
+      "topic": "gmat::quant::arithmetic::ratios_proportions",
+      "difficulty": "easy",
+      "source": "GMATWiz original (authored)",
+      "license": "authored-gmatwiz"
+    },
+    {
+      "stem": "The bus fare for two persons for travelling between Agra and Aligarh id four-thirds the train fare between the same places for one person. The total fare paid by 6 persons travelling by bus and 8 persons travelling by train between the two places is Rs.1512. Find the train fare between the two places for one person?",
+      "options": {
+        "A": "126",
+        "B": "77",
+        "C": "88",
+        "D": "66",
+        "E": "54"
+      },
+      "correct": "A",
+      "explanation": "Let the train fare between the two places for one person be Rs.t\nBus fare between the two places for two persons Rs.4/3 t\n=> 6/2 (4/3 t) + 8(t) = 1512\n=> 12t = 1512 => t = 126.\nAnswer:A",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    }
+  ]
+}

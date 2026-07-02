@@ -161,6 +161,9 @@ export interface TodayBlock {
     detail: string;
     count?: number;
     topic?: string | null;
+    // a "mock" block sourced from the practice-test library carries the form to run
+    form_id?: string;
+    label?: string;
     est_minutes: number;
 }
 
@@ -522,8 +525,56 @@ export async function fetchMockPool(): Promise<MockPool> {
     });
 }
 
-export async function submitMock(results: MockResult[]): Promise<MockReport | null> {
-    return postJson<MockReport | null>("gmatSubmitMock", null, { results });
+export async function submitMock(
+    results: MockResult[],
+    formId?: string,
+    year?: string,
+): Promise<MockReport | null> {
+    // form_id/year are optional: when present the submission also records the
+    // practice-test form as taken (back-compatible - a plain mock omits them).
+    return postJson<MockReport | null>("gmatSubmitMock", null, {
+        results,
+        form_id: formId,
+        year,
+    });
+}
+
+// ---- Practice-test library (full-length timed forms, grouped by year) ----
+
+export interface TestFormMeta {
+    id: string;
+    year: string;
+    label: string;
+    count: number;
+    topics: Record<string, number>;
+    sources: string[];
+    taken: boolean;
+    accuracy: number | null;
+    q: number | null;
+    ts: number | null;
+}
+
+export interface TestLibrary {
+    years: Record<string, TestFormMeta[]>;
+}
+
+/** The practice-test catalog merged with this student's taken/score status. */
+export async function fetchTests(): Promise<TestLibrary> {
+    return postJson<TestLibrary>("gmatTests", { years: {} });
+}
+
+/**
+ * A form's questions in the SAME shape as a mock pool (so the timed-mock flow
+ * can be reused verbatim), plus which form produced them. Pool order is fixed.
+ */
+export async function fetchTestQuestions(
+    id: string,
+): Promise<MockPool & { form_id?: string; label?: string }> {
+    return postJson<MockPool & { form_id?: string; label?: string }>(
+        "gmatTestQuestions",
+        { pool: [], count: 21, seconds: 2700, target_ms: 128000 },
+        { id },
+    );
 }
 
 /**

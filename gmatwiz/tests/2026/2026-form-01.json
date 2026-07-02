@@ -1,0 +1,345 @@
+{
+  "id": "2026-form-01",
+  "year": 2026,
+  "label": "2026 Practice Test 1",
+  "seconds": 2700,
+  "target_ms": 128000,
+  "items": [
+    {
+      "stem": "A flagstaff 17.5 metre high casts a shadow of length 40.25 metre. The height of building, which casts a shadow of length 28.75 metre under similar conditions will be :",
+      "options": {
+        "A": "12 metre",
+        "B": "12.5 metre",
+        "C": "13.5 metre",
+        "D": "14 metre",
+        "E": "15 metre"
+      },
+      "correct": "B",
+      "explanation": "Less shadow, Less Height (Direct Proportion)\nSo, let height of building be x metre\nthen,\n40.25:17.5::28.75:x\n=>x=17.5∗28.75/ 40.25\n=>x=12.5\nOption B",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "What is the sum of three consecutive integers whose product can be expressed as 727+728+729.",
+      "options": {
+        "A": "37",
+        "B": "38",
+        "C": "36",
+        "D": "30",
+        "E": "39"
+      },
+      "correct": "E",
+      "explanation": "The addition of any 3 consecutive numbers is always divisible by 3\nthat rules out options a,b,c\nNow focus on options 30 and 39\nIf we consider\n12, 13, 14 the sum is 39\nAnswer = E",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "hard",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "I have a money pouch containing Rs. 700. There are equal number of 25 paise coins, 50 paise coins and one rupee coins. How many of each are there?",
+      "options": {
+        "A": "453",
+        "B": "651",
+        "C": "400",
+        "D": "487",
+        "E": "286"
+      },
+      "correct": "C",
+      "explanation": "25 paise + 50 paise + 100 paise = 175 paise and Rs. 700 = 70,000 paise\n70,000/175 = 400",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "hard",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "The nefarious bandit Hoopsmot decides to go in with his criminal partner Smolapon to purchase a number of senators. Hoopsmot contributes $16,000 to their bribery pool, and Smolapon contributes just $4,000. Their total allows them to influence 30 senators. How many senators of these can be considered Hoopsmot's?",
+      "options": {
+        "A": "18",
+        "B": "20",
+        "C": "22",
+        "D": "24",
+        "E": "26"
+      },
+      "correct": "D",
+      "explanation": "A = 16000\nB = 4000\nA share 16 parts & B share 4 parts\nTotal 20 parts -----> 30\n----> 1 part -------> 1.5\nA share = 16 parts -----> 24\nD",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "Consider there is an staircase elevator and you are coming down. If you walk 20 steps and stop, then you reach bottom in 10 minutes. If you walk 10 steps and stop, you reach to the ground in 20 minutes. What is the speed of the elevator?",
+      "options": {
+        "A": "1 step/minute",
+        "B": "2 step/minute",
+        "C": "3 step/minute",
+        "D": "4 step/minute",
+        "E": "None of the above"
+      },
+      "correct": "A",
+      "explanation": "Let total number of steps in the elevator be n and let the speed be e\nElevator covered n-20 steps in 10 mins\n(n-20)/e=10.................1\nElevator covered n-10 steps in 20 mins\n(n-10)/e=20......................2\nFrom (1) and (2)\nn=30\ne=1 step/min\nHence (A) is correct answer.",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "The bus fare of one adult is Rs. 140 from Ranchi to Patna and bus fare of a child is half the fare of one adult between the same places. What is the total bus fare of 4 adults and 3 children between same places?",
+      "options": {
+        "A": "Rs. 666",
+        "B": "Rs. 670",
+        "C": "Rs. 700",
+        "D": "Rs. 570",
+        "E": "Rs. 770"
+      },
+      "correct": "E",
+      "explanation": "Fare for Adult = Rs. 140.\nFare of Child = Half of the Adult = Rs. 70.\nSo,\nTotal fare = 4 *140 + 3 *70 = 560 +210 = Rs. 770.\nANSWER : E",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "hard",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "A train travels 360 miles in 4 hours. At the same constant rate, how many miles will it travel in 7 hours?",
+      "options": {
+        "A": "540",
+        "B": "600",
+        "C": "630",
+        "D": "720",
+        "E": "840"
+      },
+      "correct": "C",
+      "explanation": "The rate is 360 / 4 = 90 miles per hour, so in 7 hours it covers 90 x 7 = 630 miles.",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "medium",
+      "source": "GMATWiz original (authored)",
+      "license": "authored-gmatwiz"
+    },
+    {
+      "stem": "In a sale, a discount of 20% was available on all the articles. If Vinit purchased an article for Rs.4578 in the sale. What was the actual selling price of the article?",
+      "options": {
+        "A": "s.5050",
+        "B": "s.5723",
+        "C": "s.5040",
+        "D": "s.4950",
+        "E": "s.4870"
+      },
+      "correct": "B",
+      "explanation": "Rs.4578 = 20% of SP\n:. SP = 4578 x 100/80 = Rs.5723\nAnswer: Option B",
+      "topic": "gmat::quant::arithmetic::percents",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "30 is subtracted from a number, it is reduced to its one third. What is the value of 50% of that number?",
+      "options": {
+        "A": "22.5",
+        "B": "84",
+        "C": "21",
+        "D": "24",
+        "E": "25"
+      },
+      "correct": "A",
+      "explanation": "2/3 x = 30 => x = 45\n45 * 1/2 = 22.5\nANSWER:A",
+      "topic": "gmat::quant::arithmetic::percents",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "5 horses are in a race. Mr.Jain selects two of horses at random and bets on them. The probability that he selected the winning horse is",
+      "options": {
+        "A": "1/5",
+        "B": "2/5",
+        "C": "3/5",
+        "D": "4/5",
+        "E": "6/5"
+      },
+      "correct": "B",
+      "explanation": "There are 5 horses.\nProbability of winning for each horse = 1/5.\nProbability of winning with 2 selected horses= (1/5)+(1/5)= 2/5.\nAnswer is 2/5.\nANSWER:B",
+      "topic": "gmat::quant::arithmetic::probability",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "[(272 - 32) (124 + 176)] / (17 x 15 - 15) = ?",
+      "options": {
+        "A": "0",
+        "B": "2.25",
+        "C": "300",
+        "D": "400",
+        "E": "None of these"
+      },
+      "correct": "C",
+      "explanation": "Given expression = [(272 - 32) (124 + 176)] / (17 x 15 - 15)\n= (240 x 300 ) / 240\n= 300\nCorrect Option: C",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "Suppose you want to arrange your English, Hindi, Mathematics, History, Geography and Science books on a shelf. In how many ways can you do it ?",
+      "options": {
+        "A": "520",
+        "B": "720",
+        "C": "920",
+        "D": "None",
+        "E": "Cannot be determined"
+      },
+      "correct": "B",
+      "explanation": "We have to arrange 6 books. The number of permutations is 6*5*4*3*2*1= 720\nAnswer : B",
+      "topic": "gmat::quant::arithmetic::counting",
+      "difficulty": "hard",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "At 6% per annum simple interest, Rahul borrowed Rs. 500. What amount will he pay to clear the debt after 4 years",
+      "options": {
+        "A": "750",
+        "B": "700",
+        "C": "620",
+        "D": "600",
+        "E": "None of these"
+      },
+      "correct": "C",
+      "explanation": "We need to calculate the total amount to be paid by him after 4 years, so it will be Principal + simple interest.\nSo,\n=>500+500∗6∗4 /100=>Rs.620\nOption C",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "hard",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "What is the value of sqrt(144) + sqrt(25) ?",
+      "options": {
+        "A": "13",
+        "B": "15",
+        "C": "17",
+        "D": "19",
+        "E": "169"
+      },
+      "correct": "C",
+      "explanation": "sqrt(144) = 12 and sqrt(25) = 5, so the sum is 12 + 5 = 17.",
+      "topic": "gmat::quant::arithmetic::exponents_roots",
+      "difficulty": "easy",
+      "source": "GMATWiz original (authored)",
+      "license": "authored-gmatwiz"
+    },
+    {
+      "stem": "Peter wants to find 10 additional people to form a scavenger hunt team with him. If he has 10 friends who would like to participate, how many choices does he have for forming his team?",
+      "options": {
+        "A": "0",
+        "B": "1",
+        "C": "2",
+        "D": "3",
+        "E": "4"
+      },
+      "correct": "B",
+      "explanation": "Peter has 10 friends out of which he has to select 10 so 10C10= 1 Choice.\nANSWER:B",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "Train ‘A’ leaves Mumbai Central for Lucknow at 11 am, running at the speed of 40 kmph. Train ‘B’ leaves Mumbai Central for Lucknow by the same route at 2 pm on the same day, running at the speed of 72 kmph. At what time will the two trains meet each other?",
+      "options": {
+        "A": "12 am on the next day",
+        "B": "5 am on the next day",
+        "C": "5 pm on the next day",
+        "D": "2 pm on the next day",
+        "E": "None of these"
+      },
+      "correct": "A",
+      "explanation": "Distance covered by train A before the train B leaves\nMumbai Central = 40 × 3 = 120 km\nTime taken to cross each other = 120⁄12 = 10 hours\nRequired time = 2pm + 10 = 12 am on the next day\nAnswer A",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "An organization decided to raise Rs. 6 lakh by collecting equal contribution from each of its employees. If each of them had contributed Rs. 60 extra, the contribution would have been Rs. 6.24 lakh. How many employees are there in that organization?",
+      "options": {
+        "A": "300",
+        "B": "200",
+        "C": "400",
+        "D": "100",
+        "E": "500"
+      },
+      "correct": "C",
+      "explanation": "Required number of employees = (624000 - 600000)/60=24000/60=400\nAnswer is C.",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "easy",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "If one of the roots of the quadratic equation x^2 + mx + 22 = 0 is 1.5, then what is the value of m?",
+      "options": {
+        "A": "-23.5",
+        "B": "-17.5",
+        "C": "-10.5",
+        "D": "-16.2",
+        "E": "Cannot be determined"
+      },
+      "correct": "D",
+      "explanation": "Here x=1.5 must satisfy the equation\n=> 1.5^2 + 1.5m + 22 = 0\n=> m=-16.2\nANSWER:D",
+      "topic": "gmat::quant::algebra::quadratics",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "What is the median of the list 3, 8, 12, 5, 21, 7 ?",
+      "options": {
+        "A": "6.5",
+        "B": "7",
+        "C": "7.5",
+        "D": "8",
+        "E": "10"
+      },
+      "correct": "C",
+      "explanation": "Sort the list: 3, 5, 7, 8, 12, 21. With 6 values, the median is the average of the 3rd and 4th: (7 + 8) / 2 = 7.5.",
+      "topic": "gmat::quant::arithmetic::statistics",
+      "difficulty": "medium",
+      "source": "GMATWiz original (authored)",
+      "license": "authored-gmatwiz"
+    },
+    {
+      "stem": "The manufacturer of tyres is offering a 20% discount on the price of its tubeless tyres. Some retailers are offering additional discounts. If a retailer offers an additional 20% discount, then what is the total discount available at that retailer?",
+      "options": {
+        "A": "10%",
+        "B": "25%",
+        "C": "28%",
+        "D": "30%",
+        "E": "36%"
+      },
+      "correct": "E",
+      "explanation": "Discount = 1-0.8*0.8=1-0.64=0.36=36%\nAnswer choice E",
+      "topic": "gmat::quant::arithmetic::percents",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "Car ‘X’ covers a distance of 320 kms in 8 hours and car ‘Y’ covers a distance of 415 kms in 5 hrs. What is the difference in the speed of the two cars?",
+      "options": {
+        "A": "42kms/hr",
+        "B": "41km/hr",
+        "C": "43kms/hr",
+        "D": "45kms/hr",
+        "E": "None of these"
+      },
+      "correct": "C",
+      "explanation": "The speed of Car ’X’=320kms/8hr=40kms/hr\nThe speed of car ’Y’=415kms/5hr=83kms/hr\nthe difference is 43km/hr\nANSWER:C",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    }
+  ]
+}

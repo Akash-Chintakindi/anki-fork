@@ -1,0 +1,345 @@
+{
+  "id": "2026-form-07",
+  "year": 2026,
+  "label": "2026 Practice Test 7",
+  "seconds": 2700,
+  "target_ms": 128000,
+  "items": [
+    {
+      "stem": "In a survey of students, each student selected from a list of 10 songs the 2 songs that the student liked best. If each song was selected 5 times, how many students were surveyed?",
+      "options": {
+        "A": "96",
+        "B": "48",
+        "C": "32",
+        "D": "25",
+        "E": "18"
+      },
+      "correct": "D",
+      "explanation": "Each out of 10 songs was selected 5 times --> the total number of selections = 10*5 = 50.\nEach student selected 2 songs --> the total number of students = 50/2 = 25.\nAnswer: D.",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "The difference between simple interest and C.I. at the same rate for Rs.5000 for 2 years in Rs.72. The rate of interest is?",
+      "options": {
+        "A": "10%",
+        "B": "12%",
+        "C": "6%",
+        "D": "8%",
+        "E": "4%"
+      },
+      "correct": "B",
+      "explanation": "5000 = 72(100/R)2\n5 R2 = 720 => R = 12\nAnswer: Option B",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "hard",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "In how many ways can the letters of the word \"PROBLEC\" be rearranged to make 7 letter words such that none of the letters repeat?",
+      "options": {
+        "A": "2!",
+        "B": "3!",
+        "C": "7!",
+        "D": "8!",
+        "E": "9!"
+      },
+      "correct": "C",
+      "explanation": "There are seven positions to be filled.\nThe first position can be filled using any of the 7 letters contained in PROBLEM.\nThe second position can be filled by the remaining 6 letters as the letters should not repeat.\nThe third position can be filled by the remaining 5 letters only and so on.\n758\nTherefore, the total number of ways of rearranging the 7 letter word = 7*6*5*4*3*2*1 = 7! Ways.\nC",
+      "topic": "gmat::quant::arithmetic::counting",
+      "difficulty": "hard",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "Train A leaves a station every 16 minutes and Train B leaves every 17 minutes. If both trains just left the station simultaneously, how long until they do so again?",
+      "options": {
+        "A": "272 minutes",
+        "B": "304 minutes",
+        "C": "190 minutes",
+        "D": "70 minutes",
+        "E": "35 minutes"
+      },
+      "correct": "A",
+      "explanation": "We have to find the LCM:\n17 is a prime number which means the LCM of 16 and 17 has to be 16*17=272\nCorrect answer is A.",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "If x^2 - 5x = 14, which of the following is a possible value of x?",
+      "options": {
+        "A": "-7",
+        "B": "-1",
+        "C": "2",
+        "D": "5",
+        "E": "7"
+      },
+      "correct": "E",
+      "explanation": "Rewrite as x^2 - 5x - 14 = 0 and factor: (x - 7)(x + 2) = 0, so x = 7 or x = -2. Of the choices, only 7 appears.",
+      "topic": "gmat::quant::algebra::quadratics",
+      "difficulty": "hard",
+      "source": "GMATWiz original (authored)",
+      "license": "authored-gmatwiz"
+    },
+    {
+      "stem": "A man divides Rs 8600 among 5 sons, 4 daughters and 2 nephews. If each daughter receives four times as much as each nephew, and each son receives five as much as each nephew. How much does each daughter receive ?",
+      "options": {
+        "A": "Rs 400",
+        "B": "Rs 500",
+        "C": "Rs 600",
+        "D": "Rs 700",
+        "E": "Rs 800"
+      },
+      "correct": "E",
+      "explanation": "If each nephew got Rs x, then\n2x+16x+25x = 8600\nx= 200\nEach daughter got 4*200 = Rs 800\nANSWER:E",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "hard",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "An exam is given in a certain class. The average (arithmetic mean) of the highest score and the lowest score is equal to x. If the average score for the entire class is equal to y and there are z students in the class, where z > 5, then in terms of x, y, and z, what is the average score for the class excluding the highest and lowest scorers?",
+      "options": {
+        "A": "(zy – 2x)/z",
+        "B": "(zy – 2)/z",
+        "C": "(zx – y)/(z – 2)",
+        "D": "(zy – 2x)/(z -2)",
+        "E": "(zy – x)/(z + 2)"
+      },
+      "correct": "D",
+      "explanation": "Highest: H\nLowest: L\nNumber of students in the class: Z\nNumber of students in the class excluding the highest and lowest : Z-2\nAverage of Highest and Lowest: (H + L)/2=X => H+L=2X\nAverage of Entire Class : (H+L+Others)/Z=Y => Others= ZY-2X\nAverage of the others in the class: (ZY-2X)/(Z-2)\nAnswer: D",
+      "topic": "gmat::quant::arithmetic::statistics",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "A merchant receives an invoice for a motor boat for $20 000 with terms 4/30, n/100. What is the highest simple interest rate at which he can afford to borrow money in order to take advantage of the discount?",
+      "options": {
+        "A": "247.67",
+        "B": "237.67",
+        "C": "227.67",
+        "D": "215.67",
+        "E": "None of these"
+      },
+      "correct": "A",
+      "explanation": "Explanation:\nSuppose the merchant will take advantage of the cash discount of 4% of $20 000 = $800 by paying the bill within 30 days from the date of invoice. He needs to borrow $20 000 = $800 = $19 200. He would borrow this money on day 30 and repay it on day 100 (the day the original invoice is due) resulting in a 70-day loan. The interest he should be willing to pay on borrowed money should not exceed the cash discount $800.\nr=I/pt=21.73%\nThe highest simple interest rate at which the merchant can afford to borrow money is 21.73%. This is a break-even rate. If he can borrow money, say at a rate of 15%, he should do so. He would borrow $19 200 for 70 days at 15%. Maturity value of the loan is $19 200(1+0.15(70/365))=$19 752.33\nsavings would be $20 000 − $19 752.33 = $247.67\nAnswer: A",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "hard",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "It takes a worker 9 minutes to drive from home to work at an average rate of 20 kilometers per hour. How many minutes will it take the worker to cycle from home to work along the same route at an average rate of 6 kilometers per hour?",
+      "options": {
+        "A": "30",
+        "B": "32",
+        "C": "35",
+        "D": "36",
+        "E": "40"
+      },
+      "correct": "A",
+      "explanation": "distance = time*speed = (9/60)(20) kilometers\ntime to bike = distance/speed = (9*20)/(60*6) = 30/60 hours = 30 minutes.\nThe answer is A.",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "At its maximum speed, a space shuttle can travel 700m high in 40 seconds. It will also take 5 seconds to pass a point. What then is the length of the space shuttle?",
+      "options": {
+        "A": "50 m",
+        "B": "75 m",
+        "C": "100 m",
+        "D": "125 m",
+        "E": "150 m"
+      },
+      "correct": "C",
+      "explanation": "Let the length of the space shuttle be x metres and its speed be y m/sec. Then, x / y = 1 ⇒ y = x / 5\n∴ (x + 700) / 40 = x / 5 ⇔ x = 100 m. Answer C",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "hard",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "What is the value of 0.2 x 0.05 ?",
+      "options": {
+        "A": "0.001",
+        "B": "0.01",
+        "C": "0.1",
+        "D": "0.0001",
+        "E": "1.0"
+      },
+      "correct": "B",
+      "explanation": "Multiply 2 x 5 = 10, then place the decimal: 0.2 has one decimal place and 0.05 has two, for three places total: 0.010 = 0.01.",
+      "topic": "gmat::quant::arithmetic::decimals",
+      "difficulty": "easy",
+      "source": "GMATWiz original (authored)",
+      "license": "authored-gmatwiz"
+    },
+    {
+      "stem": "Jim filled his dog's bowl with dog food. Starting at 8:00 am, Jim's dog ate exactly once an hour, consuming exactly 1/3 of the dog food remaining in the bowl at each feeding session. Approximately, what percent of the original food was in the dog's bowl right before the dog began to eat at noon of the same day?",
+      "options": {
+        "A": "20%",
+        "B": "25%",
+        "C": "30%",
+        "D": "35%",
+        "E": "40%"
+      },
+      "correct": "A",
+      "explanation": "The amount remaining after each feeding session is 2/3 of what was in the bowl.\nThere were four feeding sessions.\nThe amount remaining just before noon was (2/3)^4 = 16/81, which is about 20%.\nThe answer is A.",
+      "topic": "gmat::quant::arithmetic::percents",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "After a 25% discount, a jacket sells for $90. What was its original price?",
+      "options": {
+        "A": "$112.50",
+        "B": "$115",
+        "C": "$120",
+        "D": "$125",
+        "E": "$135"
+      },
+      "correct": "C",
+      "explanation": "A 25% discount means the sale price is 75% of the original: 0.75 x P = 90, so P = 90 / 0.75 = $120.",
+      "topic": "gmat::quant::arithmetic::percents",
+      "difficulty": "hard",
+      "source": "GMATWiz original (authored)",
+      "license": "authored-gmatwiz"
+    },
+    {
+      "stem": "On a map, the length of the road from Town F to Town G is measured to be 20 inches. On this map, 1/4 inch represents an actual distance of 10 miles. What is the actual distance, in miles, from Town F to Town G along this road?",
+      "options": {
+        "A": "800",
+        "B": "720",
+        "C": "960",
+        "D": "1140",
+        "E": "1160"
+      },
+      "correct": "A",
+      "explanation": "Here we are given a ratio: 1/4 inch on the map = 10 miles, so 1 inch on the map = 40 miles. If the map-distance between the towns is 20 inches, then the actual distance must be 20 x 40 = 800\nAnswer: A.",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "hard",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "The price of a stock first increased by 20% and then decreased by 10%. The final price is what percent of the original price?",
+      "options": {
+        "A": "90%",
+        "B": "100%",
+        "C": "108%",
+        "D": "110%",
+        "E": "112%"
+      },
+      "correct": "C",
+      "explanation": "Apply the factors in sequence: 1.20 x 0.90 = 1.08, i.e. 108% of the original price.",
+      "topic": "gmat::quant::arithmetic::percents",
+      "difficulty": "medium",
+      "source": "GMATWiz original (authored)",
+      "license": "authored-gmatwiz"
+    },
+    {
+      "stem": "The events A and B are independent. The probability that event A occurs is 0.6, and the probability that at least one of the events A or B occurs is 0.96. What is the probability that event B occurs?",
+      "options": {
+        "A": "0.5",
+        "B": "0.6",
+        "C": "0.7",
+        "D": "0.8",
+        "E": "0.9"
+      },
+      "correct": "E",
+      "explanation": "Let x be the probability that B does not occur.\nP(A and B do not occur) = 1 - 0.96 = 0.04\n0.4x = 0.04\nx=0.1\nP(B occurs) = 1 - x = 0.9\nThe answer is E.",
+      "topic": "gmat::quant::arithmetic::probability",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "What is the greatest number of identical bouquets that can be made out of 28 white and 98 red tulips if no flowers are to be left out? (Two bouquets are identical whenever the number of red tulips in the two bouquets is equal and the number of white tulips in the two bouquets is equal.)",
+      "options": {
+        "A": "4",
+        "B": "7",
+        "C": "10",
+        "D": "14",
+        "E": "21"
+      },
+      "correct": "D",
+      "explanation": "The greatest common divisor of 28 and 98 is 14.\nWe can make 14 identical bouquets with 2 white tulips and 7 red tulips in each bouquet.\nThe answer is D.",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "In a row of children Neha is 12th from left end and Radha is 6th from right end. When Radha is shifted to left by 2 places and Neha is shifted to right by 2 places there 6 children between Radha and Neha. How many children are there in the row?",
+      "options": {
+        "A": "23",
+        "B": "27",
+        "C": "26",
+        "D": "28",
+        "E": "29"
+      },
+      "correct": "D",
+      "explanation": "After moving 2 positions to the right Neha is 14 positions from the left, and after moving 2 positions to the left, Radha is on the 8th position from the right. If there are 6 children between them, the total number of children is  14+6+8 = 28\nANSWER:D",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "In an exam, a candidate secured 504 marks of the maximum mark of M. If the maximum mark M is converted into 800 marks, he would have secured 420 marks. What is the value of M?",
+      "options": {
+        "A": "278",
+        "B": "2890",
+        "C": "270",
+        "D": "2702",
+        "E": "960"
+      },
+      "correct": "E",
+      "explanation": "504/M = 420/800\n(504 * 800) / 420 = M\nM = 960\nAnswer:E",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "easy",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "If 5x - 3 = 2x + 12, what is the value of x?",
+      "options": {
+        "A": "3",
+        "B": "4",
+        "C": "5",
+        "D": "6",
+        "E": "9"
+      },
+      "correct": "C",
+      "explanation": "Subtract 2x from both sides: 3x - 3 = 12. Add 3: 3x = 15, so x = 5.",
+      "topic": "gmat::quant::algebra::linear_equations",
+      "difficulty": "easy",
+      "source": "GMATWiz original (authored)",
+      "license": "authored-gmatwiz"
+    },
+    {
+      "stem": "Mark told John \"If you give me half your money I will have Rs.75. John said, \"if you give me one third of your money, I will have Rs.75/-. How much money did John have ?",
+      "options": {
+        "A": "22",
+        "B": "60",
+        "C": "28",
+        "D": "26",
+        "E": "18"
+      },
+      "correct": "B",
+      "explanation": "Let the money with Mark and John are M and J, respectively.\nNow\nM + J/2 = 75\nM/3 + J = 75\nSolving we get M = 45, and J = 60.\nAnswer:B",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    }
+  ]
+}

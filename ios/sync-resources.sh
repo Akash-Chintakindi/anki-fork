@@ -3,8 +3,8 @@
 # add them to the app bundle as folder references (preserving directory layout).
 #
 # Sources (produced by a desktop build):
-#   out/qt/_aqt/data/web/sveltekit/   -> the built SvelteKit "GMATWiz" SPA
-#   gmatwiz/lessons, gmatwiz/content  -> lesson + question data (resourceDir)
+#   out/qt/_aqt/data/web/sveltekit/          -> the built SvelteKit "GMATWiz" SPA
+#   gmatwiz/lessons, gmatwiz/content, tests  -> lesson/question/test data (resourceDir)
 #
 # Run this BEFORE `xcodegen generate` / `xcodebuild` (like build-ios.sh for the
 # xcframework). The copied trees are git-ignored build artifacts.
@@ -24,7 +24,7 @@ if [ ! -f "$WEB_SRC/index.html" ]; then
 fi
 
 rm -rf "ios/Resources/web" "$GMAT_DST"
-mkdir -p "$WEB_DST" "$GMAT_DST/lessons" "$GMAT_DST/content"
+mkdir -p "$WEB_DST" "$GMAT_DST/lessons" "$GMAT_DST/content" "$GMAT_DST/tests"
 
 # The web SPA: copy verbatim (index.html + _app/immutable/...).
 rsync -a "$WEB_SRC/" "$WEB_DST/"
@@ -36,6 +36,13 @@ rsync -a --exclude '__pycache__' --exclude '*.py' \
 rsync -a --exclude '__pycache__' --exclude '*.py' --exclude 'raw' \
   "gmatwiz/content/" "$GMAT_DST/content/"
 
+# Practice-test library (tests/index.json + tests/<year>/<id>.json). Authored
+# separately and may not exist yet, so only copy it when present.
+if [ -d "gmatwiz/tests" ]; then
+  rsync -a --exclude '__pycache__' --exclude '*.py' --exclude 'raw' \
+    "gmatwiz/tests/" "$GMAT_DST/tests/"
+fi
+
 echo "Synced iOS resources:"
 echo "  $WEB_DST"
-echo "  $GMAT_DST/{lessons,content}"
+echo "  $GMAT_DST/{lessons,content,tests}"

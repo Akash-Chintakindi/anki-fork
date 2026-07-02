@@ -50,6 +50,16 @@ function stripEmpty(state: GmatState): GmatState {
     return out;
 }
 
+// Timestamp (ms) of the newest state this device has written or applied. The
+// auto-sync poll only pulls genuinely newer remote state (last-writer-wins) and
+// never re-applies its own push, so two devices don't ping-pong each other.
+let lastSyncedAt = 0;
+
+function stampOf(state: GmatState | null): number {
+    const v = state?.updatedAt;
+    return typeof v === "number" ? v : 0;
+}
+
 /** On login: apply the account's stored state, or reset to a fresh start for a
  * brand-new account (so it begins at the diagnostic). Returns whether it's new. */
 export async function pullAccountState(uid: string): Promise<{ isNew: boolean }> {
@@ -57,9 +67,11 @@ export async function pullAccountState(uid: string): Promise<{ isNew: boolean }>
     const remote = await provider.load(uid);
     if (remote) {
         await importState(remote);
+        lastSyncedAt = stampOf(remote) || Date.now();
         return { isNew: false };
     }
     await resetState();
+    lastSyncedAt = 0;
     return { isNew: true };
 }
 
@@ -75,8 +87,48 @@ export function scheduleStatePush(uid: string): void {
 export async function pushStateNow(uid: string): Promise<void> {
     if (!provider) return;
     try {
-        await provider.save(uid, stripEmpty(await exportState()));
+        const updatedAt = Date.now();
+        await provider.save(uid, { ...stripEmpty(await exportState()), updatedAt });
+        lastSyncedAt = updatedAt;
     } catch (e) {
         console.error("GMATWiz state push failed", e);
+    }
+}
+
+let autoTimer: ReturnType<typeof setInterval> | null = null;
+
+/** Keep this device in sync automatically (no manual button): poll the account
+ * doc and apply any genuinely newer state written by another device. Pushes
+ * still happen on local change (scheduleStatePush). Returns a stop function. */
+export function startAutoSync(
+    uid: string,
+    onRemoteApplied: () => void,
+    intervalMs = 12000,
+): () => void {
+    if (!provider) return () => {};
+    stopAutoSync();
+    autoTimer = setInterval(() => void pullIfChanged(uid, onRemoteApplied), intervalMs);
+    return stopAutoSync;
+}
+
+export function stopAutoSync(): void {
+    if (autoTimer) {
+        clearInterval(autoTimer);
+        autoTimer = null;
+    }
+}
+
+async function pullIfChanged(uid: string, onRemoteApplied: () => void): Promise<void> {
+    if (!provider) return;
+    try {
+        const remote = await provider.load(uid);
+        const remoteAt = stampOf(remote);
+        if (remote && remoteAt > lastSyncedAt) {
+            await importState(remote);
+            lastSyncedAt = remoteAt;
+            onRemoteApplied();
+        }
+    } catch (e) {
+        console.error("GMATWiz auto-sync pull failed", e);
     }
 }

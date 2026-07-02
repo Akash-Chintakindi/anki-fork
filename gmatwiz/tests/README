@@ -1,0 +1,65 @@
+===============================================================================
+GMATWiz - GMAT Quantitative Reasoning practice-test FORMS (versioned library)
+===============================================================================
+Location : anki-fork/gmatwiz/tests/
+Scope    : GMAT Focus Edition -> Quantitative Reasoning -> Problem Solving.
+
+-------------------------------------------------------------------------------
+1. WHAT THESE ARE
+-------------------------------------------------------------------------------
+A set of full-length practice-test "forms". Each form mirrors the GMAT Focus
+Edition Quant section shape: EXACTLY 21 Problem Solving questions, timed at
+45 minutes (2700 seconds; ~128 s/question target pace).
+
+The forms are assembled ONLY from open-licensed / self-authored content:
+  - AQuA-RAT (DeepMind), Apache-2.0   -> ../content/questions.json
+  - GMATWiz authored (authored-gmatwiz) -> ../content/seed.json
+
+There are NO official, real, or copyrighted GMAT questions here. Nothing is
+scraped or fetched at build time; the builder only reads the two already-
+normalized, legally-sourced bank files in ../content/. Every item keeps its
+original `source` and `license` fields, and each form's index entry lists the
+distinct sources/licenses actually used by that form's items.
+
+-------------------------------------------------------------------------------
+2. DISJOINT / HELD-OUT GUARANTEE
+-------------------------------------------------------------------------------
+The forms are mutually DISJOINT: no question id is shared across forms, and no
+stem is repeated within or across forms. Each form is therefore an independent,
+held-out set safe to use as a clean practice test (no leakage between forms).
+
+Each form is stratified to spread across TOPICS (roughly following the bank's
+topic distribution) and to spread DIFFICULTY best-effort. The underlying bank is
+heavily "medium" (the open dataset ships no difficulty labels), so most items are
+medium; easy/hard are scattered across forms where available.
+
+-------------------------------------------------------------------------------
+3. FILES
+-------------------------------------------------------------------------------
+  build_tests.py     The deterministic, re-runnable builder (stdlib only).
+  index.json         Manifest: schema_version, exam/section/question_type, and
+                     per-year form entries (id, label, count, topic mix, sources).
+  2026/              One JSON file per form: 2026-form-01.json .. 2026-form-NN.json
+                     (id, year, label, seconds, target_ms, and EXACTLY 21 items).
+  README             This file.
+
+"2026" is the version year: it is the GMAT Focus edition / import year used to
+version the library (AQuA-RAT has no intrinsic year), not a claim about any real
+exam year.
+
+-------------------------------------------------------------------------------
+4. HOW TO REGENERATE
+-------------------------------------------------------------------------------
+Requires Python 3 (standard library only - json, os, random, collections,
+hashlib). Output is deterministic (RNG seeded with 20260101): re-running
+produces byte-for-byte identical files.
+
+  cd gmatwiz/tests
+  python3 build_tests.py
+
+The script prints a summary (forms built, questions used, per-form topic and
+difficulty mix, sources) and VALIDATES every form (exactly 21 items; A-E present
+and non-empty; the correct letter exists in the options; ids and stems unique
+across all forms). It fails loudly and writes nothing partial-valid on any
+violation.
+===============================================================================

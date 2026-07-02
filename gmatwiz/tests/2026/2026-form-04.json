@@ -1,0 +1,345 @@
+{
+  "id": "2026-form-04",
+  "year": 2026,
+  "label": "2026 Practice Test 4",
+  "seconds": 2700,
+  "target_ms": 128000,
+  "items": [
+    {
+      "stem": "In a group of 50 people, 30 like coffee and 25 like tea. If 10 like neither, how many like both coffee and tea?",
+      "options": {
+        "A": "5",
+        "B": "10",
+        "C": "15",
+        "D": "20",
+        "E": "25"
+      },
+      "correct": "C",
+      "explanation": "People who like at least one drink: 50 - 10 = 40. By inclusion-exclusion, both = 30 + 25 - 40 = 15.",
+      "topic": "gmat::quant::arithmetic::sets",
+      "difficulty": "medium",
+      "source": "GMATWiz original (authored)",
+      "license": "authored-gmatwiz"
+    },
+    {
+      "stem": "A bag of cat food weighs 7 pounds and 4 ounces. How much does the bag weigh in ounces?",
+      "options": {
+        "A": "108",
+        "B": "112",
+        "C": "116",
+        "D": "120",
+        "E": "124"
+      },
+      "correct": "C",
+      "explanation": "1 pound = 16 ounces.\n7 pounds and 4 ounces = (7 x 16) + 4 = 116 ounces.\nAnswer: C.",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "Shweta rides at the rate of 10 km per hour but stops for 10 minutes to take rest at the end of every 15 km. How many hours will she take to cover 100 km",
+      "options": {
+        "A": "9 hours.",
+        "B": "10 hours.",
+        "C": "11 hours.",
+        "D": "12 hours.",
+        "E": "13 hours."
+      },
+      "correct": "C",
+      "explanation": "After every 15 km she will take a rest of 10 minutes so after every 90 minutes she will 10 min break.\nshe will 10 hours to cover 90 km distance and 1 hour to cover remaining 10km.\nSo the answer is 11 hours.\nANSWER:C",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "A man spend 810 in buying trouser at Rs 70 each and shirt at 30 each. What will be the ratio of trouser and shirt when the maximum number of trouser is purchased?",
+      "options": {
+        "A": "9 Trousers",
+        "B": "8 Trousers",
+        "C": "10 Trousers",
+        "D": "7 Trousers",
+        "E": "11 Trousers"
+      },
+      "correct": "A",
+      "explanation": "Lets assume S as price of shirt and T as price of trousers, we have bellow equation:\n70 T + 30 S = 810\nSimplifying we get : 7T + 3S = 81\nT = ( 81 - 3*S )/7\nWe need to find the least value of S which will make (81 - 3*S) divisible by 7\nSimplifying by taking 3 as common factor 3*(27-S) / 7\nLooking at the above equation its not difficult to find out least value of S is 6 so that 27- 3S becomes divisible by S\nHence, T = (81-3*S)/7 = (81-3*6)/7 = 63/7 = 9\nANSWER:A",
+      "topic": "gmat::quant::arithmetic::ratios_proportions",
+      "difficulty": "hard",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "10kg of a mixture contains 30% sand and 70% clay. In order to make the mixture contain equal quantities of clay and sand how much of the mixture is to be removed and replaced with pure sand?",
+      "options": {
+        "A": "10/7",
+        "B": "20/7",
+        "C": "30/7",
+        "D": "40/7",
+        "E": "50/7"
+      },
+      "correct": "B",
+      "explanation": "The mixture contains 3kg sand and 7 kg clay.\nFor the mixture to be in equal quantities, there should be 2 kg of clay removed.\nClay and sand are in the ratio 7:3\nSo part of sand to be removed = 2*3/7 = 6/7\nSo total mixture to be removed = 2 + 6/7 = 20/7\nANSWER:B",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "Fernando purchased a university meal plan that allows him to have a total of 3 lunches and 3 dinners per week. If the cafeteria is closed on weekends and Fernando always goes home for a dinner on Friday nights, how many options does he have to allocate his meals?",
+      "options": {
+        "A": "5C3*4C3",
+        "B": "5C4*4C2",
+        "C": "5C2*4C4",
+        "D": "5C6*4C5",
+        "E": "4C3*4C3"
+      },
+      "correct": "A",
+      "explanation": "He can allocate his 3 free lunches on any 3 days from 5 (excluding weekends), so in 5C3 ways.\nHe can allocate his 3 free dinners on any 3 days from 4 (excluding weekends and Friday), so in 4C3 ways.\nTotal = 5C3*4C3 ways\nANS:A",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "Amy is organizing her bookshelves and finds that she has 10 different types of books. She then codes each book with either a single letter or a pair of two different letters. If each type of book is uniquely represented by either a single letter or pair of letters, what is the smallest number of letters Amy will need to create the codes for all 10 types of books? (Assume the order of letters in a pair does not matter.)",
+      "options": {
+        "A": "3",
+        "B": "4",
+        "C": "5",
+        "D": "10",
+        "E": "20"
+      },
+      "correct": "D",
+      "explanation": "The question asks for the smallest value of n, such that (n + nC2) = 10 (n represents the number of letters. In this equation, n by itself is for single-letter codes and nC2 is for two-letter codes).\nAt this point, you'd need to pick numbers, since there's really no easy way to solve nC2 = (10 – n) without a calculator.\nLooking at the answer choices, you can eliminate 10 and 20, so you can quickly narrow down the values you need to test. (i.e. (10 – n) suggests n can not be less than 10.)\nAs a general rule, whenever you're asked for the smallest value that satisfies a condition, start by testing the smallest number in the answers. Conversely, if you're asked for the largest value, start with the greatest answer.\nPlug-in n=4 to (n + nC2) = (4 + 4C2) = 4 + (4x3 /2) = (4 + 6) = 10 ANS:D",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "easy",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "When I was 2 years old, my brother was half my age. Now I am 60 years old, how old is my brother?",
+      "options": {
+        "A": "A)59",
+        "B": "B)69",
+        "C": "C)79",
+        "D": "D)89",
+        "E": "E)99"
+      },
+      "correct": "A",
+      "explanation": "Half of 2 is 1. =>2+58=60-> 1+58=59\nAnswer A",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "20 marbles were pulled out of a bag of only white marbles, painted black, and then put back in. Then, another 20 marbles were pulled out, of which 1 was black, after which they were all returned to the bag. If the percentage of black marbles pulled out the second time represents their percentage in the bag, how many marbles in total Q does the bag currently hold?",
+      "options": {
+        "A": "40",
+        "B": "200",
+        "C": "380",
+        "D": "400",
+        "E": "3200"
+      },
+      "correct": "D",
+      "explanation": "We know that there are 20 black marbles in the bag and this number represent 1/20 th of the number of all marbles in the bag, thus there are total Q of 20*20=400 marbles.\nAnswer: D.",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "Six pita breads contain the same amount of falafel as do two rolls. Three rolls contain the same amount of falafel as five baguettes do. Two baguettes contain the same amount of falafel as how many pita breads?",
+      "options": {
+        "A": "12/25",
+        "B": "3/2",
+        "C": "3",
+        "D": "2",
+        "E": "25/3"
+      },
+      "correct": "C",
+      "explanation": "6P = 2R\n3R = 5B\n2B = ?P\nThus, P : R : B = 18 : 6 : 12\nP : B = 18 : 12\n= 3 : 2\nThus P = 3\nAnswer : C",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "A bag contains 11 candy bars: three cost 50 cents each, four cost $1 each and four cost $2 each. How many ways can 3 candy bars be selected from the 11 candy bars so that the total cost is more than $4?",
+      "options": {
+        "A": "8",
+        "B": "28",
+        "C": "46",
+        "D": "66",
+        "E": "70"
+      },
+      "correct": "C",
+      "explanation": "The ways of choosing 3 candy bars with a total cost over $4 include: choose 3 out of 4 (2 dollars each); choose 2 out of 4 (2 dollars each) and 1 from the other 7. So, the total number of ways is C4\n3 + (7 C4\n2 ) = 46. Incidentally, the total number ways of choosing 3 candy bars out of 11 is C11\n3 = 165. So the probability of them costing more than $4 if they are randomly chosen is\nC4\n3 + (7 C4\n2 )\nC11\n3\n=\n46/165\ncorrect answer C",
+      "topic": "gmat::quant::arithmetic::counting",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "Decipher the following multiplication table: M A D B E ------------- M A D R A E ------------- A M I D",
+      "options": {
+        "A": "9 2 0 0",
+        "B": "9 2 0 9",
+        "C": "9 2 0 1",
+        "D": "9 2 0 7",
+        "E": "9 2 2 2"
+      },
+      "correct": "D",
+      "explanation": "It is clear that E = 1 as MAD×E=MAD\nFrom the hundred's line, M + A = 10 + M or 1 + M + A = 10 + M\nAs A = 10 not possible, A = 9\nSo I = 0.\nand From the thousand's line R + 1 = A. So R = 8.\nM 9 D\nB 1\n-------------\nM 9 D\n8 9 1\n-------------\n9 M 0 D\n-------------\nAs B×D = 1, B and D takes 3, 7 in some order.\nIf B = 7 and D = 3, then M93×7 = _51 is not satisfied. So B = 3 and D = 7.\n2 9 7\n3 1\n-------------\n2 9 7\n8 9 1\n-------------\n9 2 0 7\n-------------\nAnswer:D",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "there are more than 501 students in a school such that 20% of them exactly took physics and 28% of them exactly took math. What could be the least possible no of students in the school?",
+      "options": {
+        "A": "550",
+        "B": "570",
+        "C": "600",
+        "D": "700",
+        "E": "none of these"
+      },
+      "correct": "E",
+      "explanation": "20% means 1/5 and 28% means 7/25,taking the lcm of the denominators 5 and 25 we get 25,the least multiple of 25 which is greater than 501 is 525. So, answer is none\nANSWER:E",
+      "topic": "gmat::quant::arithmetic::percents",
+      "difficulty": "hard",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "How many distinct positive factors does 360 have?",
+      "options": {
+        "A": "12",
+        "B": "16",
+        "C": "18",
+        "D": "20",
+        "E": "24"
+      },
+      "correct": "E",
+      "explanation": "Prime-factorize: 360 = 2^3 x 3^2 x 5^1. The number of factors is (3+1)(2+1)(1+1) = 4 x 3 x 2 = 24.",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "hard",
+      "source": "GMATWiz original (authored)",
+      "license": "authored-gmatwiz"
+    },
+    {
+      "stem": "Anna is able to buy 5 more articles for $300 after the price of each article decreased by 15%. What is the new selling price of each article?",
+      "options": {
+        "A": "$8",
+        "B": "$10",
+        "C": "$13.6",
+        "D": "$22.9",
+        "E": "$40"
+      },
+      "correct": "C",
+      "explanation": "p = old price.\nn = the number of items for $300 for p.\npn = (0.85p)(n + 5) --> n = 0.85(n + 5) --> n = 17.\nNew price = 300/(n + 5) = 13.6.\nAnswer: C.",
+      "topic": "gmat::quant::arithmetic::percents",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "Boomtown urban planners expect the city’s population to increase by 10% per year over the next two years. If that projection were to come true, the population two years from now would be exactly double the population of one year ago. Which of the following is closest to the percent population increase in Boomtown over the last year?",
+      "options": {
+        "A": "20%",
+        "B": "40%",
+        "C": "50%",
+        "D": "65%",
+        "E": "75%"
+      },
+      "correct": "D",
+      "explanation": "Population now - 100;\nPopulation one year from now - 110;\nPopulation two years from now - 121;\nSince the population two years from now (121) is exactly double the population one year ago then the population one year ago was 121/2=60.5.\nNow, the question asks about the population increase over the last year, so from 60.5 (last year) to 100 (now): percent increase=difference/original*100=(100-60.5)/60.5*100=39.5/60.5*100=~2/3*100=~65%.\nAnswer: D.",
+      "topic": "gmat::quant::arithmetic::percents",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "A bag contains 4 red and 6 blue marbles. If one marble is drawn at random, what is the probability that it is red?",
+      "options": {
+        "A": "1/5",
+        "B": "2/5",
+        "C": "1/2",
+        "D": "3/5",
+        "E": "2/3"
+      },
+      "correct": "B",
+      "explanation": "P(red) = favorable / total = 4 / (4 + 6) = 4/10 = 2/5.",
+      "topic": "gmat::quant::arithmetic::probability",
+      "difficulty": "easy",
+      "source": "GMATWiz original (authored)",
+      "license": "authored-gmatwiz"
+    },
+    {
+      "stem": "A book was sold for Rs 27.50 with a profit of 10%. If it were sold for Rs. 25.75, then would have been percentage of profit and loss ?",
+      "options": {
+        "A": "2% Profit",
+        "B": "3% Profit",
+        "C": "2% Loss",
+        "D": "3% Loss",
+        "E": "4% Loss"
+      },
+      "correct": "B",
+      "explanation": "S.P.=(100+gain%100∗C.P)\nSo, C.P. = (100/110∗25.75)\nWhen S.P. = 25.75 then\nProfit=25.75−25=Re.0.75\nProfit%=0.75/25∗100=3%\nAnswer is B",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "If 75 percent of the employees of a certain company take a winter vacation, 40 percent take a winter and a summer vacation, and 20 percent take neither a winter nor a summer vacation, what Q percent of the employees take a summer vacation but not a winter vacation?",
+      "options": {
+        "A": "5%",
+        "B": "15%",
+        "C": "25%",
+        "D": "35%",
+        "E": "45%"
+      },
+      "correct": "A",
+      "explanation": "Winter = 75\nBoth = 40\nNeither = 20\nWinter + Summer - Both + Neither = 100\n75 + Summer - 40 + 20 = 100\nSummer = 45\nSummer but not winter Q= Summer only = Summer - Both(i.e. summer overlap with winter) = 45 - 40 = 5\nAnswer: A",
+      "topic": "gmat::quant::arithmetic::percents",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "For any nonzero x, which of the following is equivalent to (x^3)(x^4) ?",
+      "options": {
+        "A": "x^7",
+        "B": "x^12",
+        "C": "x^1",
+        "D": "2x^7",
+        "E": "x^34"
+      },
+      "correct": "A",
+      "explanation": "When multiplying powers with the same base, add the exponents: x^3 x x^4 = x^(3+4) = x^7.",
+      "topic": "gmat::quant::algebra::expressions",
+      "difficulty": "easy",
+      "source": "GMATWiz original (authored)",
+      "license": "authored-gmatwiz"
+    },
+    {
+      "stem": "A newspaper costs $4 on Sunday and $1 the rest of the days of the week. If a hotel orders twice as many papers on Sunday as it does the rest of the days of the week and pays $210 per week for newspapers, how many newspapers does it buy on Monday?",
+      "options": {
+        "A": "15",
+        "B": "30",
+        "C": "45",
+        "D": "60",
+        "E": "75"
+      },
+      "correct": "A",
+      "explanation": "Number of paper bought on monday = x\n# of paper bought on sunday = 2x\nTotal cost = 210 = 6*x(rest of the day cost)+8*x (sunday cost)\n14x = 210\nx = 15\nAns A",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    }
+  ]
+}

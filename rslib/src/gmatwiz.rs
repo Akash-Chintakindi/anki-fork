@@ -54,6 +54,7 @@ const GMAT_STATE_KEYS: &[&str] = &[
     "gmatRepairTopics",
     "gmatTimedDrill",
     "gmatLessonScheduled",
+    "gmatTestsTaken",
 ];
 
 /// Timing risk classification for one first-exposure attempt (Brainlift: wrong,
@@ -753,6 +754,60 @@ fn gmat_read_lesson_by_topic(resource_dir: &str, topic_id: &str) -> Option<Value
         .and_then(|t| serde_json::from_str::<Value>(&t).ok())
 }
 
+/// Bundled practice-test catalog (`resource_dir/tests/index.json`), or empty.
+fn gmat_read_tests_index(resource_dir: &str) -> Value {
+    let path = std::path::Path::new(resource_dir)
+        .join("tests")
+        .join("index.json");
+    std::fs::read_to_string(path)
+        .ok()
+        .and_then(|t| serde_json::from_str::<Value>(&t).ok())
+        .unwrap_or_else(|| json!({ "years": {} }))
+}
+
+/// A form's `year` as a string: its own `year` field (string or number),
+/// falling back to the `years` map key it was listed under.
+fn gmat_form_year(form: &Value, group_key: &str) -> String {
+    form["year"]
+        .as_str()
+        .map(String::from)
+        .or_else(|| form["year"].as_i64().map(|n| n.to_string()))
+        .unwrap_or_else(|| group_key.to_string())
+}
+
+/// The authored practice-test form for `form_id`, read from the bundled tests
+/// folder (`tests/<year>/<id>.json`); the year is resolved from the index so the
+/// caller only needs the id. None if the form/file is missing.
+fn gmat_read_test_form(resource_dir: &str, form_id: &str) -> Option<Value> {
+    if form_id.is_empty() {
+        return None;
+    }
+    let index = gmat_read_tests_index(resource_dir);
+    let years = index["years"].as_object()?;
+    let mut year: Option<String> = None;
+    for (group_key, forms) in years {
+        if let Some(arr) = forms.as_array() {
+            for f in arr {
+                if f["id"].as_str() == Some(form_id) {
+                    year = Some(gmat_form_year(f, group_key));
+                    break;
+                }
+            }
+        }
+        if year.is_some() {
+            break;
+        }
+    }
+    let year = year?;
+    let path = std::path::Path::new(resource_dir)
+        .join("tests")
+        .join(year)
+        .join(format!("{form_id}.json"));
+    std::fs::read_to_string(path)
+        .ok()
+        .and_then(|t| serde_json::from_str::<Value>(&t).ok())
+}
+
 /// Bundled question content (`resource_dir/content/{seed,questions}.json`),
 /// used only as a fallback when the collection has no GMAT PS notes yet (fresh
 /// phone), so the practice/pretest/mock screens still render.
@@ -1389,6 +1444,42 @@ impl Collection {
     }
 
     /// Assemble today's session (mirrors `_gmat_build_today`).
+    /// The next practice-test form the student hasn't taken yet (lowest id), as
+    /// `{ id, year, label }`, or None if every form is taken / none exist.
+    fn gmat_next_untaken_test(&self, resource_dir: &str) -> Option<Value> {
+        let index = gmat_read_tests_index(resource_dir);
+        let taken = self
+            .get_config_optional::<Value, _>("gmatTestsTaken")
+            .filter(Value::is_object)
+            .unwrap_or_else(|| json!({}));
+        let taken_obj = taken.as_object();
+        let mut forms: Vec<(String, String, String)> = Vec::new(); // (id, year, label)
+        if let Some(years) = index["years"].as_object() {
+            for (group_key, arr) in years {
+                let Some(list) = arr.as_array() else {
+                    continue;
+                };
+                for f in list {
+                    let fid = f["id"].as_str().unwrap_or("");
+                    if fid.is_empty()
+                        || taken_obj.map(|o| o.contains_key(fid)).unwrap_or(false)
+                    {
+                        continue;
+                    }
+                    let year = gmat_form_year(f, group_key);
+                    let label = f["label"].as_str().unwrap_or(fid).to_string();
+                    forms.push((fid.to_string(), year, label));
+                }
+            }
+        }
+        if forms.is_empty() {
+            return None;
+        }
+        forms.sort_by(|a, b| a.0.cmp(&b.0));
+        let (id, year, label) = forms.into_iter().next().unwrap();
+        Some(json!({ "id": id, "year": year, "label": label }))
+    }
+
     fn gmat_build_today(&mut self, resource_dir: &str) -> Result<Value> {
         let plan = match self.get_config_optional::<Value, _>("gmatPlan") {
             Some(p) if !p.is_null() => p,
@@ -1547,7 +1638,10 @@ impl Collection {
             }));
         }
 
-        // suggest a timed mock when learning is done or the exam is close
+        // A mock/test simulation, at most one per day. Prefer a real practice-test
+        // form when the exam date is known and an untaken form remains, with cadence
+        // tightening toward the exam (~10d out >21d, ~weekly within 21d, ~4-5d
+        // within the final 14d). Fall back to the adaptive mock section otherwise.
         let mocks = self
             .get_config_optional::<Vec<Value>, _>("gmatMocks")
             .unwrap_or_default();
@@ -1557,17 +1651,46 @@ impl Collection {
             .and_then(|v| v.as_i64())
             .unwrap_or(0);
         let days_to_exam = pacing["days_to_exam"].as_i64();
-        let mock_due = (pacing["status"].as_str() == Some("learning_complete")
-            || days_to_exam.map(|d| d <= 21).unwrap_or(false))
-            && (now_ts - last_mock_ts) > 7 * 86_400;
-        if mock_due {
-            blocks.push(json!({
-                "kind": "mock",
-                "title": "Timed mock section",
-                "detail": "21 questions · 45:00 · exam conditions, no feedback until the end",
-                "count": 21,
-                "est_minutes": 45,
-            }));
+
+        let mut test_block: Option<Value> = None;
+        if let Some(dte) = days_to_exam {
+            if let Some(form) = self.gmat_next_untaken_test(resource_dir) {
+                let cadence_days = if dte <= 14 {
+                    4
+                } else if dte <= 21 {
+                    7
+                } else {
+                    10
+                };
+                if (now_ts - last_mock_ts) > cadence_days * 86_400 {
+                    let label = form["label"].as_str().unwrap_or("").to_string();
+                    test_block = Some(json!({
+                        "kind": "mock",
+                        "title": "Practice test",
+                        "detail": format!("{label} - 21 questions, timed"),
+                        "form_id": form["id"],
+                        "label": label,
+                        "est_minutes": 45,
+                    }));
+                }
+            }
+        }
+
+        if let Some(block) = test_block {
+            blocks.push(block);
+        } else {
+            let mock_due = (pacing["status"].as_str() == Some("learning_complete")
+                || days_to_exam.map(|d| d <= 21).unwrap_or(false))
+                && (now_ts - last_mock_ts) > 7 * 86_400;
+            if mock_due {
+                blocks.push(json!({
+                    "kind": "mock",
+                    "title": "Timed mock section",
+                    "detail": "21 questions · 45:00 · exam conditions, no feedback until the end",
+                    "count": 21,
+                    "est_minutes": 45,
+                }));
+            }
         }
 
         Ok(json!({
@@ -1587,6 +1710,9 @@ impl Collection {
         if n == 0 {
             return Ok(json!({ "ok": false }).to_string());
         }
+        // optional: which practice-test form produced these answers (year is
+        // accepted for client symmetry but resolved from the index, so unused).
+        let form_id = body["form_id"].as_str().unwrap_or("").to_string();
         let correct_count = results
             .iter()
             .filter(|r| r["correct"].as_bool().unwrap_or(false))
@@ -1641,7 +1767,7 @@ impl Collection {
         let mut mocks = self
             .get_config_optional::<Vec<Value>, _>("gmatMocks")
             .unwrap_or_default();
-        mocks.push(json!({
+        let mut mock_entry = json!({
             "ts": now,
             "accuracy": acc_round,
             "n": n,
@@ -1650,7 +1776,11 @@ impl Collection {
                 "rushed_wrong": rushed_wrong,
                 "slow_correct": slow_correct,
             },
-        }));
+        });
+        if !form_id.is_empty() {
+            mock_entry["form_id"] = json!(form_id);
+        }
+        mocks.push(mock_entry);
         let start = mocks.len().saturating_sub(20);
         let trimmed = mocks[start..].to_vec();
         self.gmat_put_config("gmatMocks", &Value::Array(trimmed))?;
@@ -1668,6 +1798,19 @@ impl Collection {
                 .unwrap_or(Value::Null),
             Err(_) => Value::Null,
         };
+
+        // a practice-test form additionally records itself as taken (id -> score)
+        if !form_id.is_empty() {
+            let mut taken = self
+                .get_config_optional::<Value, _>("gmatTestsTaken")
+                .filter(Value::is_object)
+                .unwrap_or_else(|| json!({}));
+            taken.as_object_mut().unwrap().insert(
+                form_id.clone(),
+                json!({ "ts": now, "accuracy": acc_round, "q": q }),
+            );
+            self.gmat_put_config("gmatTestsTaken", &taken)?;
+        }
 
         let mut pt: Vec<(String, (i64, i64))> =
             order.iter().map(|t| (t.clone(), per_topic[t])).collect();
@@ -2009,6 +2152,86 @@ impl Collection {
                 .to_string()
             }
             "gmatSubmitMock" => self.gmat_submit_mock(&parse_body(body), now)?,
+            "gmatTests" => {
+                // practice-test catalog grouped by year, merged with taken status
+                let index = gmat_read_tests_index(resource_dir);
+                let taken = self
+                    .get_config_optional::<Value, _>("gmatTestsTaken")
+                    .filter(Value::is_object)
+                    .unwrap_or_else(|| json!({}));
+                let taken_obj = taken.as_object();
+                let mut years_out = serde_json::Map::new();
+                if let Some(years) = index["years"].as_object() {
+                    for (group_key, forms) in years {
+                        let mut out_forms: Vec<Value> = Vec::new();
+                        if let Some(arr) = forms.as_array() {
+                            for f in arr {
+                                let fid = f["id"].as_str().unwrap_or("");
+                                let status = taken_obj.and_then(|o| o.get(fid));
+                                out_forms.push(json!({
+                                    "id": fid,
+                                    "year": gmat_form_year(f, group_key),
+                                    "label": f["label"].as_str().unwrap_or(fid),
+                                    "count": f.get("count").cloned().unwrap_or(json!(21)),
+                                    "topics": f.get("topics").cloned().unwrap_or_else(|| json!({})),
+                                    "sources": f.get("sources").cloned().unwrap_or_else(|| json!([])),
+                                    "taken": status.is_some(),
+                                    "accuracy": status.and_then(|s| s.get("accuracy")).cloned().unwrap_or(Value::Null),
+                                    "q": status.and_then(|s| s.get("q")).cloned().unwrap_or(Value::Null),
+                                    "ts": status.and_then(|s| s.get("ts")).cloned().unwrap_or(Value::Null),
+                                }));
+                            }
+                        }
+                        years_out.insert(group_key.clone(), Value::Array(out_forms));
+                    }
+                }
+                json!({ "years": Value::Object(years_out) }).to_string()
+            }
+            "gmatTestQuestions" => {
+                // one form's questions in the mock-pool shape, in fixed item order
+                let body = parse_body(body);
+                let form_id = body["id"].as_str().unwrap_or("");
+                match gmat_read_test_form(resource_dir, form_id) {
+                    Some(form) => {
+                        let empty: Vec<Value> = Vec::new();
+                        let items = form["items"].as_array().unwrap_or(&empty);
+                        let pool: Vec<Value> = items
+                            .iter()
+                            .map(|it| {
+                                let difficulty = it["difficulty"]
+                                    .as_str()
+                                    .filter(|s| !s.is_empty())
+                                    .unwrap_or("medium");
+                                json!({
+                                    "stem": it["stem"].as_str().unwrap_or(""),
+                                    "options": it.get("options").cloned().unwrap_or_else(|| json!({})),
+                                    "correct": it["correct"].as_str().unwrap_or(""),
+                                    "topic": it["topic"].as_str().unwrap_or(""),
+                                    "difficulty": difficulty,
+                                    "seen": false,
+                                })
+                            })
+                            .collect();
+                        let count = pool.len();
+                        json!({
+                            "pool": pool,
+                            "count": count,
+                            "seconds": form.get("seconds").cloned().unwrap_or(json!(45 * 60)),
+                            "target_ms": form.get("target_ms").cloned().unwrap_or(json!(128_000)),
+                            "form_id": form["id"].as_str().unwrap_or(form_id),
+                            "label": form["label"].as_str().unwrap_or(""),
+                        })
+                        .to_string()
+                    }
+                    None => json!({
+                        "pool": [],
+                        "count": 21,
+                        "seconds": 45 * 60,
+                        "target_ms": 128_000,
+                    })
+                    .to_string(),
+                }
+            }
             // Desktop-only bridges (open Anki's stats/deck browser, trigger the
             // desktop sync). No mobile equivalent - the phone syncs via
             // gmat_sync_collection_at and has its own stats/decks UI.

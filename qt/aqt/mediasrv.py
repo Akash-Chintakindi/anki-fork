@@ -1203,6 +1203,7 @@ GMAT_STATE_KEYS = [
     "gmatRepairTopics",
     "gmatTimedDrill",
     "gmatLessonScheduled",
+    "gmatTestsTaken",
 ]
 
 
@@ -1598,25 +1599,51 @@ def _gmat_build_today(col) -> dict:
             }
         )
 
-    # suggest a timed mock when the learning runway is done or the exam is
-    # close, at most every 7 days (the app decides when to simulate the exam)
+    # A mock/test simulation, at most one per day. Prefer a real practice-test
+    # form when the exam date is known and an untaken form remains, with cadence
+    # tightening toward the exam (~10d out >21d, ~weekly within 21d, ~4-5d within
+    # the final 14d). Fall back to the adaptive mock section otherwise.
     mocks = col.get_config("gmatMocks", []) or []
     last_mock_ts = mocks[-1].get("ts", 0) if mocks else 0
     days_to_exam = pacing.get("days_to_exam")
-    mock_due = (
-        pacing.get("status") == "learning_complete"
-        or (days_to_exam is not None and days_to_exam <= 21)
-    ) and (now_ts - last_mock_ts) > 7 * 86400
-    if mock_due:
-        blocks.append(
-            {
-                "kind": "mock",
-                "title": "Timed mock section",
-                "detail": "21 questions · 45:00 · exam conditions, no feedback until the end",
-                "count": 21,
-                "est_minutes": 45,
-            }
-        )
+
+    test_block = None
+    if days_to_exam is not None:
+        next_form = _gmat_next_untaken_test(col)
+        if next_form is not None:
+            if days_to_exam <= 14:
+                cadence_days = 4
+            elif days_to_exam <= 21:
+                cadence_days = 7
+            else:
+                cadence_days = 10
+            if (now_ts - last_mock_ts) > cadence_days * 86400:
+                test_block = {
+                    "kind": "mock",
+                    "title": "Practice test",
+                    "detail": f"{next_form['label']} - 21 questions, timed",
+                    "form_id": next_form["id"],
+                    "label": next_form["label"],
+                    "est_minutes": 45,
+                }
+
+    if test_block is not None:
+        blocks.append(test_block)
+    else:
+        mock_due = (
+            pacing.get("status") == "learning_complete"
+            or (days_to_exam is not None and days_to_exam <= 21)
+        ) and (now_ts - last_mock_ts) > 7 * 86400
+        if mock_due:
+            blocks.append(
+                {
+                    "kind": "mock",
+                    "title": "Timed mock section",
+                    "detail": "21 questions · 45:00 · exam conditions, no feedback until the end",
+                    "count": 21,
+                    "est_minutes": 45,
+                }
+            )
 
     return {
         "has_plan": True,
@@ -1635,6 +1662,70 @@ def _gmat_lessons_dir() -> str:
     # qt/aqt/mediasrv.py -> aqt -> qt -> repo root; lessons at gmatwiz/lessons.
     root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     return os.path.join(root, "gmatwiz", "lessons")
+
+
+def _gmat_tests_dir() -> str:
+    # sibling of _gmat_lessons_dir: the practice-test library at gmatwiz/tests.
+    root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    return os.path.join(root, "gmatwiz", "tests")
+
+
+def _load_tests_index() -> dict:
+    """The practice-test catalog ({"years": {...}}); empty if not authored yet."""
+    path = os.path.join(_gmat_tests_dir(), "index.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {"years": {}}
+
+
+def _gmat_test_forms() -> list[dict]:
+    """Flatten the tests index into a list of forms, each carrying its year."""
+    index = _load_tests_index()
+    forms: list[dict] = []
+    for year, year_forms in (index.get("years", {}) or {}).items():
+        for form in year_forms or []:
+            entry = dict(form)
+            entry.setdefault("year", year)
+            entry["year"] = str(entry["year"])
+            forms.append(entry)
+    return forms
+
+
+def _load_test_form(form_id: str) -> dict | None:
+    """Read one authored form (`tests/<year>/<id>.json`); the year is resolved
+    from the index so the caller only needs the form id."""
+    if not form_id:
+        return None
+    year = None
+    for form in _gmat_test_forms():
+        if form.get("id") == form_id:
+            year = str(form.get("year", ""))
+            break
+    if not year:
+        return None
+    path = os.path.join(_gmat_tests_dir(), year, f"{form_id}.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+
+def _gmat_next_untaken_test(col) -> dict | None:
+    """The next practice-test form the student hasn't taken (lowest id), or None."""
+    taken = col.get_config("gmatTestsTaken", {}) or {}
+    untaken = [f for f in _gmat_test_forms() if f.get("id") and f["id"] not in taken]
+    if not untaken:
+        return None
+    untaken.sort(key=lambda f: f["id"])
+    first = untaken[0]
+    return {
+        "id": first["id"],
+        "year": str(first.get("year", "")),
+        "label": first.get("label", first["id"]),
+    }
 
 
 def _load_lessons_index() -> dict:
@@ -1828,6 +1919,10 @@ def gmat_submit_mock() -> bytes:
     if n == 0:
         return json.dumps({"ok": False}).encode("utf-8")
 
+    # optional: which practice-test form produced these answers (year is accepted
+    # for symmetry with the client but resolved from the index, so it's unused).
+    form_id = str(body.get("form_id", "") or "")
+
     correct = sum(1 for r in results if r.get("correct"))
     accuracy = correct / n
 
@@ -1854,19 +1949,21 @@ def gmat_submit_mock() -> bytes:
         # every mock answer updates the living plan, like practice answers do
         _gmat_update_mastery(col, topic, bool(r.get("correct")))
 
+    now_ts = int(time.time())
     mocks = col.get_config("gmatMocks", []) or []
-    mocks.append(
-        {
-            "ts": int(time.time()),
-            "accuracy": round(accuracy, 4),
-            "n": n,
-            "timing": {
-                "avg_ms": avg_ms,
-                "rushed_wrong": rushed_wrong,
-                "slow_correct": slow_correct,
-            },
-        }
-    )
+    entry = {
+        "ts": now_ts,
+        "accuracy": round(accuracy, 4),
+        "n": n,
+        "timing": {
+            "avg_ms": avg_ms,
+            "rushed_wrong": rushed_wrong,
+            "slow_correct": slow_correct,
+        },
+    }
+    if form_id:
+        entry["form_id"] = form_id
+    mocks.append(entry)
     col.set_config("gmatMocks", mocks[-20:])
 
     # score the mock in the shared engine (single accuracy->Q implementation)
@@ -1879,6 +1976,12 @@ def gmat_submit_mock() -> bytes:
             q = engine_mocks[-1].get("q")
     except Exception as exc:
         print(f"GMATWiz: mock scoring unavailable: {exc}")
+
+    # a practice-test form additionally records itself as taken (id -> score)
+    if form_id:
+        taken = col.get_config("gmatTestsTaken", {}) or {}
+        taken[form_id] = {"ts": now_ts, "accuracy": round(accuracy, 4), "q": q}
+        col.set_config("gmatTestsTaken", taken)
 
     return json.dumps(
         {
@@ -1902,6 +2005,77 @@ def gmat_submit_mock() -> bytes:
     ).encode("utf-8")
 
 
+def gmat_tests() -> bytes:
+    """The practice-test catalog grouped by year, merged with this student's
+    taken/score status (from the gmatTestsTaken config). Empty if not authored."""
+    col = aqt.mw.col
+    index = _load_tests_index()
+    taken = col.get_config("gmatTestsTaken", {}) or {}
+    years_out: dict = {}
+    for year, forms in (index.get("years", {}) or {}).items():
+        out_forms = []
+        for form in forms or []:
+            fid = form.get("id")
+            status = taken.get(fid) or {}
+            out_forms.append(
+                {
+                    "id": fid,
+                    "year": str(form.get("year", year)),
+                    "label": form.get("label", fid),
+                    "count": form.get("count", 21),
+                    "topics": form.get("topics", {}) or {},
+                    "sources": form.get("sources", []) or [],
+                    "taken": fid in taken,
+                    "accuracy": status.get("accuracy"),
+                    "q": status.get("q"),
+                    "ts": status.get("ts"),
+                }
+            )
+        years_out[str(year)] = out_forms
+    return json.dumps({"years": years_out}).encode("utf-8")
+
+
+def gmat_test_questions() -> bytes:
+    """One practice-test form's questions in the SAME shape as a mock pool (so
+    the timed-mock flow is reused verbatim). Pool order is the form's item order."""
+    try:
+        body = json.loads(request.data or b"{}")
+    except Exception:
+        body = {}
+    form_id = str(body.get("id", ""))
+    form = _load_test_form(form_id)
+    if not form:
+        return json.dumps(
+            {
+                "pool": [],
+                "count": 21,
+                "seconds": 45 * 60,
+                "target_ms": GMAT_MOCK_TARGET_MS,
+            }
+        ).encode("utf-8")
+    pool = [
+        {
+            "stem": it.get("stem", ""),
+            "options": it.get("options", {}) or {},
+            "correct": it.get("correct", ""),
+            "topic": it.get("topic", ""),
+            "difficulty": it.get("difficulty", "medium") or "medium",
+            "seen": False,
+        }
+        for it in (form.get("items", []) or [])
+    ]
+    return json.dumps(
+        {
+            "pool": pool,
+            "count": len(pool),
+            "seconds": form.get("seconds", 45 * 60),
+            "target_ms": form.get("target_ms", GMAT_MOCK_TARGET_MS),
+            "form_id": form.get("id", form_id),
+            "label": form.get("label", ""),
+        }
+    ).encode("utf-8")
+
+
 post_handler_list = [
     congrats_info,
     gmat_questions,
@@ -1919,6 +2093,8 @@ post_handler_list = [
     gmat_today,
     gmat_mock_questions,
     gmat_submit_mock,
+    gmat_tests,
+    gmat_test_questions,
     gmat_official_scores,
     gmat_save_official_score,
     gmat_open_stats,
@@ -2072,6 +2248,8 @@ def _check_dynamic_request_permissions():
         "/_anki/gmatToday",
         "/_anki/gmatMockQuestions",
         "/_anki/gmatSubmitMock",
+        "/_anki/gmatTests",
+        "/_anki/gmatTestQuestions",
         "/_anki/gmatOfficialScores",
         "/_anki/gmatSaveOfficialScore",
         "/_anki/gmatOpenStats",

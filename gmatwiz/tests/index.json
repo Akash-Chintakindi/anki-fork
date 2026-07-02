@@ -1,0 +1,173 @@
+{
+  "schema_version": "1.0",
+  "exam": "GMAT Focus Edition",
+  "section": "Quantitative Reasoning",
+  "question_type": "Problem Solving",
+  "years": {
+    "2026": [
+      {
+        "id": "2026-form-01",
+        "year": 2026,
+        "label": "2026 Practice Test 1",
+        "count": 21,
+        "topics": {
+          "gmat::quant::arithmetic::number_properties": 8,
+          "gmat::quant::algebra::word_problems": 5,
+          "gmat::quant::arithmetic::percents": 3,
+          "gmat::quant::algebra::quadratics": 1,
+          "gmat::quant::arithmetic::counting": 1,
+          "gmat::quant::arithmetic::exponents_roots": 1,
+          "gmat::quant::arithmetic::probability": 1,
+          "gmat::quant::arithmetic::statistics": 1
+        },
+        "sources": [
+          "AQuA-RAT (DeepMind), Apache-2.0",
+          "GMATWiz authored (authored-gmatwiz)"
+        ]
+      },
+      {
+        "id": "2026-form-02",
+        "year": 2026,
+        "label": "2026 Practice Test 2",
+        "count": 21,
+        "topics": {
+          "gmat::quant::arithmetic::number_properties": 8,
+          "gmat::quant::algebra::word_problems": 4,
+          "gmat::quant::arithmetic::percents": 4,
+          "gmat::quant::arithmetic::counting": 1,
+          "gmat::quant::arithmetic::exponents_roots": 1,
+          "gmat::quant::arithmetic::ratios_proportions": 1,
+          "gmat::quant::arithmetic::sets": 1,
+          "gmat::quant::arithmetic::statistics": 1
+        },
+        "sources": [
+          "AQuA-RAT (DeepMind), Apache-2.0",
+          "GMATWiz authored (authored-gmatwiz)"
+        ]
+      },
+      {
+        "id": "2026-form-03",
+        "year": 2026,
+        "label": "2026 Practice Test 3",
+        "count": 21,
+        "topics": {
+          "gmat::quant::arithmetic::number_properties": 8,
+          "gmat::quant::algebra::word_problems": 4,
+          "gmat::quant::arithmetic::percents": 4,
+          "gmat::quant::algebra::absolute_value": 1,
+          "gmat::quant::arithmetic::counting": 1,
+          "gmat::quant::arithmetic::ratios_proportions": 1,
+          "gmat::quant::arithmetic::sets": 1,
+          "gmat::quant::arithmetic::statistics": 1
+        },
+        "sources": [
+          "AQuA-RAT (DeepMind), Apache-2.0",
+          "GMATWiz authored (authored-gmatwiz)"
+        ]
+      },
+      {
+        "id": "2026-form-04",
+        "year": 2026,
+        "label": "2026 Practice Test 4",
+        "count": 21,
+        "topics": {
+          "gmat::quant::arithmetic::number_properties": 8,
+          "gmat::quant::algebra::word_problems": 4,
+          "gmat::quant::arithmetic::percents": 4,
+          "gmat::quant::algebra::expressions": 1,
+          "gmat::quant::arithmetic::counting": 1,
+          "gmat::quant::arithmetic::probability": 1,
+          "gmat::quant::arithmetic::ratios_proportions": 1,
+          "gmat::quant::arithmetic::sets": 1
+        },
+        "sources": [
+          "AQuA-RAT (DeepMind), Apache-2.0",
+          "GMATWiz authored (authored-gmatwiz)"
+        ]
+      },
+      {
+        "id": "2026-form-05",
+        "year": 2026,
+        "label": "2026 Practice Test 5",
+        "count": 21,
+        "topics": {
+          "gmat::quant::arithmetic::number_properties": 8,
+          "gmat::quant::algebra::word_problems": 4,
+          "gmat::quant::arithmetic::percents": 3,
+          "gmat::quant::arithmetic::counting": 2,
+          "gmat::quant::algebra::functions": 1,
+          "gmat::quant::algebra::inequalities": 1,
+          "gmat::quant::arithmetic::probability": 1,
+          "gmat::quant::arithmetic::ratios_proportions": 1
+        },
+        "sources": [
+          "AQuA-RAT (DeepMind), Apache-2.0",
+          "GMATWiz authored (authored-gmatwiz)"
+        ]
+      },
+      {
+        "id": "2026-form-06",
+        "year": 2026,
+        "label": "2026 Practice Test 6",
+        "count": 21,
+        "topics": {
+          "gmat::quant::arithmetic::number_properties": 8,
+          "gmat::quant::algebra::word_problems": 4,
+          "gmat::quant::arithmetic::percents": 3,
+          "gmat::quant::algebra::inequalities": 1,
+          "gmat::quant::algebra::quadratics": 1,
+          "gmat::quant::algebra::sequences": 1,
+          "gmat::quant::arithmetic::counting": 1,
+          "gmat::quant::arithmetic::probability": 1,
+          "gmat::quant::arithmetic::statistics": 1
+        },
+        "sources": [
+          "AQuA-RAT (DeepMind), Apache-2.0",
+          "GMATWiz authored (authored-gmatwiz)"
+        ]
+      },
+      {
+        "id": "2026-form-07",
+        "year": 2026,
+        "label": "2026 Practice Test 7",
+        "count": 21,
+        "topics": {
+          "gmat::quant::arithmetic::number_properties": 8,
+          "gmat::quant::algebra::word_problems": 4,
+          "gmat::quant::arithmetic::percents": 3,
+          "gmat::quant::algebra::linear_equations": 1,
+          "gmat::quant::algebra::quadratics": 1,
+          "gmat::quant::arithmetic::counting": 1,
+          "gmat::quant::arithmetic::decimals": 1,
+          "gmat::quant::arithmetic::probability": 1,
+          "gmat::quant::arithmetic::statistics": 1
+        },
+        "sources": [
+          "AQuA-RAT (DeepMind), Apache-2.0",
+          "GMATWiz authored (authored-gmatwiz)"
+        ]
+      },
+      {
+        "id": "2026-form-08",
+        "year": 2026,
+        "label": "2026 Practice Test 8",
+        "count": 21,
+        "topics": {
+          "gmat::quant::arithmetic::number_properties": 7,
+          "gmat::quant::algebra::word_problems": 5,
+          "gmat::quant::arithmetic::percents": 3,
+          "gmat::quant::algebra::linear_equations": 1,
+          "gmat::quant::algebra::quadratics": 1,
+          "gmat::quant::arithmetic::counting": 1,
+          "gmat::quant::arithmetic::fractions": 1,
+          "gmat::quant::arithmetic::probability": 1,
+          "gmat::quant::arithmetic::statistics": 1
+        },
+        "sources": [
+          "AQuA-RAT (DeepMind), Apache-2.0",
+          "GMATWiz authored (authored-gmatwiz)"
+        ]
+      }
+    ]
+  }
+}

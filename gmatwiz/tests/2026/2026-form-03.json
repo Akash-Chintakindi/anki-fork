@@ -1,0 +1,345 @@
+{
+  "id": "2026-form-03",
+  "year": 2026,
+  "label": "2026 Practice Test 3",
+  "seconds": 2700,
+  "target_ms": 128000,
+  "items": [
+    {
+      "stem": "A bookshelf contains 45 books, 30 of which are hardcover and 20 of which are fiction. What is the maximum number of books that are both hardcover and fiction?",
+      "options": {
+        "A": "10",
+        "B": "15",
+        "C": "18",
+        "D": "20",
+        "E": "30"
+      },
+      "correct": "D",
+      "explanation": "Total Books = 45\nHard Cover = 30\nNon hardcover = 15\nFiction = 20\nNon-Fiction = 25\nMaximum number of Hardcover fiction will be 20( Assuming All the Fiction Books are Hard Cover )\nHence, the correct answer will be (D)",
+      "topic": "gmat::quant::arithmetic::sets",
+      "difficulty": "hard",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "Two friends are eating a jar full of candies. Had P eaten alone, it would have taken him 10 minutes to finish the candies in the jar. Had Q eaten alone, it would have taken her 5 minutes to finish half the jar. Since both of them are eating simultaneously, how many minutes would it take them to empty the jar?",
+      "options": {
+        "A": "4",
+        "B": "5",
+        "C": "6",
+        "D": "7",
+        "E": "8"
+      },
+      "correct": "B",
+      "explanation": "Together they eat 1/10 + 1/10 = 1/5 of the jar per minute.\nThe time to finish the jar is 5 minutes.\nThe answer is B.",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "How many integer values of x satisfy |x| < 4 ?",
+      "options": {
+        "A": "3",
+        "B": "4",
+        "C": "6",
+        "D": "7",
+        "E": "8"
+      },
+      "correct": "D",
+      "explanation": "|x| < 4 means -4 < x < 4. The integers are -3, -2, -1, 0, 1, 2, 3 — that is 7 values.",
+      "topic": "gmat::quant::algebra::absolute_value",
+      "difficulty": "easy",
+      "source": "GMATWiz original (authored)",
+      "license": "authored-gmatwiz"
+    },
+    {
+      "stem": "A student instead of finding the value of 7/8 of a number, found the value of 7/18 of the number. If his answer differed from the actual one by 770, find the that number.",
+      "options": {
+        "A": "1584",
+        "B": "2520",
+        "C": "1728",
+        "D": "1656",
+        "E": "None"
+      },
+      "correct": "A",
+      "explanation": "According to the question,\n=> [7/8 - 7/18 ]x = 770\n=> 7*10*x /18*8 = 770\n=> x = 11*18*8\n=> 1584.\nAnswer : A",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "hard",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "Ram and Krishna start from A and B, respectively, at the same time and travel towards each other at constant speeds of 20m/s and 40m/s, respectively, along the same route. Ram meets Krishna at point C on the road after 10 seconds. Find the total distance between A to B.",
+      "options": {
+        "A": "700 meters",
+        "B": "1000 meters",
+        "C": "700 kilometers",
+        "D": "555 meters",
+        "E": "600 meters"
+      },
+      "correct": "E",
+      "explanation": "Vr=20m/s, Vk=40m/s\ndistance A-C = 20*10=200m\ndistance B-C = 40*10=400m\nTherefore, distance A-C = 200+400=600m.\noption E",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "hard",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "A number of friends decided to go on a picnic and planned to spend Rs. 96 on eatables. Four of them, however, did not turn up. As a consequence, the remaining ones had to contribute Rs. 4 extra, each. The number of those who attended the picnic was",
+      "options": {
+        "A": "8",
+        "B": "12",
+        "C": "16",
+        "D": "24",
+        "E": "25"
+      },
+      "correct": "A",
+      "explanation": "Let the number of persons be x. Then,\n96/x-4-96/x=4 => x=12\nSo, required number =x-4=8.\nAnswer is A",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "If a subscription for 15 issues of a magazine costs $42.00 and represents a saving of 25 percent of the cover prices, what is the cover price per issue?",
+      "options": {
+        "A": "$7.73",
+        "B": "$6.73",
+        "C": "$5.73",
+        "D": "$4.73",
+        "E": "$3.73"
+      },
+      "correct": "E",
+      "explanation": "Let subscription per magazine = x\n15x = 42\n=> x= 2.8\nLet cover price per magazine = c\nSince there is a 25% saving on cover prices\n0.75c=x\n=> 0.75c = 2.8\n=>c= 3.73\nAnswer E",
+      "topic": "gmat::quant::arithmetic::percents",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "In how many ways can a teacher in a kindergarten school arrange a group of 3 children (Susan, Tim and Zen) on 3 identical chairs in a straight line so that Susan is on the left of Tim?",
+      "options": {
+        "A": "7",
+        "B": "3",
+        "C": "2",
+        "D": "1",
+        "E": "6"
+      },
+      "correct": "B",
+      "explanation": "Total ways in which 3 children can be arranged on 3 chairs = 3*2*1 = 6\nBut in half cases Susan will be left of Tim and in other half of cases Tim will be on left of Susan\ni.e. Desired cases in which Susan is on the left of Tim = (1/2)*6 = 3\nB",
+      "topic": "gmat::quant::arithmetic::counting",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "A grocer makes a 25% profit on the selling price for each bag of flour it sells. If he sells each bag for $100 and makes $3,000 in profit, how many bags did he sell?",
+      "options": {
+        "A": "12",
+        "B": "16",
+        "C": "24",
+        "D": "30",
+        "E": "40"
+      },
+      "correct": "C",
+      "explanation": "Profit on one bag: 100*1.25= 125\nNumber of bags sold = 3000/125 = 24\nAnswer is C.",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "In a large forest, 300 deer were caught, tagged, and returned during 2001. During 2002, 500 deer were caught at random, of which only 20 had tags from the previous year. If the percent of deer in the forest that had tags during the second year and were caught in the 500 deer sample is representative of the percent of the total deer population in the forest with tags, what is the total deer population in the forest (assuming no change in population between 2001 and 2002)?",
+      "options": {
+        "A": "300",
+        "B": "500",
+        "C": "5000",
+        "D": "6000",
+        "E": "7500"
+      },
+      "correct": "E",
+      "explanation": "Let N = the total number of deer in the forest.\nDuring the first year, the percent of deer in the entire population with tags was: 300/N\n20/500 is the percent of deer caught during the second year that had tags. Since this sample percent matches the percent for the entire population (i.e., the total number of tagged deer divided by the total number of deer), the two ratios are equal.\nEquating these two percents:\nSample = Population\n(20/500)=(300/N)\nN = (300/1)*(500/20)\nN=7500\nAnswer E",
+      "topic": "gmat::quant::arithmetic::percents",
+      "difficulty": "easy",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "900 + 5 × 12 = ?",
+      "options": {
+        "A": "820",
+        "B": "202",
+        "C": "420",
+        "D": "209",
+        "E": "960"
+      },
+      "correct": "E",
+      "explanation": "900 + 5 × 12 = ?\nor, ? = 900 + 60 = 960\nAnswer E",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "The average weight of 10 oarsmen in a boat is increased by 1.8 kg when one of the crew, who weighs 53 kg is replaced by a new man. Find the weight of the new man.",
+      "options": {
+        "A": "71",
+        "B": "62",
+        "C": "43",
+        "D": "67",
+        "E": "40"
+      },
+      "correct": "A",
+      "explanation": "Total weight increased = (1.8 x 10) kg =18 kg.\nWeight of the new man = (53 + 18) kg =71 kg.\nANSWER A",
+      "topic": "gmat::quant::arithmetic::statistics",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "Find 25/12*5",
+      "options": {
+        "A": "2.5498",
+        "B": "0.4167",
+        "C": "3.3987",
+        "D": "8.5497",
+        "E": "5.6312"
+      },
+      "correct": "B",
+      "explanation": "Answer=25/12*5\n=25/60=0.4167\nOption B is correct",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "You can purchase one soda and two energy bars for 150 cents, or two sodas and three energy bars for 300 cents. If the costs of the items do not change, compute the cost in cents of six sodas and seven bars.",
+      "options": {
+        "A": "500",
+        "B": "600",
+        "C": "750",
+        "D": "800",
+        "E": "900"
+      },
+      "correct": "E",
+      "explanation": "The cost of adding one soda and one energy bar is 150 cents. We need to purchase six sodas and seven bars. We know two sodas and three bars costs 300 cents, so to that purchase, we'd need to add four sodas and four bars - or four sets of items. So, we take the initial 300 + (4 * 150) = 300+600 = 900.\nAnswer - E.",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "hard",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "A grocery sells a bag of ice for $1.25, and makes 20% profit. If it sells 500 bags of ice, how much total profit does it make?",
+      "options": {
+        "A": "125",
+        "B": "150",
+        "C": "225",
+        "D": "250",
+        "E": "275"
+      },
+      "correct": "A",
+      "explanation": "Profit per bag = 1.25 * 0.20 = 0.25\nTotal profit = 500 * 0.25 = 125\nAnswer is A.",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "easy",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "You can rent DVDs at a local video store for $4.00 per movie without a membership. However, if you purchase a membership for $7.00 per month, you can rent DVDs for $2.00 each. What is the minimum amount of DVDs you would have to rent to make it worth it to purchase the membership?",
+      "options": {
+        "A": "1",
+        "B": "2",
+        "C": "3",
+        "D": "4",
+        "E": "5"
+      },
+      "correct": "D",
+      "explanation": "Let's compare the cost to rent x CDs.\n4x > 2x+7\n2x > 7\nx > 3.5\nThe minimum number of CDs you would need to rent is 4.\nThe answer is D.",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "A special cereal mixture contains rice, wheat and corn in the ratio of 2:3:5. If a bag of the mixture contains 3 pounds of rice, how much corn does it contain?",
+      "options": {
+        "A": "6.5",
+        "B": "7.5",
+        "C": "7",
+        "D": "6",
+        "E": "None of the above"
+      },
+      "correct": "B",
+      "explanation": "Let x = amount of corn\nrice/corn=2/5=3/x\n2 × x = 3 × 5\n2x = 15\nx=7.5\nAnswer:B",
+      "topic": "gmat::quant::arithmetic::ratios_proportions",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "What is 60% of 30% of 1400 grams?",
+      "options": {
+        "A": "450 gms",
+        "B": "100 gms",
+        "C": "252 gms",
+        "D": "240 gms",
+        "E": "None of these"
+      },
+      "correct": "C",
+      "explanation": "60/100 * 30/100 * 1400= 252\nAnswer: C",
+      "topic": "gmat::quant::arithmetic::percents",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "In a chocolate store, all chocolates are either vanilla or cocoa flavored only. 10% of the chocolates are cocoa flavored, 90% of the rest are squashed. What percentage of the chocolates are both vanilla flavored and not squashed?",
+      "options": {
+        "A": "1%",
+        "B": "2%",
+        "C": "5%",
+        "D": "9%",
+        "E": "10%"
+      },
+      "correct": "D",
+      "explanation": "If 10% of chocolates are cocoa flavored, then 90% are vanilla flavored.\n90% of 90% are squashed, i.e. 81% are squashed.\nVanilla flavored and non squashed= 90-81= 9%\nD is the answer",
+      "topic": "gmat::quant::arithmetic::percents",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "While selling a watch, a shopkeeper gives a discount of 5%. If he gives a discount of 7%, he earns Rs. 15 less as profit. The marked price of the watch is:",
+      "options": {
+        "A": "Rs. 697.50",
+        "B": "Rs. 712.50",
+        "C": "Rs. 787.50",
+        "D": "Rs. 750",
+        "E": "Rs. 780"
+      },
+      "correct": "D",
+      "explanation": "If he increases the discount by 2%, then his profit is 15 less. Let the marked price be X.\n.02x = 15\nx = 750 marked price\nANSWER:D",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "hard",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    },
+    {
+      "stem": "There is well of depth 30m and frog is at bottom of the well. He jumps 3m up one day and falls back 2m down the same day. How many days will it take for the frog to come out of the well?",
+      "options": {
+        "A": "25 days",
+        "B": "26 days",
+        "C": "27 days",
+        "D": "28 days",
+        "E": "29 days"
+      },
+      "correct": "D",
+      "explanation": "frog jumps 3 m up day & falls back 2 m down at night\nso,frog will be 3-2=1 m up in a day.\nThus, in 27 days it will be 27 m up\non 28 th day it will be at top i.e 27+3 = 30 m & will not fall down.\nANSWER:D",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+      "license": "Apache-2.0"
+    }
+  ]
+}
