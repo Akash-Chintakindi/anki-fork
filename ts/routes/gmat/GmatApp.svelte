@@ -64,7 +64,6 @@ chrome77/es2020 webview.
         openDecks,
         renderMath,
         setAiEnabledRemote,
-        addGeneratedQuestions,
     } from "./api";
     import { authEnabled, onUser, signIn, signUp, signOutUser, type AuthUser } from "./auth";
     import { getAiEnabled, setAiEnabled, generateJson, Schema } from "./ai";
@@ -334,6 +333,11 @@ chrome77/es2020 webview.
     // The taxonomy id backing the current topic/ephemeral session, so
     // "Generate more" can keep targeting it (topicLabelText is only display).
     let practiceTopicId = "";
+    // AI front-queue (Drill/scheduler mode): generated questions are served
+    // BEFORE the scheduler card, so "Generate with AI" injects them as the next
+    // few questions. Ephemeral (no scheduler write); wrong answers still log.
+    let aiFront: MockQuestion[] = [];
+    $: servingFront = practiceMode === "scheduler" && aiFront.length > 0;
 
     // ---- AI features (default OFF; user opt-in, mirrored to synced config) ----
     let aiOn = false; // reactive mirror of getAiEnabled() for the template
@@ -379,20 +383,29 @@ chrome77/es2020 webview.
                       difficulty: topicPool[topicIdx].difficulty,
                   } as ActiveQuestion)
                 : null
-            : card
+            : aiFront.length > 0
               ? ({
-                    stem: card.stem,
-                    options: card.options,
-                    correct: card.correct,
-                    explanation: card.explanation,
-                    topic: card.topic,
-                    difficulty: card.difficulty,
+                    stem: aiFront[0].stem,
+                    options: aiFront[0].options,
+                    correct: aiFront[0].correct,
+                    explanation: aiFront[0].explanation ?? "",
+                    topic: aiFront[0].topic,
+                    difficulty: aiFront[0].difficulty,
                 } as ActiveQuestion)
-              : null;
+              : card
+                ? ({
+                      stem: card.stem,
+                      options: card.options,
+                      correct: card.correct,
+                      explanation: card.explanation,
+                      topic: card.topic,
+                      difficulty: card.difficulty,
+                  } as ActiveQuestion)
+                : null;
     $: queueRemaining =
         practiceMode === "topic"
             ? Math.max(0, topicPool.length - topicIdx)
-            : remaining;
+            : remaining + aiFront.length;
     $: isLastTopicQ =
         practiceMode === "topic" && topicIdx >= topicPool.length - 1;
 
@@ -528,6 +541,7 @@ chrome77/es2020 webview.
         sessionEnded = false;
         aiNote = "";
         aiNoteOk = false;
+        aiFront = [];
     }
 
     /** End the running practice session and show its review summary. */
@@ -551,6 +565,16 @@ chrome77/es2020 webview.
     async function practiceNext(): Promise<void> {
         if (practiceMode === "topic") {
             advanceTopic();
+        } else if (aiFront.length > 0) {
+            // Consume the front-queue AI question, then fall back to the
+            // already-loaded scheduler card when it's empty.
+            aiFront = aiFront.slice(1);
+            selected = null;
+            revealed = false;
+            pendingWhy = false;
+            guessLogged = false;
+            started = Date.now();
+            restartPracticeTimer();
         } else {
             await loadNextCard();
         }
@@ -871,27 +895,6 @@ chrome77/es2020 webview.
         };
     }
 
-    /** Practice a generated batch ephemerally (topic mode): no scheduler writes,
-        but wrong answers still flow to the error log. Used on mobile and when the
-        scheduler can't yet serve freshly-added desktop cards. */
-    function startEphemeralPractice(
-        items: GmatQuestion[],
-        topicId: string,
-        label: string,
-    ): void {
-        practiceMode = "topic";
-        practiceTopicId = topicId;
-        topicLabelText = label;
-        topicPool = items.map(toMock);
-        topicIdx = 0;
-        selected = null;
-        revealed = false;
-        pendingWhy = false;
-        guessLogged = false;
-        started = Date.now();
-        restartPracticeTimer();
-    }
-
     /** Append more generated items to the current ephemeral/topic pool and resume
         (the button only shows when the pool is exhausted, so this steps forward). */
     function appendEphemeral(items: GmatQuestion[]): void {
@@ -943,30 +946,25 @@ chrome77/es2020 webview.
             aiGenerating = false;
             return;
         }
-        let added = 0;
-        try {
-            added = (await addGeneratedQuestions(survivors)).added;
-        } catch (_e) {
-            added = 0;
-        }
         const n = survivors.length;
         const plural = n === 1 ? "" : "s";
         if (practiceMode === "topic") {
-            // Study / ephemeral session: keep it ephemeral and continue.
+            // Study / ephemeral session: append and continue.
             appendEphemeral(survivors);
             aiNote = `Generated ${n} fresh AI question${plural} for this session.`;
-        } else if (added > 0) {
-            // Desktop Drill: persisted as real notes — serve via the scheduler.
-            await loadNextCard();
-            if (!card) startEphemeralPractice(survivors, target.id, target.label);
-            aiNote = `Added ${added} AI question${added === 1 ? "" : "s"} to your bank — quality-checked and now scheduled.`;
         } else {
-            // Mobile Drill (no-op add) or a failed add: practice ephemerally.
-            startEphemeralPractice(survivors, target.id, target.label);
-            aiNote = `Generated ${n} AI question${plural} for this session.`;
+            // Drill: push to the FRONT so they are the immediate next questions.
+            // Ephemeral (no scheduler write); wrong answers still hit the log.
+            aiFront = [...survivors.map(toMock), ...aiFront];
+            selected = null;
+            revealed = false;
+            pendingWhy = false;
+            guessLogged = false;
+            started = Date.now();
+            restartPracticeTimer();
+            aiNote = `Generated ${n} AI question${plural} — up next.`;
         }
         aiNoteOk = true;
-        pushIfAuthed();
         aiGenerating = false;
     }
 
@@ -1007,7 +1005,7 @@ chrome77/es2020 webview.
         // A scheduler card records a REAL review (Good if right, Again if wrong).
         // A fixed topic-pool question has no card to schedule; a wrong answer is
         // still logged to the error log via classifyMiss below.
-        if (practiceMode === "scheduler" && card) {
+        if (practiceMode === "scheduler" && aiFront.length === 0 && card) {
             await answerCard(card.card_id, isCorrect, answerMs);
             pushIfAuthed();
         }
@@ -1760,8 +1758,16 @@ chrome77/es2020 webview.
         </div>
         {#if activeQuestion || answered > 0}
             <div class="session-controls">
+                {#if aiOn && practiceMode === "scheduler" && activeQuestion}
+                    <button class="ghost" disabled={aiGenerating} on:click={generateMore}>
+                        {aiGenerating ? "Generating…" : "Generate with AI"}
+                    </button>
+                {/if}
                 <button class="ghost end-session" on:click={endSession}>End session</button>
             </div>
+        {/if}
+        {#if aiNote && activeQuestion}
+            <p class="ai-note" class:ok={aiNoteOk} class:muted={!aiNoteOk}>{aiNote}</p>
         {/if}
 
         {#if loading}
