@@ -340,7 +340,8 @@ chrome77/es2020 webview.
     let aiBusy = false; // toggle request in flight
     // On-demand hybrid generation (Drill + Study). Never runs when AI is off.
     let aiGenerating = false;
-    let aiNote = ""; // soft, themed "AI unavailable / couldn't generate" line
+    let aiNote = ""; // soft, themed status line (success or "AI unavailable")
+    let aiNoteOk = false; // true => success note (added/generated), false => problem
 
     // ---- per-session review (drives the End-session summary) ----
     interface SessionAnswer {
@@ -526,6 +527,7 @@ chrome77/es2020 webview.
         sessionLog = [];
         sessionEnded = false;
         aiNote = "";
+        aiNoteOk = false;
     }
 
     /** End the running practice session and show its review summary. */
@@ -907,6 +909,7 @@ chrome77/es2020 webview.
     async function generateMore(): Promise<void> {
         if (aiGenerating) return;
         aiNote = "";
+        aiNoteOk = false;
         if (!aiOn) {
             aiNote = "AI is off — turn it on in Progress to generate questions.";
             return;
@@ -946,17 +949,23 @@ chrome77/es2020 webview.
         } catch (_e) {
             added = 0;
         }
+        const n = survivors.length;
+        const plural = n === 1 ? "" : "s";
         if (practiceMode === "topic") {
             // Study / ephemeral session: keep it ephemeral and continue.
             appendEphemeral(survivors);
+            aiNote = `Generated ${n} fresh AI question${plural} for this session.`;
         } else if (added > 0) {
             // Desktop Drill: persisted as real notes — serve via the scheduler.
             await loadNextCard();
             if (!card) startEphemeralPractice(survivors, target.id, target.label);
+            aiNote = `Added ${added} AI question${added === 1 ? "" : "s"} to your bank — quality-checked and now scheduled.`;
         } else {
             // Mobile Drill (no-op add) or a failed add: practice ephemerally.
             startEphemeralPractice(survivors, target.id, target.label);
+            aiNote = `Generated ${n} AI question${plural} for this session.`;
         }
+        aiNoteOk = true;
         pushIfAuthed();
         aiGenerating = false;
     }
@@ -1866,7 +1875,7 @@ chrome77/es2020 webview.
                         {aiGenerating ? "Generating…" : "Generate more with AI"}
                     </button>
                 {/if}
-                {#if aiNote}<p class="muted ai-note">{aiNote}</p>{/if}
+                {#if aiNote}<p class="ai-note" class:ok={aiNoteOk} class:muted={!aiNoteOk}>{aiNote}</p>{/if}
                 {#if ctx}
                     <button class="ghost" on:click={ctx.onExit}>{ctx.exitLabel}</button>
                 {/if}
@@ -5103,6 +5112,10 @@ chrome77/es2020 webview.
     }
     .ai-note {
         margin-top: 12px;
+    }
+    .ai-note.ok {
+        color: var(--emerald-ink, var(--emerald));
+        font-weight: 600;
     }
 
     /* End-session control + review summary */
