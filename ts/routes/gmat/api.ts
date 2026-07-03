@@ -468,6 +468,29 @@ export async function resetState(): Promise<void> {
     await postJson("gmatResetState", null);
 }
 
+// ---- whole-collection file sync (Cloud Storage; cards + revlog) ----
+//
+// These back the additional whole-collection sync layer (colsync.ts). The
+// desktop implements them in qt/aqt/mediasrv.py and iOS implements the same
+// three paths natively.
+
+/** This device's collection modification time (ms) - Anki's col.mod - the
+ * last-writer-wins clock for whole-collection sync. */
+export async function colMeta(): Promise<{ mod: number }> {
+    return postJson<{ mod: number }>("gmatColMeta", { mod: 0 });
+}
+
+/** A consistent base64 snapshot of the whole .anki2 collection file. */
+export async function colExport(): Promise<{ b64: string }> {
+    return postJson<{ b64: string }>("gmatColExport", { b64: "" });
+}
+
+/** Replace this device's collection with a base64 .anki2 (the desktop backs up
+ * the file it overwrites first). Returns {ok:false} if the swap didn't happen. */
+export async function colReplace(b64: string): Promise<{ ok: boolean }> {
+    return postJson<{ ok: boolean }>("gmatColReplace", { ok: false }, { b64 });
+}
+
 /** Mirror the AI on/off choice to synced config so it follows the account across
  * devices (the localStorage override is the local mirror). Best-effort. */
 export async function setAiEnabledRemote(enabled: boolean): Promise<void> {

@@ -71,6 +71,11 @@ chrome77/es2020 webview.
     import { checkItem } from "./aiChecker";
     import { coachMiss } from "./coach";
     import { pullAccountState, scheduleStatePush, startAutoSync, stopAutoSync } from "./sync";
+    import {
+        pullCollectionOnLogin,
+        scheduleCollectionUpload,
+        uploadCollection,
+    } from "./colsync";
 
     export let overview: GmatOverview;
 
@@ -126,6 +131,15 @@ chrome77/es2020 webview.
     }
 
     async function doSignOut(): Promise<void> {
+        // Push the whole collection up before auth is torn down (Cloud Storage
+        // rejects writes once signed out). Best-effort - never block sign-out.
+        if (authUser) {
+            try {
+                await uploadCollection(authUser.uid);
+            } catch (e) {
+                console.error("GMATWiz collection upload on sign-out failed", e);
+            }
+        }
         await signOutUser();
     }
 
@@ -1503,6 +1517,10 @@ chrome77/es2020 webview.
             } catch (e) {
                 console.error("GMATWiz account load failed", e);
             }
+            // Then reconcile the WHOLE collection file (cards + revlog) via Cloud
+            // Storage - AFTER the config pull, so config + collection both land.
+            // Guarded internally; a Storage/network failure never breaks login.
+            await pullCollectionOnLogin(u.uid);
             await applyRemoteState();
             view = "home";
             // Cross-device sync runs automatically: pull newer remote state on a
@@ -1514,9 +1532,24 @@ chrome77/es2020 webview.
             fetchToday().then((t) => (today = t));
             fetchCalendar().then((c) => (calendar = c));
         }
+        // Push the whole collection up when the page is hidden or unloaded
+        // (tab switch, app backgrounded on mobile, window close). Debounced so
+        // rapid events coalesce; a no-op when signed out.
+        const uploadOnLeave = (): void => {
+            if (authUser) scheduleCollectionUpload(authUser.uid);
+        };
+        const onVisibility = (): void => {
+            if (document.visibilityState === "hidden") uploadOnLeave();
+        };
+        document.addEventListener("visibilitychange", onVisibility);
+        window.addEventListener("pagehide", uploadOnLeave);
+        window.addEventListener("beforeunload", uploadOnLeave);
         return () => {
             unsub();
             stopAutoSync();
+            document.removeEventListener("visibilitychange", onVisibility);
+            window.removeEventListener("pagehide", uploadOnLeave);
+            window.removeEventListener("beforeunload", uploadOnLeave);
         };
     });
 </script>

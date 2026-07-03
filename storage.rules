@@ -1,0 +1,14 @@
+rules_version = '2';
+
+// GMATWiz whole-collection sync (Cloud Storage). Each signed-in user can
+// read/write ONLY objects under their own users/{uid}/ prefix - their live
+// collection.anki2 and its backups/. Nobody can touch anyone else's data, and
+// unauthenticated requests are denied. Deploy with:
+//   firebase deploy --only storage
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /users/{uid}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}

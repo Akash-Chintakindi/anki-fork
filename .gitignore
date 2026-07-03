@@ -31,3 +31,7 @@ proof/*.dmg
 proof/*.zip
 # GMATWiz AI content-ingestion cache (regenerated at runtime)
 gmatwiz/content/.ai_cache.json
+# Firebase CLI logs
+firebase-debug.log
+firestore-debug.log
+.firebase/

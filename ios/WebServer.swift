@@ -24,8 +24,16 @@ final class WebServer {
     /// JSON response string (callers map a nil engine result to "{}").
     typealias EndpointHandler = (_ method: String, _ body: String) -> String
 
+    /// Handles the three whole-collection Cloud Storage sync routes
+    /// (gmatColMeta / gmatColExport / gmatColReplace) NATIVELY, since export and
+    /// replace must release/reopen the collection - which the engine dispatch
+    /// (an open handle) can't do. `route` is the method name (no `/_anki/`
+    /// prefix); `body` is the raw request body. Returns the JSON response string.
+    typealias ColHandler = (_ route: String, _ body: String) -> String
+
     private let webRoot: URL
     private let onEndpoint: EndpointHandler
+    private let onCol: ColHandler
     // Concurrent so parallel asset requests from the webview don't serialize;
     // the engine handler itself is serialized by the caller.
     private let queue = DispatchQueue(label: "com.gmatwiz.webserver", attributes: .concurrent)
@@ -34,9 +42,10 @@ final class WebServer {
     /// The ephemeral port the listener bound to (0 until `start()` succeeds).
     private(set) var port: UInt16 = 0
 
-    init(webRoot: URL, onEndpoint: @escaping EndpointHandler) {
+    init(webRoot: URL, onEndpoint: @escaping EndpointHandler, onCol: @escaping ColHandler) {
         self.webRoot = webRoot
         self.onEndpoint = onEndpoint
+        self.onCol = onCol
     }
 
     /// Starts the server on an ephemeral 127.0.0.1 port and returns it. Blocks
@@ -140,6 +149,20 @@ final class WebServer {
     private func route(_ request: HTTPRequest, body: Data) -> HTTPResponse {
         var path = request.path
         if let q = path.firstIndex(of: "?") { path = String(path[..<q]) }
+
+        // Whole-collection Cloud Storage sync is handled NATIVELY: gmatColExport
+        // and gmatColReplace must release/reopen the collection (which the engine
+        // dispatch can't do), so intercept all three exact paths BEFORE the
+        // generic /_anki/gmat* -> engine path below.
+        if request.method == "POST",
+           path == "/_anki/gmatColMeta"
+               || path == "/_anki/gmatColExport"
+               || path == "/_anki/gmatColReplace" {
+            let route = String(path.dropFirst("/_anki/".count))
+            let bodyString = String(data: body, encoding: .utf8) ?? ""
+            let json = onCol(route, bodyString)
+            return HTTPResponse(status: 200, contentType: "application/json", body: Data(json.utf8))
+        }
 
         // Our GMATWiz endpoints return JSON: POST /_anki/gmat<...>
         if request.method == "POST", path.hasPrefix("/_anki/gmat") {

@@ -51,6 +51,31 @@ New/changed endpoints: gmatTopicQuestions, gmatMilestoneQuestions, gmatSubmitQui
 gmatCalendar, gmatSetAiEnabled, gmatAddQuestions, gmatSetErrorTakeaway (+ Coach).
 New dirs/files: functions/ (Cloud Functions proxy), firebase.json, AIfeatures.txt,
 ts/routes/gmat/{ai,aiChecker,coach}.ts, gmatwiz/content/ai_ingest.py.
+
+-------------------------------------------------------------------------------
+FULL DESKTOP<->MOBILE SYNC via FIREBASE CLOUD STORAGE (2026-07-03, needs Blaze)
+-------------------------------------------------------------------------------
+Two sync layers now:
+- Firestore config layer (existing): instant per-user config (plan/progress/
+  scores/errors/quizzes/mastery). ts/routes/gmat/sync.ts.
+- Cloud Storage collection layer (NEW): the WHOLE .anki2 (cards + revlog) so raw
+  SRS scheduling is shared too. ts/routes/gmat/colsync.ts.
+  * Storage path users/{uid}/collection.anki2; conflict = last-writer-wins by the
+    collection mod time (col.mod), stored in the object's customMetadata.col_mod.
+  * ALWAYS backs up the copy it overwrites: desktop keeps <path>.bak-<ts>; the
+    cloud copy is copied to users/{uid}/backups/ before re-upload. Recoverable,
+    never silent data loss.
+  * Triggers: pull on login (after the Firestore pull); upload on sign-out +
+    page-hide (debounced). Guarded - never breaks the app on network failure.
+- Native contract (both platforms, /_anki/): gmatColMeta {mod}, gmatColExport
+  {b64}, gmatColReplace {b64}->{ok}. Desktop (mediasrv.py) does a WAL-checkpointed
+  snapshot + safe close->backup->atomic-swap->reopen on the GUI thread. iOS: the
+  WebServer intercepts these 3 paths and the WebAppController releases the
+  handle -> backup -> atomic replace -> reopen (handle made swappable). rslib adds
+  a gmatColMeta arm (col.mod).
+- Rules: storage.rules (per-uid), firebase.json storage section.
+- GO-LIVE: publish rules `firebase deploy --only storage` (Blaze). Firestore rules
+  already published earlier.
 ===============================================================================
 
 WHAT GMATWIZ IS

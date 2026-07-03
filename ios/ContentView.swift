@@ -162,10 +162,16 @@ final class WebAppController: ObservableObject {
     @Published private(set) var port: UInt16 = 0
     @Published private(set) var status = "Starting GMATWiz…"
 
-    // Retained so the collection + server outlive every request; the collection
-    // handle is also captured by the endpoint closure below.
+    // The server outlives every request. The collection handle is NOT captured
+    // by the server's closures; it lives HERE and is read/swapped LIVE so a
+    // whole-collection restore (gmatColReplace) can drop and reopen it under the
+    // running server. Every access to `collection` (and the paths below) happens
+    // on `engineQueue`, which serializes it with all engine calls, so no request
+    // can race the swap.
     private var server: WebServer?
     private var collection: GmatCollectionHandle?
+    private var collectionPath = ""
+    private var resourceDir = ""
     private let engineQueue = DispatchQueue(label: "com.gmatwiz.engine")
     private var started = false
 
@@ -189,19 +195,27 @@ final class WebAppController: ObservableObject {
             return
         }
         let resourceDir = GmatPaths.resourceDir() ?? ""
-        collection = handle
 
-        // Capture the handle + queue by value: no shared mutable state crosses
-        // threads, and the handle lives as long as the server's closure. Every
-        // engine call is serialized on engineQueue; a nil result maps to "{}"
-        // (200) so the SvelteKit client's res.text() -> JSON.parse works.
-        let engineQueue = self.engineQueue
-        let server = WebServer(webRoot: webRoot) { method, body in
-            engineQueue.sync {
-                GmatwizEngine.endpoint(
-                    handle, name: method, body: body, resourceDir: resourceDir) ?? "{}"
-            }
+        // Seed the live handle + paths ON engineQueue so every later read on that
+        // queue is properly synchronized (and the handle stays swappable).
+        engineQueue.sync {
+            self.collectionPath = path
+            self.resourceDir = resourceDir
+            self.collection = handle
         }
+
+        // The server's closures call BACK into the controller instead of
+        // capturing the handle, so a collection swap is visible to every later
+        // request. A nil result maps to "{}" (200) so the SvelteKit client's
+        // res.text() -> JSON.parse works.
+        let server = WebServer(
+            webRoot: webRoot,
+            onEndpoint: { [weak self] method, body in
+                self?.runEndpoint(method: method, body: body) ?? "{}"
+            },
+            onCol: { [weak self] route, body in
+                self?.runCol(route: route, body: body) ?? "{}"
+            })
 
         do {
             let boundPort = try server.start()
@@ -210,6 +224,149 @@ final class WebAppController: ObservableObject {
         } catch {
             publish(status: "Server error: \(error.localizedDescription)")
         }
+    }
+
+    // MARK: - Engine dispatch (serialized on engineQueue, reads the LIVE handle)
+
+    /// Generic `/_anki/<method>` -> shared engine, reading the current handle so a
+    /// collection swap between requests is picked up.
+    private func runEndpoint(method: String, body: String) -> String {
+        engineQueue.sync {
+            guard let handle = collection else { return "{}" }
+            return GmatwizEngine.endpoint(
+                handle, name: method, body: body, resourceDir: resourceDir) ?? "{}"
+        }
+    }
+
+    // MARK: - Whole-collection Cloud Storage sync (native)
+    // These run on the SAME serial queue as every engine call, so no request can
+    // touch the collection while it is being snapshotted or swapped. Export and
+    // replace can't go through the engine (they must release the open handle for a
+    // consistent file / an in-place swap), so they are handled here in Swift.
+
+    /// Routes one native sync endpoint. Called on the webserver queue; each method
+    /// takes engineQueue itself, so do NOT wrap this in engineQueue (the nested
+    /// sync would deadlock).
+    private func runCol(route: String, body: String) -> String {
+        switch route {
+        case "gmatColMeta": return colMeta()
+        case "gmatColExport": return colExport()
+        case "gmatColReplace": return colReplace(body: body)
+        default: return "{}"
+        }
+    }
+
+    /// `{ "mod": <col.mod ms> }` via the engine (handle stays open - a pure read).
+    private func colMeta() -> String {
+        engineQueue.sync {
+            guard let handle = collection else { return "{}" }
+            return GmatwizEngine.endpoint(
+                handle, name: "gmatColMeta", body: "", resourceDir: resourceDir) ?? "{}"
+        }
+    }
+
+    /// `{ "b64": "<base64 .anki2>" }`. Releasing the handle first flushes SQLite
+    /// (WAL checkpointed on close) so the bytes on disk are a consistent snapshot;
+    /// the handle is ALWAYS reopened before returning (even on read failure).
+    private func colExport() -> String {
+        engineQueue.sync {
+            let path = collectionPath
+            collection = nil  // drop the write lock so the file on disk is consistent
+            defer { collection = GmatwizEngine.openCollection(path: path) }
+
+            guard let data = try? Data(contentsOf: URL(fileURLWithPath: path)) else {
+                // Shape matches the client's {b64} type (empty => "no snapshot").
+                return jsonObject(["b64": "", "error": "could not read collection file"])
+            }
+            return jsonObject(["b64": data.base64EncodedString()])
+        }
+    }
+
+    /// Replace the whole collection with the posted base64 `.anki2`. Backs up the
+    /// current file first (MANDATORY), writes atomically, then reopens. On ANY
+    /// failure the original is restored from the backup and reopened, so the app
+    /// is never left without an open collection.
+    private func colReplace(body: String) -> String {
+        engineQueue.sync {
+            guard let bodyData = body.data(using: .utf8),
+                  let obj = try? JSONSerialization.jsonObject(with: bodyData) as? [String: Any],
+                  let b64 = obj["b64"] as? String,
+                  let newData = Data(base64Encoded: b64) else {
+                return jsonObject(["ok": false, "error": "invalid or missing b64 in body"])
+            }
+
+            let fm = FileManager.default
+            let path = collectionPath
+            let fileURL = URL(fileURLWithPath: path)
+            let stamp = Int(Date().timeIntervalSince1970)
+            let backupURL = URL(fileURLWithPath: "\(path).bak-\(stamp)")
+            let tmpURL = URL(fileURLWithPath: "\(path).tmp-\(stamp)")
+
+            collection = nil  // release the single SQLite writer before touching the file
+            // A clean close checkpoints + drops the WAL sidecars; delete any that
+            // linger so the reopened db reads exactly the bytes we write.
+            removeSQLiteSidecars(for: path)
+
+            // Mandatory backup of the current collection.
+            var backedUp = false
+            if fm.fileExists(atPath: path) {
+                do {
+                    try? fm.removeItem(at: backupURL)
+                    try fm.copyItem(at: fileURL, to: backupURL)
+                    backedUp = true
+                } catch {
+                    collection = GmatwizEngine.openCollection(path: path)
+                    return jsonObject(["ok": false, "error": "backup failed: \(error.localizedDescription)"])
+                }
+            }
+
+            do {
+                // Atomic swap: write to a temp file on the same volume, then move
+                // it into place in one step.
+                try? fm.removeItem(at: tmpURL)
+                try newData.write(to: tmpURL, options: .atomic)
+                if fm.fileExists(atPath: path) {
+                    _ = try fm.replaceItemAt(fileURL, withItemAt: tmpURL)
+                } else {
+                    try fm.moveItem(at: tmpURL, to: fileURL)
+                }
+                removeSQLiteSidecars(for: path)
+
+                guard let handle = GmatwizEngine.openCollection(path: path) else {
+                    throw ColSyncError.reopenFailed
+                }
+                collection = handle
+                return jsonObject(["ok": true])
+            } catch {
+                // Restore the original and reopen so we never lose the collection.
+                try? fm.removeItem(at: tmpURL)
+                if backedUp {
+                    try? fm.removeItem(at: fileURL)
+                    try? fm.copyItem(at: backupURL, to: fileURL)
+                }
+                removeSQLiteSidecars(for: path)
+                collection = GmatwizEngine.openCollection(path: path)
+                return jsonObject(["ok": false, "error": "replace failed: \(error.localizedDescription)"])
+            }
+        }
+    }
+
+    private enum ColSyncError: Error { case reopenFailed }
+
+    /// Removes the SQLite WAL/SHM sidecars next to `path` if present.
+    private func removeSQLiteSidecars(for path: String) {
+        let fm = FileManager.default
+        for suffix in ["-wal", "-shm"] {
+            try? fm.removeItem(atPath: path + suffix)
+        }
+    }
+
+    private func jsonObject(_ dict: [String: Any]) -> String {
+        guard let data = try? JSONSerialization.data(withJSONObject: dict),
+              let string = String(data: data, encoding: .utf8) else {
+            return "{}"
+        }
+        return string
     }
 
     private func publish(port: UInt16? = nil, status message: String) {

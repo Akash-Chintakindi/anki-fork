@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import base64
 import enum
 import json
 import logging
@@ -10,7 +11,9 @@ import mimetypes
 import os
 import re
 import secrets
+import shutil
 import sys
+import tempfile
 import threading
 import time
 import traceback
@@ -1364,6 +1367,179 @@ def gmat_reset_state() -> bytes:
         except Exception:
             col.set_config(key, None)
     col.set_config("topicAwareScheduling", False)
+    return json.dumps({"ok": True}).encode("utf-8")
+
+
+# ---- whole-collection Cloud Storage sync (desktop side) --------------------
+#
+# On top of the Firestore config sync above, the web/mobile layer keeps the
+# ENTIRE collection FILE (cards + revlog = the full SRS state) in sync through
+# Firebase Cloud Storage, so desktop and phone share one complete schedule. It
+# drives three endpoints implemented here (iOS implements the same paths
+# natively):
+#   gmatColMeta    -> {"mod": <col.mod ms>}           last-writer-wins clock
+#   gmatColExport  -> {"b64": "<base64 .anki2>"}       a CONSISTENT snapshot
+#   gmatColReplace {"b64": "..."} -> {"ok": true}      back up + atomic swap
+# Closing/replacing/reopening the collection may only happen on the GUI thread,
+# but these handlers run on a media-server worker thread, so we hop to the main
+# thread and block for the result.
+
+
+def _run_on_main_and_wait(func: "Callable[[], object]") -> object:
+    """Run func on the GUI (main) thread and block the calling worker thread
+    until it finishes, propagating the return value or the exception it raised."""
+    if threading.current_thread() is threading.main_thread():
+        return func()
+    done = threading.Event()
+    box: dict = {}
+
+    def wrapper() -> None:
+        try:
+            box["result"] = func()
+        except BaseException as exc:  # re-raised on the caller thread below
+            box["error"] = exc
+        finally:
+            done.set()
+
+    aqt.mw.taskman.run_on_main(wrapper)
+    done.wait()
+    if "error" in box:
+        raise box["error"]
+    return box.get("result")
+
+
+def _silent_remove(path: str) -> None:
+    try:
+        if os.path.exists(path):
+            os.remove(path)
+    except OSError:
+        pass
+
+
+def _reopen_collection(col, path: str, backup: str) -> None:
+    """Reopen the collection at path. If the freshly-swapped file won't open,
+    restore the local backup and open that instead, so the app is never left
+    without a collection. Reload the scheduler so it matches the (new) file."""
+    try:
+        col.reopen(after_full_sync=False)
+    except Exception:
+        try:
+            if os.path.exists(backup):
+                shutil.copy2(backup, path)
+        except Exception:
+            pass
+        col.reopen(after_full_sync=False)
+    try:
+        col._load_scheduler()
+    except Exception:
+        pass
+
+
+def gmat_col_meta() -> bytes:
+    """The open collection's modification time in ms (Anki's col.mod). The Cloud
+    Storage layer compares this against the remote object's stored col_mod to do
+    last-writer-wins whole-collection sync."""
+    col = aqt.mw.col
+    try:
+        mod = int(col.mod)
+    except Exception:
+        mod = int(col.db.scalar("select mod from col") or 0)
+    return json.dumps({"mod": mod}).encode("utf-8")
+
+
+def gmat_col_export() -> bytes:
+    """A CONSISTENT base64 snapshot of the whole .anki2 file, produced on the GUI
+    thread WITHOUT closing the live collection: fold the WAL back into the main
+    db (wal_checkpoint TRUNCATE), copy the file to a temp path, then base64 it."""
+
+    def snapshot() -> bytes:
+        col = aqt.mw.col
+        path = col.path
+        # Fold any WAL frames into the main db so a plain file copy is a
+        # complete, standalone snapshot (best-effort - the copy is valid either
+        # way, this just avoids relying on sidecar files).
+        try:
+            col.db.execute("pragma wal_checkpoint(TRUNCATE)")
+        except Exception:
+            pass
+        fd, tmp = tempfile.mkstemp(suffix=".anki2", dir=os.path.dirname(path))
+        os.close(fd)
+        try:
+            shutil.copyfile(path, tmp)
+            with open(tmp, "rb") as fh:
+                return fh.read()
+        finally:
+            _silent_remove(tmp)
+
+    data = _run_on_main_and_wait(snapshot)
+    b64 = base64.b64encode(data).decode("ascii")
+    return json.dumps({"b64": b64}).encode("utf-8")
+
+
+def gmat_col_replace() -> bytes:
+    """Replace the whole collection with an uploaded base64 .anki2 (a newer copy
+    pulled from Cloud Storage). On the GUI thread: stage the incoming bytes on
+    the same filesystem, close the collection, COPY the current file to
+    <path>.bak-<ts> (never silently discard the overwritten data), drop stale
+    WAL/SHM sidecars, atomically swap the new file in, then reopen + refresh.
+    The collection is always reopened - and if the new file won't open, the
+    local backup is restored - so the app is never left without a collection."""
+    try:
+        body = json.loads(request.data or b"{}")
+    except Exception:
+        body = {}
+    try:
+        new_bytes = base64.b64decode(body.get("b64") or "")
+    except Exception:
+        new_bytes = b""
+    if not new_bytes:
+        return json.dumps({"ok": False, "error": "empty payload"}).encode("utf-8")
+
+    def replace() -> None:
+        col = aqt.mw.col
+        path = col.path
+        folder = os.path.dirname(path)
+
+        # 1) stage the incoming bytes next to the collection (same filesystem)
+        #    so the final swap can be an atomic os.replace.
+        fd, staged = tempfile.mkstemp(suffix=".anki2.new", dir=folder)
+        try:
+            with os.fdopen(fd, "wb") as fh:
+                fh.write(new_bytes)
+        except Exception:
+            _silent_remove(staged)
+            raise
+
+        backup = f"{path}.bak-{int(time.time() * 1000)}"
+
+        # 2) close so the file is unlocked, then swap under a guaranteed reopen.
+        col.close(downgrade=False)
+        try:
+            if os.path.exists(path):
+                shutil.copy2(path, backup)  # keep the overwritten copy recoverable
+            # a leftover WAL/SHM from the OLD db would corrupt the new file.
+            _silent_remove(path + "-wal")
+            _silent_remove(path + "-shm")
+            os.replace(staged, path)  # atomic on the same filesystem
+        except Exception:
+            _silent_remove(staged)
+            # if we never got as far as writing the new file, restore the backup
+            # so we reopen the original rather than a missing/half-written file.
+            try:
+                if not os.path.exists(path) and os.path.exists(backup):
+                    shutil.copy2(backup, path)
+            except Exception:
+                pass
+            raise
+        finally:
+            _reopen_collection(col, path, backup)
+
+        try:
+            aqt.mw.reset()  # refresh the GUI/webview against the new collection
+        except Exception:
+            pass
+
+    _run_on_main_and_wait(replace)
     return json.dumps({"ok": True}).encode("utf-8")
 
 
@@ -3002,6 +3178,9 @@ post_handler_list = [
     gmat_export_state,
     gmat_import_state,
     gmat_reset_state,
+    gmat_col_meta,
+    gmat_col_export,
+    gmat_col_replace,
     get_deck_configs_for_update,
     update_deck_configs,
     get_scheduling_states_with_context,
@@ -3164,6 +3343,9 @@ def _check_dynamic_request_permissions():
         "/_anki/gmatExportState",
         "/_anki/gmatImportState",
         "/_anki/gmatResetState",
+        "/_anki/gmatColMeta",
+        "/_anki/gmatColExport",
+        "/_anki/gmatColReplace",
     ):
         pass
     else:

@@ -3218,6 +3218,16 @@ impl Collection {
                 self.set_config_bool(BoolKey::TopicAwareScheduling, false, false)?;
                 json!({ "ok": true }).to_string()
             }
+            // Whole-collection Cloud Storage sync (mobile): the modification time
+            // (`col.mod`, epoch ms) the web layer compares to decide which side is
+            // newer. Unlike gmatExport/gmatReplace-State above (config-only), the
+            // actual .anki2 export/replace can't run through this endpoint - they
+            // must release the open handle - so the native layer does those; this
+            // arm only surfaces the mod stamp while the collection is open.
+            "gmatColMeta" => {
+                let modified = self.storage.get_collection_timestamps()?.collection_change.0;
+                json!({ "mod": modified }).to_string()
+            }
             _ => return Option::<String>::None.or_invalid(format!("unknown gmat endpoint: {name}")),
         };
         Ok(out)
