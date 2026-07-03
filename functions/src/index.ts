@@ -138,12 +138,22 @@ export const gmatGenerate = onCall(
     try {
       completion = await createWithFallback(client, params);
     } catch (err) {
+      // Surface the real OpenAI cause (status/code/type) under non-`message`
+      // keys so the structured logger doesn't swallow them.
+      const e = err as { status?: number; code?: unknown; type?: unknown };
       logger.error("gmatGenerate: OpenAI request failed", {
         model,
-        message: errMessage(err),
+        openaiStatus: e?.status ?? null,
+        openaiCode: e?.code ?? null,
+        openaiType: e?.type ?? null,
+        detail: errMessage(err),
       });
-      // The client treats any failure as "degrade to fixed bank".
-      throw new HttpsError("internal", "AI generation failed.");
+      // The client treats any failure as "degrade to fixed bank". Include the
+      // status/code so it is visible in the callable error too (safe metadata).
+      throw new HttpsError(
+        "internal",
+        `AI generation failed (status ${e?.status ?? "?"}, code ${String(e?.code ?? "?")}).`,
+      );
     }
 
     const text = completion.choices[0]?.message?.content ?? "";
