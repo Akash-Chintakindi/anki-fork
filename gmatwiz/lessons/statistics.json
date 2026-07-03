@@ -59,7 +59,24 @@
     "retrieval_starter": {
       "duration_minutes": 5,
       "purpose": "Retrieves the four basic measures and the key intuition (the mean is a balance point) that powers today's sum-based reasoning.",
-      "if_students_struggle": "If median is shaky with an even count, remind them to sort first and average the two middle values."
+      "if_students_struggle": "If median is shaky with an even count, remind them to sort first and average the two middle values.",
+      "questions": [
+        {
+          "prompt": "Compute 4 + 8 + 9 + 11.",
+          "answer": "32.",
+          "targets": "addition (for a sum)"
+        },
+        {
+          "prompt": "Compute 32 ÷ 4.",
+          "answer": "8.",
+          "targets": "division (for an average)"
+        },
+        {
+          "prompt": "Put 12, 3, 20, 7, 9 in increasing order.",
+          "answer": "3, 7, 9, 12, 20.",
+          "targets": "ordering numbers"
+        }
+      ]
     },
     "prior_knowledge_bridge": "You computed means by adding then dividing. The GMAT rarely asks that directly — it gives you the average and asks you to work backward. The move is to flip the formula into sum = mean × count. Q5's insight (the mean is a balance point) is why that flip works, and it's the key to every 'missing value' and 'new average' question today.",
     "learning_intention": "By the end you can compute mean/median/mode/range and use sum = mean × count to solve missing-value and changing-average problems, and reason qualitatively about standard deviation.",

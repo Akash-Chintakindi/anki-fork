@@ -29,3 +29,5 @@ proof/*.mov
 proof/*.mp4
 proof/*.dmg
 proof/*.zip
+# GMATWiz AI content-ingestion cache (regenerated at runtime)
+gmatwiz/content/.ai_cache.json

@@ -59,7 +59,24 @@
     "retrieval_starter": {
       "duration_minutes": 5,
       "purpose": "Retrieves substitution (the only mechanical skill functions need) and the inside-out order that composition and custom symbols depend on.",
-      "if_students_struggle": "If notation feels alien, read f(3) as 'the rule f applied to 3' — substitute 3 wherever x appears."
+      "if_students_struggle": "If notation feels alien, read f(3) as 'the rule f applied to 3' — substitute 3 wherever x appears.",
+      "questions": [
+        {
+          "prompt": "Evaluate 2x + 1 when x = 3.",
+          "answer": "7.",
+          "targets": "evaluating expressions (algebraic expressions)"
+        },
+        {
+          "prompt": "Evaluate x^2 when x = −4.",
+          "answer": "16.",
+          "targets": "substituting a negative value"
+        },
+        {
+          "prompt": "Solve x + 1 = 10.",
+          "answer": "x = 9.",
+          "targets": "linear equations"
+        }
+      ]
     },
     "prior_knowledge_bridge": "A function is just a substitution rule with a name. You've evaluated expressions for years; f(x) only labels the rule so we can chain rules. Q5 sets up the one new habit: in f(g(x)) you work the inside first. Custom GMAT symbols (like a ◇ b) are the same idea wearing a costume.",
     "learning_intention": "By the end you can evaluate functions and compositions, decode custom operation symbols, and solve for an input or an inner rule.",

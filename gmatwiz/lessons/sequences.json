@@ -59,7 +59,24 @@
     "retrieval_starter": {
       "duration_minutes": 5,
       "purpose": "Retrieves the difference/ratio distinction and the need for a direct formula — exactly what the nth-term rules provide today.",
-      "if_students_struggle": "If difference vs ratio blurs, ask 'add or multiply to advance?' — add = arithmetic, multiply = geometric."
+      "if_students_struggle": "If difference vs ratio blurs, ask 'add or multiply to advance?' — add = arithmetic, multiply = geometric.",
+      "questions": [
+        {
+          "prompt": "If f(n) = 3n + 1, find f(4).",
+          "answer": "13.",
+          "targets": "function evaluation (functions)"
+        },
+        {
+          "prompt": "If g(x) = 2x, find g(5).",
+          "answer": "10.",
+          "targets": "function notation (functions)"
+        },
+        {
+          "prompt": "Evaluate 4 + (n − 1) × 3 when n = 20.",
+          "answer": "61.",
+          "targets": "evaluating an expression (algebraic expressions)"
+        }
+      ]
     },
     "prior_knowledge_bridge": "A sequence is a function whose input is the term number n. You spotted the step rule in the Do-Now; today you turn that rule into a formula so you can leap to the 20th or 100th term without listing. Arithmetic adds a fixed d; geometric multiplies by a fixed r — same idea, different operation.",
     "learning_intention": "By the end you can find any term of an arithmetic or geometric sequence with its formula and sum an arithmetic sequence.",

@@ -59,7 +59,24 @@
     "retrieval_starter": {
       "duration_minutes": 5,
       "purpose": "Retrieves the multiplication principle, factorials, and the order-vs-no-order distinction that decides permutation versus combination.",
-      "if_students_struggle": "If factorials are shaky, write 4! = 4·3·2·1 explicitly and connect to arranging 4 items."
+      "if_students_struggle": "If factorials are shaky, write 4! = 4·3·2·1 explicitly and connect to arranging 4 items.",
+      "questions": [
+        {
+          "prompt": "How many 2-digit codes use digits 1–4 if repeats are allowed?",
+          "answer": "16 (4 × 4).",
+          "targets": "multiplication principle"
+        },
+        {
+          "prompt": "Compute 4! (4 factorial).",
+          "answer": "24.",
+          "targets": "factorials"
+        },
+        {
+          "prompt": "Pick 1 of 3 shirts and 1 of 2 pants — how many outfits?",
+          "answer": "6 (3 × 2).",
+          "targets": "independent choices"
+        }
+      ]
     },
     "prior_knowledge_bridge": "Everything in counting grows from the multiplication principle you just used for outfits. Q5 splits the world in two: when order matters you keep all arrangements (permutations); when it doesn't, you divide out the repeats (combinations). Today you'll pick the right tool and compute it by hand.",
     "learning_intention": "By the end you can count outcomes with the multiplication principle and decide between permutations and combinations, computing each without a calculator.",

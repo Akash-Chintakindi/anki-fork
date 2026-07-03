@@ -24,6 +24,7 @@ Run:  python3 build.py
 import html as _html
 import json
 import os
+import re
 
 SCHEMA_VERSION = "1.0"
 EXAM = "GMAT Focus Edition"
@@ -394,6 +395,88 @@ def render_hub(topics):
 
 
 # ---------------------------------------------------------------------------
+# SCHEMA VALIDATION (stdlib-only; validates generated JSON against schema.json).
+# Supports the JSON-Schema draft-07 subset actually used by schema.json:
+# type, required, properties, items, enum, pattern, minItems, maxItems,
+# allOf, $ref (local), and additionalProperties.
+# ---------------------------------------------------------------------------
+def _type_ok(inst, t):
+    if t == "object":
+        return isinstance(inst, dict)
+    if t == "array":
+        return isinstance(inst, list)
+    if t == "string":
+        return isinstance(inst, str)
+    if t == "integer":
+        return isinstance(inst, int) and not isinstance(inst, bool)
+    if t == "number":
+        return isinstance(inst, (int, float)) and not isinstance(inst, bool)
+    if t == "boolean":
+        return isinstance(inst, bool)
+    if t == "null":
+        return inst is None
+    return True
+
+
+def _resolve_ref(ref, root):
+    if not ref.startswith("#/"):
+        raise ValueError(f"unsupported $ref: {ref}")
+    node = root
+    for part in ref[2:].split("/"):
+        node = node[part]
+    return node
+
+
+def _validate(inst, schema, root, path, errors):
+    if not isinstance(schema, dict):
+        return
+    if "$ref" in schema:
+        _validate(inst, _resolve_ref(schema["$ref"], root), root, path, errors)
+    for sub in schema.get("allOf", []):
+        _validate(inst, sub, root, path, errors)
+    if "type" in schema:
+        types = schema["type"] if isinstance(schema["type"], list) else [schema["type"]]
+        if not any(_type_ok(inst, t) for t in types):
+            errors.append(f"{path}: expected type {schema['type']}, got {type(inst).__name__}")
+            return
+    if "enum" in schema and inst not in schema["enum"]:
+        errors.append(f"{path}: {inst!r} not in enum {schema['enum']}")
+    if "pattern" in schema and isinstance(inst, str):
+        if re.search(schema["pattern"], inst) is None:
+            errors.append(f"{path}: {inst!r} does not match pattern {schema['pattern']!r}")
+    if isinstance(inst, dict):
+        props = schema.get("properties", {})
+        for req in schema.get("required", []):
+            if req not in inst:
+                errors.append(f"{path}: missing required key '{req}'")
+        if schema.get("additionalProperties", True) is False:
+            for k in inst:
+                if k not in props:
+                    errors.append(f"{path}: additional property '{k}' not allowed")
+        for k, subschema in props.items():
+            if k in inst:
+                _validate(inst[k], subschema, root, f"{path}.{k}", errors)
+    if isinstance(inst, list):
+        if "minItems" in schema and len(inst) < schema["minItems"]:
+            errors.append(f"{path}: array len {len(inst)} < minItems {schema['minItems']}")
+        if "maxItems" in schema and len(inst) > schema["maxItems"]:
+            errors.append(f"{path}: array len {len(inst)} > maxItems {schema['maxItems']}")
+        if isinstance(schema.get("items"), dict):
+            for i, el in enumerate(inst):
+                _validate(el, schema["items"], root, f"{path}[{i}]", errors)
+
+
+def validate_against_schema(data_by_slug):
+    """Validate each already-written lesson JSON against schema.json on disk."""
+    with open(os.path.join(HERE, "schema.json"), encoding="utf-8") as f:
+        schema = json.load(f)
+    errors = []
+    for slug, data in data_by_slug.items():
+        _validate(data, schema, schema, slug, errors)
+    return errors
+
+
+# ---------------------------------------------------------------------------
 # WRITE EVERYTHING
 # ---------------------------------------------------------------------------
 def check_items(topics):
@@ -512,16 +595,32 @@ def build():
     with open(os.path.join(HERE, "README"), "w", encoding="utf-8") as f:
         f.write(render_readme(topics, index))
 
-    # validate JSON round-trips
+    # validate JSON round-trips, then validate each file against schema.json
+    loaded = {}
     for t in topics:
         with open(os.path.join(HERE, t["slug"] + ".json"), encoding="utf-8") as f:
-            json.load(f)
+            loaded[t["slug"]] = json.load(f)
     with open(os.path.join(HERE, "index.json"), encoding="utf-8") as f:
         json.load(f)
+
+    schema_errors = validate_against_schema(loaded)
+    if schema_errors:
+        print("SCHEMA VALIDATION FAILED:")
+        for e in schema_errors:
+            print("  - " + e)
+        raise SystemExit(1)
+
+    with_questions = sum(
+        1 for d in loaded.values()
+        if d.get("opening", {}).get("retrieval_starter", {}).get("questions")
+    )
 
     print(f"OK: {len(topics)} topics, "
           f"{index['counts']['practice_items']} practice items, "
           f"{len(topics)+1} html files (incl. hub) + index.json + README.")
+    print(f"Schema: all {len(loaded)} lesson JSON files validate against schema.json.")
+    print(f"Openings: {with_questions}/{len(loaded)} have opening.retrieval_starter.questions "
+          f"(+ prior_knowledge_bridge + learning_intention).")
 
 
 def render_readme(topics, index):

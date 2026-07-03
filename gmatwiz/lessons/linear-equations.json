@@ -58,7 +58,24 @@
     "retrieval_starter": {
       "duration_minutes": 5,
       "purpose": "Retrieves the isolate-the-variable routine and the substitution idea that drives systems today.",
-      "if_students_struggle": "If order trips them, label the operations done TO x, then undo them last-in-first-out."
+      "if_students_struggle": "If order trips them, label the operations done TO x, then undo them last-in-first-out.",
+      "questions": [
+        {
+          "prompt": "Simplify 3x + 5x − 2x.",
+          "answer": "6x.",
+          "targets": "combining like terms (algebraic expressions)"
+        },
+        {
+          "prompt": "Expand 3(x − 2).",
+          "answer": "3x − 6.",
+          "targets": "distributing (algebraic expressions)"
+        },
+        {
+          "prompt": "Evaluate 2x + 5 when x = 4.",
+          "answer": "13.",
+          "targets": "evaluating expressions (algebraic expressions)"
+        }
+      ]
     },
     "prior_knowledge_bridge": "Solving an equation is just undoing operations in reverse, as Q5 highlights. A system is two equations sharing the same unknowns; the trick is to remove one variable — by substitution (use one equation inside the other) or elimination (add/subtract to cancel) — and reduce it to the single-variable problem you already own.",
     "learning_intention": "By the end you can solve linear equations (including fractional ones) and two-variable systems by substitution or elimination.",

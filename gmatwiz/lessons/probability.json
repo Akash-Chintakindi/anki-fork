@@ -59,7 +59,24 @@
     "retrieval_starter": {
       "duration_minutes": 5,
       "purpose": "Retrieves favorable-over-total, the complement, and the multiply-for-'and' rule — the three moves behind every problem today.",
-      "if_students_struggle": "If the multiply rule is unclear, list all four outcomes of two flips (HH, HT, TH, TT) to show P(HH) = 1/4."
+      "if_students_struggle": "If the multiply rule is unclear, list all four outcomes of two flips (HH, HT, TH, TT) to show P(HH) = 1/4.",
+      "questions": [
+        {
+          "prompt": "Simplify 3/6.",
+          "answer": "1/2.",
+          "targets": "fractions"
+        },
+        {
+          "prompt": "How many equally likely outcomes are there when rolling one die?",
+          "answer": "6.",
+          "targets": "counting outcomes"
+        },
+        {
+          "prompt": "How many outcomes are there for one coin flip?",
+          "answer": "2 (heads, tails).",
+          "targets": "counting a sample space"
+        }
+      ]
     },
     "prior_knowledge_bridge": "Probability is just counting wrapped in a fraction: favorable outcomes over total outcomes (your counting skills). Q4 and Q5 add the two power tools — the complement (turn 'at least one' into '1 minus none') and multiplying for 'and'. Today you'll combine them, including draws without replacement where the counts change.",
     "learning_intention": "By the end you can compute single-event probabilities, use the complement for 'at least one', and combine events with the 'and' (multiply) and 'or' (add minus overlap) rules.",

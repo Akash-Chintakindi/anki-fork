@@ -77,10 +77,26 @@
         },
         "retrieval_starter": {
           "type": "object",
+          "required": ["questions"],
           "properties": {
             "duration_minutes": { "type": "number" },
             "purpose": { "type": "string" },
-            "if_students_struggle": { "type": "string" }
+            "if_students_struggle": { "type": "string" },
+            "questions": {
+              "type": "array",
+              "description": "2-3 low-stakes recall questions (with answers) targeting the SPECIFIC prior knowledge this topic builds on, drawn from its index.json prerequisites (Rosenshine daily review; Agarwal retrieval).",
+              "minItems": 2,
+              "maxItems": 3,
+              "items": {
+                "type": "object",
+                "required": ["prompt", "answer"],
+                "properties": {
+                  "prompt": { "type": "string" },
+                  "answer": { "type": "string" },
+                  "targets": { "type": "string", "description": "Which prerequisite (from index.json) this recall question targets" }
+                }
+              }
+            }
           }
         },
         "prior_knowledge_bridge": { "type": "string" },

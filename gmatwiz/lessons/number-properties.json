@@ -59,7 +59,24 @@
     "retrieval_starter": {
       "duration_minutes": 5,
       "purpose": "Surfaces factors, primes, even/odd, and the key idea that divisibility by a composite equals divisibility by its prime parts — exactly the tools today extends to factor-counting and GCD/LCM.",
-      "if_students_struggle": "If factors of 24 are shaky, rebuild with a factor-pair ladder (1×24, 2×12, 3×8, 4×6) before moving on; today's factor counting depends on it."
+      "if_students_struggle": "If factors of 24 are shaky, rebuild with a factor-pair ladder (1×24, 2×12, 3×8, 4×6) before moving on; today's factor counting depends on it.",
+      "questions": [
+        {
+          "prompt": "Compute 7 × 8 and 9 × 6.",
+          "answer": "56 and 54.",
+          "targets": "multiplication facts (prerequisite)"
+        },
+        {
+          "prompt": "Compute 56 ÷ 8 and 63 ÷ 9.",
+          "answer": "7 and 7.",
+          "targets": "division facts (prerequisite)"
+        },
+        {
+          "prompt": "In 3,204, what is the value of the digit 2?",
+          "answer": "200 (the hundreds place).",
+          "targets": "place value (prerequisite)"
+        }
+      ]
     },
     "prior_knowledge_bridge": "You just found the factors of 24 by trial. That works for small numbers, but the GMAT asks about numbers like 72 — or 2³ × 3² × 5 — where listing is far too slow. Today we replace listing with prime factorization, the 'DNA' of an integer, which lets you count factors and find GCD/LCM in seconds.",
     "learning_intention": "By the end you can prime-factorize an integer and use it to count its factors, find GCD/LCM, and settle 'must be true' even/odd and divisibility questions without listing.",

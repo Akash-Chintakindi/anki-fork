@@ -59,7 +59,24 @@
     "retrieval_starter": {
       "duration_minutes": 5,
       "purpose": "Retrieves conversions and 'percent of a number', and surfaces the #1 percent misconception (successive percents don't add) that today's lesson resolves.",
-      "if_students_struggle": "If 10% of 80 is hard, anchor '10% = move the decimal one place'; build 5% and 15% from there."
+      "if_students_struggle": "If 10% of 80 is hard, anchor '10% = move the decimal one place'; build 5% and 15% from there.",
+      "questions": [
+        {
+          "prompt": "Write 1/4 as a decimal.",
+          "answer": "0.25.",
+          "targets": "fraction ↔ decimal"
+        },
+        {
+          "prompt": "Write 0.6 as a fraction in lowest terms.",
+          "answer": "3/5.",
+          "targets": "decimal ↔ fraction"
+        },
+        {
+          "prompt": "Compute 1/2 of 80.",
+          "answer": "40.",
+          "targets": "fraction of a quantity"
+        }
+      ]
     },
     "prior_knowledge_bridge": "Q5 is the trap the GMAT sets constantly: people add percents. You can't, because each percent acts on a different base. Today you'll treat every percent as a multiplier (15% off = ×0.85) and chain them — the same equivalent-fraction thinking you used with decimals, now applied to change.",
     "learning_intention": "By the end you can compute percent-of and percent-change, chain successive percents by multiplying, and reverse a percent to find the original amount.",

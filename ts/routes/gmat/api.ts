@@ -37,7 +37,9 @@ export interface GmatMemory {
 export interface GmatProfile {
     exam_date: string;
     days_per_week: number;
-    minutes_per_day: number;
+    // Goal-driven: the target GMAT Focus total (clamped [205, 805]) replaces the
+    // old minutes-per-day input; the per-topic mastery bar is derived from it.
+    target_score: number;
 }
 
 export interface PlanTopic {
@@ -48,10 +50,12 @@ export interface PlanTopic {
 
 export interface GmatPlan {
     topics: PlanTopic[];
-    daily_minutes: number;
     days_per_week: number;
     days_to_exam: number | null;
     created_ts: number;
+    // derived from the profile's target_score at plan-build time
+    target_score: number;
+    mastery_bar: number;
 }
 
 export interface PerfEval {
@@ -153,6 +157,9 @@ export interface GmatPacing {
     behind_by: number;
     topics_per_study_day: number;
     study_days_remaining: number | null;
+    // true when we're inside the final 10 days (or too little runway) and pacing
+    // falls back to all remaining study days instead of the exam-minus-10 window
+    late_start: boolean;
 }
 
 export interface TodayBlock {
@@ -171,6 +178,7 @@ export interface TodaySession {
     has_plan: boolean;
     pacing: GmatPacing | null;
     blocks: TodayBlock[];
+    // DERIVED (no longer user-set): the sum of est_minutes of today's blocks
     daily_minutes: number;
 }
 
@@ -185,6 +193,13 @@ export interface PretestQuestion {
 /** Why a question was missed - the one-prompt error-log classification. */
 export type ErrorWhy = "careless" | "concept_gap" | "timing" | "guess" | "";
 
+export interface CoachTakeaway {
+    root_cause: string;
+    rule: string;
+    check: string;
+    next_action: string;
+}
+
 export interface ErrorEntry {
     stem: string;
     topic: string;
@@ -193,6 +208,9 @@ export interface ErrorEntry {
     why?: ErrorWhy;
     ms?: number;
     mock?: boolean;
+    options?: Record<string, string>;
+    explanation?: string;
+    ai_takeaway?: CoachTakeaway;
     ts: number;
 }
 
@@ -272,6 +290,8 @@ export async function logError(entry: {
     why?: ErrorWhy;
     ms?: number;
     mock?: boolean;
+    options?: Record<string, string>;
+    explanation?: string;
 }): Promise<void> {
     await postJson("gmatLogError", null, entry);
 }
@@ -281,6 +301,10 @@ export async function fetchErrorLog(): Promise<ErrorEntry[]> {
         entries: [],
     });
     return data.entries ?? [];
+}
+
+export async function saveErrorTakeaway(ts: number, takeaway: CoachTakeaway): Promise<void> {
+    await postJson("gmatSetErrorTakeaway", null, { ts, takeaway });
 }
 
 export async function fetchNextCard(): Promise<NextCardResult> {

@@ -1,0 +1,138 @@
+===============================================================================
+GMATWiz - AI FEATURES
+Companion to PRD.md (product plan), context.txt (codebase map), and
+context/update.txt (build state).
+Repo: /Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork
+Last updated: 2026-07-02
+===============================================================================
+
+WHY THESE, AND WHY NOW
+- The PRD deliberately shipped with AI OFF (S3 non-goal, S16) but pre-designed
+  the seams: a ContentSource adapter, a CardGenerator interface feeding a "7f"
+  checker, and a Coach interface for turning error-log reflections into
+  takeaways. This pass lights up those seams in dependency order.
+- Everything is grounded in the two Brainlift SPOVs (PRD S2):
+    SPOV 1 - "Structure is the product" (adaptive learning structure).
+    SPOV 2 - "Application over lessons" (lessons create confidence; application
+             creates competence) + "error logs are non-negotiable: capture WHY
+             a miss happened and what to do next time."
+- HARD RULE honored by every feature (PRD S16, S14.4): AI is flag-gated and must
+  DEGRADE CLEANLY. If AI is off, unconfigured, offline, times out, or returns
+  garbage, the app falls back to its existing non-AI behavior - no crash, no
+  blocked review, scores/reviews keep working.
+
+ARCHITECTURE (one AI client, two apps)
+- Desktop and iOS render the SAME SvelteKit app, which already initializes
+  Firebase (Auth + Firestore). So runtime AI lives in the TypeScript layer via
+  Firebase AI Logic (Gemini) -> one implementation serves BOTH platforms, no
+  Python/Rust AI duplication. The Rust/Python backends only store data.
+- Content ingestion is the exception: a build-time Python tool (offline), not
+  part of the running app.
+
+-------------------------------------------------------------------------------
+F - SHARED AI PLUMBING  (the seam everything else uses)
+-------------------------------------------------------------------------------
+Files: ts/routes/gmat/ai.ts, ts/routes/gmat/aiChecker.ts
+What:
+- ai.ts wraps Firebase AI Logic (Gemini Developer API) behind one function,
+  generateJson<T>(prompt, schema): returns { ok:true, value } or { ok:false,
+  reason } and NEVER throws. Enforces a timeout, parses structured JSON output
+  (responseMimeType + responseSchema), lazily inits the model. Model:
+  gemini-flash-latest.
+- Flag gating: aiEnabled = Firebase configured (getApps>0) AND not disabled;
+  override via localStorage "gmatwiz.ai" = "on"/"off"; defaults ON when Firebase
+  is configured. getAiEnabled()/setAiEnabled() exported.
+- aiChecker.ts is the PRD S14.8 "7f" quality gate: checkItem() scores an item on
+  correctness / in-scope / well-formed / teaching-quality with a pass cutoff.
+  FAIL-CLOSED (pass:false) when AI is unavailable, so a future generator can
+  never admit an unchecked card. Not wired to anything live yet - it is the
+  harness the card generators (features B/C) will call before admitting content.
+Reasoning: PRD S16 "Define clean seams so AI plugs in later; everything runs
+with AI off." This is that seam + the degrade-cleanly guarantee in one place, so
+A (and future B/C/D) reuse it instead of each re-implementing AI calls.
+
+-------------------------------------------------------------------------------
+E - AI CONTENT INGESTION  (build-time content quality)
+-------------------------------------------------------------------------------
+File: gmatwiz/content/ai_ingest.py   (reuses taxonomy.py; sibling of scraper.py)
+What (four passes over a normalized question bank):
+  1. Validity/scope filter - drop malformed items; quarantine out-of-scope
+     geometry / Data Sufficiency (PRD S5 = Problem Solving, arithmetic+algebra).
+  2. AI auto-tag - classify each item to exactly one leaf topic in
+     taxonomy.TAXONOMY with a confidence; low-confidence flagged for review.
+  3. Semantic dedupe - group reworded-equivalent duplicates (embeddings, or
+     token-set similarity offline); near-dups of official/copyrighted items are
+     quarantined as leakage risks (PRD S14.3).
+  4. Difficulty estimate - re-level easy/medium/hard (the scraped bank skews
+     ~80% "medium").
+Degrade: client is Gemini (if GEMINI_API_KEY/GOOGLE_API_KEY + SDK present),
+else a HeuristicClient (taxonomy keyword tagger + rules), else --mock (offline
+deterministic). Results cached in gmatwiz/content/.ai_cache.json (gitignored).
+Safety: never overwrites questions.json without --write; writes to
+questions.curated.json + a machine-readable report by default.
+Run (user step, needs a key):
+  cd gmatwiz/content
+  python3 ai_ingest.py --in questions.json --out questions.curated.json \
+      --report ai_ingest_report.json
+  # review low_confidence_items / duplicate_groups / quarantined, then promote.
+Offline smoke test (no key): add --mock.
+Reasoning: PRD S13 pipeline already calls for "topic auto-tag" and
+"near-duplicate detection"; AI raises tagging/dedupe/difficulty quality, which
+every downstream feature (coverage map, topic-aware scheduling, future
+generation) keys off. Build-time, so runtime degrade rules don't apply.
+
+-------------------------------------------------------------------------------
+A - AI ERROR-LOG COACH  (the headline, most Brainlift-aligned feature)
+-------------------------------------------------------------------------------
+Files: ts/routes/gmat/coach.ts, GmatApp.svelte (Error Log view), api.ts,
+       qt/aqt/mediasrv.py, rslib/src/gmatwiz.rs
+What:
+- On a logged miss, coachMiss(entry) asks Gemini (via F's generateJson) to first
+  solve the problem, then return a structured CoachTakeaway:
+    { root_cause, rule, check, next_action }
+  shown in the Error Log as "Why you missed it / The rule / 10-second check /
+  Next". The model explains the KNOWN-correct reasoning (miss context is passed
+  in), it does not invent facts.
+- Miss context: error-log entries are enriched (best-effort) with the option
+  texts + explanation at log time so the coach has full context.
+- Persistence + sync: the takeaway is saved on the error entry (ai_takeaway)
+  via a new endpoint gmatSetErrorTakeaway, implemented with desktop+mobile
+  parity (mediasrv.py + gmatwiz.rs). Because gmatErrorLog is already synced
+  state, takeaways cache and follow the account across devices - generated once.
+- Degrade: the "Coach this miss" button only shows when AI is enabled; on any
+  failure it shows "AI coaching unavailable" and the existing repair loop
+  (careless/concept_gap/timing repair + "Repair now") is untouched.
+Reasoning: The Brainlift calls error logs non-negotiable and wants the WHY + the
+next step (PRD S2, S10). The app already captured a coarse why-tag and scheduled
+repairs; the coach turns each miss into a specific, personalized root-cause and
+fix - directly serving SPOV 2 (application/repair over passive lessons). PRD S16
+pre-named this the "Coach interface."
+
+-------------------------------------------------------------------------------
+GUARDRAILS (all features)
+-------------------------------------------------------------------------------
+- Flag-gated, OFF-safe: builds, typechecks, and runs with AI disabled.
+- Degrade cleanly: generateJson never throws; UI hides/greys AI affordances and
+  falls back; reviews and scores never depend on AI.
+- 7f checker (aiChecker.ts) gates any future AI-GENERATED card, fail-closed.
+- Leakage (PRD S14.3): ingestion quarantines near-copies of official items.
+- No official/copyrighted content enters the learning pool (PRD S13).
+- Honesty rule (PRD S4) still applies to any AI-derived claim.
+
+-------------------------------------------------------------------------------
+PREREQUISITE TO GO LIVE (one-time, like publishing the Firestore rules)
+-------------------------------------------------------------------------------
+- Enable Firebase AI Logic (Gemini Developer API) for the `gmatwiz` project:
+    npx -y firebase-tools@latest init ailogic       (run in the repo)
+  or enable it in the Firebase console. Until then, AI stays off and the app
+  uses fallbacks. App Check is recommended before any public release.
+- For E's live run, set GEMINI_API_KEY (or GOOGLE_API_KEY) in the shell.
+
+-------------------------------------------------------------------------------
+NOT YET (designed-for, not built)
+-------------------------------------------------------------------------------
+- B - AI application-item generator (fills coverage gaps), gated by aiChecker.
+- C - AI paraphrase/variant generator (memory->performance bridge, PRD S14.2).
+- D - Socratic hint-ladder / post-attempt tutor in the lesson loop.
+The F seam + aiChecker harness were built so B/C/D drop in without re-plumbing.
+===============================================================================

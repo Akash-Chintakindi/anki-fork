@@ -58,7 +58,24 @@
     "retrieval_starter": {
       "duration_minutes": 5,
       "purpose": "Retrieves decimal–fraction conversions and the decimal-place rule for multiplication — the foundation for the division and size-estimation problems coming up.",
-      "if_students_struggle": "If place counting is shaky, model 0.2 × 0.3 as (2/10)(3/10) = 6/100 = 0.06 to anchor the rule in fractions."
+      "if_students_struggle": "If place counting is shaky, model 0.2 × 0.3 as (2/10)(3/10) = 6/100 = 0.06 to anchor the rule in fractions.",
+      "questions": [
+        {
+          "prompt": "In 5.36, which digit is in the tenths place?",
+          "answer": "3.",
+          "targets": "place value"
+        },
+        {
+          "prompt": "Write 0.75 as a fraction in lowest terms.",
+          "answer": "3/4.",
+          "targets": "fractions"
+        },
+        {
+          "prompt": "What fraction equals 0.125?",
+          "answer": "1/8.",
+          "targets": "fractions"
+        }
+      ]
     },
     "prior_knowledge_bridge": "Q5 explains the rule you'll lean on all lesson: a decimal is just a fraction over a power of ten. Once you see 0.2 = 2/10, multiplying and dividing decimals becomes counting places and shifting by powers of 10 — and converting to fractions is often the fastest GMAT move.",
     "learning_intention": "By the end you can multiply and divide decimals reliably, convert among fractions/decimals/percents, and estimate to check an answer's size.",

@@ -59,7 +59,24 @@
     "retrieval_starter": {
       "duration_minutes": 5,
       "purpose": "Retrieves simplifying, scaling, and cross-multiplication — the exact moves needed for the parts method and combined ratios today.",
-      "if_students_struggle": "If splitting 30 as 2:3 is hard, show 2+3 = 5 parts, 30/5 = 6 per part, then 12 and 18."
+      "if_students_struggle": "If splitting 30 as 2:3 is hard, show 2+3 = 5 parts, 30/5 = 6 per part, then 12 and 18.",
+      "questions": [
+        {
+          "prompt": "Write 18/24 in lowest terms.",
+          "answer": "3/4.",
+          "targets": "simplifying fractions"
+        },
+        {
+          "prompt": "Solve 3/4 = x/20.",
+          "answer": "x = 15.",
+          "targets": "equivalent fractions"
+        },
+        {
+          "prompt": "What is 25% of 40?",
+          "answer": "10.",
+          "targets": "percents"
+        }
+      ]
     },
     "prior_knowledge_bridge": "A ratio is a pair of equivalent fractions waiting to be scaled. In the Do-Now you scaled 2:3 by a multiplier; today you'll formalize that into the 'parts' method — sum the parts, find the value of one part, then scale every share — and chain ratios that share a term.",
     "learning_intention": "By the end you can solve ratio and proportion problems with the parts method, scale with cross-multiplication, and combine ratios sharing a common term.",

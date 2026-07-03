@@ -59,7 +59,24 @@
     "retrieval_starter": {
       "duration_minutes": 5,
       "purpose": "Retrieves the product rule, square roots, and the zero exponent — the building blocks for power-of-a-power, fractional exponents, and same-base comparisons today.",
-      "if_students_struggle": "If the product rule is fuzzy, expand it: x^2 · x^3 = (x·x)(x·x·x) = x^5. Counting factors makes 'add exponents' obvious."
+      "if_students_struggle": "If the product rule is fuzzy, expand it: x^2 · x^3 = (x·x)(x·x·x) = x^5. Counting factors makes 'add exponents' obvious.",
+      "questions": [
+        {
+          "prompt": "Write 72 as a product of primes.",
+          "answer": "2^3 × 3^2 (72 = 8 × 9).",
+          "targets": "prime factorization (number properties)"
+        },
+        {
+          "prompt": "Compute 2^3 and 5^2.",
+          "answer": "8 and 25.",
+          "targets": "repeated multiplication"
+        },
+        {
+          "prompt": "Compute 6 × 7 and 8 × 9.",
+          "answer": "42 and 72.",
+          "targets": "multiplication facts"
+        }
+      ]
     },
     "prior_knowledge_bridge": "Q5 is the engine of this whole topic: every exponent rule is just careful factor-counting, and prime factorization (last week) is how you put two different-looking powers on the same base. Today you'll extend 'add the exponents' to dividing, nesting, and fractional exponents (roots) — and use a common base to compare powers fast.",
     "learning_intention": "By the end you can simplify expressions with the exponent rules, convert between roots and fractional exponents, and solve and compare exponential expressions by matching bases.",

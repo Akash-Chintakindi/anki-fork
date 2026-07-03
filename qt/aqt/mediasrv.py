@@ -872,7 +872,7 @@ def _gmat_apply_repair(col, topic: str, why: str) -> None:
 
 def gmat_log_error() -> bytes:
     """Append a missed (or guessed) question to the error log and schedule its
-    repair. Body: JSON entry with optional why/ms/guess/mock fields."""
+    repair. Body: JSON entry with optional why/ms/guess/mock/options/explanation."""
     col = aqt.mw.col
     try:
         entry = json.loads(request.data or b"{}")
@@ -880,20 +880,44 @@ def gmat_log_error() -> bytes:
         entry = {}
     topic = str(entry.get("topic", ""))
     why = str(entry.get("why", ""))
-    _gmat_append_error(
-        col,
-        {
-            "stem": str(entry.get("stem", ""))[:400],
-            "topic": topic,
-            "chosen": str(entry.get("chosen", "")),
-            "correct": str(entry.get("correct", "")),
-            "why": why,
-            "ms": int(entry.get("ms", 0) or 0),
-            "mock": bool(entry.get("mock", False)),
-            "ts": int(time.time()),
-        },
-    )
+    record: dict = {
+        "stem": str(entry.get("stem", ""))[:400],
+        "topic": topic,
+        "chosen": str(entry.get("chosen", "")),
+        "correct": str(entry.get("correct", "")),
+        "why": why,
+        "ms": int(entry.get("ms", 0) or 0),
+        "mock": bool(entry.get("mock", False)),
+        "ts": int(time.time()),
+    }
+    options = entry.get("options")
+    if isinstance(options, dict):
+        record["options"] = {str(k): str(v) for k, v in options.items()}
+    explanation = entry.get("explanation")
+    if explanation:
+        record["explanation"] = str(explanation)[:2000]
+    _gmat_append_error(col, record)
     _gmat_apply_repair(col, topic, why)
+    return b""
+
+
+def gmat_set_error_takeaway() -> bytes:
+    """Attach a cached AI coach takeaway to an existing error-log entry."""
+    col = aqt.mw.col
+    try:
+        body = json.loads(request.data or b"{}")
+    except Exception:
+        return b""
+    ts = int(body.get("ts", 0) or 0)
+    takeaway = body.get("takeaway")
+    if not ts or takeaway is None:
+        return b""
+    entries = col.get_config("gmatErrorLog", []) or []
+    for entry in entries:
+        if int(entry.get("ts", 0)) == ts:
+            entry["ai_takeaway"] = takeaway
+            col.set_config("gmatErrorLog", entries)
+            break
     return b""
 
 
@@ -985,6 +1009,18 @@ def _gmat_status(mastery: float) -> str:
     return "weak" if mastery < 0.5 else ("developing" if mastery < 0.8 else "strong")
 
 
+def _gmat_mastery_bar(target_score: int) -> float:
+    """Per-topic mastery a student must reach, derived from their target GMAT
+    Focus total. Higher goals demand deeper mastery before a topic is 'done'."""
+    if target_score >= 705:
+        return 0.90
+    if target_score >= 645:
+        return 0.85
+    if target_score >= 585:
+        return 0.80
+    return 0.72
+
+
 def _gmat_topic_of_card(col, card_id: int) -> str:
     try:
         note = col.get_card(card_id).note()
@@ -1046,10 +1082,11 @@ def gmat_save_profile() -> bytes:
         body = json.loads(request.data or b"{}")
     except Exception:
         body = {}
+    target_score = max(205, min(805, int(body.get("target_score", 645) or 645)))
     profile = {
         "exam_date": str(body.get("exam_date", "")),
         "days_per_week": int(body.get("days_per_week", 5) or 5),
-        "minutes_per_day": int(body.get("minutes_per_day", 60) or 60),
+        "target_score": target_score,
     }
     col.set_config("gmatProfile", profile)
     return b""
@@ -1387,14 +1424,16 @@ def gmat_submit_pretest() -> bytes:
             days_to_exam = None
 
     ranked = sorted(diagnosis.items(), key=lambda kv: kv[1])
+    target_score = max(205, min(805, int(profile.get("target_score", 645) or 645)))
     plan = {
         "topics": [
             {"topic": t, "mastery": m, "status": status(m)} for t, m in ranked
         ],
-        "daily_minutes": int(profile.get("minutes_per_day", 60) or 60),
         "days_per_week": int(profile.get("days_per_week", 5) or 5),
         "days_to_exam": days_to_exam,
         "created_ts": int(time.time()),
+        "target_score": target_score,
+        "mastery_bar": _gmat_mastery_bar(target_score),
     }
     col.set_config("gmatDiagnosis", diagnosis)
     col.set_config("gmatPlan", plan)
@@ -1404,10 +1443,14 @@ def gmat_submit_pretest() -> bytes:
 def _gmat_pacing(col) -> dict:
     """Dated pacing + on/behind-track from profile + plan + learned progress.
 
-    The learn phase is the first ~70% of the runway to the exam; the final ~30%
-    is reserved for review/mixed practice (mirrors the learn-then-drill model).
-    'behind_by' compares topics actually learned against the count you should
-    have learned by today if you were on an even pace.
+    GOAL-DRIVEN: every lesson must be finished at least 10 calendar days before
+    the exam (a HARD boundary), leaving the final 10 days for review + mocks.
+    Lessons are paced across the study days that fall inside that learn window.
+    A very late or dire start (already inside the last 10 days, or too many
+    topics for the window) flips `late_start` and paces across ALL remaining
+    study days instead, so lessons still get scheduled - even into the last 10.
+    'behind_by' compares topics learned against the count you should have learned
+    by today on an even pace from plan-creation to the exam-minus-10 deadline.
     """
     from datetime import date, datetime
 
@@ -1430,6 +1473,7 @@ def _gmat_pacing(col) -> dict:
         "behind_by": 0,
         "topics_per_study_day": 0.0,
         "study_days_remaining": None,
+        "late_start": False,
     }
 
     exam_date = profile.get("exam_date", "") or ""
@@ -1450,22 +1494,40 @@ def _gmat_pacing(col) -> dict:
         out["status"] = "learning_complete"
         return out
 
-    # learning runway = first 70% of remaining study days (min 1 while any remain)
-    learn_days_remaining = max(1, round(study_days_remaining * 0.7)) if study_days_remaining else 0
+    # HARD BOUNDARY: finish every lesson >= 10 calendar days before the exam.
+    learn_calendar_days = max(0, days_to_exam - 10)
+    learn_days_remaining = round(learn_calendar_days * days_per_week / 7.0)
+    if topics_remaining and learn_calendar_days > 0:
+        learn_days_remaining = max(1, learn_days_remaining)
+
+    # LATE-START EXCEPTION: already inside the final 10 days, or the learn window
+    # is too tight to fit the remaining topics at a sane pace (~<=2 topics/study
+    # day) -> pace across ALL remaining study days so lessons still get scheduled.
+    late_start = False
+    if learn_calendar_days <= 0 or (
+        learn_days_remaining > 0 and topics_remaining / learn_days_remaining > 2.0
+    ):
+        late_start = True
+        learn_days_remaining = study_days_remaining
+        if topics_remaining and days_to_exam > 0:
+            learn_days_remaining = max(1, learn_days_remaining)
+    out["late_start"] = late_start
+
     out["topics_per_study_day"] = (
-        round(topics_remaining / learn_days_remaining, 2) if learn_days_remaining else float(topics_remaining)
+        round(topics_remaining / learn_days_remaining, 2)
+        if learn_days_remaining
+        else float(topics_remaining)
     )
 
-    # expected progress by today (day-of-week cancels in the ratio, so use
-    # calendar days between plan creation and the 70% learn deadline)
+    # expected progress by today: linear from plan creation to the exam-minus-10
+    # deadline (the hard lessons-finish-by date), day-of-week cancels in the ratio
     created_ts = plan.get("created_ts")
     behind = 0
     if created_ts:
         created = date.fromtimestamp(created_ts)
-        total_days = max(1, (exam - created).days)
-        learn_deadline_days = max(1.0, total_days * 0.7)
+        total_days = max(1, (exam - created).days - 10)
         elapsed = max(0, (today - created).days)
-        frac = min(1.0, elapsed / learn_deadline_days)
+        frac = min(1.0, elapsed / total_days)
         expected_learned = round(topics_total * frac)
         behind = max(0, expected_learned - topics_learned)
     out["behind_by"] = behind
@@ -1496,7 +1558,6 @@ def _gmat_build_today(col) -> dict:
         return {"has_plan": False, "pacing": None, "blocks": [], "daily_minutes": 0}
 
     pacing = _gmat_pacing(col)
-    daily_minutes = float(plan.get("daily_minutes", 60) or 60)
     learned = col.get_config("gmatLearned", {}) or {}
     topics = plan.get("topics", []) or []
 
@@ -1507,13 +1568,20 @@ def _gmat_build_today(col) -> dict:
     queued = col.sched.get_queued_cards(fetch_limit=1)
     due_total = queued.new_count + queued.learning_count + queued.review_count
 
+    # DERIVED daily budget (no longer user-set): enough room for today's paced
+    # lessons + the due reviews + slack. It only sizes block-filling here; the
+    # RETURNED daily_minutes is the sum of the blocks actually added below.
+    reviews_est = round(due_total * _REVIEW_MIN) if due_total > 0 else 0
+    topics_per_day = round(pacing.get("topics_per_study_day", 0) or 0)
+    budget = float(max(30, topics_per_day * _LESSON_MIN + reviews_est + 20))
+
     # which weak topics have an authored lesson (so "Learn" links resolve)
     lesson_ids = {
         t.get("topic_id") for t in _load_lessons_index().get("topics", [])
     }
 
     blocks: list = []
-    remaining_min = daily_minutes
+    remaining_min = budget
 
     if due_total > 0:
         est = round(due_total * _REVIEW_MIN)
@@ -1663,7 +1731,7 @@ def _gmat_build_today(col) -> dict:
         "has_plan": True,
         "pacing": pacing,
         "blocks": blocks,
-        "daily_minutes": round(daily_minutes),
+        "daily_minutes": sum(int(b.get("est_minutes", 0)) for b in blocks),
     }
 
 
@@ -2103,6 +2171,7 @@ post_handler_list = [
     gmat_overview,
     gmat_error_log,
     gmat_log_error,
+    gmat_set_error_takeaway,
     gmat_save_profile,
     gmat_pretest_questions,
     gmat_submit_pretest,
@@ -2258,6 +2327,7 @@ def _check_dynamic_request_permissions():
         "/_anki/gmatAnswerCard",
         "/_anki/gmatErrorLog",
         "/_anki/gmatLogError",
+        "/_anki/gmatSetErrorTakeaway",
         "/_anki/gmatSaveProfile",
         "/_anki/gmatPretestQuestions",
         "/_anki/gmatSubmitPretest",

@@ -59,7 +59,24 @@
     "retrieval_starter": {
       "duration_minutes": 5,
       "purpose": "Retrieves the distance meaning of |x| and the two-solution idea, which generalize into the two-case method for equations and inequalities today.",
-      "if_students_struggle": "If two cases feel arbitrary, mark 5 and −5 on a number line and note both sit 5 units from 0."
+      "if_students_struggle": "If two cases feel arbitrary, mark 5 and −5 on a number line and note both sit 5 units from 0.",
+      "questions": [
+        {
+          "prompt": "Solve 2x < 6.",
+          "answer": "x < 3.",
+          "targets": "inequalities"
+        },
+        {
+          "prompt": "Solve −x < 4.",
+          "answer": "x > −4 (flip when dividing by a negative).",
+          "targets": "inequality sign-flip"
+        },
+        {
+          "prompt": "On a number line, which is greater: −5 or −2?",
+          "answer": "−2 (it is farther right).",
+          "targets": "the number line"
+        }
+      ]
     },
     "prior_knowledge_bridge": "Absolute value is distance from zero — that single idea (Q5) explains everything today. '= c' means two points (c and −c); '< c' means everything within c of zero (a band); '> c' means everything farther than c (two outward rays). You'll turn each into the plain equations and inequalities you already solve.",
     "learning_intention": "By the end you can solve absolute-value equations with two cases and absolute-value inequalities as bands or two rays.",

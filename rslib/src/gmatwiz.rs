@@ -652,6 +652,20 @@ fn gmat_status_str(mastery: f64) -> &'static str {
     }
 }
 
+/// Per-topic mastery bar derived from the target GMAT Focus total (mirrors
+/// `_gmat_mastery_bar`). Higher goals demand deeper mastery before a topic's done.
+fn gmat_mastery_bar(target_score: i64) -> f64 {
+    if target_score >= 705 {
+        0.90
+    } else if target_score >= 645 {
+        0.85
+    } else if target_score >= 585 {
+        0.80
+    } else {
+        0.72
+    }
+}
+
 /// Round half-to-even like Python's built-in `round`, so pacing/session numbers
 /// match the desktop exactly at .5 boundaries.
 fn py_round(x: f64) -> i64 {
@@ -1165,6 +1179,7 @@ impl Collection {
             "behind_by": 0,
             "topics_per_study_day": 0.0,
             "study_days_remaining": Value::Null,
+            "late_start": false,
         });
 
         let exam_date = profile["exam_date"].as_str().unwrap_or("");
@@ -1186,11 +1201,30 @@ impl Collection {
             return out;
         }
 
-        let learn_days_remaining = if study_days_remaining != 0 {
-            py_round(study_days_remaining as f64 * 0.7).max(1)
-        } else {
-            0
-        };
+        // HARD BOUNDARY: finish every lesson >= 10 calendar days before the exam.
+        let learn_calendar_days = (days_to_exam - 10).max(0);
+        let mut learn_days_remaining =
+            py_round(learn_calendar_days as f64 * days_per_week as f64 / 7.0);
+        if topics_remaining > 0 && learn_calendar_days > 0 {
+            learn_days_remaining = learn_days_remaining.max(1);
+        }
+
+        // LATE-START EXCEPTION: already inside the final 10 days, or the learn
+        // window is too tight to fit remaining topics at a sane pace (~<=2 topics/
+        // study day) -> pace across ALL remaining study days so lessons still fit.
+        let mut late_start = false;
+        if learn_calendar_days <= 0
+            || (learn_days_remaining > 0
+                && topics_remaining as f64 / learn_days_remaining as f64 > 2.0)
+        {
+            late_start = true;
+            learn_days_remaining = study_days_remaining;
+            if topics_remaining > 0 && days_to_exam > 0 {
+                learn_days_remaining = learn_days_remaining.max(1);
+            }
+        }
+        out["late_start"] = json!(late_start);
+
         let topics_per_study_day = if learn_days_remaining != 0 {
             py_round2(topics_remaining as f64 / learn_days_remaining as f64)
         } else {
@@ -1198,6 +1232,8 @@ impl Collection {
         };
         out["topics_per_study_day"] = json!(topics_per_study_day);
 
+        // expected progress by today: linear from plan creation to the exam-minus
+        // -10 deadline (the hard lessons-finish-by date).
         let mut behind = 0i64;
         if let Some(created_ts) = plan.get("created_ts").and_then(|v| v.as_i64()) {
             if let Some(created) = Local
@@ -1205,10 +1241,9 @@ impl Collection {
                 .single()
                 .map(|dt| dt.date_naive())
             {
-                let total_days = (exam - created).num_days().max(1);
-                let learn_deadline_days = (total_days as f64 * 0.7).max(1.0);
+                let total_days = ((exam - created).num_days() - 10).max(1);
                 let elapsed = (today - created).num_days().max(0);
-                let frac = (elapsed as f64 / learn_deadline_days).min(1.0);
+                let frac = (elapsed as f64 / total_days as f64).min(1.0);
                 let expected_learned = py_round(topics_total as f64 * frac);
                 behind = (expected_learned - topics_learned).max(0);
             }
@@ -1350,13 +1385,10 @@ impl Collection {
             .filter(Value::is_object)
             .unwrap_or_else(|| json!({}));
         let days_to_exam = gmat_days_to_exam(profile["exam_date"].as_str().unwrap_or(""));
-        let daily_minutes = {
-            let m = json_i64(&profile["minutes_per_day"], 60);
-            if m == 0 {
-                60
-            } else {
-                m
-            }
+        let target_score = {
+            let t = json_i64(&profile["target_score"], 645);
+            let t = if t == 0 { 645 } else { t };
+            t.clamp(205, 805)
         };
         let days_per_week = {
             let d = json_i64(&profile["days_per_week"], 5);
@@ -1388,10 +1420,11 @@ impl Collection {
             .collect();
         let plan = json!({
             "topics": plan_topics,
-            "daily_minutes": daily_minutes,
             "days_per_week": days_per_week,
             "days_to_exam": days_to_exam,
             "created_ts": now,
+            "target_score": target_score,
+            "mastery_bar": gmat_mastery_bar(target_score),
         });
         let diagnosis_val = Value::Object(diagnosis);
         self.gmat_put_config("gmatDiagnosis", &diagnosis_val)?;
@@ -1499,14 +1532,6 @@ impl Collection {
         };
 
         let pacing = self.gmat_pacing();
-        let daily_minutes = {
-            let m = json_i64(&plan["daily_minutes"], 60);
-            if m == 0 {
-                60.0
-            } else {
-                m as f64
-            }
-        };
         let learned = self
             .get_config_optional::<Value, _>("gmatLearned")
             .filter(Value::is_object)
@@ -1532,10 +1557,21 @@ impl Collection {
             .unwrap_or_default();
 
         let mut blocks: Vec<Value> = Vec::new();
-        let mut remaining_min = daily_minutes;
         const REVIEW_MIN: f64 = 1.5;
         const LESSON_MIN: f64 = 12.0;
         const PRACTICE_MIN: f64 = 2.0;
+
+        // DERIVED daily budget (no longer user-set): enough room for today's paced
+        // lessons + the due reviews + slack. It only sizes block-filling here; the
+        // RETURNED daily_minutes is the sum of the blocks actually added below.
+        let reviews_est = if due_total > 0 {
+            py_round(due_total as f64 * REVIEW_MIN)
+        } else {
+            0
+        };
+        let topics_per_day = py_round(pacing["topics_per_study_day"].as_f64().unwrap_or(0.0));
+        let budget = 30.0_f64.max(topics_per_day as f64 * LESSON_MIN + reviews_est as f64 + 20.0);
+        let mut remaining_min = budget;
 
         if due_total > 0 {
             let est = py_round(due_total as f64 * REVIEW_MIN);
@@ -1706,11 +1742,15 @@ impl Collection {
             }
         }
 
+        let total_est: i64 = blocks
+            .iter()
+            .map(|b| b["est_minutes"].as_i64().unwrap_or(0))
+            .sum();
         Ok(json!({
             "has_plan": true,
             "pacing": pacing,
             "blocks": blocks,
-            "daily_minutes": py_round(daily_minutes),
+            "daily_minutes": total_est,
         }))
     }
 
@@ -1971,18 +2011,15 @@ impl Collection {
                         d
                     }
                 };
-                let minutes = {
-                    let m = json_i64(&body["minutes_per_day"], 60);
-                    if m == 0 {
-                        60
-                    } else {
-                        m
-                    }
+                let target = {
+                    let t = json_i64(&body["target_score"], 645);
+                    let t = if t == 0 { 645 } else { t };
+                    t.clamp(205, 805)
                 };
                 let profile = json!({
                     "exam_date": body["exam_date"].as_str().unwrap_or(""),
                     "days_per_week": days,
-                    "minutes_per_day": minutes,
+                    "target_score": target,
                 });
                 self.gmat_put_config("gmatProfile", &profile)?;
                 String::new()
@@ -2107,7 +2144,7 @@ impl Collection {
                 let topic = entry["topic"].as_str().unwrap_or("").to_string();
                 let why = entry["why"].as_str().unwrap_or("").to_string();
                 let stem: String = entry["stem"].as_str().unwrap_or("").chars().take(400).collect();
-                let record = json!({
+                let mut record = json!({
                     "stem": stem,
                     "topic": topic,
                     "chosen": entry["chosen"].as_str().unwrap_or(""),
@@ -2117,6 +2154,17 @@ impl Collection {
                     "mock": entry["mock"].as_bool().unwrap_or(false),
                     "ts": now,
                 });
+                if let Some(options) = entry.get("options").and_then(|v| v.as_object()) {
+                    let opts: serde_json::Map<String, Value> = options
+                        .iter()
+                        .map(|(k, v)| (k.clone(), json!(v.as_str().unwrap_or(""))))
+                        .collect();
+                    record["options"] = Value::Object(opts);
+                }
+                if let Some(explanation) = entry.get("explanation").and_then(|v| v.as_str()) {
+                    let truncated: String = explanation.chars().take(2000).collect();
+                    record["explanation"] = json!(truncated);
+                }
                 let mut entries = self
                     .get_config_optional::<Vec<Value>, _>("gmatErrorLog")
                     .unwrap_or_default();
@@ -2125,6 +2173,32 @@ impl Collection {
                 let trimmed = entries[start..].to_vec();
                 self.gmat_put_config("gmatErrorLog", &Value::Array(trimmed))?;
                 self.gmat_apply_repair(&topic, &why)?;
+                String::new()
+            }
+            "gmatSetErrorTakeaway" => {
+                let body = parse_body(body);
+                let ts = json_i64(&body["ts"], 0);
+                let takeaway = body.get("takeaway").cloned();
+                if ts > 0 {
+                    if let Some(takeaway) = takeaway {
+                        let mut entries = self
+                            .get_config_optional::<Vec<Value>, _>("gmatErrorLog")
+                            .unwrap_or_default();
+                        let mut found = false;
+                        for entry in &mut entries {
+                            if json_i64(&entry["ts"], 0) == ts {
+                                if let Value::Object(map) = entry {
+                                    map.insert("ai_takeaway".to_string(), takeaway);
+                                    found = true;
+                                }
+                                break;
+                            }
+                        }
+                        if found {
+                            self.gmat_put_config("gmatErrorLog", &Value::Array(entries))?;
+                        }
+                    }
+                }
                 String::new()
             }
             "gmatErrorLog" => {

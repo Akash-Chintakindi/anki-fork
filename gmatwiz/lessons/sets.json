@@ -59,7 +59,24 @@
     "retrieval_starter": {
       "duration_minutes": 5,
       "purpose": "Retrieves union/intersection/complement and exposes the double-counting problem that inclusion–exclusion fixes.",
-      "if_students_struggle": "If union vs intersection blurs, anchor: 'or' = union (everything), 'and' = intersection (overlap only)."
+      "if_students_struggle": "If union vs intersection blurs, anchor: 'or' = union (everything), 'and' = intersection (overlap only).",
+      "questions": [
+        {
+          "prompt": "Compute 25 + 18.",
+          "answer": "43.",
+          "targets": "addition"
+        },
+        {
+          "prompt": "Of 30 students, 18 play a sport. How many do not?",
+          "answer": "12 (30 − 18).",
+          "targets": "subtraction (complement)"
+        },
+        {
+          "prompt": "What is 20% of 50?",
+          "answer": "10.",
+          "targets": "percents (of a group)"
+        }
+      ]
     },
     "prior_knowledge_bridge": "Q5 names today's whole idea: when you add two group sizes, the people in both get counted twice. The fix is to subtract the overlap once — that's the two-set formula. Combined with 'neither', it turns any overlap word problem into a quick arithmetic setup.",
     "learning_intention": "By the end you can solve two-set overlap problems with |A∪B| = |A| + |B| − |A∩B|, include a 'neither' group, and extract 'only-A' counts.",

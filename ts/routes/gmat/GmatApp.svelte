@@ -32,6 +32,7 @@ chrome77/es2020 webview.
     } from "./api";
     import {
         logError,
+        saveErrorTakeaway,
         refreshOverview,
         fetchErrorLog,
         fetchNextCard,
@@ -56,6 +57,8 @@ chrome77/es2020 webview.
         renderMath,
     } from "./api";
     import { authEnabled, onUser, signIn, signUp, signOutUser, type AuthUser } from "./auth";
+    import { getAiEnabled } from "./ai";
+    import { coachMiss } from "./coach";
     import { pullAccountState, scheduleStatePush, startAutoSync, stopAutoSync } from "./sync";
 
     export let overview: GmatOverview;
@@ -164,7 +167,7 @@ chrome77/es2020 webview.
     // ---- onboarding / diagnostic state ----
     let examDate = "";
     let daysPerWeek = 5;
-    let minutesPerDay = 60;
+    let targetScore = 645;
     let pretestQs: PretestQuestion[] = [];
     let pretestIdx = 0;
     let pretestSelected: string | null = null;
@@ -374,6 +377,8 @@ chrome77/es2020 webview.
             correct: card.correct,
             why,
             ms: answerMs,
+            options: card.options,
+            explanation: card.explanation || undefined,
         });
         pushIfAuthed();
     }
@@ -389,6 +394,8 @@ chrome77/es2020 webview.
             correct: card.correct,
             why: "guess",
             ms: answerMs,
+            options: card.options,
+            explanation: card.explanation || undefined,
         });
         pushIfAuthed();
     }
@@ -420,7 +427,7 @@ chrome77/es2020 webview.
         if (overview.profile) {
             examDate = overview.profile.exam_date || "";
             daysPerWeek = overview.profile.days_per_week || 5;
-            minutesPerDay = overview.profile.minutes_per_day || 60;
+            targetScore = overview.profile.target_score || 645;
         }
         view = "onboarding";
     }
@@ -429,7 +436,7 @@ chrome77/es2020 webview.
         await saveProfile({
             exam_date: examDate,
             days_per_week: daysPerWeek,
-            minutes_per_day: minutesPerDay,
+            target_score: targetScore,
         });
         const result = await fetchPretest();
         pretestQs = result.questions;
@@ -508,6 +515,8 @@ chrome77/es2020 webview.
                 topic: lesson?.topic_id ?? "",
                 chosen: lessonSelected,
                 correct: lessonItem.correct,
+                options: lessonItem.options,
+                explanation: lessonItem.explanation || undefined,
             });
         }
     }
@@ -552,9 +561,11 @@ chrome77/es2020 webview.
         await go(target);
     }
 
-    // ---- error log: filters + repair-now ----
+    // ---- error log: filters + repair-now + AI coach ----
     let errorFilter: "all" | ErrorWhy = "all";
     let errInfoOpen = false; // toggles the "how error types work" explainer
+    let coachLoadingTs: number | null = null;
+    let coachUnavailableTs: Record<number, boolean> = {};
     $: filteredErrors =
         errorFilter === "all" ? errors : errors.filter((e) => (e.why || "") === errorFilter);
     $: hasLessonFor = new Set(lessonTopics.map((t) => t.topic_id));
@@ -565,6 +576,29 @@ chrome77/es2020 webview.
             await openLesson(e.topic);
         } else {
             await go("practice");
+        }
+    }
+
+    function mockMissOptions(miss: MockResult): Record<string, string> | undefined {
+        const it = mockItems.find(
+            (x) => x.q.stem === miss.stem && (x.answer ?? "") === miss.chosen,
+        );
+        return it?.q.options;
+    }
+
+    async function coachErrorEntry(e: ErrorEntry): Promise<void> {
+        if (coachLoadingTs !== null) return;
+        coachLoadingTs = e.ts;
+        coachUnavailableTs = { ...coachUnavailableTs, [e.ts]: false };
+        const result = await coachMiss(e);
+        coachLoadingTs = null;
+        if (result.ok) {
+            await saveErrorTakeaway(e.ts, result.value);
+            errors = errors.map((err) =>
+                err.ts === e.ts ? { ...err, ai_takeaway: result.value } : err,
+            );
+        } else {
+            coachUnavailableTs = { ...coachUnavailableTs, [e.ts]: true };
         }
     }
 
@@ -738,6 +772,7 @@ chrome77/es2020 webview.
             why,
             ms: miss.ms,
             mock: true,
+            options: mockMissOptions(miss),
         });
     }
 
@@ -956,7 +991,7 @@ chrome77/es2020 webview.
                 {:else if today && today.blocks.length > 0}
                     <div class="action-head">
                         <span class="eyebrow">Today's session</span>
-                        <span class="pill">~{todayEst} of {today.daily_minutes} min</span>
+                        <span class="pill">~{todayEst} min today</span>
                     </div>
                     <h2 class="action-title">Do this, in order.</h2>
                     <ol class="today-list">
@@ -1505,8 +1540,8 @@ chrome77/es2020 webview.
                     <input type="number" min="1" max="7" bind:value={daysPerWeek} />
                 </label>
                 <label class="field">
-                    <span class="field-label">Minutes per day</span>
-                    <input type="number" min="10" max="600" step="5" bind:value={minutesPerDay} />
+                    <span class="field-label">Target GMAT score</span>
+                    <input type="number" min="205" max="805" step="5" bind:value={targetScore} />
                 </label>
                 <button class="primary" on:click={beginPretest}>Begin diagnostic</button>
                 <p class="seal">No explanations during the diagnostic &mdash; it only measures.</p>
@@ -1563,7 +1598,7 @@ chrome77/es2020 webview.
                     {#if overview.plan.days_to_exam !== null}
                         {overview.plan.days_to_exam} days to exam &middot;
                     {/if}
-                    {overview.plan.daily_minutes} min/day, {overview.plan.days_per_week} days/week.
+                    Target {overview.plan.target_score} &middot; {overview.plan.days_per_week} days/week{#if today} &middot; ~{today.daily_minutes} min today{/if}.
                     Weakest topics come first and are scheduled to resurface sooner.
                 </p>
                 <section class="action-card">
@@ -2132,6 +2167,29 @@ chrome77/es2020 webview.
                                 </span>
                             </div>
                             <p class="err-stem">{e.stem}</p>
+                            {#if e.ai_takeaway}
+                                <section class="q-card coach-card">
+                                    <p class="eyebrow">Why you missed it</p>
+                                    <p class="explain">{e.ai_takeaway.root_cause}</p>
+                                    <p class="eyebrow">The rule</p>
+                                    <p class="explain">{e.ai_takeaway.rule}</p>
+                                    <p class="eyebrow">10-second check</p>
+                                    <p class="explain">{e.ai_takeaway.check}</p>
+                                    <p class="eyebrow">Next</p>
+                                    <p class="explain">{e.ai_takeaway.next_action}</p>
+                                </section>
+                            {:else if getAiEnabled()}
+                                {#if coachLoadingTs === e.ts}
+                                    <p class="muted">Coaching&hellip;</p>
+                                {:else}
+                                    <button class="tb-go coach-btn" on:click={() => coachErrorEntry(e)}>
+                                        Coach this miss
+                                    </button>
+                                {/if}
+                                {#if coachUnavailableTs[e.ts]}
+                                    <p class="muted coach-unavail">AI coaching unavailable</p>
+                                {/if}
+                            {/if}
                             <button class="tb-go" on:click={() => repairNow(e)}>
                                 {e.why === "concept_gap" && e.topic && hasLessonFor.has(e.topic)
                                     ? "Repair now: relearn"
@@ -3413,6 +3471,26 @@ chrome77/es2020 webview.
     .err-stem {
         margin: 0;
         line-height: 1.5;
+    }
+    .coach-card {
+        margin: 10px 0;
+        padding: 12px 14px;
+    }
+    .coach-card .eyebrow {
+        margin: 8px 0 4px;
+    }
+    .coach-card .eyebrow:first-child {
+        margin-top: 0;
+    }
+    .coach-card .explain {
+        margin: 0 0 4px;
+    }
+    .coach-btn {
+        margin: 8px 0 0;
+    }
+    .coach-unavail {
+        margin: 6px 0 0;
+        font-size: 13px;
     }
 
     .ghost {

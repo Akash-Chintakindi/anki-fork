@@ -59,7 +59,24 @@
     "retrieval_starter": {
       "duration_minutes": 5,
       "purpose": "Retrieves trinomial factoring, difference of squares, and the zero-product property — the three tools that solve almost every GMAT quadratic.",
-      "if_students_struggle": "If factoring stalls, list factor pairs of c and test which pair sums to b."
+      "if_students_struggle": "If factoring stalls, list factor pairs of c and test which pair sums to b.",
+      "questions": [
+        {
+          "prompt": "Factor x^2 + 5x + 6.",
+          "answer": "(x + 2)(x + 3).",
+          "targets": "factoring trinomials (algebraic expressions)"
+        },
+        {
+          "prompt": "Factor x^2 − 16.",
+          "answer": "(x − 4)(x + 4).",
+          "targets": "difference of squares (algebraic expressions)"
+        },
+        {
+          "prompt": "Solve 2x − 4 = 0.",
+          "answer": "x = 2.",
+          "targets": "linear equations"
+        }
+      ]
     },
     "prior_knowledge_bridge": "You can already factor (last lesson) and solve linear equations. Q5 is the hinge that connects them: once a quadratic is factored and set equal to 0, the zero-product property turns it into two linear equations. Today you'll factor, then solve — and learn the trap of dividing by x.",
     "learning_intention": "By the end you can solve quadratic equations by factoring and the zero-product property, and read off the sum and product of the roots.",

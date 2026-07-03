@@ -60,7 +60,24 @@
     "retrieval_starter": {
       "duration_minutes": 5,
       "purpose": "Retrieves simplifying, same-denominator addition, and LCM — the prerequisites for adding unlike fractions and for the 'fraction of a quantity' problems the GMAT loves.",
-      "if_students_struggle": "If LCM is shaky, recap with multiples lists (4: 4,8,12 …; 6: 6,12) before today's unlike-denominator work; the whole topic rides on it."
+      "if_students_struggle": "If LCM is shaky, recap with multiples lists (4: 4,8,12 …; 6: 6,12) before today's unlike-denominator work; the whole topic rides on it.",
+      "questions": [
+        {
+          "prompt": "Write 18/24 in lowest terms.",
+          "answer": "3/4 (divide top and bottom by 6).",
+          "targets": "factors (number properties)"
+        },
+        {
+          "prompt": "What is the LCM of 4 and 6?",
+          "answer": "12.",
+          "targets": "LCM (number properties)"
+        },
+        {
+          "prompt": "Compute 84 ÷ 7.",
+          "answer": "12.",
+          "targets": "whole-number division"
+        }
+      ]
     },
     "prior_knowledge_bridge": "You added 3/8 + 1/8 easily because the pieces were the same size. The Do-Now's last question is the whole point of today: when denominators differ, you can't just add tops. You'll use the LCM skill you just retrieved to make the pieces the same size first — then multiply, divide, and take fractions of quantities the way GMAT word problems demand.",
     "learning_intention": "By the end you can add, subtract, multiply, and divide fractions (including mixed numbers) and compute a fraction of a quantity — simplifying as you go.",

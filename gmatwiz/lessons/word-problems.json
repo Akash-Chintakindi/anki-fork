@@ -60,7 +60,24 @@
     "retrieval_starter": {
       "duration_minutes": 5,
       "purpose": "Retrieves D = rt, work-as-rate, percent-of, and relative speed — the four setups behind today's classic word-problem types.",
-      "if_students_struggle": "If D = rt is shaky, drill the triangle (cover the unknown to get the formula) before composite problems."
+      "if_students_struggle": "If D = rt is shaky, drill the triangle (cover the unknown to get the formula) before composite problems.",
+      "questions": [
+        {
+          "prompt": "Solve 4x = 200.",
+          "answer": "x = 50.",
+          "targets": "linear equations"
+        },
+        {
+          "prompt": "A car goes 180 miles in 3 hours. What is its speed?",
+          "answer": "60 mph.",
+          "targets": "rates (ratios & proportions)"
+        },
+        {
+          "prompt": "What is 5% of 200?",
+          "answer": "10.",
+          "targets": "percents"
+        }
+      ]
     },
     "prior_knowledge_bridge": "Every word problem today is a translation exercise built on one relationship you already know: rate × time = amount (miles, jobs, dollars of interest). The art is choosing a variable, writing one honest equation, and solving it with your linear-equation skills. Q5's relative-speed idea unlocks the trickier travel problems.",
     "learning_intention": "By the end you can translate rate, work, mixture, and interest scenarios into equations and solve them.",

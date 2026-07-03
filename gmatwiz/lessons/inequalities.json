@@ -58,7 +58,24 @@
     "retrieval_starter": {
       "duration_minutes": 5,
       "purpose": "Retrieves equation-style solving and surfaces the single rule that makes inequalities different: flip when you multiply or divide by a negative.",
-      "if_students_struggle": "If the flip is unintuitive, test x = −10 in −x < 4: −(−10) = 10, which is NOT < 4, confirming the reversed solution."
+      "if_students_struggle": "If the flip is unintuitive, test x = −10 in −x < 4: −(−10) = 10, which is NOT < 4, confirming the reversed solution.",
+      "questions": [
+        {
+          "prompt": "Solve 2x = 10.",
+          "answer": "x = 5.",
+          "targets": "solving a one-step equation (linear equations)"
+        },
+        {
+          "prompt": "Solve x + 4 = 9.",
+          "answer": "x = 5.",
+          "targets": "solving equations (linear equations)"
+        },
+        {
+          "prompt": "Solve 3x − 6 = 0.",
+          "answer": "x = 2.",
+          "targets": "isolating the variable (linear equations)"
+        }
+      ]
     },
     "prior_knowledge_bridge": "Inequalities solve exactly like equations — with one twist from Q5: multiplying or dividing both sides by a negative reverses the direction. Master that and you also handle compound inequalities (a range) and 'how many integers' questions the GMAT likes.",
     "learning_intention": "By the end you can solve linear and compound inequalities, flipping the sign correctly, and count integer solutions in a range.",
