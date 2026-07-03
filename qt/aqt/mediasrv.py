@@ -1989,6 +1989,63 @@ def gmat_mock_questions() -> bytes:
     ).encode("utf-8")
 
 
+def gmat_topic_questions() -> bytes:
+    """Question pool for a topic-scoped practice session, in the SAME shape as a
+    mock pool so the practice card can be reused. The collection's GMAT PS notes
+    filtered to one Topic, unseen items first. Fixed bank - AI generation to fill
+    thin topics is a later phase."""
+    import random
+
+    try:
+        body = json.loads(request.data or b"{}")
+    except Exception:
+        body = {}
+    topic = str(body.get("topic", "") or "")
+    try:
+        n = int(body.get("n", 10) or 10)
+    except Exception:
+        n = 10
+    n = max(1, min(50, n))
+
+    col = aqt.mw.col
+    seen_nids: set = set()
+    try:
+        rows = col.db.all(
+            "select distinct c.nid from cards c join revlog r on r.cid = c.id"
+        )
+        seen_nids = {r[0] for r in rows}
+    except Exception:
+        pass
+
+    pool: list = []
+    for nid in col.find_notes('note:"GMAT PS"'):
+        fields = dict(col.get_note(nid).items())
+        if topic and fields.get("Topic", "") != topic:
+            continue
+        pool.append(
+            {
+                "stem": fields.get("Stem", ""),
+                "options": {k: fields.get(f"Option{k}", "") for k in "ABCDE"},
+                "correct": fields.get("Correct", ""),
+                "topic": fields.get("Topic", ""),
+                "difficulty": fields.get("Difficulty", "medium") or "medium",
+                "seen": nid in seen_nids,
+            }
+        )
+    random.shuffle(pool)
+    # unseen first so a fresh session prefers held-out items
+    pool.sort(key=lambda q: q["seen"])
+    sliced = pool[:n]
+    return json.dumps(
+        {
+            "pool": sliced,
+            "count": len(sliced),
+            "seconds": 45 * 60,
+            "target_ms": GMAT_MOCK_TARGET_MS,
+        }
+    ).encode("utf-8")
+
+
 def gmat_submit_mock() -> bytes:
     """Store a finished mock, update the living plan from its answers, and
     return the report. Mock answers deliberately do NOT go through the
@@ -2180,6 +2237,7 @@ post_handler_list = [
     gmat_mark_learned,
     gmat_today,
     gmat_mock_questions,
+    gmat_topic_questions,
     gmat_submit_mock,
     gmat_tests,
     gmat_test_questions,
@@ -2336,6 +2394,7 @@ def _check_dynamic_request_permissions():
         "/_anki/gmatMarkLearned",
         "/_anki/gmatToday",
         "/_anki/gmatMockQuestions",
+        "/_anki/gmatTopicQuestions",
         "/_anki/gmatSubmitMock",
         "/_anki/gmatTests",
         "/_anki/gmatTestQuestions",

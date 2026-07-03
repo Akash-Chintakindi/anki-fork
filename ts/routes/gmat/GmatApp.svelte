@@ -46,6 +46,7 @@ chrome77/es2020 webview.
         markLearned,
         fetchToday,
         fetchMockPool,
+        fetchTopicQuestions,
         submitMock,
         fetchTests,
         fetchTestQuestions,
@@ -63,19 +64,27 @@ chrome77/es2020 webview.
 
     export let overview: GmatOverview;
 
+    // 6-tab shell: Today(home) / Study / Drill / Progress(dashboard) / Error Log
+    // (errors) / Sign-out. "study" folds in the old "learn" topic list; "drill"
+    // is the renamed FSRS practice; "lesson" is the standalone lesson player.
     type View =
         | "home"
-        | "practice"
+        | "study"
+        | "drill"
         | "dashboard"
         | "errors"
         | "onboarding"
         | "pretest"
         | "plan"
-        | "learn"
         | "lesson"
         | "mock"
         | "tests";
     let view: View = "home";
+
+    // Context passed to the reusable lesson/practice snippets so the same markup
+    // renders standalone (a whole view) AND inline (inside Today / Study), with a
+    // context-appropriate "back" control on completion.
+    type InlineCtx = { onExit: () => void; exitLabel: string };
 
     // ---- progress (integrated Stats) ----
     let stats: GmatStats | null = null;
@@ -193,6 +202,77 @@ chrome77/es2020 webview.
     let practiceTimer = 0;
     const TARGET_SECS = 128; // GMAT Focus Quant pace: 45 min / 21 questions
 
+    // The practice card feeds from two sources: the real scheduler (infinite
+    // Drill + Today's review/practice blocks) or a fixed topic-scoped pool
+    // (Study -> Practice). `activeQuestion` normalizes whichever is current so the
+    // same card markup + why-capture serves both.
+    type PracticeMode = "scheduler" | "topic";
+    let practiceMode: PracticeMode = "scheduler";
+    let topicPool: MockQuestion[] = [];
+    let topicIdx = 0;
+    let topicLabelText = "";
+
+    interface ActiveQuestion {
+        stem: string;
+        options: Record<string, string>;
+        correct: string;
+        explanation: string;
+        topic: string;
+        difficulty: string;
+    }
+    $: activeQuestion =
+        practiceMode === "topic"
+            ? topicPool[topicIdx]
+                ? ({
+                      stem: topicPool[topicIdx].stem,
+                      options: topicPool[topicIdx].options,
+                      correct: topicPool[topicIdx].correct,
+                      explanation: "",
+                      topic: topicPool[topicIdx].topic,
+                      difficulty: topicPool[topicIdx].difficulty,
+                  } as ActiveQuestion)
+                : null
+            : card
+              ? ({
+                    stem: card.stem,
+                    options: card.options,
+                    correct: card.correct,
+                    explanation: card.explanation,
+                    topic: card.topic,
+                    difficulty: card.difficulty,
+                } as ActiveQuestion)
+              : null;
+    $: queueRemaining =
+        practiceMode === "topic"
+            ? Math.max(0, topicPool.length - topicIdx)
+            : remaining;
+    $: isLastTopicQ =
+        practiceMode === "topic" && topicIdx >= topicPool.length - 1;
+
+    // ---- inline task execution (Today runs its tasks without leaving the tab) --
+    // The block currently running inline on the Today tab (null = show the list).
+    let todayActive: TodayBlock | null = null;
+    // The topic currently being practiced inline on the Study tab (null = list).
+    let studyActive: string | null = null;
+    // Locally-tracked completed Today blocks (keyed) so finished tasks read as
+    // done and the "done for today" state can trigger even for the always-present
+    // targeted-practice block that the backend keeps re-emitting.
+    let todayDone = new Set<string>();
+    function blockKey(b: TodayBlock): string {
+        return `${b.kind}:${b.topic ?? ""}:${b.form_id ?? ""}`;
+    }
+    $: allTodayDone =
+        !!today &&
+        today.blocks.length > 0 &&
+        today.blocks.every((b) => todayDone.has(blockKey(b)));
+    $: firstPendingBlock = today
+        ? today.blocks.find((b) => !todayDone.has(blockKey(b))) ?? null
+        : null;
+
+    // Study is section-split; only Quant exists in Phase 2, so every authored
+    // lesson topic is a Quant topic. A later section would filter on domain here.
+    $: quantTopics = lessonTopics;
+
     // ---- mock exam state (timed, exam conditions, no mid-test feedback) ----
     // Exam-accurate: adaptive selection, bookmark/flag, a pre-submit review
     // screen, and up to 3 answer changes in review (GMAT Focus rules).
@@ -230,7 +310,7 @@ chrome77/es2020 webview.
         ? Object.keys(tests.years).sort((a, b) => b.localeCompare(a))
         : [];
 
-    $: optionEntries = card ? Object.entries(card.options) : [];
+    $: optionEntries = activeQuestion ? Object.entries(activeQuestion.options) : [];
     $: sessionAccuracy = answered > 0 ? Math.round((correctCount / answered) * 100) : 0;
     $: remaining = counts.new + counts.learning + counts.review;
     $: coveragePct = overview.topics_total
@@ -252,7 +332,19 @@ chrome77/es2020 webview.
 
     let errors: ErrorEntry[] = [];
 
+    /** (Re)start the per-question pace timer used by both practice modes. */
+    function restartPracticeTimer(): void {
+        if (practiceTimer) clearInterval(practiceTimer);
+        practiceElapsed = 0;
+        practiceTimer = window.setInterval(() => {
+            if (!revealed) practiceElapsed += 1;
+        }, 1000);
+    }
+
     async function loadNextCard(): Promise<void> {
+        // any scheduler-backed load returns us to scheduler mode (e.g. Drill nav
+        // after a topic session)
+        practiceMode = "scheduler";
         loading = true;
         selected = null;
         revealed = false;
@@ -262,25 +354,51 @@ chrome77/es2020 webview.
         card = result.card;
         counts = result.counts;
         started = Date.now();
-        practiceElapsed = 0;
-        if (practiceTimer) clearInterval(practiceTimer);
-        practiceTimer = window.setInterval(() => {
-            if (!revealed) practiceElapsed += 1;
-        }, 1000);
+        restartPracticeTimer();
         loading = false;
+    }
+
+    /** Start a fresh scheduler-backed drill session (resets the running tally). */
+    async function startDrill(): Promise<void> {
+        answered = 0;
+        correctCount = 0;
+        await loadNextCard();
+    }
+
+    /** Advance within a topic-scoped (fixed pool) practice session. */
+    function advanceTopic(): void {
+        selected = null;
+        revealed = false;
+        pendingWhy = false;
+        guessLogged = false;
+        topicIdx += 1;
+        started = Date.now();
+        restartPracticeTimer();
+    }
+
+    /** "Next" for whichever practice mode is running. */
+    async function practiceNext(): Promise<void> {
+        if (practiceMode === "topic") {
+            advanceTopic();
+        } else {
+            await loadNextCard();
+        }
     }
 
     async function go(next: View): Promise<void> {
         stopTimer();
+        // navigating via the nav always leaves any inline task in progress
+        todayActive = null;
+        studyActive = null;
         // Until the diagnostic produces a plan, only the Today gate is reachable.
         if (
             locked &&
-            ["learn", "lesson", "practice", "dashboard", "errors", "tests"].includes(next)
+            ["study", "drill", "lesson", "dashboard", "errors", "tests"].includes(next)
         ) {
             next = "home";
         }
         view = next;
-        if (next === "practice") await loadNextCard();
+        if (next === "drill") await startDrill();
         if (next === "tests") tests = await fetchTests();
         if (next === "errors") {
             errors = await fetchErrorLog();
@@ -288,7 +406,7 @@ chrome77/es2020 webview.
                 lessonTopics = (await fetchLessonsIndex()).topics;
             }
         }
-        if (next === "learn") lessonTopics = (await fetchLessonsIndex()).topics;
+        if (next === "study") lessonTopics = (await fetchLessonsIndex()).topics;
         if (next === "home" || next === "dashboard") {
             const fresh = await refreshOverview();
             if (fresh) overview = fresh;
@@ -328,14 +446,88 @@ chrome77/es2020 webview.
     }
 
     async function startBlock(block: TodayBlock): Promise<void> {
-        if ((block.kind === "learn" || block.kind === "repair") && block.topic) {
-            await openLesson(block.topic);
-        } else if (block.kind === "mock") {
+        stopTimer();
+        // A mock stays a full-screen timed flow (its own intro/run/review/report
+        // phases). Everything else runs INLINE so the nav stays on "Today".
+        if (block.kind === "mock") {
             // a library-sourced block runs its specific form; otherwise adaptive mock
             await startMock(block.form_id);
-        } else {
-            await go("practice");
+            return;
         }
+        todayActive = block;
+        if ((block.kind === "learn" || block.kind === "repair") && block.topic) {
+            await loadLesson(block.topic);
+        } else {
+            // review / practice -> the scheduler-backed drill card, inline
+            practiceMode = "scheduler";
+            answered = 0;
+            correctCount = 0;
+            await loadNextCard();
+        }
+    }
+
+    /** Finish (or step out of) the inline Today task and return to the task list,
+        refreshing so completed work drops off and progress updates. A lesson only
+        counts as done once its player reaches the "done" phase; a drill counts as
+        done whenever the student steps back (there is no natural end to it). */
+    async function backToToday(): Promise<void> {
+        if (todayActive) {
+            const isLesson =
+                todayActive.kind === "learn" || todayActive.kind === "repair";
+            if (!isLesson || lessonPhase === "done") {
+                todayDone = new Set(todayDone).add(blockKey(todayActive));
+            }
+        }
+        todayActive = null;
+        stopTimer();
+        today = await fetchToday();
+        const fresh = await refreshOverview();
+        if (fresh) overview = fresh;
+    }
+
+    /** "You're done for today" -> keep the momentum with extra spaced practice,
+        inline on the Today tab. Full recalibration / pulling tomorrow's plan
+        forward is a later phase; this stays minimal but functional. */
+    async function jumpAhead(): Promise<void> {
+        await startBlock({
+            kind: "practice",
+            title: "Extra practice",
+            detail: "getting ahead",
+            est_minutes: 0,
+        });
+    }
+
+    /** Start an inline, topic-scoped practice session on the Study tab (fixed
+        bank via gmatTopicQuestions), reusing the practice card + why-capture. */
+    async function startTopicPractice(topic: string, label: string): Promise<void> {
+        stopTimer();
+        practiceMode = "topic";
+        topicLabelText = label;
+        topicPool = [];
+        topicIdx = 0;
+        answered = 0;
+        correctCount = 0;
+        selected = null;
+        revealed = false;
+        pendingWhy = false;
+        guessLogged = false;
+        loading = true;
+        studyActive = topic;
+        const data = await fetchTopicQuestions(topic, 10);
+        topicPool = data.pool;
+        started = Date.now();
+        restartPracticeTimer();
+        loading = false;
+    }
+
+    /** Leave the inline Study practice session and refresh topic mastery. */
+    async function backToStudy(): Promise<void> {
+        studyActive = null;
+        practiceMode = "scheduler";
+        stopTimer();
+        lessonTopics = (await fetchLessonsIndex()).topics;
+        const fresh = await refreshOverview();
+        if (fresh) overview = fresh;
     }
 
     function paceLabel(p: GmatPacing): string {
@@ -350,52 +542,56 @@ chrome77/es2020 webview.
     }
 
     async function commit(): Promise<void> {
-        if (selected === null || revealed || !card) return;
+        if (selected === null || revealed || !activeQuestion) return;
         revealed = true;
         answered += 1;
         answerMs = Date.now() - started;
-        const isCorrect = selected === card.correct;
+        const isCorrect = selected === activeQuestion.correct;
         if (isCorrect) {
             correctCount += 1;
         } else {
             // Error log is required: classify the miss before the next question.
             pendingWhy = true;
         }
-        // Record a REAL review through the scheduler (Good if right, Again if wrong).
-        await answerCard(card.card_id, isCorrect, answerMs);
-        pushIfAuthed();
+        // A scheduler card records a REAL review (Good if right, Again if wrong).
+        // A fixed topic-pool question has no card to schedule; a wrong answer is
+        // still logged to the error log via classifyMiss below.
+        if (practiceMode === "scheduler" && card) {
+            await answerCard(card.card_id, isCorrect, answerMs);
+            pushIfAuthed();
+        }
     }
 
     /** One-prompt error-log capture: why did the miss happen? */
     async function classifyMiss(why: ErrorWhy): Promise<void> {
-        if (!card || selected === null) return;
+        if (!activeQuestion || selected === null) return;
         pendingWhy = false;
         await logError({
-            stem: card.stem,
-            topic: card.topic,
+            stem: activeQuestion.stem,
+            topic: activeQuestion.topic,
             chosen: selected,
-            correct: card.correct,
+            correct: activeQuestion.correct,
             why,
             ms: answerMs,
-            options: card.options,
-            explanation: card.explanation || undefined,
+            options: activeQuestion.options,
+            explanation: activeQuestion.explanation || undefined,
         });
         pushIfAuthed();
     }
 
     /** Correct, but only by guessing - honesty beats a lucky streak. */
     async function markGuess(): Promise<void> {
-        if (!card || selected === null || guessLogged) return;
+        if (!activeQuestion || selected === null || guessLogged) return;
         guessLogged = true;
         await logError({
-            stem: card.stem,
-            topic: card.topic,
+            stem: activeQuestion.stem,
+            topic: activeQuestion.topic,
             chosen: selected,
-            correct: card.correct,
+            correct: activeQuestion.correct,
             why: "guess",
             ms: answerMs,
-            options: card.options,
-            explanation: card.explanation || undefined,
+            options: activeQuestion.options,
+            explanation: activeQuestion.explanation || undefined,
         });
         pushIfAuthed();
     }
@@ -490,16 +686,23 @@ chrome77/es2020 webview.
     $: pretestOptions = pretestCurrent ? Object.entries(pretestCurrent.options) : [];
 
     // ---- lesson loop (I-do -> we-do -> you-do) ----
-    async function openLesson(topicId: string): Promise<void> {
+    /** Load a lesson's state WITHOUT switching views, so the lesson player can
+        render inline on the Today tab as well as in its own view. */
+    async function loadLesson(topicId: string): Promise<void> {
         stopTimer();
         lessonLoading = true;
-        view = "lesson";
         lesson = await fetchLesson(topicId);
         lessonPhase = "intro";
         lessonIdx = 0;
         lessonSelected = null;
         lessonRevealed = false;
         lessonLoading = false;
+    }
+
+    /** Open the standalone lesson player (Study -> Learn, error-log repair). */
+    async function openLesson(topicId: string): Promise<void> {
+        view = "lesson";
+        await loadLesson(topicId);
     }
 
     function chooseLesson(key: string): void {
@@ -575,7 +778,7 @@ chrome77/es2020 webview.
         if (e.why === "concept_gap" && e.topic && hasLessonFor.has(e.topic)) {
             await openLesson(e.topic);
         } else {
-            await go("practice");
+            await go("drill");
         }
     }
 
@@ -940,10 +1143,10 @@ chrome77/es2020 webview.
             <button class:active={view === "home"} on:click={() => go("home")}>Today</button>
             {#if !locked}
                 <button
-                    class:active={view === "learn" || view === "lesson"}
-                    on:click={() => go("learn")}>Learn</button
+                    class:active={view === "study" || view === "lesson"}
+                    on:click={() => go("study")}>Study</button
                 >
-                <button class:active={view === "practice"} on:click={() => go("practice")}>Practice</button>
+                <button class:active={view === "drill"} on:click={() => go("drill")}>Drill</button>
                 <button
                     class:active={view === "dashboard"}
                     on:click={() => go("dashboard")}>Progress</button
@@ -959,166 +1162,216 @@ chrome77/es2020 webview.
         </nav>
     </header>
 
-    {#if view === "home"}
-        <main class="col">
-            <p class="eyebrow">Today</p>
-            <h1 class="display">The work that builds competence.</h1>
-            <p class="lede">
-                Lessons create confidence. Application creates competence. Your next move is a
-                problem to solve, not a page to read.
-            </p>
+    <!-- Reusable practice card: rendered standalone (Drill view) AND inline
+         (Today's review/practice blocks, Study -> Practice). Reads the shared
+         practice state; `ctx` supplies a context-appropriate "back" control. -->
+    {#snippet practiceCard(ctx: InlineCtx | null)}
+        {#if ctx}
+            <button class="ghost back-inline" on:click={ctx.onExit}>&larr; {ctx.exitLabel}</button>
+        {/if}
+        <div class="session-meter">
+            <span class="readout">{answered}</span> answered
+            {#if answered > 0}
+                &middot; <span class="readout">{sessionAccuracy}%</span> accurate
+            {/if}
+            {#if queueRemaining > 0}
+                &middot;
+                <span class="muted">{queueRemaining} {practiceMode === "topic" ? "left" : "in queue"}</span>
+            {/if}
+            {#if activeQuestion && !revealed}
+                &middot;
+                <span class="readout" class:overpace={practiceElapsed > TARGET_SECS}>
+                    {fmtTime(practiceElapsed)}
+                </span>
+                <span class="muted">/ {fmtTime(TARGET_SECS)} pace</span>
+            {/if}
+        </div>
 
-            <section class="action-card">
-                {#if overview.total === 0}
-                    <div class="action-head">
-                        <span class="eyebrow">Get started</span>
-                        <span class="pill">{overview.deck}</span>
-                    </div>
-                    <h2 class="action-title">Import your GMAT Quant questions</h2>
-                    <p class="muted">
-                        Use Tools &rarr; Import GMAT Quant, then take your diagnostic.
-                    </p>
-                {:else if !overview.plan}
-                    <div class="action-head">
-                        <span class="eyebrow">Next action</span>
-                    </div>
-                    <h2 class="action-title">Take your diagnostic</h2>
-                    <p class="muted">
-                        A 21-question timed diagnostic builds your personalized plan and targets
-                        your weak topics.
-                    </p>
-                    <button class="primary" on:click={startDiagnostic}>Start diagnostic</button>
-                {:else if today && today.blocks.length > 0}
-                    <div class="action-head">
-                        <span class="eyebrow">Today's session</span>
-                        <span class="pill">~{todayEst} min today</span>
-                    </div>
-                    <h2 class="action-title">Do this, in order.</h2>
-                    <ol class="today-list">
-                        {#each today.blocks as b, i}
-                            <li class="today-block kind-{b.kind}">
-                                <span class="tb-index">{i + 1}</span>
-                                <div class="tb-body">
-                                    <span class="tb-title">
-                                        {b.kind === "learn" && b.topic
-                                            ? `Learn: ${topicLabel(b.topic)}`
-                                            : b.kind === "repair" && b.topic
-                                              ? `Repair: ${topicLabel(b.topic)}`
-                                              : b.title}
-                                    </span>
-                                    <span class="tb-detail">{b.detail}</span>
-                                </div>
-                                <span class="tb-min">{b.est_minutes}m</span>
-                                <button class="tb-go" on:click={() => startBlock(b)}>
-                                    {b.kind === "learn" || b.kind === "repair"
-                                        ? "Learn"
-                                        : b.kind === "mock"
-                                          ? "Begin"
-                                          : "Start"}
-                                </button>
-                            </li>
-                        {/each}
-                    </ol>
-                    <button class="primary" on:click={() => today && startBlock(today.blocks[0])}>
-                        Start today
+        {#if loading}
+            <section class="q-card empty"><p>Loading&hellip;</p></section>
+        {:else if activeQuestion}
+            <section class="q-card">
+                <div class="q-head">
+                    <span class="eyebrow">
+                        {activeQuestion.topic ? topicLabel(activeQuestion.topic) : "GMAT Quant"}
+                    </span>
+                    <span class="pill diff-{activeQuestion.difficulty}">{activeQuestion.difficulty}</span>
+                </div>
+                <h1 class="stem">{@html renderMath(activeQuestion.stem)}</h1>
+
+                <ul class="opts">
+                    {#each optionEntries as [key, value]}
+                        <li>
+                            <button
+                                class="opt"
+                                class:sel={!revealed && selected === key}
+                                class:correct={revealed && activeQuestion && activeQuestion.correct === key}
+                                class:wrong={revealed && selected === key && !(activeQuestion && activeQuestion.correct === key)}
+                                class:muted={revealed && !(activeQuestion && activeQuestion.correct === key) && selected !== key}
+                                disabled={revealed}
+                                on:click={() => choose(key)}
+                            >
+                                <span class="opt-key">{key}</span>
+                                <span>{@html renderMath(value)}</span>
+                            </button>
+                        </li>
+                    {/each}
+                </ul>
+
+                {#if !revealed}
+                    <button class="primary" disabled={selected === null} on:click={commit}>
+                        Commit answer
                     </button>
-                    <button class="ghost" on:click={() => go("plan")}>View full plan</button>
+                    <p class="seal">The explanation stays sealed until you commit.</p>
                 {:else}
-                    <div class="action-head">
-                        <span class="eyebrow">Today's session</span>
-                        <span class="pill">{overview.deck}</span>
+                    <div class="verdict {selected === activeQuestion.correct ? 'ok' : 'no'}">
+                        <strong>{selected === activeQuestion.correct ? "Correct" : "Not yet"}</strong>
+                        <span class="muted">
+                            Answer: {activeQuestion.correct} &middot; took {fmtTime(
+                                Math.round(answerMs / 1000),
+                            )}
+                        </span>
                     </div>
-                    <h2 class="action-title">You're caught up.</h2>
-                    <p class="muted">
-                        No reviews are due and there's nothing new to learn today. Rest, or get
-                        ahead with extra practice.
-                    </p>
-                    <button class="primary" on:click={() => go("practice")}>Practice anyway</button>
-                    <button class="ghost" on:click={() => go("plan")}>View full plan</button>
+                    {#if activeQuestion.explanation}
+                        <p class="explain">{@html renderMath(activeQuestion.explanation)}</p>
+                    {/if}
+                    {#if pendingWhy}
+                        <div class="why-box">
+                            <p class="why-q">Why did you miss it? (goes in your error log)</p>
+                            <div class="why-chips">
+                                <button class="why-chip" on:click={() => classifyMiss("careless")}>
+                                    Careless slip
+                                </button>
+                                <button class="why-chip" on:click={() => classifyMiss("concept_gap")}>
+                                    Concept gap
+                                </button>
+                                <button class="why-chip" on:click={() => classifyMiss("timing")}>
+                                    Ran out of time
+                                </button>
+                            </div>
+                        </div>
+                    {:else}
+                        {#if selected === activeQuestion.correct && !guessLogged}
+                            <button class="ghost guess-link" on:click={markGuess}>
+                                Honestly? I guessed.
+                            </button>
+                        {:else if guessLogged}
+                            <p class="muted">Logged as a guess &mdash; it will resurface.</p>
+                        {/if}
+                        <button class="primary" on:click={practiceNext}>
+                            {practiceMode === "topic" && isLastTopicQ ? "Finish" : "Next question"}
+                        </button>
+                    {/if}
                 {/if}
             </section>
-
-            {#if today && today.pacing && today.pacing.status !== "no_pacing"}
-                {@const p = today.pacing}
-                <section class="pace pace-{p.status}">
-                    <div class="pace-top">
-                        <span class="pace-status">{paceLabel(p)}</span>
-                        {#if p.days_to_exam !== null}
-                            <span class="pace-days">{p.days_to_exam} days to exam</span>
-                        {/if}
-                    </div>
-                    <div class="pace-bar" aria-hidden="true">
-                        <span
-                            class="pace-fill"
-                            style="width:{p.topics_total
-                                ? Math.round((100 * p.topics_learned) / p.topics_total)
-                                : 0}%"
-                        ></span>
-                    </div>
-                    <p class="pace-detail">
-                        {p.topics_learned}/{p.topics_total} topics learned{#if p.behind_by > 0}
-                            &middot; {p.behind_by} behind pace &mdash; do a lesson today{:else if p.status === "learning_complete"}
-                            &middot; now consolidate with review + practice{:else}
-                            &middot; keep it up{/if}
+        {:else if practiceMode === "topic" && ctx}
+            <section class="q-card">
+                {#if topicPool.length === 0}
+                    <p class="eyebrow">Nothing to practice</p>
+                    <h1 class="stem">No questions for this topic yet.</h1>
+                    <p class="explain">
+                        The fixed bank has no items tagged for {topicLabelText} right now &mdash; try a
+                        lesson, or another topic. Targeted generation comes later.
                     </p>
-                </section>
+                {:else}
+                    <p class="eyebrow">Session complete</p>
+                    <h1 class="stem">Nice work on {topicLabelText}.</h1>
+                    <p class="explain">
+                        You worked through {answered} question{answered === 1 ? "" : "s"}{#if answered > 0}
+                            &middot; {sessionAccuracy}% correct{/if}. Any misses are in your error log
+                        for repair.
+                    </p>
+                {/if}
+                <button class="primary" on:click={ctx.onExit}>{ctx.exitLabel}</button>
+            </section>
+        {:else}
+            <section class="q-card empty">
+                <p>
+                    You're caught up for now. Import GMAT Quant from the Tools menu, or come
+                    back later for scheduled review.
+                </p>
+            </section>
+        {/if}
+    {/snippet}
+
+    <!-- Reusable lesson player: rendered standalone (lesson view) AND inline
+         (Today's learn/repair blocks). `ctx` swaps the completion controls. -->
+    {#snippet lessonPlayer(ctx: InlineCtx | null)}
+        {#if lessonLoading}
+            <section class="q-card empty"><p>Loading lesson&hellip;</p></section>
+        {:else if lesson}
+            {#if ctx}
+                <button class="ghost back-inline" on:click={ctx.onExit}>&larr; {ctx.exitLabel}</button>
             {/if}
-
-            <div class="mini-grid">
-                <div class="mini">
-                    <span class="mini-n">{overview.total}</span>
-                    <span class="mini-l">in bank</span>
-                </div>
-                <div class="mini">
-                    <span class="mini-n">{coveragePct}%</span>
-                    <span class="mini-l">coverage</span>
-                </div>
-                <div class="mini">
-                    <span class="mini-n">{overview.reviews}</span>
-                    <span class="mini-l">reviews</span>
-                </div>
-            </div>
-        </main>
-    {:else if view === "practice"}
-        <main class="col">
             <div class="session-meter">
-                <span class="readout">{answered}</span> answered
-                {#if answered > 0}
-                    &middot; <span class="readout">{sessionAccuracy}%</span> accurate
-                {/if}
-                {#if remaining > 0}
-                    &middot; <span class="muted">{remaining} in queue</span>
-                {/if}
-                {#if card && !revealed}
-                    &middot;
-                    <span class="readout" class:overpace={practiceElapsed > TARGET_SECS}>
-                        {fmtTime(practiceElapsed)}
-                    </span>
-                    <span class="muted">/ {fmtTime(TARGET_SECS)} pace</span>
-                {/if}
+                <span class="readout">{lesson.title}</span> &middot;
+                {#if lessonPhase === "intro"}Overview
+                {:else if lessonPhase === "ido"}I do
+                {:else if lessonPhase === "wedo"}We do {lessonIdx + 1}/{lesson.we_do.length}
+                {:else if lessonPhase === "youdo"}You do {lessonIdx + 1}/{lesson.you_do.length}
+                {:else}Complete{/if}
             </div>
 
-            {#if loading}
-                <section class="q-card empty"><p>Loading&hellip;</p></section>
-            {:else if card}
+            {#if lessonPhase === "intro"}
                 <section class="q-card">
-                    <div class="q-head">
-                        <span class="eyebrow">{card.topic || "GMAT Quant"}</span>
-                        <span class="pill diff-{card.difficulty}">{card.difficulty}</span>
+                    <p class="eyebrow">{lesson.domain}</p>
+                    <h1 class="stem">{lesson.title}</h1>
+                    {#if lesson.opening?.learning_intention}
+                        <p class="explain">{@html renderMath(lesson.opening.learning_intention)}</p>
+                    {/if}
+                    {#if lesson.learning_objectives?.length}
+                        <ul class="obj-list">
+                            {#each lesson.learning_objectives as o}
+                                <li>{@html renderMath(o)}</li>
+                            {/each}
+                        </ul>
+                    {/if}
+                    <button class="primary" on:click={advanceLesson}>Start lesson</button>
+                </section>
+            {:else if lessonPhase === "ido" && lessonItem}
+                <section class="q-card">
+                    <p class="eyebrow">Worked example (I do)</p>
+                    <h1 class="stem">{@html renderMath(lessonItem.stem)}</h1>
+                    {#if lessonItem.think_aloud_steps?.length}
+                        <p class="eyebrow">Think aloud</p>
+                        <ol class="steps">
+                            {#each lessonItem.think_aloud_steps as s}
+                                <li>{@html renderMath(s)}</li>
+                            {/each}
+                        </ol>
+                    {/if}
+                    <div class="verdict ok">
+                        <strong>Answer: {lessonItem.correct}</strong>
+                        <span>{@html renderMath(lessonItem.options[lessonItem.correct])}</span>
                     </div>
-                    <h1 class="stem">{@html renderMath(card.stem)}</h1>
-
+                    {#if lessonItem.key_takeaway}
+                        <p class="explain">
+                            <strong>Takeaway:</strong> {@html renderMath(lessonItem.key_takeaway)}
+                        </p>
+                    {/if}
+                    <button class="primary" on:click={advanceLesson}>Continue</button>
+                </section>
+            {:else if (lessonPhase === "wedo" || lessonPhase === "youdo") && lessonItem}
+                <section class="q-card">
+                    <p class="eyebrow">
+                        {lessonPhase === "wedo" ? "Guided practice (we do)" : "Your turn (you do)"}
+                    </p>
+                    <h1 class="stem">{@html renderMath(lessonItem.stem)}</h1>
                     <ul class="opts">
-                        {#each optionEntries as [key, value]}
+                        {#each lessonOptions as [key, value]}
                             <li>
                                 <button
                                     class="opt"
-                                    class:sel={!revealed && selected === key}
-                                    class:correct={revealed && card && card.correct === key}
-                                    class:wrong={revealed && selected === key && !(card && card.correct === key)}
-                                    class:muted={revealed && !(card && card.correct === key) && selected !== key}
-                                    disabled={revealed}
-                                    on:click={() => choose(key)}
+                                    class:sel={!lessonRevealed && lessonSelected === key}
+                                    class:correct={lessonRevealed && lessonItem.correct === key}
+                                    class:wrong={lessonRevealed &&
+                                        lessonSelected === key &&
+                                        lessonItem.correct !== key}
+                                    class:muted={lessonRevealed &&
+                                        lessonItem.correct !== key &&
+                                        lessonSelected !== key}
+                                    disabled={lessonRevealed}
+                                    on:click={() => chooseLesson(key)}
                                 >
                                     <span class="opt-key">{key}</span>
                                     <span>{@html renderMath(value)}</span>
@@ -1126,57 +1379,226 @@ chrome77/es2020 webview.
                             </li>
                         {/each}
                     </ul>
-
-                    {#if !revealed}
-                        <button class="primary" disabled={selected === null} on:click={commit}>
-                            Commit answer
+                    {#if !lessonRevealed}
+                        <button
+                            class="primary"
+                            disabled={lessonSelected === null}
+                            on:click={checkLesson}
+                        >
+                            Check
                         </button>
-                        <p class="seal">The explanation stays sealed until you commit.</p>
-                    {:else}
-                        <div class="verdict {selected === card.correct ? 'ok' : 'no'}">
-                            <strong>{selected === card.correct ? "Correct" : "Not yet"}</strong>
-                            <span class="muted">
-                                Answer: {card.correct} &middot; took {fmtTime(
-                                    Math.round(answerMs / 1000),
-                                )}
-                            </span>
-                        </div>
-                        <p class="explain">{@html renderMath(card.explanation)}</p>
-                        {#if pendingWhy}
-                            <div class="why-box">
-                                <p class="why-q">Why did you miss it? (goes in your error log)</p>
-                                <div class="why-chips">
-                                    <button class="why-chip" on:click={() => classifyMiss("careless")}>
-                                        Careless slip
-                                    </button>
-                                    <button class="why-chip" on:click={() => classifyMiss("concept_gap")}>
-                                        Concept gap
-                                    </button>
-                                    <button class="why-chip" on:click={() => classifyMiss("timing")}>
-                                        Ran out of time
-                                    </button>
-                                </div>
-                            </div>
-                        {:else}
-                            {#if selected === card.correct && !guessLogged}
-                                <button class="ghost guess-link" on:click={markGuess}>
-                                    Honestly? I guessed.
-                                </button>
-                            {:else if guessLogged}
-                                <p class="muted">Logged as a guess &mdash; it will resurface.</p>
-                            {/if}
-                            <button class="primary" on:click={loadNextCard}>Next question</button>
+                        {#if lessonPhase === "wedo" && lessonItem.scaffold_hints?.length}
+                            <details class="all-topics">
+                                <summary>Need a hint?</summary>
+                                <ul class="steps">
+                                    {#each lessonItem.scaffold_hints as h}
+                                        <li>{@html renderMath(h)}</li>
+                                    {/each}
+                                </ul>
+                            </details>
                         {/if}
+                    {:else}
+                        <div class="verdict {lessonSelected === lessonItem.correct ? 'ok' : 'no'}">
+                            <strong>{lessonSelected === lessonItem.correct ? "Correct" : "Not yet"}</strong>
+                            <span class="muted">Answer: {lessonItem.correct}</span>
+                        </div>
+                        {#if lessonPhase === "wedo" && lessonItem.immediate_feedback}
+                            <p class="explain">
+                                {@html renderMath(
+                                    lessonSelected === lessonItem.correct
+                                        ? lessonItem.immediate_feedback.if_correct ?? ""
+                                        : lessonItem.immediate_feedback.if_incorrect ?? "",
+                                )}
+                            </p>
+                        {/if}
+                        <p class="explain">{@html renderMath(lessonItem.explanation)}</p>
+                        <button class="primary" on:click={advanceLesson}>Next</button>
                     {/if}
                 </section>
             {:else}
-                <section class="q-card empty">
-                    <p>
-                        You're caught up for now. Import GMAT Quant from the Tools menu, or come
-                        back later for scheduled review.
+                <section class="q-card">
+                    <p class="eyebrow">Lesson complete</p>
+                    <h1 class="stem">Nice work on {lesson.title}.</h1>
+                    <p class="explain">
+                        You've been through the worked example, guided practice, and independent
+                        questions. Now lock it in with spaced practice.
                     </p>
+                    {#if ctx}
+                        <button class="primary" on:click={ctx.onExit}>{ctx.exitLabel}</button>
+                    {:else}
+                        <button class="primary" on:click={() => finishLesson("drill")}>
+                            Practice this topic
+                        </button>
+                        <button class="ghost" on:click={() => finishLesson("study")}>
+                            Back to Study
+                        </button>
+                    {/if}
                 </section>
             {/if}
+        {:else}
+            <section class="q-card empty"><p>Lesson not found.</p></section>
+        {/if}
+    {/snippet}
+
+    {#if view === "home"}
+        <main class="col">
+            {#if todayActive}
+                <!-- A Today task runs INLINE here; the "Today" nav stays active. -->
+                {#if todayActive.kind === "learn" || todayActive.kind === "repair"}
+                    {@render lessonPlayer({ onExit: backToToday, exitLabel: "Back to today" })}
+                {:else}
+                    {@render practiceCard({ onExit: backToToday, exitLabel: "Back to today" })}
+                {/if}
+            {:else}
+                <p class="eyebrow">Today</p>
+                <h1 class="display">The work that builds competence.</h1>
+                <p class="lede">
+                    Lessons create confidence. Application creates competence. Your next move is a
+                    problem to solve, not a page to read.
+                </p>
+
+                <section class="action-card">
+                    {#if overview.total === 0}
+                        <div class="action-head">
+                            <span class="eyebrow">Get started</span>
+                            <span class="pill">{overview.deck}</span>
+                        </div>
+                        <h2 class="action-title">Import your GMAT Quant questions</h2>
+                        <p class="muted">
+                            Use Tools &rarr; Import GMAT Quant, then take your diagnostic.
+                        </p>
+                    {:else if !overview.plan}
+                        <div class="action-head">
+                            <span class="eyebrow">Next action</span>
+                        </div>
+                        <h2 class="action-title">Take your diagnostic</h2>
+                        <p class="muted">
+                            A 21-question timed diagnostic builds your personalized plan and targets
+                            your weak topics.
+                        </p>
+                        <button class="primary" on:click={startDiagnostic}>Start diagnostic</button>
+                    {:else if today && today.blocks.length > 0}
+                        {#if allTodayDone}
+                            <div class="action-head">
+                                <span class="eyebrow">Today's session</span>
+                                <span class="pill cal-ok">complete</span>
+                            </div>
+                            <h2 class="action-title">You're done for today.</h2>
+                            <p class="muted">
+                                Every task on today's plan is finished. Rest &mdash; or jump ahead and
+                                keep the momentum going with extra spaced practice.
+                            </p>
+                            <button class="primary" on:click={jumpAhead}>Jump ahead</button>
+                            <button class="ghost" on:click={() => go("plan")}>View full plan</button>
+                        {:else}
+                            <div class="action-head">
+                                <span class="eyebrow">Today's session</span>
+                                <span class="pill">~{todayEst} min today</span>
+                            </div>
+                            <h2 class="action-title">Do this, in order.</h2>
+                            <ol class="today-list">
+                                {#each today.blocks as b, i}
+                                    {@const done = todayDone.has(blockKey(b))}
+                                    <li class="today-block kind-{b.kind}" class:done>
+                                        <span class="tb-index">{done ? "\u2713" : i + 1}</span>
+                                        <div class="tb-body">
+                                            <span class="tb-title">
+                                                {b.kind === "learn" && b.topic
+                                                    ? `Learn: ${topicLabel(b.topic)}`
+                                                    : b.kind === "repair" && b.topic
+                                                      ? `Repair: ${topicLabel(b.topic)}`
+                                                      : b.title}
+                                            </span>
+                                            <span class="tb-detail">{b.detail}</span>
+                                        </div>
+                                        <span class="tb-min">{b.est_minutes}m</span>
+                                        <button
+                                            class="tb-go"
+                                            disabled={done}
+                                            on:click={() => startBlock(b)}
+                                        >
+                                            {done
+                                                ? "Done"
+                                                : b.kind === "learn" || b.kind === "repair"
+                                                  ? "Learn"
+                                                  : b.kind === "mock"
+                                                    ? "Begin"
+                                                    : "Start"}
+                                        </button>
+                                    </li>
+                                {/each}
+                            </ol>
+                            <button
+                                class="primary"
+                                disabled={!firstPendingBlock}
+                                on:click={() => firstPendingBlock && startBlock(firstPendingBlock)}
+                            >
+                                {todayDone.size > 0 ? "Continue today" : "Start today"}
+                            </button>
+                            <button class="ghost" on:click={() => go("plan")}>View full plan</button>
+                        {/if}
+                    {:else}
+                        <div class="action-head">
+                            <span class="eyebrow">Today's session</span>
+                            <span class="pill">{overview.deck}</span>
+                        </div>
+                        <h2 class="action-title">You're caught up.</h2>
+                        <p class="muted">
+                            No reviews are due and there's nothing new to learn today. Rest, or get
+                            ahead with extra practice.
+                        </p>
+                        <button class="primary" on:click={() => go("drill")}>Practice anyway</button>
+                        <button class="ghost" on:click={() => go("plan")}>View full plan</button>
+                    {/if}
+                </section>
+
+                {#if today && today.pacing && today.pacing.status !== "no_pacing"}
+                    {@const p = today.pacing}
+                    <section class="pace pace-{p.status}">
+                        <div class="pace-top">
+                            <span class="pace-status">{paceLabel(p)}</span>
+                            {#if p.days_to_exam !== null}
+                                <span class="pace-days">{p.days_to_exam} days to exam</span>
+                            {/if}
+                        </div>
+                        <div class="pace-bar" aria-hidden="true">
+                            <span
+                                class="pace-fill"
+                                style="width:{p.topics_total
+                                    ? Math.round((100 * p.topics_learned) / p.topics_total)
+                                    : 0}%"
+                            ></span>
+                        </div>
+                        <p class="pace-detail">
+                            {p.topics_learned}/{p.topics_total} topics learned{#if p.behind_by > 0}
+                                &middot; {p.behind_by} behind pace &mdash; do a lesson today{:else if p.status === "learning_complete"}
+                                &middot; now consolidate with review + practice{:else}
+                                &middot; keep it up{/if}
+                        </p>
+                    </section>
+                {/if}
+
+                <div class="mini-grid">
+                    <div class="mini">
+                        <span class="mini-n">{overview.total}</span>
+                        <span class="mini-l">in bank</span>
+                    </div>
+                    <div class="mini">
+                        <span class="mini-n">{coveragePct}%</span>
+                        <span class="mini-l">coverage</span>
+                    </div>
+                    <div class="mini">
+                        <span class="mini-n">{overview.reviews}</span>
+                        <span class="mini-l">reviews</span>
+                    </div>
+                </div>
+            {/if}
+        </main>
+    {:else if view === "drill"}
+        <main class="col">
+            <!-- The infinite, scheduler-backed drill: the same card the Today tab
+                 and Study -> Practice render, here with no "back" (it never ends). -->
+            {@render practiceCard(null)}
         </main>
     {:else if view === "dashboard"}
         <main class="col-wide">
@@ -1614,7 +2036,7 @@ chrome77/es2020 webview.
                             </li>
                         {/each}
                     </ul>
-                    <button class="primary" on:click={() => go("practice")}>
+                    <button class="primary" on:click={() => go("drill")}>
                         Start studying my plan
                     </button>
                 </section>
@@ -1636,174 +2058,74 @@ chrome77/es2020 webview.
                 <p class="lede">No plan yet. Take your diagnostic from the Today tab.</p>
             {/if}
         </main>
-    {:else if view === "learn"}
+    {:else if view === "study"}
         <main class="col">
-            <p class="eyebrow">Learn</p>
-            <h1 class="display">Teach first, then apply.</h1>
-            <p class="lede">
-                Short worked examples and guided practice, weakest topics first. Each lesson ends
-                by dropping you into real spaced practice.
-            </p>
-            {#if lessonTopics.length === 0}
-                <section class="q-card empty">
-                    <p>
-                        Take your diagnostic first (Today tab) to prioritize topics, or import GMAT
-                        Quant from the Tools menu.
-                    </p>
-                </section>
+            {#if studyActive}
+                <!-- Topic-scoped practice runs INLINE here; nav stays on "Study". -->
+                {@render practiceCard({ onExit: backToStudy, exitLabel: "Back to study" })}
             {:else}
-                <ul class="focus-list">
-                    {#each lessonTopics as t}
-                        <li>
-                            <span class="focus-name">
-                                {t.title}{#if t.learned} &check;{/if}
-                            </span>
-                            <span class="focus-bar">
-                                <span class="focus-fill" style="width:{Math.round((t.mastery ?? 0) * 100)}%"></span>
-                            </span>
-                            <button class="ghost" on:click={() => openLesson(t.topic_id)}>
-                                {t.learned ? "Review" : "Learn"}
-                            </button>
-                        </li>
-                    {/each}
-                </ul>
+                <p class="eyebrow">Study</p>
+                <h1 class="display">Teach first, then apply.</h1>
+                <p class="lede">
+                    Learn a topic with a worked example and guided practice, then apply it with
+                    targeted questions. Weakest topics come first.
+                </p>
+                {#if lessonTopics.length === 0}
+                    <section class="q-card empty">
+                        <p>
+                            Take your diagnostic first (Today tab) to prioritize topics, or import
+                            GMAT Quant from the Tools menu.
+                        </p>
+                    </section>
+                {:else}
+                    <section class="action-card">
+                        <div class="action-head">
+                            <span class="eyebrow">Quant</span>
+                            <span class="pill">{quantTopics.length} topics</span>
+                        </div>
+                        <ul class="study-list">
+                            {#each quantTopics as t}
+                                <li class="study-row">
+                                    <div class="sr-body">
+                                        <span class="sr-name">
+                                            {t.title}{#if t.learned} &check;{/if}
+                                        </span>
+                                        <span class="sr-meta">
+                                            <span class="focus-bar">
+                                                <span
+                                                    class="focus-fill"
+                                                    style="width:{Math.round((t.mastery ?? 0) * 100)}%"
+                                                ></span>
+                                            </span>
+                                            {#if t.status}
+                                                <span class="focus-status s-{t.status}">{t.status}</span>
+                                            {/if}
+                                        </span>
+                                    </div>
+                                    <div class="sr-actions">
+                                        <button class="tb-go" on:click={() => openLesson(t.topic_id)}>
+                                            {t.learned ? "Review" : "Learn"}
+                                        </button>
+                                        <button
+                                            class="tb-go"
+                                            on:click={() => startTopicPractice(t.topic_id, t.title)}
+                                        >
+                                            Practice
+                                        </button>
+                                    </div>
+                                </li>
+                            {/each}
+                        </ul>
+                    </section>
+                    <p class="muted">
+                        Verbal and Data Insights arrive later; Quant is the focus for now.
+                    </p>
+                {/if}
             {/if}
         </main>
     {:else if view === "lesson"}
         <main class="col">
-            {#if lessonLoading}
-                <section class="q-card empty"><p>Loading lesson&hellip;</p></section>
-            {:else if lesson}
-                <div class="session-meter">
-                    <span class="readout">{lesson.title}</span> &middot;
-                    {#if lessonPhase === "intro"}Overview
-                    {:else if lessonPhase === "ido"}I do
-                    {:else if lessonPhase === "wedo"}We do {lessonIdx + 1}/{lesson.we_do.length}
-                    {:else if lessonPhase === "youdo"}You do {lessonIdx + 1}/{lesson.you_do.length}
-                    {:else}Complete{/if}
-                </div>
-
-                {#if lessonPhase === "intro"}
-                    <section class="q-card">
-                        <p class="eyebrow">{lesson.domain}</p>
-                        <h1 class="stem">{lesson.title}</h1>
-                        {#if lesson.opening?.learning_intention}
-                            <p class="explain">{@html renderMath(lesson.opening.learning_intention)}</p>
-                        {/if}
-                        {#if lesson.learning_objectives?.length}
-                            <ul class="obj-list">
-                                {#each lesson.learning_objectives as o}
-                                    <li>{@html renderMath(o)}</li>
-                                {/each}
-                            </ul>
-                        {/if}
-                        <button class="primary" on:click={advanceLesson}>Start lesson</button>
-                    </section>
-                {:else if lessonPhase === "ido" && lessonItem}
-                    <section class="q-card">
-                        <p class="eyebrow">Worked example (I do)</p>
-                        <h1 class="stem">{@html renderMath(lessonItem.stem)}</h1>
-                        {#if lessonItem.think_aloud_steps?.length}
-                            <p class="eyebrow">Think aloud</p>
-                            <ol class="steps">
-                                {#each lessonItem.think_aloud_steps as s}
-                                    <li>{@html renderMath(s)}</li>
-                                {/each}
-                            </ol>
-                        {/if}
-                        <div class="verdict ok">
-                            <strong>Answer: {lessonItem.correct}</strong>
-                            <span>{@html renderMath(lessonItem.options[lessonItem.correct])}</span>
-                        </div>
-                        {#if lessonItem.key_takeaway}
-                            <p class="explain">
-                                <strong>Takeaway:</strong> {@html renderMath(lessonItem.key_takeaway)}
-                            </p>
-                        {/if}
-                        <button class="primary" on:click={advanceLesson}>Continue</button>
-                    </section>
-                {:else if (lessonPhase === "wedo" || lessonPhase === "youdo") && lessonItem}
-                    <section class="q-card">
-                        <p class="eyebrow">
-                            {lessonPhase === "wedo" ? "Guided practice (we do)" : "Your turn (you do)"}
-                        </p>
-                        <h1 class="stem">{@html renderMath(lessonItem.stem)}</h1>
-                        <ul class="opts">
-                            {#each lessonOptions as [key, value]}
-                                <li>
-                                    <button
-                                        class="opt"
-                                        class:sel={!lessonRevealed && lessonSelected === key}
-                                        class:correct={lessonRevealed &&
-                                            lessonItem.correct === key}
-                                        class:wrong={lessonRevealed &&
-                                            lessonSelected === key &&
-                                            lessonItem.correct !== key}
-                                        class:muted={lessonRevealed &&
-                                            lessonItem.correct !== key &&
-                                            lessonSelected !== key}
-                                        disabled={lessonRevealed}
-                                        on:click={() => chooseLesson(key)}
-                                    >
-                                        <span class="opt-key">{key}</span>
-                                        <span>{@html renderMath(value)}</span>
-                                    </button>
-                                </li>
-                            {/each}
-                        </ul>
-                        {#if !lessonRevealed}
-                            <button
-                                class="primary"
-                                disabled={lessonSelected === null}
-                                on:click={checkLesson}
-                            >
-                                Check
-                            </button>
-                            {#if lessonPhase === "wedo" && lessonItem.scaffold_hints?.length}
-                                <details class="all-topics">
-                                    <summary>Need a hint?</summary>
-                                    <ul class="steps">
-                                        {#each lessonItem.scaffold_hints as h}
-                                            <li>{@html renderMath(h)}</li>
-                                        {/each}
-                                    </ul>
-                                </details>
-                            {/if}
-                        {:else}
-                            <div class="verdict {lessonSelected === lessonItem.correct ? 'ok' : 'no'}">
-                                <strong>{lessonSelected === lessonItem.correct ? "Correct" : "Not yet"}</strong>
-                                <span class="muted">Answer: {lessonItem.correct}</span>
-                            </div>
-                            {#if lessonPhase === "wedo" && lessonItem.immediate_feedback}
-                                <p class="explain">
-                                    {@html renderMath(
-                                        lessonSelected === lessonItem.correct
-                                            ? lessonItem.immediate_feedback.if_correct ?? ""
-                                            : lessonItem.immediate_feedback.if_incorrect ?? "",
-                                    )}
-                                </p>
-                            {/if}
-                            <p class="explain">{@html renderMath(lessonItem.explanation)}</p>
-                            <button class="primary" on:click={advanceLesson}>Next</button>
-                        {/if}
-                    </section>
-                {:else}
-                    <section class="q-card">
-                        <p class="eyebrow">Lesson complete</p>
-                        <h1 class="stem">Nice work on {lesson.title}.</h1>
-                        <p class="explain">
-                            You've been through the worked example, guided practice, and independent
-                            questions. Now lock it in with spaced practice.
-                        </p>
-                        <button class="primary" on:click={() => finishLesson("practice")}>
-                            Practice this topic
-                        </button>
-                        <button class="ghost" on:click={() => finishLesson("learn")}>Back to Learn</button>
-                    </section>
-                {/if}
-            {:else}
-                <section class="q-card empty"><p>Lesson not found.</p></section>
-            {/if}
+            {@render lessonPlayer(null)}
         </main>
     {:else if view === "mock"}
         <main class="col">
@@ -2670,9 +2992,77 @@ chrome77/es2020 webview.
         border-radius: 8px;
         cursor: pointer;
     }
-    .tb-go:hover {
+    .tb-go:hover:not(:disabled) {
         border-color: var(--indicator-ink);
         color: var(--indicator-ink);
+    }
+    .tb-go:disabled {
+        opacity: 0.5;
+        cursor: default;
+        border-color: var(--line);
+        color: var(--ink-faint);
+    }
+
+    /* a completed Today task: dimmed, checkmarked, its button locked */
+    .today-block.done {
+        opacity: 0.62;
+        border-left-color: var(--emerald-ink);
+    }
+    .today-block.done .tb-index {
+        color: var(--emerald);
+        border-color: var(--emerald-ink);
+    }
+
+    /* the inline "back" control shared by lesson/practice snippets. `button`
+       raises specificity above the later `.ghost` rule so the margin sticks. */
+    button.back-inline {
+        margin: 0 0 14px 0;
+    }
+
+    /* Study tab: topic rows with a mastery bar + Learn/Practice actions */
+    .study-list {
+        list-style: none;
+        margin: 6px 0 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .study-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--brass-ink, #9a6b1f);
+        border-radius: 12px;
+        background: var(--surface);
+    }
+    .sr-body {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .sr-name {
+        font-family: var(--ui);
+        font-weight: 600;
+        font-size: 15px;
+    }
+    .sr-meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .sr-meta .focus-bar {
+        flex: 1 1 auto;
+        margin: 0;
+    }
+    .sr-actions {
+        flex: none;
+        display: flex;
+        gap: 8px;
     }
 
     /* error-log why-capture + filters */

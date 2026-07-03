@@ -1,0 +1,13 @@
+# Firebase Functions build + deps (never committed)
+node_modules/
+lib/
+
+# Local secrets / config (OPENAI_API_KEY lives in Functions secrets, not here)
+.env
+.env.*
+!.env.example
+
+# Firebase / logs
+firebase-debug.log
+firebase-debug.*.log
+*.local

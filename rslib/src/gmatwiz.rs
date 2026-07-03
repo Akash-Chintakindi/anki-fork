@@ -2238,6 +2238,43 @@ impl Collection {
                 })
                 .to_string()
             }
+            "gmatTopicQuestions" => {
+                // topic-scoped practice pool in the mock-pool shape, filtered to
+                // one Topic (unseen first). Fixed bank; `n` caps the session.
+                let body = parse_body(body);
+                let topic = body["topic"].as_str().unwrap_or("");
+                let n = json_i64(&body["n"], 10).clamp(1, 50) as usize;
+                let pool_notes = self.gmat_question_pool(resource_dir)?;
+                let mut seen_nids: HashSet<i64> = HashSet::new();
+                {
+                    let mut stmt = self
+                        .storage
+                        .db
+                        .prepare("select distinct c.nid from cards c join revlog r on r.cid = c.id")?;
+                    let rows = stmt.query_map([], |r| r.get::<_, i64>(0))?;
+                    for row in rows {
+                        seen_nids.insert(row?);
+                    }
+                }
+                let mut pool: Vec<Value> = pool_notes
+                    .iter()
+                    .filter(|q| topic.is_empty() || q.topic == topic)
+                    .map(|q| q.mock_json(q.nid > 0 && seen_nids.contains(&q.nid)))
+                    .collect();
+                let mut rng = rand::rng();
+                pool.shuffle(&mut rng);
+                // unseen first so a fresh session prefers held-out items
+                pool.sort_by_key(|q| q["seen"].as_bool().unwrap_or(false));
+                pool.truncate(n);
+                let count = pool.len();
+                json!({
+                    "pool": pool,
+                    "count": count,
+                    "seconds": 45 * 60,
+                    "target_ms": 128_000,
+                })
+                .to_string()
+            }
             "gmatSubmitMock" => self.gmat_submit_mock(&parse_body(body), now)?,
             "gmatTests" => {
                 // practice-test catalog grouped by year, merged with taken status

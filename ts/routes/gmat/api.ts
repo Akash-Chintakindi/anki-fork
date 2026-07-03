@@ -549,6 +549,19 @@ export async function fetchMockPool(): Promise<MockPool> {
     });
 }
 
+/**
+ * A topic-scoped practice pool in the SAME shape as a mock pool (so the practice
+ * card can be reused), filtered to `topic` from the fixed question bank. `n` caps
+ * the session length. AI generation to fill gaps is a later phase.
+ */
+export async function fetchTopicQuestions(topic: string, n: number): Promise<MockPool> {
+    return postJson<MockPool>(
+        "gmatTopicQuestions",
+        { pool: [], count: 0, seconds: 2700, target_ms: 128000 },
+        { topic, n },
+    );
+}
+
 export async function submitMock(
     results: MockResult[],
     formId?: string,
