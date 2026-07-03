@@ -1004,11 +1004,14 @@ def gmat_answer_card() -> bytes:
     deck_id = col.decks.id("GMAT::Quant")
     if col.decks.get_current_id() != deck_id:
         col.decks.select(deck_id)
-    queued = col.sched.get_queued_cards(fetch_limit=1)
-    if not queued.cards or queued.cards[0].card.id != card_id:
-        # queue moved on; do not answer the wrong card
+    # Answer the SPECIFIED card even when it isn't the very top of the queue, so
+    # front-loaded AI cards (served out of scheduler order in Drill) still record
+    # a real review. Fall back to a no-op if the card isn't in the queue window.
+    queued = col.sched.get_queued_cards(fetch_limit=200)
+    match = next((qc for qc in queued.cards if qc.card.id == card_id), None)
+    if match is None:
         return b""
-    states = queued.cards[0].states
+    states = match.states
     answer = CardAnswer(
         card_id=card_id,
         current_state=states.current,
@@ -2827,7 +2830,30 @@ def gmat_add_questions() -> bytes:
         req.note.tags.append(GMAT_AI_GENERATED_TAG)
     if requests:
         col.add_notes(requests)
-    return json.dumps({"added": len(requests)}).encode("utf-8")
+    # Return the created cards (with card_id + content) so the client can serve
+    # them immediately at the FRONT of the Drill queue AND record real reviews.
+    cards_out: list[dict] = []
+    for req in requests:
+        note = req.note
+        try:
+            cids = list(col.card_ids_of_note(note.id))
+        except Exception:
+            cids = [c.id for c in note.cards()]
+        if not cids:
+            continue
+        fields = dict(note.items())
+        cards_out.append(
+            {
+                "card_id": cids[0],
+                "stem": fields.get("Stem", ""),
+                "options": {k: fields.get(f"Option{k}", "") for k in "ABCDE"},
+                "correct": fields.get("Correct", ""),
+                "explanation": fields.get("Explanation", ""),
+                "topic": fields.get("Topic", ""),
+                "difficulty": fields.get("Difficulty", "medium") or "medium",
+            }
+        )
+    return json.dumps({"added": len(cards_out), "cards": cards_out}).encode("utf-8")
 
 
 def gmat_submit_mock() -> bytes:

@@ -503,10 +503,25 @@ export async function setAiEnabledRemote(enabled: boolean): Promise<void> {
  * returns the count added; mobile is a documented no-op returning {added:0},
  * where the caller instead practices the batch ephemerally.
  */
+/** A card admitted into the bank by gmatAddQuestions (with its real card_id). */
+export interface GeneratedCard {
+    card_id: number;
+    stem: string;
+    options: Record<string, string>;
+    correct: string;
+    explanation: string;
+    topic: string;
+    difficulty: string;
+}
+
 export async function addGeneratedQuestions(
     questions: GmatQuestion[],
-): Promise<{ added: number }> {
-    return postJson<{ added: number }>("gmatAddQuestions", { added: 0 }, { questions });
+): Promise<{ added: number; cards?: GeneratedCard[] }> {
+    return postJson<{ added: number; cards?: GeneratedCard[] }>(
+        "gmatAddQuestions",
+        { added: 0 },
+        { questions },
+    );
 }
 
 export async function fetchOfficialScores(): Promise<OfficialScore[]> {

@@ -64,6 +64,7 @@ chrome77/es2020 webview.
         openDecks,
         renderMath,
         setAiEnabledRemote,
+        addGeneratedQuestions,
     } from "./api";
     import { authEnabled, onUser, signIn, signUp, signOutUser, type AuthUser } from "./auth";
     import { getAiEnabled, setAiEnabled, generateJson, Schema } from "./ai";
@@ -335,8 +336,19 @@ chrome77/es2020 webview.
     let practiceTopicId = "";
     // AI front-queue (Drill/scheduler mode): generated questions are served
     // BEFORE the scheduler card, so "Generate with AI" injects them as the next
-    // few questions. Ephemeral (no scheduler write); wrong answers still log.
-    let aiFront: MockQuestion[] = [];
+    // few questions. On desktop they are admitted as real cards (card_id set) and
+    // answered as REAL FSRS reviews; on mobile (no importer) card_id is null and
+    // they're practice-only. Either way, wrong answers hit the error log.
+    interface FrontItem {
+        card_id: number | null;
+        stem: string;
+        options: Record<string, string>;
+        correct: string;
+        explanation: string;
+        topic: string;
+        difficulty: string;
+    }
+    let aiFront: FrontItem[] = [];
     $: servingFront = practiceMode === "scheduler" && aiFront.length > 0;
 
     // ---- AI features (default OFF; user opt-in, mirrored to synced config) ----
@@ -953,16 +965,48 @@ chrome77/es2020 webview.
             appendEphemeral(survivors);
             aiNote = `Generated ${n} fresh AI question${plural} for this session.`;
         } else {
-            // Drill: push to the FRONT so they are the immediate next questions.
-            // Ephemeral (no scheduler write); wrong answers still hit the log.
-            aiFront = [...survivors.map(toMock), ...aiFront];
+            // Drill: admit them to the bank as real spaced cards, then push those
+            // to the FRONT so they're the immediate next questions AND get real
+            // reviews. Mobile (no importer) returns no cards -> practice-only.
+            let admitted: FrontItem[] = [];
+            try {
+                const res = await addGeneratedQuestions(survivors);
+                admitted = (res.cards ?? []).map((c) => ({
+                    card_id: c.card_id,
+                    stem: c.stem,
+                    options: c.options,
+                    correct: c.correct,
+                    explanation: c.explanation,
+                    topic: c.topic,
+                    difficulty: c.difficulty,
+                }));
+            } catch (_e) {
+                admitted = [];
+            }
+            const front: FrontItem[] =
+                admitted.length > 0
+                    ? admitted
+                    : survivors.map((q) => ({
+                          card_id: null,
+                          stem: q.stem,
+                          options: q.options,
+                          correct: q.correct,
+                          explanation: q.explanation ?? "",
+                          topic: q.topic,
+                          difficulty: q.difficulty,
+                      }));
+            aiFront = [...front, ...aiFront];
             selected = null;
             revealed = false;
             pendingWhy = false;
             guessLogged = false;
             started = Date.now();
             restartPracticeTimer();
-            aiNote = `Generated ${n} AI question${plural} — up next.`;
+            aiNote =
+                admitted.length > 0
+                    ? `Added ${front.length} AI question${plural} to your bank — up next.`
+                    : `Generated ${front.length} AI question${plural} — up next (this session).`;
+            pushIfAuthed();
         }
         aiNoteOk = true;
         aiGenerating = false;
@@ -1005,7 +1049,15 @@ chrome77/es2020 webview.
         // A scheduler card records a REAL review (Good if right, Again if wrong).
         // A fixed topic-pool question has no card to schedule; a wrong answer is
         // still logged to the error log via classifyMiss below.
-        if (practiceMode === "scheduler" && aiFront.length === 0 && card) {
+        if (practiceMode === "scheduler" && aiFront.length > 0) {
+            // Front-queue AI card: record a REAL review when it was admitted to
+            // the bank (desktop, card_id set); mobile ephemeral items have no id.
+            const fid = aiFront[0].card_id;
+            if (fid != null) {
+                await answerCard(fid, isCorrect, answerMs);
+                pushIfAuthed();
+            }
+        } else if (practiceMode === "scheduler" && card) {
             await answerCard(card.card_id, isCorrect, answerMs);
             pushIfAuthed();
         }
