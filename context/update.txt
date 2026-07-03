@@ -3,7 +3,54 @@ GMATWiz - PROJECT UPDATE (state of the build)
 Companion to context.txt (codebase map) and PRD.md (product plan).
 Repo: /Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork
 Branch: gmatwiz   (nothing pushed to any remote)
-Last updated: 2026-07-01 (accounts + Firestore per-user state sync)
+Last updated: 2026-07-03 (structured Today redesign + AI features)
+===============================================================================
+
+-------------------------------------------------------------------------------
+STRUCTURED TODAY REDESIGN + AI (2026-07-03) - newest work
+-------------------------------------------------------------------------------
+Goal-driven, application-first rebuild of the learning pipeline (SPOV 1 + 2).
+Desktop (mediasrv.py) + mobile (gmatwiz.rs) parity throughout; AI is flag-gated
+and OFF by default, degrading to the fixed bank everywhere.
+
+- Onboarding: asks exam date + days/week + TARGET GMAT SCORE (dropped
+  minutes/day). Target -> per-topic mastery bar (0.72/0.80/0.85/0.90). Per-day
+  length is DERIVED (sum of the day's blocks), not user-set.
+- Pacing: all lessons finish by exam-minus-10-days (HARD boundary); the last 10
+  days are tests/drills only. Late-start exception compresses if needed.
+- 6 tabs: Today / Study / Drill / Progress / Error Log / Sign-out.
+  * Drill = the FSRS infinite practice (was "Practice").
+  * Study = per-topic Learn (lesson) + topic-scoped Practice (gmatTopicQuestions).
+  * Today EXECUTES tasks inline (lesson/drill via reusable {#snippet}s; nav stays
+    on Today), tracks completion, has a "done for today" + Jump ahead / "Start
+    tomorrow's plan" (pulls next lesson forward).
+- Assessment layer (3 tiers): Topic Quiz (7 Q, the SOFT MASTERY GATE: a topic is
+  "mastered" only after >=85% across >=2 spaced sessions -> drives pacing),
+  Milestone Test (~weekly, mixed learned topics, folded into gmatMocks so it
+  feeds Readiness), Practice Test (full mock, unchanged). Quiz/test answers use a
+  weighted EMA (alpha 0.5) and log to gmatApplication (folded into Performance).
+  New synced keys: gmatQuizzes, gmatApplication (in GMAT_STATE_KEYS both sides).
+  Reuses the timed-mock run/review/report UI.
+- Progress CALENDAR: gmatCalendar endpoint projects a per-day plan to the exam
+  (lessons weakest-first within exam-10d, quizzes after lessons + spaced re-quiz,
+  milestones ~weekly, tests in the final 10 days). Recalibrates on every fetch
+  from live mastery/completion (byte-identical desktop/Rust projection).
+- Lesson openings: every topic has retrieval starter + prior-knowledge bridge +
+  learning intention (gmatwiz/lessons, authored via /lesson-opening-designer +
+  /teach).
+
+AI (see AIfeatures.txt for detail): ai.ts -> gmatGenerate Firebase Function (v2)
+-> OpenAI (key server-side); aiChecker 7f gate; Error-Log Coach; hybrid Drill/
+Study generation (checkItem-gated, admitted as notes on desktop / ephemeral on
+mobile); AI on/off switch in Progress (synced gmatAiEnabled). Build-time
+gmatwiz/content/ai_ingest.py for auto-tag/dedupe/difficulty/validity.
+GO-LIVE: Blaze + `firebase functions:secrets:set OPENAI_API_KEY` + deploy
+functions, then flip the switch.
+
+New/changed endpoints: gmatTopicQuestions, gmatMilestoneQuestions, gmatSubmitQuiz,
+gmatCalendar, gmatSetAiEnabled, gmatAddQuestions, gmatSetErrorTakeaway (+ Coach).
+New dirs/files: functions/ (Cloud Functions proxy), firebase.json, AIfeatures.txt,
+ts/routes/gmat/{ai,aiChecker,coach}.ts, gmatwiz/content/ai_ingest.py.
 ===============================================================================
 
 WHAT GMATWIZ IS

@@ -146,6 +146,9 @@ export interface GmatOverview {
     readiness: GmatReadiness;
     profile: GmatProfile | null;
     plan: GmatPlan | null;
+    // Synced AI on/off preference (null when never set on any device). The app
+    // reconciles this with the localStorage override on load (synced wins).
+    gmatAiEnabled?: boolean | null;
 }
 
 export interface GmatPacing {
@@ -163,7 +166,9 @@ export interface GmatPacing {
 }
 
 export interface TodayBlock {
-    kind: "review" | "learn" | "practice" | "repair" | "mock";
+    // "quiz" = single-topic mastery-gate quiz; "milestone" = periodic mixed
+    // checkpoint. Both reuse the timed-mock flow (see startBlock).
+    kind: "review" | "learn" | "practice" | "repair" | "mock" | "quiz" | "milestone";
     title: string;
     detail: string;
     count?: number;
@@ -248,6 +253,7 @@ export const EMPTY_OVERVIEW: GmatOverview = {
     readiness: { status: "abstain", unmet: [] },
     profile: null,
     plan: null,
+    gmatAiEnabled: null,
 };
 
 const BINARY = { "Content-Type": "application/binary" };
@@ -335,6 +341,66 @@ export async function fetchToday(): Promise<TodaySession> {
     });
 }
 
+// ---- Study calendar (forward projection to the exam) ----
+
+/** One task chip on a projected calendar day. Kinds mirror the Today builder
+ * plus "requiz" (a spaced re-quiz) and "practice_test"; "rest" marks off-days. */
+export interface CalendarItem {
+    kind:
+        | "lesson"
+        | "quiz"
+        | "requiz"
+        | "milestone"
+        | "review"
+        | "drill"
+        | "practice_test"
+        | "rest";
+    topic: string | null;
+    title: string;
+    est_minutes: number;
+}
+
+export interface CalendarDay {
+    date: string; // YYYY-MM-DD
+    day_offset: number; // 0 = today
+    weekday: string; // Mon..Sun
+    is_today: boolean;
+    is_exam: boolean;
+    is_study_day: boolean;
+    // learn = new lessons; review = consolidation before the boundary;
+    // final = the tests-only last 10 days
+    phase: "learn" | "review" | "final";
+    est_minutes: number;
+    items: CalendarItem[];
+}
+
+export interface StudyCalendar {
+    exam_date: string;
+    days_to_exam: number | null;
+    generated_ts: number;
+    // convenience derivations for the honest header (count of study days to the
+    // exam; the date the last projected lesson lands, or null if none remain)
+    study_days: number;
+    lessons_finish_date: string | null;
+    days: CalendarDay[];
+}
+
+/**
+ * The tentative day-by-day plan from today through the exam. Derived server-side
+ * from CURRENT mastery/learned/quiz state, so every fetch recalibrates (mastering
+ * a topic shortens it; getting ahead reshuffles it). Empty `days` without a plan.
+ */
+export async function fetchCalendar(): Promise<StudyCalendar> {
+    return postJson<StudyCalendar>("gmatCalendar", {
+        exam_date: "",
+        days_to_exam: null,
+        generated_ts: 0,
+        study_days: 0,
+        lessons_finish_date: null,
+        days: [],
+    });
+}
+
 export interface GmatStats {
     has_data: boolean;
     reviews_today: number;
@@ -400,6 +466,24 @@ export async function importState(state: GmatState): Promise<void> {
 /** Clear GMATWiz state so a new account starts at the diagnostic. */
 export async function resetState(): Promise<void> {
     await postJson("gmatResetState", null);
+}
+
+/** Mirror the AI on/off choice to synced config so it follows the account across
+ * devices (the localStorage override is the local mirror). Best-effort. */
+export async function setAiEnabledRemote(enabled: boolean): Promise<void> {
+    await postJson("gmatSetAiEnabled", null, { enabled });
+}
+
+/**
+ * Admit AI-generated (and checkItem-passed) questions into the fixed bank.
+ * Desktop persists them as real "GMAT PS" notes so FSRS schedules them and
+ * returns the count added; mobile is a documented no-op returning {added:0},
+ * where the caller instead practices the batch ephemerally.
+ */
+export async function addGeneratedQuestions(
+    questions: GmatQuestion[],
+): Promise<{ added: number }> {
+    return postJson<{ added: number }>("gmatAddQuestions", { added: 0 }, { questions });
 }
 
 export async function fetchOfficialScores(): Promise<OfficialScore[]> {
@@ -478,7 +562,9 @@ export interface LessonTopic {
     domain: string;
     mastery: number | null;
     status: string | null;
+    // lesson-done (learned) vs. passed the soft quiz gate (mastered)
     learned: boolean;
+    mastered: boolean;
 }
 
 export async function fetchLessonsIndex(): Promise<{ topics: LessonTopic[] }> {
@@ -507,6 +593,9 @@ export interface MockQuestion {
     topic: string;
     difficulty: string;
     seen: boolean;
+    // Present only for AI-generated items practiced ephemerally (mobile / when
+    // the scheduler can't yet serve them); the fixed bank omits it.
+    explanation?: string;
 }
 
 export interface MockPool {
@@ -538,7 +627,14 @@ export interface MockReport {
         slow_correct: number;
         target_ms: number;
     };
+    // present when the report is from the assessment layer (topic quiz /
+    // milestone). `mastered` is set only for a topic quiz (did it clear the gate).
+    kind?: "topic" | "milestone" | "mock";
+    mastered?: boolean;
 }
+
+/** The 3-tier assessment kinds that reuse the timed-mock flow. */
+export type QuizKind = "topic" | "milestone";
 
 export async function fetchMockPool(): Promise<MockPool> {
     return postJson<MockPool>("gmatMockQuestions", {
@@ -574,6 +670,35 @@ export async function submitMock(
         form_id: formId,
         year,
     });
+}
+
+// ---- Assessment layer (topic quiz + milestone test, reusing the mock flow) ----
+
+/**
+ * A MILESTONE pool in the SAME shape as a mock pool (so the timed-mock flow is
+ * reused verbatim), drawn MIXED across the student's learned topics. `n` sizes
+ * the checkpoint (default ~12).
+ */
+export async function fetchMilestoneQuestions(n: number): Promise<MockPool> {
+    return postJson<MockPool>(
+        "gmatMilestoneQuestions",
+        { pool: [], count: n, seconds: n * 128, target_ms: 128000 },
+        { n },
+    );
+}
+
+/**
+ * Submit a finished assessment session. `kind:"topic"` appends to the topic's
+ * quiz history (the mastery gate) and passes `topic`; `kind:"milestone"` folds
+ * into Readiness via gmatMocks. Returns the same report shape as a mock, plus
+ * `mastered` for a topic quiz.
+ */
+export async function submitQuiz(payload: {
+    kind: QuizKind;
+    topic?: string;
+    results: MockResult[];
+}): Promise<MockReport | null> {
+    return postJson<MockReport | null>("gmatSubmitQuiz", null, payload);
 }
 
 // ---- Practice-test library (full-length timed forms, grouped by year) ----

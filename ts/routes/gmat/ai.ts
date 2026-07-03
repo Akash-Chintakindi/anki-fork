@@ -1,11 +1,20 @@
 // Copyright: GMATWiz contributors
 // License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 //
-// Shared Firebase AI Logic (Gemini) plumbing. Generic JSON generation with
-// graceful degradation — callers never receive thrown errors.
+// Shared AI plumbing. Generic JSON generation with graceful degradation —
+// callers never receive thrown errors.
+//
+// The Gemini call is proxied through the `gmatGenerate` Firebase callable
+// (Functions v2, us-central1) so the API key stays server-side and both the
+// desktop and mobile builds share one path. The public interface (generateJson,
+// getAiEnabled/setAiEnabled, aiEnabled, Schema) is unchanged, so coach.ts,
+// aiChecker.ts, and the app shell keep working without edits.
 
 import { getApps } from "firebase/app";
-import { getAI, getGenerativeModel, GoogleAIBackend, Schema } from "firebase/ai";
+// `Schema` is a plain client-side schema BUILDER (no network); callers use it to
+// declare a responseSchema which we forward to the callable untouched.
+import { Schema } from "firebase/ai";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 import { authEnabled } from "./auth";
 
@@ -14,10 +23,18 @@ export { Schema };
 export type AiResult<T> = { ok: true; value: T } | { ok: false; reason: string };
 
 const AI_STORAGE_KEY = "gmatwiz.ai";
-const DEFAULT_MODEL = "gemini-flash-latest";
-const DEFAULT_TIMEOUT_MS = 15_000;
+const FUNCTIONS_REGION = "us-central1";
+const DEFAULT_TIMEOUT_MS = 20_000;
 
-let aiInstance: ReturnType<typeof getAI> | null = null;
+/** Request/response contract of the deployed `gmatGenerate` callable. */
+interface GmatGenerateRequest {
+    prompt: string;
+    responseSchema?: unknown;
+    model?: string;
+}
+interface GmatGenerateResponse {
+    text: string;
+}
 
 function readAiOverride(): boolean | null {
     try {
@@ -30,12 +47,15 @@ function readAiOverride(): boolean | null {
     return null;
 }
 
-/** Firebase configured and AI not explicitly turned off in localStorage. */
+/**
+ * AI is OFF by default (it needs a Blaze project + the Firebase AI setup). It
+ * turns on only when the user explicitly enables it — the localStorage override
+ * (mirrored to synced config). Also requires Firebase to be configured so no
+ * network call is ever attempted when the app runs auth-less.
+ */
 export function getAiEnabled(): boolean {
     if (!authEnabled || getApps().length === 0) return false;
-    const override = readAiOverride();
-    if (override !== null) return override;
-    return true;
+    return readAiOverride() === true;
 }
 
 export const aiEnabled: boolean = getAiEnabled();
@@ -48,17 +68,26 @@ export function setAiEnabled(on: boolean): void {
     }
 }
 
-function getAiInstance(): ReturnType<typeof getAI> | null {
-    if (getApps().length === 0) return null;
-    if (!aiInstance) {
-        aiInstance = getAI(getApps()[0], { backend: new GoogleAIBackend() });
-    }
-    return aiInstance;
-}
-
 function reasonFromError(err: unknown): string {
     if (err instanceof Error) return err.message || "error";
     return String(err);
+}
+
+/**
+ * The callable proxies to OpenAI, which wants a plain JSON Schema object. A
+ * `firebase/ai` Schema instance carries that shape behind a `toJSON()`, so
+ * normalize before sending; plain objects (or undefined) pass through untouched.
+ */
+function normalizeSchema(schema: unknown): unknown {
+    const maybe = schema as { toJSON?: () => unknown } | null | undefined;
+    if (maybe && typeof maybe.toJSON === "function") {
+        try {
+            return maybe.toJSON();
+        } catch (_e) {
+            return schema;
+        }
+    }
+    return schema;
 }
 
 export async function generateJson<T>(
@@ -70,26 +99,27 @@ export async function generateJson<T>(
         return { ok: false, reason: "disabled" };
     }
 
-    const ai = getAiInstance();
-    if (!ai) {
+    const apps = getApps();
+    if (apps.length === 0) {
         return { ok: false, reason: "unconfigured" };
     }
 
     const timeoutMs = opts?.timeoutMs ?? DEFAULT_TIMEOUT_MS;
-    const modelName = opts?.model ?? DEFAULT_MODEL;
 
     try {
-        const model = getGenerativeModel(ai, {
-            model: modelName,
-            generationConfig: {
-                responseMimeType: "application/json",
-                responseSchema: schema as never,
-            },
-        });
+        const fns = getFunctions(apps[0], FUNCTIONS_REGION);
+        const callable = httpsCallable<GmatGenerateRequest, GmatGenerateResponse>(
+            fns,
+            "gmatGenerate",
+        );
 
         const work = (async () => {
-            const result = await model.generateContent(prompt);
-            const text = result.response.text();
+            const res = await callable({
+                prompt,
+                responseSchema: normalizeSchema(schema),
+                model: opts?.model,
+            });
+            const text = res.data?.text ?? "";
             return JSON.parse(text) as T;
         })();
 

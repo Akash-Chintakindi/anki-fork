@@ -821,6 +821,9 @@ def gmat_overview() -> bytes:
             "readiness": scores["readiness"],
             "profile": col.get_config("gmatProfile", None),
             "plan": col.get_config("gmatPlan", None),
+            # null when never set on any device, so the app can tell "unset" from
+            # an explicit off and let synced config win over the local override.
+            "gmatAiEnabled": col.get_config("gmatAiEnabled", None),
         }
     ).encode("utf-8")
 
@@ -836,6 +839,23 @@ def _gmat_append_error(col, entry: dict) -> None:
     entries = col.get_config("gmatErrorLog", []) or []
     entries.append(entry)
     col.set_config("gmatErrorLog", entries[-500:])
+
+
+def _gmat_record_application(col, topic: str, correct: bool, ms: int) -> None:
+    """Log one assessment answer (topic quiz / milestone) as an APPLICATION
+    attempt. These never touch the scheduler/revlog, so the Performance reader
+    (rslib `gmat_performance_json`) folds this synced log in alongside revlog
+    first-exposure attempts - keeping the honesty thresholds evidence-based."""
+    log = col.get_config("gmatApplication", []) or []
+    log.append(
+        {
+            "ts": int(time.time()),
+            "topic": str(topic or ""),
+            "correct": bool(correct),
+            "ms": int(ms or 0),
+        }
+    )
+    col.set_config("gmatApplication", log[-2000:])
 
 
 def _gmat_apply_repair(col, topic: str, why: str) -> None:
@@ -1003,6 +1023,20 @@ def gmat_answer_card() -> bytes:
 
 # EMA weight for how much one fresh answer moves a topic's mastery.
 GMAT_MASTERY_ALPHA = 0.3
+# Assessment answers (topic quiz / milestone) move mastery HARDER than a single
+# drill: they are deliberate, timed checks, so one carries more signal.
+GMAT_QUIZ_MASTERY_ALPHA = 0.5
+# Soft mastery gate (PRD assessment layer): a topic is "mastered" once its quiz
+# history has >= 2 passing sessions (accuracy >= the pass bar) on >= 2 distinct
+# days - proof it stuck, not a one-day fluke.
+GMAT_QUIZ_PASS_ACCURACY = 0.85
+GMAT_QUIZ_PASS_SESSIONS = 2
+GMAT_QUIZ_PASS_DISTINCT_DAYS = 2
+# Topic-quiz length (single topic) and the spacing before a passed-once topic is
+# re-quizzed to confirm it stuck on a distinct day. 7 (not 6) so a single miss
+# still clears the 85% bar: 6/7 = 85.7% >= 0.85, where 5/6 = 83.3% would fail.
+GMAT_QUIZ_N = 7
+GMAT_QUIZ_RESPACE_SECS = 3 * 86400
 
 
 def _gmat_status(mastery: float) -> str:
@@ -1029,16 +1063,23 @@ def _gmat_topic_of_card(col, card_id: int) -> str:
         return ""
 
 
-def _gmat_update_mastery(col, topic: str, correct: bool) -> None:
+def _gmat_update_mastery(
+    col, topic: str, correct: bool, alpha: float = GMAT_MASTERY_ALPHA
+) -> None:
     """EMA-update one topic's mastery from a single practice answer and keep the
-    stored plan + topic-aware scheduling in sync. No-op until a plan exists."""
+    stored plan + topic-aware scheduling in sync. No-op until a plan exists.
+
+    `alpha` is the EMA weight: the default (0.3) suits ordinary drills; the
+    assessment layer passes a stronger weight (0.5) for deliberate quiz/milestone
+    answers. This drives the plan display + topic-aware order; the hard mastery
+    GATE is quiz-history based (see `_gmat_topic_mastered`)."""
     if not topic or not col.get_config("gmatPlan", None):
         return
     diagnosis = col.get_config("gmatDiagnosis", {}) or {}
     old = diagnosis.get(topic)
     old = 0.5 if old is None else float(old)
     new = round(
-        (1 - GMAT_MASTERY_ALPHA) * old + GMAT_MASTERY_ALPHA * (1.0 if correct else 0.0),
+        (1 - alpha) * old + alpha * (1.0 if correct else 0.0),
         3,
     )
     diagnosis[topic] = new
@@ -1060,6 +1101,33 @@ def _gmat_update_mastery(col, topic: str, correct: bool) -> None:
             )
         plan["topics"].sort(key=lambda e: e.get("mastery", 0.5))
         col.set_config("gmatPlan", plan)
+
+
+def _gmat_day_bucket(col) -> int:
+    """Absolute day index from the scheduler's day cutoff - constant within an
+    Anki day, +1 each rollover. Used to stamp quiz sessions so the mastery gate
+    can require passes on DISTINCT days."""
+    try:
+        return int(col.sched.day_cutoff) // 86400
+    except Exception:
+        return int(time.time()) // 86400
+
+
+def _gmat_topic_mastered(col, topic: str) -> bool:
+    """The SOFT mastery gate: True once the topic's quiz history proves it stuck
+    - at least GMAT_QUIZ_PASS_SESSIONS passing sessions (accuracy >= the pass
+    bar) spread over at least GMAT_QUIZ_PASS_DISTINCT_DAYS distinct days. This is
+    the single definition of 'mastered' that pacing + Today + Study read; the
+    EMA `gmatDiagnosis` value is only the display/scheduling signal."""
+    if not topic:
+        return False
+    quizzes = col.get_config("gmatQuizzes", {}) or {}
+    sessions = quizzes.get(topic, []) or []
+    passing = [s for s in sessions if float(s.get("accuracy", 0) or 0) >= GMAT_QUIZ_PASS_ACCURACY]
+    if len(passing) < GMAT_QUIZ_PASS_SESSIONS:
+        return False
+    distinct_days = {int(s.get("day", 0) or 0) for s in passing}
+    return len(distinct_days) >= GMAT_QUIZ_PASS_DISTINCT_DAYS
 
 
 def _gmat_notes_by_topic() -> dict:
@@ -1090,6 +1158,19 @@ def gmat_save_profile() -> bytes:
     }
     col.set_config("gmatProfile", profile)
     return b""
+
+
+def gmat_set_ai_enabled() -> bytes:
+    """Persist the AI on/off choice to synced config (mirrors the client's
+    localStorage override) so it follows the account across devices. Body:
+    {"enabled": bool}."""
+    col = aqt.mw.col
+    try:
+        body = json.loads(request.data or b"{}")
+    except Exception:
+        body = {}
+    col.set_config("gmatAiEnabled", bool(body.get("enabled", False)))
+    return json.dumps({"ok": True}).encode("utf-8")
 
 
 def gmat_open_stats() -> bytes:
@@ -1241,6 +1322,12 @@ GMAT_STATE_KEYS = [
     "gmatTimedDrill",
     "gmatLessonScheduled",
     "gmatTestsTaken",
+    "gmatAiEnabled",
+    # 3-tier assessment layer: per-topic quiz session history (the mastery
+    # gate) and the application-attempt log the Performance reader folds in
+    # (quiz/milestone answers, which never touch the scheduler/revlog).
+    "gmatQuizzes",
+    "gmatApplication",
 ]
 
 
@@ -1456,11 +1543,14 @@ def _gmat_pacing(col) -> dict:
 
     plan = col.get_config("gmatPlan", None) or {}
     profile = col.get_config("gmatProfile", {}) or {}
-    learned = col.get_config("gmatLearned", {}) or {}
     topics = plan.get("topics", []) or []
     topic_ids = {t.get("topic") for t in topics}
     topics_total = len(topics)
-    topics_learned = len([t for t in learned if t in topic_ids])
+    # "Learned" now means MASTERED (passed the topic quiz gate), NOT merely
+    # lesson-done: a finished lesson without passing quizzes is still in
+    # progress and counts toward remaining. This keeps pacing honest about how
+    # much real competence is banked.
+    topics_learned = len([t for t in topic_ids if t and _gmat_topic_mastered(col, t)])
     topics_remaining = max(0, topics_total - topics_learned)
     days_per_week = int(plan.get("days_per_week", profile.get("days_per_week", 5)) or 5)
 
@@ -1539,6 +1629,9 @@ def _gmat_pacing(col) -> dict:
 _REVIEW_MIN = 1.5
 _LESSON_MIN = 12.0
 _PRACTICE_MIN = 2.0
+# a short topic quiz (~6 timed questions) and a milestone checkpoint (~12-15)
+_QUIZ_MIN = 8.0
+_MILESTONE_MIN = 25.0
 
 
 def gmat_today() -> bytes:
@@ -1639,6 +1732,48 @@ def _gmat_build_today(col) -> dict:
         )
         remaining_min -= _LESSON_MIN
 
+    # TOPIC QUIZ (soft mastery gate): a lesson-done topic that isn't mastered yet
+    # gets a short timed quiz to prove it. One passing session needs a spaced
+    # re-quiz (>= 3 days later, distinct day) to reach the 2-pass gate; a recent
+    # single pass waits for that spacing instead of re-quizzing today.
+    quizzes_cfg = col.get_config("gmatQuizzes", {}) or {}
+    quiz_topics: list = []
+    for t in topics:
+        tid = t.get("topic")
+        if not tid or tid not in learned or tid not in lesson_ids:
+            continue
+        if _gmat_topic_mastered(col, tid):
+            continue
+        sessions = quizzes_cfg.get(tid, []) or []
+        passing = [
+            s for s in sessions
+            if float(s.get("accuracy", 0) or 0) >= GMAT_QUIZ_PASS_ACCURACY
+        ]
+        if not passing:
+            quiz_topics.append((tid, False))
+        else:
+            last_pass = max(int(s.get("ts", 0) or 0) for s in passing)
+            if now_ts - last_pass >= GMAT_QUIZ_RESPACE_SECS:
+                quiz_topics.append((tid, True))
+    for tid, spaced in quiz_topics[:2]:
+        if remaining_min < _QUIZ_MIN and blocks:
+            break
+        blocks.append(
+            {
+                "kind": "quiz",
+                "title": "Topic quiz (spaced)" if spaced else "Topic quiz",
+                "detail": (
+                    f"confirm {topic_leaf(tid)} stuck - re-quiz to master"
+                    if spaced
+                    else f"prove {topic_leaf(tid)} - {GMAT_QUIZ_N} questions, timed"
+                ),
+                "topic": tid,
+                "count": GMAT_QUIZ_N,
+                "est_minutes": round(_QUIZ_MIN),
+            }
+        )
+        remaining_min -= _QUIZ_MIN
+
     # fill the rest of the budget with targeted practice on the weakest learned topic
     learned_topics = [t for t in topics if t.get("topic") in learned]
     if remaining_min >= _PRACTICE_MIN and (learned_topics or due_total == 0):
@@ -1667,21 +1802,35 @@ def _gmat_build_today(col) -> dict:
             }
         )
 
-    # A mock/test simulation, at most one per day. Prefer a real practice-test
-    # form when the exam date is known and an untaken form remains, with cadence
-    # tightening toward the exam (~10d out >21d, ~weekly within 21d, ~4-5d within
-    # the final 14d). Fall back to the adaptive mock section otherwise.
+    # ONE timed test per day, chosen by priority: practice-test form > milestone
+    # checkpoint > adaptive mock. gmatMocks now also holds milestone entries
+    # (kind:"milestone"), so the practice-test/adaptive-mock cadence reads only
+    # NON-milestone entries to stay exactly as before, while the milestone has
+    # its own weekly cadence. The "already tested today" guard keeps it to one.
     mocks = col.get_config("gmatMocks", []) or []
-    last_mock_ts = mocks[-1].get("ts", 0) if mocks else 0
+    non_milestone = [m for m in mocks if m.get("kind") != "milestone"]
+    milestone_mocks = [m for m in mocks if m.get("kind") == "milestone"]
+    last_mock_ts = non_milestone[-1].get("ts", 0) if non_milestone else 0
+    last_milestone_ts = milestone_mocks[-1].get("ts", 0) if milestone_mocks else 0
+    try:
+        _cutoff = int(col.sched.day_cutoff)
+    except Exception:
+        _cutoff = now_ts
+    today_start_ts = _cutoff - 86400
+    taken_timed_today = any(int(m.get("ts", 0) or 0) >= today_start_ts for m in mocks)
+
     days_to_exam = pacing.get("days_to_exam")
-    learned = int(pacing.get("topics_learned") or 0)
+    learned_count = int(pacing.get("topics_learned") or 0)
     total = int(pacing.get("topics_total") or 0)
+    # count of lesson-done topics (there's a pool to draw a milestone from)
+    lesson_done_count = len([t for t in topics if t.get("topic") in learned])
     learning_ok = pacing.get("status") == "learning_complete" or (
-        total > 0 and learned / total >= GMAT_TEST_MIN_LEARNED_FRAC
+        total > 0 and learned_count / total >= GMAT_TEST_MIN_LEARNED_FRAC
     )
     near_exam = days_to_exam is not None and days_to_exam <= GMAT_TEST_EXAM_WINDOW_DAYS
 
-    test_block = None
+    timed_block = None
+    # 1) practice-test form (unchanged cadence, near the exam)
     if days_to_exam is not None:
         next_form = _gmat_next_untaken_test(col)
         if next_form is not None:
@@ -1696,7 +1845,7 @@ def _gmat_build_today(col) -> dict:
                 and near_exam
                 and learning_ok
             ):
-                test_block = {
+                timed_block = {
                     "kind": "mock",
                     "title": "Practice test",
                     "detail": f"{next_form['label']} - 21 questions, timed",
@@ -1705,9 +1854,20 @@ def _gmat_build_today(col) -> dict:
                     "est_minutes": 45,
                 }
 
-    if test_block is not None:
-        blocks.append(test_block)
-    else:
+    # 2) milestone checkpoint: roughly weekly once several topics are learned
+    if timed_block is None and lesson_done_count >= GMAT_MILESTONE_MIN_TOPICS:
+        milestone_due = (now_ts - last_milestone_ts) > 7 * 86400
+        if milestone_due:
+            timed_block = {
+                "kind": "milestone",
+                "title": "Milestone test",
+                "detail": f"{GMAT_MILESTONE_N} questions, mixed across learned topics · timed",
+                "count": GMAT_MILESTONE_N,
+                "est_minutes": round(_MILESTONE_MIN),
+            }
+
+    # 3) adaptive mock section (existing fallback)
+    if timed_block is None:
         mock_due = (
             pacing.get("status") == "learning_complete"
             or (
@@ -1717,21 +1877,347 @@ def _gmat_build_today(col) -> dict:
             )
         ) and (now_ts - last_mock_ts) > 7 * 86400
         if mock_due:
-            blocks.append(
-                {
-                    "kind": "mock",
-                    "title": "Timed mock section",
-                    "detail": "21 questions · 45:00 · exam conditions, no feedback until the end",
-                    "count": 21,
-                    "est_minutes": 45,
-                }
-            )
+            timed_block = {
+                "kind": "mock",
+                "title": "Timed mock section",
+                "detail": "21 questions · 45:00 · exam conditions, no feedback until the end",
+                "count": 21,
+                "est_minutes": 45,
+            }
+
+    if timed_block is not None and not taken_timed_today:
+        blocks.append(timed_block)
 
     return {
         "has_plan": True,
         "pacing": pacing,
         "blocks": blocks,
         "daily_minutes": sum(int(b.get("est_minutes", 0)) for b in blocks),
+    }
+
+
+# --- forward study calendar (Progress tab) -----------------------------------
+# A tentative day-by-day projection from today through the exam. Everything is
+# DERIVED from the CURRENT plan/mastery/learned/quiz state, so each fetch
+# recalibrates: mastering a topic drops it from the remaining set (fewer
+# lessons, an earlier finish, more consolidation days); completing tomorrow's
+# lesson early shifts the same state the Today builder reads. It parallels
+# `_gmat_pacing` + `_gmat_build_today` (same 10-day hard boundary, late_start,
+# topics-weakest-first, per-item minute costs), never a separate schedule.
+_PRACTICE_TEST_MIN = 45.0
+# nominal drill fill (questions) on a non-lesson study day -> minutes via _PRACTICE_MIN
+_CAL_DRILL_N = 8
+# how far ahead to project at most (guards a pathological far-future exam date)
+_CAL_MAX_DAYS = 370
+# practice-test spacing (calendar days) in the final stretch - the near-exam
+# cadence from the Today builder (days_to_exam <= 14 -> every 4 days)
+_CAL_TEST_CADENCE = 4
+
+
+def _gmat_cal_review_min(learned: int) -> int:
+    """Nominal spaced-review minutes for a projected study day, growing with how
+    many topics are learned by then (more banked -> more cards in rotation).
+    Reuses the Today per-review cost (_REVIEW_MIN); ~3 due cards per learned
+    topic, capped so no day balloons."""
+    nominal_due = min(30, 3 * learned + 2)
+    return round(_REVIEW_MIN * nominal_due)
+
+
+def gmat_calendar() -> bytes:
+    """A tentative day-by-day study calendar from today through the exam. Read-only
+    and derived from current state (recalibrates on every fetch). Returns
+    {"days": []} when there's no plan/exam date (the UI shows an empty state)."""
+    try:
+        data = _gmat_build_calendar(aqt.mw.col)
+    except Exception as exc:
+        print(f"GMATWiz: calendar unavailable: {exc}")
+        data = {
+            "exam_date": "",
+            "days_to_exam": None,
+            "generated_ts": int(time.time()),
+            "study_days": 0,
+            "lessons_finish_date": None,
+            "days": [],
+        }
+    return json.dumps(data).encode("utf-8")
+
+
+def _gmat_build_calendar(col) -> dict:
+    from collections import defaultdict
+    from datetime import date, datetime, timedelta
+
+    now_ts = int(time.time())
+    empty = {
+        "exam_date": "",
+        "days_to_exam": None,
+        "generated_ts": now_ts,
+        "study_days": 0,
+        "lessons_finish_date": None,
+        "days": [],
+    }
+    plan = col.get_config("gmatPlan", None)
+    profile = col.get_config("gmatProfile", {}) or {}
+    if not plan:
+        return empty
+    exam_date = profile.get("exam_date", "") or ""
+    if not exam_date:
+        return empty
+    try:
+        exam = datetime.strptime(exam_date, "%Y-%m-%d").date()
+    except Exception:
+        return empty
+
+    today = date.today()
+    days_to_exam = (exam - today).days
+    if days_to_exam < 0:
+        # exam already passed: nothing to project forward
+        return {**empty, "exam_date": exam_date, "days_to_exam": days_to_exam}
+
+    pacing = _gmat_pacing(col)
+    days_per_week = max(
+        1, min(7, int(plan.get("days_per_week", profile.get("days_per_week", 5)) or 5))
+    )
+    late_start = bool(pacing.get("late_start"))
+
+    # DERIVED from current mastery + learned state (so each fetch recalibrates):
+    # remaining = UN-MASTERED topics weakest-first (plan.topics is already sorted;
+    # the quiz-history gate is the single "mastered" definition). A topic that is
+    # already lesson-done ("learned") but not yet mastered projects its mastery
+    # quizzes only - no fresh lesson - exactly like the Today builder, so pulling
+    # a lesson forward (jump-ahead) turns its future slot from lesson -> quiz.
+    learned_cfg = col.get_config("gmatLearned", {}) or {}
+    learned_ids = set(learned_cfg.keys()) if isinstance(learned_cfg, dict) else set()
+    topics = plan.get("topics", []) or []
+    remaining = [
+        t.get("topic")
+        for t in topics
+        if t.get("topic") and not _gmat_topic_mastered(col, t.get("topic"))
+    ]
+    # lesson-done topics count toward "learned" for review scaling + the milestone
+    # gate (mirrors the Today builder's lesson_done_count)
+    lesson_done_start = sum(1 for t in topics if t.get("topic") in learned_ids)
+
+    WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    # HARD boundary: lessons must finish by exam-10; the last 10 days are the
+    # tests-only "final" stretch. Negative when we're already inside it (late).
+    final_start = days_to_exam - 10
+
+    def is_study(off: int) -> bool:
+        # deterministic: the first `days_per_week` days of each rolling 7-day
+        # block from today are study days
+        return (off % 7) < days_per_week
+
+    def next_study(off: int) -> "int | None":
+        o = off + 1
+        while o < days_to_exam:
+            if is_study(o):
+                return o
+            o += 1
+        return None
+
+    def study_at_least(off: int) -> "int | None":
+        o = max(0, off)
+        while o < days_to_exam:
+            if is_study(o):
+                return o
+            o += 1
+        return None
+
+    # eligible study days for placing lessons: the learn window, unless a late
+    # start pushes lessons across ALL remaining study days (mirrors pacing)
+    eligible = [
+        o
+        for o in range(0, days_to_exam)
+        if is_study(o) and (late_start or o < final_start)
+    ]
+
+    lessons_by: dict = defaultdict(list)
+    quizzes_by: dict = defaultdict(list)
+    requizzes_by: dict = defaultdict(list)
+
+    # spread the remaining topics EVENLY across the eligible study days (spacing
+    # ~= eligible/remaining, i.e. ~topics_per_study_day/day on average). A
+    # not-yet-taught topic gets a lesson, a quiz the next study day, and a spaced
+    # re-quiz ~3 days on; an already-taught (learned) topic skips the lesson and
+    # just gets its quiz + spaced re-quiz.
+    respace_days = GMAT_QUIZ_RESPACE_SECS // 86400
+    r = len(remaining)
+    e = len(eligible)
+    if r > 0 and e > 0:
+        for k in range(r):
+            di = min(e - 1, (k * e) // r)
+            o = eligible[di]
+            topic = remaining[k]
+            if topic in learned_ids:
+                quizzes_by[o].append(topic)
+                rq_off = study_at_least(o + respace_days)
+                if rq_off is not None:
+                    requizzes_by[rq_off].append(topic)
+            else:
+                lessons_by[o].append(topic)
+                q_off = next_study(o)
+                if q_off is not None:
+                    quizzes_by[q_off].append(topic)
+                    rq_off = study_at_least(q_off + respace_days)
+                    if rq_off is not None:
+                        requizzes_by[rq_off].append(topic)
+
+    last_lesson_off = max(lessons_by.keys()) if lessons_by else -1
+
+    # cumulative topics learned by each offset (already lesson-done + lessons
+    # placed up to and including that day) -> review scaling + the milestone gate
+    prefix = [0] * (days_to_exam + 1)
+    for o2, tps in lessons_by.items():
+        if 0 <= o2 <= days_to_exam:
+            prefix[o2] += len(tps)
+    run = 0
+    for i in range(days_to_exam + 1):
+        run += prefix[i]
+        prefix[i] = run
+
+    def learned_upto(off: int) -> int:
+        idx = min(max(off, 0), days_to_exam)
+        return lesson_done_start + prefix[idx]
+
+    # milestone ~ every 7th study day (learn/review window only) once >= 3 topics
+    # are learned - the weekly checkpoint cadence from the Today builder
+    milestones: set = set()
+    s = 0
+    for o in range(0, days_to_exam):
+        if not is_study(o):
+            continue
+        s += 1
+        if s % 7 == 0 and o < final_start and learned_upto(o) >= GMAT_MILESTONE_MIN_TOPICS:
+            milestones.add(o)
+
+    # practice tests spaced through the final stretch (tests-only), at the
+    # near-exam cadence
+    practice_tests: set = set()
+    last_test = -_CAL_TEST_CADENCE - 1
+    for o in range(max(0, final_start), days_to_exam):
+        if not is_study(o):
+            continue
+        if o - last_test >= _CAL_TEST_CADENCE:
+            practice_tests.add(o)
+            last_test = o
+
+    days_out: list = []
+    end = min(days_to_exam, _CAL_MAX_DAYS)
+    for off in range(0, end + 1):
+        d = today + timedelta(days=off)
+        is_exam = off == days_to_exam
+        study = is_study(off) and not is_exam
+        has_lesson = off in lessons_by
+        has_test = off in practice_tests
+        has_ms = off in milestones
+        items: list = []
+        if is_exam:
+            phase = "final"
+        else:
+            if study:
+                items.append(
+                    {
+                        "kind": "review",
+                        "topic": None,
+                        "title": "Spaced review",
+                        "est_minutes": _gmat_cal_review_min(learned_upto(off)),
+                    }
+                )
+                for tp in lessons_by.get(off, []):
+                    items.append(
+                        {
+                            "kind": "lesson",
+                            "topic": tp,
+                            "title": f"Learn {topic_leaf(tp)}",
+                            "est_minutes": round(_LESSON_MIN),
+                        }
+                    )
+                for tp in quizzes_by.get(off, []):
+                    items.append(
+                        {
+                            "kind": "quiz",
+                            "topic": tp,
+                            "title": f"Quiz: {topic_leaf(tp)}",
+                            "est_minutes": round(_QUIZ_MIN),
+                        }
+                    )
+                for tp in requizzes_by.get(off, []):
+                    items.append(
+                        {
+                            "kind": "requiz",
+                            "topic": tp,
+                            "title": f"Re-quiz: {topic_leaf(tp)}",
+                            "est_minutes": round(_QUIZ_MIN),
+                        }
+                    )
+                if has_ms:
+                    items.append(
+                        {
+                            "kind": "milestone",
+                            "topic": None,
+                            "title": "Milestone checkpoint",
+                            "est_minutes": round(_MILESTONE_MIN),
+                        }
+                    )
+                if has_test:
+                    items.append(
+                        {
+                            "kind": "practice_test",
+                            "topic": None,
+                            "title": "Practice test",
+                            "est_minutes": round(_PRACTICE_TEST_MIN),
+                        }
+                    )
+                # a non-lesson study day (no lesson/test/milestone) gets a drill fill
+                if not has_lesson and not has_test and not has_ms:
+                    items.append(
+                        {
+                            "kind": "drill",
+                            "topic": None,
+                            "title": "Targeted drill",
+                            "est_minutes": round(_CAL_DRILL_N * _PRACTICE_MIN),
+                        }
+                    )
+            else:
+                items.append(
+                    {"kind": "rest", "topic": None, "title": "Rest day", "est_minutes": 0}
+                )
+            # phase: content-first (a lesson day is always "learn"), else by window
+            if has_lesson:
+                phase = "learn"
+            elif off >= final_start:
+                phase = "final"
+            elif off > last_lesson_off:
+                phase = "review"
+            else:
+                phase = "learn"
+        days_out.append(
+            {
+                "date": d.isoformat(),
+                "day_offset": off,
+                "weekday": WEEKDAYS[d.weekday()],
+                "is_today": off == 0,
+                "is_exam": is_exam,
+                "is_study_day": study,
+                "phase": phase,
+                "est_minutes": sum(int(it.get("est_minutes", 0)) for it in items),
+                "items": items,
+            }
+        )
+
+    lessons_finish_date = (
+        (today + timedelta(days=last_lesson_off)).isoformat()
+        if last_lesson_off >= 0
+        else None
+    )
+    study_days = sum(1 for o in range(0, days_to_exam) if is_study(o))
+    return {
+        "exam_date": exam_date,
+        "days_to_exam": days_to_exam,
+        "generated_ts": now_ts,
+        "study_days": study_days,
+        "lessons_finish_date": lessons_finish_date,
+        "days": days_out,
     }
 
 
@@ -1842,6 +2328,9 @@ def gmat_lessons_index() -> bytes:
                 "mastery": mastery_by_topic.get(tid),
                 "status": status_by_topic.get(tid),
                 "learned": tid in learned,
+                # the soft quiz gate: Study shows a "mastered" pill + gates the
+                # on-demand quiz action off this (not merely lesson-done).
+                "mastered": _gmat_topic_mastered(col, tid),
             }
         )
     # weakest first; unknown mastery (no diagnostic yet) goes last
@@ -2046,6 +2535,125 @@ def gmat_topic_questions() -> bytes:
     ).encode("utf-8")
 
 
+# Default milestone-test length (a periodic checkpoint, 12-15 questions mixed
+# across learned topics); the client may request another n within these bounds.
+GMAT_MILESTONE_N = 12
+GMAT_MILESTONE_N_MAX = 25
+# how many topics must be lesson-done before the weekly milestone starts showing
+GMAT_MILESTONE_MIN_TOPICS = 3
+
+
+def gmat_milestone_questions() -> bytes:
+    """Question pool for a MILESTONE test: n questions (default 12) MIXED across
+    the topics the student has learned (fallback: all topics), unseen-first, in
+    the SAME shape as a mock pool so the timed-mock flow is reused verbatim. The
+    client's adaptive picker naturally mixes topics from this pool."""
+    import random
+
+    try:
+        body = json.loads(request.data or b"{}")
+    except Exception:
+        body = {}
+    try:
+        n = int(body.get("n", GMAT_MILESTONE_N) or GMAT_MILESTONE_N)
+    except Exception:
+        n = GMAT_MILESTONE_N
+    n = max(1, min(GMAT_MILESTONE_N_MAX, n))
+
+    col = aqt.mw.col
+    learned = set((col.get_config("gmatLearned", {}) or {}).keys())
+    seen_nids: set = set()
+    try:
+        rows = col.db.all(
+            "select distinct c.nid from cards c join revlog r on r.cid = c.id"
+        )
+        seen_nids = {r[0] for r in rows}
+    except Exception:
+        pass
+
+    def build(restrict: set) -> list:
+        out: list = []
+        for nid in col.find_notes('note:"GMAT PS"'):
+            fields = dict(col.get_note(nid).items())
+            topic = fields.get("Topic", "")
+            if restrict and topic not in restrict:
+                continue
+            out.append(
+                {
+                    "stem": fields.get("Stem", ""),
+                    "options": {k: fields.get(f"Option{k}", "") for k in "ABCDE"},
+                    "correct": fields.get("Correct", ""),
+                    "topic": topic,
+                    "difficulty": fields.get("Difficulty", "medium") or "medium",
+                    "seen": nid in seen_nids,
+                }
+            )
+        return out
+
+    pool = build(learned)
+    if not pool:
+        # no learned-topic items yet (fresh account / thin bank): mix across all
+        pool = build(set())
+    random.shuffle(pool)
+    pool.sort(key=lambda q: q["seen"])
+    return json.dumps(
+        {
+            "pool": pool[:200],
+            "count": min(n, len(pool)),
+            "seconds": n * (GMAT_MOCK_TARGET_MS // 1000),
+            "target_ms": GMAT_MOCK_TARGET_MS,
+        }
+    ).encode("utf-8")
+
+
+# Tag applied to AI-generated PS notes so they're identifiable (and could be
+# audited or bulk-removed) separately from the curated bank.
+GMAT_AI_GENERATED_TAG = "gmatwiz::ai-generated"
+
+
+def gmat_add_questions() -> bytes:
+    """Admit AI-generated questions (already checkItem-gated on the client) into
+    the fixed bank as real "GMAT PS" notes so FSRS schedules them. Reuses the
+    existing note-add path (anki.gmatwiz.build_add_requests) and tags each note
+    'gmatwiz::ai-generated'. Body: {"questions": [ {stem, options, correct,
+    explanation, topic, difficulty}, ... ]}. Returns {"added": count}."""
+    import anki.gmatwiz
+
+    col = aqt.mw.col
+    try:
+        body = json.loads(request.data or b"{}")
+    except Exception:
+        body = {}
+    raw = body.get("questions", []) or []
+    questions: list[dict] = []
+    for q in raw:
+        if not isinstance(q, dict):
+            continue
+        options = q.get("options") or {}
+        if not q.get("stem") or not q.get("correct") or not isinstance(options, dict):
+            continue
+        questions.append(
+            {
+                "stem": str(q.get("stem", "")),
+                "options": {k: str(options.get(k, "")) for k in "ABCDE"},
+                "correct": str(q.get("correct", "")),
+                "explanation": str(q.get("explanation", "")),
+                "topic": str(q.get("topic", "")),
+                "difficulty": str(q.get("difficulty", "medium") or "medium"),
+                "source": "GMATWiz AI",
+            }
+        )
+    if not questions:
+        return json.dumps({"added": 0}).encode("utf-8")
+
+    requests = anki.gmatwiz.build_add_requests(col, questions, "GMAT::Quant")
+    for req in requests:
+        req.note.tags.append(GMAT_AI_GENERATED_TAG)
+    if requests:
+        col.add_notes(requests)
+    return json.dumps({"added": len(requests)}).encode("utf-8")
+
+
 def gmat_submit_mock() -> bytes:
     """Store a finished mock, update the living plan from its answers, and
     return the report. Mock answers deliberately do NOT go through the
@@ -2149,6 +2757,145 @@ def gmat_submit_mock() -> bytes:
     ).encode("utf-8")
 
 
+def gmat_submit_quiz() -> bytes:
+    """Store a finished assessment session (topic quiz or milestone test) and
+    return its report, feeding all three scores.
+
+    Body: { kind:"topic"|"milestone", topic?, results:[{topic, difficulty,
+    correct, ms, stem, chosen, correct_key}] }.
+
+    - topic quiz: append a session to gmatQuizzes[topic] (the mastery gate). A
+      failed quiz (< pass bar) puts the topic back into repair (concept-gap
+      mechanism) so it reschedules in Today; a quiz that just tips the topic to
+      mastered clears its repair flag. Bypassable - never hard-blocks anything.
+    - milestone: append to the EXISTING gmatMocks list with kind:"milestone" so
+      Readiness folds it in via the unchanged gmatMocks reader.
+
+    BOTH tiers move per-topic mastery harder than a drill (alpha 0.5) and count
+    every answer as an APPLICATION attempt (gmatApplication) so Performance
+    reflects them. Missed questions flow to the error log via the client's
+    per-miss classification (the reused mock report), exactly like a mock."""
+    from collections import defaultdict
+
+    col = aqt.mw.col
+    try:
+        body = json.loads(request.data or b"{}")
+    except Exception:
+        body = {}
+    kind = str(body.get("kind", "topic") or "topic")
+    results = body.get("results", []) or []
+    n = len(results)
+    if n == 0:
+        return json.dumps({"ok": False}).encode("utf-8")
+
+    correct = sum(1 for r in results if r.get("correct"))
+    accuracy = correct / n
+
+    per_topic: dict = defaultdict(lambda: [0, 0])
+    timed = [r for r in results if int(r.get("ms", 0) or 0) > 0]
+    rushed_wrong = sum(
+        1 for r in timed if not r.get("correct") and int(r["ms"]) < GMAT_MOCK_TARGET_MS // 2
+    )
+    slow_correct = sum(
+        1 for r in timed if r.get("correct") and int(r["ms"]) > GMAT_MOCK_TARGET_MS * 3 // 2
+    )
+    avg_ms = int(sum(int(r["ms"]) for r in timed) / len(timed)) if timed else 0
+    for r in results:
+        rtopic = str(r.get("topic", ""))
+        if not rtopic:
+            continue
+        per_topic[rtopic][1] += 1
+        if r.get("correct"):
+            per_topic[rtopic][0] += 1
+        # assessment answers move mastery harder than a drill (0.5), and every
+        # answer is application evidence the Performance reader folds in
+        _gmat_update_mastery(
+            col, rtopic, bool(r.get("correct")), alpha=GMAT_QUIZ_MASTERY_ALPHA
+        )
+        _gmat_record_application(col, rtopic, bool(r.get("correct")), int(r.get("ms", 0) or 0))
+
+    now_ts = int(time.time())
+    mastered = None
+    if kind == "milestone":
+        mocks = col.get_config("gmatMocks", []) or []
+        mocks.append(
+            {
+                "ts": now_ts,
+                "kind": "milestone",
+                "accuracy": round(accuracy, 4),
+                "n": n,
+                "timing": {
+                    "avg_ms": avg_ms,
+                    "rushed_wrong": rushed_wrong,
+                    "slow_correct": slow_correct,
+                },
+            }
+        )
+        col.set_config("gmatMocks", mocks[-20:])
+    else:
+        topic = str(body.get("topic", "") or "")
+        if not topic and per_topic:
+            # infer the dominant topic if the client omitted it
+            topic = max(per_topic.items(), key=lambda kv: kv[1][1])[0]
+        if topic:
+            quizzes = col.get_config("gmatQuizzes", {}) or {}
+            sessions = quizzes.get(topic, []) or []
+            sessions.append(
+                {
+                    "ts": now_ts,
+                    "day": _gmat_day_bucket(col),
+                    "accuracy": round(accuracy, 4),
+                    "n": n,
+                }
+            )
+            quizzes[topic] = sessions[-50:]
+            col.set_config("gmatQuizzes", quizzes)
+            mastered = _gmat_topic_mastered(col, topic)
+            if accuracy < GMAT_QUIZ_PASS_ACCURACY:
+                _gmat_apply_repair(col, topic, "concept_gap")
+            elif mastered:
+                repairs = col.get_config("gmatRepairTopics", {}) or {}
+                if topic in repairs:
+                    del repairs[topic]
+                    col.set_config("gmatRepairTopics", repairs)
+
+    # score in the shared engine (single accuracy->Q map); a milestone shows a Q
+    # like a mock, a topic quiz reports its accuracy without a section score
+    q = None
+    if kind == "milestone":
+        try:
+            raw = col._backend.gmat_scores()
+            scores = json.loads(getattr(raw, "val", raw))
+            engine_mocks = scores.get("readiness", {}).get("mocks", []) or []
+            if engine_mocks:
+                q = engine_mocks[-1].get("q")
+        except Exception as exc:
+            print(f"GMATWiz: quiz scoring unavailable: {exc}")
+
+    report: dict = {
+        "ok": True,
+        "kind": kind,
+        "accuracy": round(accuracy, 4),
+        "n": n,
+        "q": q,
+        "per_topic": [
+            {"topic": t, "correct": c, "n": total}
+            for t, (c, total) in sorted(
+                per_topic.items(), key=lambda kv: kv[1][0] / kv[1][1]
+            )
+        ],
+        "timing": {
+            "avg_ms": avg_ms,
+            "rushed_wrong": rushed_wrong,
+            "slow_correct": slow_correct,
+            "target_ms": GMAT_MOCK_TARGET_MS,
+        },
+    }
+    if mastered is not None:
+        report["mastered"] = bool(mastered)
+    return json.dumps(report).encode("utf-8")
+
+
 def gmat_tests() -> bytes:
     """The practice-test catalog grouped by year, merged with this student's
     taken/score status (from the gmatTestsTaken config). Empty if not authored."""
@@ -2230,15 +2977,20 @@ post_handler_list = [
     gmat_log_error,
     gmat_set_error_takeaway,
     gmat_save_profile,
+    gmat_set_ai_enabled,
+    gmat_add_questions,
     gmat_pretest_questions,
     gmat_submit_pretest,
     gmat_lessons_index,
     gmat_lesson,
     gmat_mark_learned,
     gmat_today,
+    gmat_calendar,
     gmat_mock_questions,
     gmat_topic_questions,
+    gmat_milestone_questions,
     gmat_submit_mock,
+    gmat_submit_quiz,
     gmat_tests,
     gmat_test_questions,
     gmat_official_scores,
@@ -2387,15 +3139,20 @@ def _check_dynamic_request_permissions():
         "/_anki/gmatLogError",
         "/_anki/gmatSetErrorTakeaway",
         "/_anki/gmatSaveProfile",
+        "/_anki/gmatSetAiEnabled",
+        "/_anki/gmatAddQuestions",
         "/_anki/gmatPretestQuestions",
         "/_anki/gmatSubmitPretest",
         "/_anki/gmatLessonsIndex",
         "/_anki/gmatLesson",
         "/_anki/gmatMarkLearned",
         "/_anki/gmatToday",
+        "/_anki/gmatCalendar",
         "/_anki/gmatMockQuestions",
         "/_anki/gmatTopicQuestions",
+        "/_anki/gmatMilestoneQuestions",
         "/_anki/gmatSubmitMock",
+        "/_anki/gmatSubmitQuiz",
         "/_anki/gmatTests",
         "/_anki/gmatTestQuestions",
         "/_anki/gmatOfficialScores",

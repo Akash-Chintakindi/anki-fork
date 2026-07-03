@@ -23,33 +23,63 @@ WHY THESE, AND WHY NOW
 
 ARCHITECTURE (one AI client, two apps)
 - Desktop and iOS render the SAME SvelteKit app, which already initializes
-  Firebase (Auth + Firestore). So runtime AI lives in the TypeScript layer via
-  Firebase AI Logic (Gemini) -> one implementation serves BOTH platforms, no
+  Firebase (Auth + Firestore). Runtime AI lives in the TypeScript layer and is
+  proxied through a Firebase Cloud Function (gmatGenerate) that calls OpenAI, so
+  the API key stays server-side and ONE implementation serves BOTH platforms - no
   Python/Rust AI duplication. The Rust/Python backends only store data.
 - Content ingestion is the exception: a build-time Python tool (offline), not
   part of the running app.
+- PROVIDER NOTE: the runtime seam started on Firebase AI Logic (Gemini) and was
+  later re-pointed to OpenAI via the gmatGenerate Cloud Function (see F). The
+  ai_ingest.py build tool is provider-flexible (Gemini/OpenAI/heuristic/mock).
 
 -------------------------------------------------------------------------------
 F - SHARED AI PLUMBING  (the seam everything else uses)
 -------------------------------------------------------------------------------
-Files: ts/routes/gmat/ai.ts, ts/routes/gmat/aiChecker.ts
+Files: ts/routes/gmat/ai.ts, ts/routes/gmat/aiChecker.ts, functions/ (proxy)
 What:
-- ai.ts wraps Firebase AI Logic (Gemini Developer API) behind one function,
-  generateJson<T>(prompt, schema): returns { ok:true, value } or { ok:false,
-  reason } and NEVER throws. Enforces a timeout, parses structured JSON output
-  (responseMimeType + responseSchema), lazily inits the model. Model:
-  gemini-flash-latest.
-- Flag gating: aiEnabled = Firebase configured (getApps>0) AND not disabled;
-  override via localStorage "gmatwiz.ai" = "on"/"off"; defaults ON when Firebase
-  is configured. getAiEnabled()/setAiEnabled() exported.
+- ai.ts wraps the AI call behind one function, generateJson<T>(prompt, schema):
+  returns { ok:true, value } or { ok:false, reason } and NEVER throws. It calls
+  the `gmatGenerate` Firebase callable (Functions v2, us-central1) which holds the
+  OPENAI_API_KEY secret and returns structured JSON (schema is normalized to plain
+  JSON Schema before sending). Timeout-wrapped; any failure -> {ok:false}.
+- functions/ = the Cloud Functions v2 project implementing gmatGenerate
+  ({prompt, responseSchema?, model?} -> {text}); default model gpt-4.1-mini
+  (overridable), key via Functions secret, App Check toggle (off until clients
+  send tokens). Compiles now; deploys at go-live.
+- Flag gating: aiEnabled requires Firebase configured AND the user switch ON;
+  override via localStorage "gmatwiz.ai" mirrored to synced config gmatAiEnabled.
+  DEFAULT OFF (AI needs Blaze + the key). getAiEnabled()/setAiEnabled() exported.
 - aiChecker.ts is the PRD S14.8 "7f" quality gate: checkItem() scores an item on
-  correctness / in-scope / well-formed / teaching-quality with a pass cutoff.
-  FAIL-CLOSED (pass:false) when AI is unavailable, so a future generator can
-  never admit an unchecked card. Not wired to anything live yet - it is the
-  harness the card generators (features B/C) will call before admitting content.
+  correctness / in-scope / well-formed / teaching-quality with a pass cutoff,
+  FAIL-CLOSED (pass:false) when AI is unavailable. It gates every AI-generated
+  question before it is admitted (see the Drill/Study generator below).
 Reasoning: PRD S16 "Define clean seams so AI plugs in later; everything runs
-with AI off." This is that seam + the degrade-cleanly guarantee in one place, so
-A (and future B/C/D) reuse it instead of each re-implementing AI calls.
+with AI off." One seam + the degrade-cleanly guarantee, reused by the Coach, the
+Drill/Study generator, and the quiz/test generator.
+
+-------------------------------------------------------------------------------
+AI ON/OFF SWITCH  (user control, default OFF)
+-------------------------------------------------------------------------------
+Files: ts/routes/gmat/ai.ts, GmatApp.svelte (Progress tab), api.ts,
+       qt/aqt/mediasrv.py, rslib/src/gmatwiz.rs
+A visible toggle in the Progress tab ("AI question generation & coaching") wired
+to getAiEnabled/setAiEnabled, mirrored to synced config gmatAiEnabled (in
+GMAT_STATE_KEYS on both platforms; synced-wins-on-load). When OFF: no gmatGenerate
+calls at all, Drill/Study use only the fixed bank, the Coach button is hidden -
+the full degrade path. Default OFF until the user enables it (and Blaze + key set).
+
+-------------------------------------------------------------------------------
+HYBRID DRILL / STUDY GENERATION  (application over lessons, SPOV 2)
+-------------------------------------------------------------------------------
+Files: GmatApp.svelte, api.ts, qt/aqt/mediasrv.py, rslib/src/gmatwiz.rs
+Drill serves real FSRS due cards first; when the queue is exhausted (or "Generate
+more") AND AI is ON, it generates a small batch of NEW weakest-topic items via
+generateJson, gates EACH through aiChecker (drop fails), then admits survivors:
+desktop adds them as real "GMAT PS" notes (tagged gmatwiz::ai-generated) so FSRS
+tracks them; mobile practices them ephemerally (no rslib importer yet). Study's
+per-topic practice generates the same way. Wrong answers -> error log + repair.
+An "End session" review shows the right/wrong summary. AI OFF -> fixed bank only.
 
 -------------------------------------------------------------------------------
 E - AI CONTENT INGESTION  (build-time content quality)
@@ -122,17 +152,24 @@ GUARDRAILS (all features)
 -------------------------------------------------------------------------------
 PREREQUISITE TO GO LIVE (one-time, like publishing the Firestore rules)
 -------------------------------------------------------------------------------
-- Enable Firebase AI Logic (Gemini Developer API) for the `gmatwiz` project:
-    npx -y firebase-tools@latest init ailogic       (run in the repo)
-  or enable it in the Firebase console. Until then, AI stays off and the app
-  uses fallbacks. App Check is recommended before any public release.
-- For E's live run, set GEMINI_API_KEY (or GOOGLE_API_KEY) in the shell.
+- Upgrade the `gmatwiz` Firebase project to the Blaze plan (Cloud Functions).
+- Set the OpenAI key + deploy the proxy:
+    firebase functions:secrets:set OPENAI_API_KEY        (paste sk-... key)
+    cd functions && npm install && npm run build
+    firebase deploy --only functions
+  (optional: OPENAI_MODEL to change the default; GMAT_ENFORCE_APP_CHECK=true once
+  clients send App Check tokens). Until deployed, the AI switch stays off and the
+  app uses the fixed bank + non-AI behavior everywhere.
+- Then flip the "AI features" switch ON in the Progress tab.
+- For the E build tool's live run, set GEMINI_API_KEY/GOOGLE_API_KEY (or OpenAI)
+  in the shell; without a key it runs heuristic/mock.
 
 -------------------------------------------------------------------------------
 NOT YET (designed-for, not built)
 -------------------------------------------------------------------------------
-- B - AI application-item generator (fills coverage gaps), gated by aiChecker.
 - C - AI paraphrase/variant generator (memory->performance bridge, PRD S14.2).
 - D - Socratic hint-ladder / post-attempt tutor in the lesson loop.
-The F seam + aiChecker harness were built so B/C/D drop in without re-plumbing.
+(B, the application-item generator, now SHIPS as the hybrid Drill/Study + quiz
+generator above, gated by aiChecker. The F seam + checker mean C/D drop in
+without re-plumbing.)
 ===============================================================================

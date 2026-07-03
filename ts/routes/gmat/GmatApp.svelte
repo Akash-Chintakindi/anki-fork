@@ -12,6 +12,7 @@ chrome77/es2020 webview.
     import { onMount } from "svelte";
     import type {
         GmatOverview,
+        GmatQuestion,
         ScheduledCard,
         Counts,
         ErrorEntry,
@@ -23,6 +24,9 @@ chrome77/es2020 webview.
         TodaySession,
         TodayBlock,
         GmatPacing,
+        StudyCalendar,
+        CalendarDay,
+        CalendarItem,
         MockQuestion,
         MockResult,
         MockReport,
@@ -45,9 +49,12 @@ chrome77/es2020 webview.
         fetchLesson,
         markLearned,
         fetchToday,
+        fetchCalendar,
         fetchMockPool,
         fetchTopicQuestions,
+        fetchMilestoneQuestions,
         submitMock,
+        submitQuiz,
         fetchTests,
         fetchTestQuestions,
         fetchOfficialScores,
@@ -56,9 +63,12 @@ chrome77/es2020 webview.
         openFullStats,
         openDecks,
         renderMath,
+        setAiEnabledRemote,
+        addGeneratedQuestions,
     } from "./api";
     import { authEnabled, onUser, signIn, signUp, signOutUser, type AuthUser } from "./auth";
-    import { getAiEnabled } from "./ai";
+    import { getAiEnabled, setAiEnabled, generateJson, Schema } from "./ai";
+    import { checkItem } from "./aiChecker";
     import { coachMiss } from "./coach";
     import { pullAccountState, scheduleStatePush, startAutoSync, stopAutoSync } from "./sync";
 
@@ -124,6 +134,35 @@ chrome77/es2020 webview.
         if (authUser) scheduleStatePush(authUser.uid);
     }
 
+    /** Reconcile the local AI override with the synced config: a value stored on
+        the account (any device) wins over the local default. Then refresh the
+        reactive mirror the template reads. */
+    function reconcileAiFlag(): void {
+        if (typeof overview.gmatAiEnabled === "boolean") {
+            setAiEnabled(overview.gmatAiEnabled);
+        }
+        aiOn = getAiEnabled();
+    }
+
+    /** Flip AI on/off: persist locally (localStorage) AND mirror to synced config
+        so the choice follows the account. Best-effort; never blocks the UI. */
+    async function toggleAi(): Promise<void> {
+        if (aiBusy) return;
+        aiBusy = true;
+        const next = !aiOn;
+        setAiEnabled(next);
+        // getAiEnabled() re-applies the Firebase-configured guard, so the switch
+        // honestly stays off if AI can't run here.
+        aiOn = getAiEnabled();
+        try {
+            await setAiEnabledRemote(next);
+            pushIfAuthed();
+        } catch (_e) {
+            /* the local override still holds; sync is best-effort */
+        }
+        aiBusy = false;
+    }
+
     // Ambient "spellfall": GMAT math glyphs drifting behind the app (the
     // subject's own vernacular as magic), plus soft floating gold orbs.
     // Precomputed so it's stable + cheap; paused under prefers-reduced-motion.
@@ -159,6 +198,70 @@ chrome77/es2020 webview.
     $: todayEst = today
         ? today.blocks.reduce((sum, b) => sum + b.est_minutes, 0)
         : 0;
+
+    // ---- forward study calendar (Progress tab + jump-ahead) ----
+    // Derived server-side from CURRENT state, so re-fetching recalibrates it.
+    let calendar: StudyCalendar | null = null;
+    // group the projected days into rows of 7 (aligned to the study/rest cycle)
+    // for the week-by-week grid
+    $: calendarWeeks = calendar
+        ? chunk(calendar.days, 7)
+        : ([] as CalendarDay[][]);
+    // the next FUTURE day that carries a lesson - powers "Start tomorrow's plan"
+    $: nextLessonDay =
+        calendar?.days.find(
+            (d) => d.day_offset > 0 && d.items.some((it) => it.kind === "lesson"),
+        ) ?? null;
+    $: nextLessonItem =
+        nextLessonDay?.items.find((it) => it.kind === "lesson") ?? null;
+
+    function chunk<T>(arr: T[], n: number): T[][] {
+        const out: T[][] = [];
+        for (let i = 0; i < arr.length; i += n) out.push(arr.slice(i, i + n));
+        return out;
+    }
+
+    /** Short, human date like "Aug 4" from a YYYY-MM-DD string (local, no TZ shift). */
+    function shortDate(iso: string): string {
+        const [y, m, d] = iso.split("-").map((x) => parseInt(x, 10));
+        if (!y || !m || !d) return iso;
+        const months = [
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+        ];
+        return `${months[m - 1]} ${d}`;
+    }
+
+    // one glyph per calendar item kind, in the app's mono "instrument" voice
+    const CAL_ITEM_GLYPH: Record<string, string> = {
+        lesson: "\u2748", // teach
+        quiz: "\u2713", // check
+        requiz: "\u21BB", // spaced re-check
+        milestone: "\u25C6", // checkpoint
+        review: "\u25CB", // spaced review
+        drill: "\u25B8", // practice
+        practice_test: "\u25A3", // full test
+        rest: "\u00B7", // rest
+    };
+
+    /** Short chip label for a calendar item (the topic name for teach/quiz, a
+        plain word otherwise) - the title carries the full text on hover. */
+    function calChipLabel(it: CalendarItem): string {
+        if (
+            (it.kind === "lesson" || it.kind === "quiz" || it.kind === "requiz") &&
+            it.topic
+        ) {
+            return topicLabel(it.topic);
+        }
+        const words: Record<string, string> = {
+            milestone: "Milestone",
+            practice_test: "Practice test",
+            review: "Review",
+            drill: "Drill",
+            rest: "Rest",
+        };
+        return words[it.kind] ?? it.title;
+    }
 
     // A new account (no plan yet) must take the diagnostic before the rest of
     // the app unlocks: sign up -> diagnostic -> dashboard + everything else.
@@ -201,6 +304,9 @@ chrome77/es2020 webview.
     let practiceElapsed = 0;
     let practiceTimer = 0;
     const TARGET_SECS = 128; // GMAT Focus Quant pace: 45 min / 21 questions
+    // Topic-quiz length (mirrors GMAT_QUIZ_N on both engines): 7 so a single
+    // miss still clears the 85% mastery bar (6/7 = 85.7% >= 0.85).
+    const QUIZ_N = 7;
 
     // The practice card feeds from two sources: the real scheduler (infinite
     // Drill + Today's review/practice blocks) or a fixed topic-scoped pool
@@ -211,6 +317,32 @@ chrome77/es2020 webview.
     let topicPool: MockQuestion[] = [];
     let topicIdx = 0;
     let topicLabelText = "";
+    // The taxonomy id backing the current topic/ephemeral session, so
+    // "Generate more" can keep targeting it (topicLabelText is only display).
+    let practiceTopicId = "";
+
+    // ---- AI features (default OFF; user opt-in, mirrored to synced config) ----
+    let aiOn = false; // reactive mirror of getAiEnabled() for the template
+    let aiBusy = false; // toggle request in flight
+    // On-demand hybrid generation (Drill + Study). Never runs when AI is off.
+    let aiGenerating = false;
+    let aiNote = ""; // soft, themed "AI unavailable / couldn't generate" line
+
+    // ---- per-session review (drives the End-session summary) ----
+    interface SessionAnswer {
+        stem: string;
+        topic: string;
+        chosen: string;
+        correct: string;
+        isCorrect: boolean;
+    }
+    let sessionLog: SessionAnswer[] = [];
+    let sessionEnded = false;
+    $: sessionRight = sessionLog.filter((a) => a.isCorrect).length;
+    $: sessionWrong = sessionLog.length - sessionRight;
+    $: sessionPct = sessionLog.length
+        ? Math.round((100 * sessionRight) / sessionLog.length)
+        : 0;
 
     interface ActiveQuestion {
         stem: string;
@@ -227,7 +359,7 @@ chrome77/es2020 webview.
                       stem: topicPool[topicIdx].stem,
                       options: topicPool[topicIdx].options,
                       correct: topicPool[topicIdx].correct,
-                      explanation: "",
+                      explanation: topicPool[topicIdx].explanation ?? "",
                       topic: topicPool[topicIdx].topic,
                       difficulty: topicPool[topicIdx].difficulty,
                   } as ActiveQuestion)
@@ -303,6 +435,14 @@ chrome77/es2020 webview.
     let mockFormId: string | null = null;
     let mockFormYear: string | null = null;
     let mockLabel = "";
+    // The timed flow serves three assessment tiers: a full "mock"/practice test,
+    // a single-topic "quiz" (soft mastery gate), and a mixed "milestone" check.
+    // quiz/milestone submit via gmatSubmitQuiz; the run/review/report UI is shared.
+    type MockKind = "mock" | "quiz" | "milestone";
+    let mockKind: MockKind = "mock";
+    let mockQuizTopic = ""; // topic id for a "quiz"
+    let mockQuizLabel = ""; // display label for a "quiz"/"milestone"
+    let mockReturnView: View = "home"; // where "Done" returns (Today vs Study)
 
     // ---- practice-test library (full-length timed forms, grouped by year) ----
     let tests: TestLibrary | null = null;
@@ -362,7 +502,22 @@ chrome77/es2020 webview.
     async function startDrill(): Promise<void> {
         answered = 0;
         correctCount = 0;
+        practiceTopicId = "";
+        resetSession();
         await loadNextCard();
+    }
+
+    /** Clear the per-session review + generation notes at the start of a session. */
+    function resetSession(): void {
+        sessionLog = [];
+        sessionEnded = false;
+        aiNote = "";
+    }
+
+    /** End the running practice session and show its review summary. */
+    function endSession(): void {
+        sessionEnded = true;
+        stopTimer();
     }
 
     /** Advance within a topic-scoped (fixed pool) practice session. */
@@ -410,13 +565,16 @@ chrome77/es2020 webview.
         if (next === "home" || next === "dashboard") {
             const fresh = await refreshOverview();
             if (fresh) overview = fresh;
+            reconcileAiFlag();
             if (next === "home" && overview.plan) {
                 lessonTopics = (await fetchLessonsIndex()).topics;
                 today = await fetchToday();
+                calendar = await fetchCalendar();
             }
             if (next === "dashboard") {
                 officialScores = await fetchOfficialScores();
                 stats = await fetchStats();
+                calendar = await fetchCalendar();
             }
         }
     }
@@ -447,11 +605,20 @@ chrome77/es2020 webview.
 
     async function startBlock(block: TodayBlock): Promise<void> {
         stopTimer();
-        // A mock stays a full-screen timed flow (its own intro/run/review/report
-        // phases). Everything else runs INLINE so the nav stays on "Today".
+        // The timed tiers (mock / topic quiz / milestone) stay full-screen (their
+        // own intro/run/review/report phases). Everything else runs INLINE so the
+        // nav stays on "Today".
         if (block.kind === "mock") {
             // a library-sourced block runs its specific form; otherwise adaptive mock
             await startMock(block.form_id);
+            return;
+        }
+        if (block.kind === "quiz" && block.topic) {
+            await startQuiz(block.topic, topicLabel(block.topic), "home");
+            return;
+        }
+        if (block.kind === "milestone") {
+            await startMilestone(block.count ?? 12, "home");
             return;
         }
         todayActive = block;
@@ -460,8 +627,10 @@ chrome77/es2020 webview.
         } else {
             // review / practice -> the scheduler-backed drill card, inline
             practiceMode = "scheduler";
+            practiceTopicId = "";
             answered = 0;
             correctCount = 0;
+            resetSession();
             await loadNextCard();
         }
     }
@@ -481,13 +650,13 @@ chrome77/es2020 webview.
         todayActive = null;
         stopTimer();
         today = await fetchToday();
+        calendar = await fetchCalendar();
         const fresh = await refreshOverview();
         if (fresh) overview = fresh;
     }
 
     /** "You're done for today" -> keep the momentum with extra spaced practice,
-        inline on the Today tab. Full recalibration / pulling tomorrow's plan
-        forward is a later phase; this stays minimal but functional. */
+        inline on the Today tab (no plan advance - just more reps). */
     async function jumpAhead(): Promise<void> {
         await startBlock({
             kind: "practice",
@@ -497,11 +666,32 @@ chrome77/es2020 webview.
         });
     }
 
+    /** JUMP-AHEAD: pull the NEXT scheduled study day's lesson forward and run it
+        inline today, reusing the lesson snippet. Because the calendar + Today are
+        both derived from live state, completing it (markLearned) is reflected on
+        the next fetch - the lesson simply moves up, nothing is double-counted. */
+    async function startTomorrow(): Promise<void> {
+        const topic = nextLessonItem?.topic;
+        if (!topic) {
+            // nothing new left to learn - fall back to extra practice
+            await jumpAhead();
+            return;
+        }
+        await startBlock({
+            kind: "learn",
+            title: `Learn: ${topicLabel(topic)}`,
+            detail: "pulled forward from tomorrow's plan",
+            topic,
+            est_minutes: 12,
+        });
+    }
+
     /** Start an inline, topic-scoped practice session on the Study tab (fixed
         bank via gmatTopicQuestions), reusing the practice card + why-capture. */
     async function startTopicPractice(topic: string, label: string): Promise<void> {
         stopTimer();
         practiceMode = "topic";
+        practiceTopicId = topic;
         topicLabelText = label;
         topicPool = [];
         topicIdx = 0;
@@ -511,6 +701,7 @@ chrome77/es2020 webview.
         revealed = false;
         pendingWhy = false;
         guessLogged = false;
+        resetSession();
         loading = true;
         studyActive = topic;
         const data = await fetchTopicQuestions(topic, 10);
@@ -530,6 +721,232 @@ chrome77/es2020 webview.
         if (fresh) overview = fresh;
     }
 
+    // ---- hybrid AI generation (Drill + Study) --------------------------------
+    // Structured shape for one generated PS item (passed to generateJson as the
+    // responseSchema and forwarded verbatim to the gmatGenerate proxy).
+    const AI_GEN_SCHEMA = Schema.array({
+        items: Schema.object({
+            properties: {
+                stem: Schema.string(),
+                options: Schema.object({
+                    properties: {
+                        A: Schema.string(),
+                        B: Schema.string(),
+                        C: Schema.string(),
+                        D: Schema.string(),
+                        E: Schema.string(),
+                    },
+                }),
+                correct: Schema.string(),
+                explanation: Schema.string(),
+                topic: Schema.string(),
+                difficulty: Schema.string(),
+            },
+        }),
+    });
+    const AI_BATCH_SIZE = 4;
+    const KEYS = ["A", "B", "C", "D", "E"];
+
+    /** Map a topic's current mastery onto a target difficulty for generation. */
+    function topicDifficulty(topicId: string): string {
+        const t = (overview.plan?.topics ?? []).find((x) => x.topic === topicId);
+        const m = t?.mastery ?? 0.5;
+        return m < 0.4 ? "easy" : m < 0.7 ? "medium" : "hard";
+    }
+
+    /** The single weakest planned topic (weakest-first), for Drill generation. */
+    function weakestTopic(): { id: string; label: string; difficulty: string } | null {
+        const topics = [...(overview.plan?.topics ?? [])].sort(
+            (a, b) => a.mastery - b.mastery,
+        );
+        const t = topics[0];
+        if (!t) return null;
+        return { id: t.topic, label: topicLabel(t.topic), difficulty: topicDifficulty(t.topic) };
+    }
+
+    function genPrompt(label: string, difficulty: string, n: number): string {
+        return [
+            `Create ${n} ORIGINAL GMAT Focus Quant Problem Solving questions on the topic "${label}".`,
+            "Scope is strict: arithmetic and algebra only. NO geometry, NO coordinate geometry,",
+            "NO Data Sufficiency, and NO questions that need a figure, chart, or table.",
+            "Each question must:",
+            "- be self-contained and solvable by hand (no calculator);",
+            "- have exactly five options keyed A, B, C, D, E with exactly one correct answer;",
+            `- match ${difficulty} difficulty;`,
+            "- include a concise worked explanation that derives the correct answer;",
+            "- be original — do not reproduce copyrighted or official GMAT items.",
+            `Set each item's "topic" to "${label}" and "difficulty" to "${difficulty}".`,
+            "Return a JSON array of objects with fields: stem, options {A,B,C,D,E}, correct,",
+            "explanation, topic, difficulty.",
+        ].join("\n");
+    }
+
+    /** Defensive normalize: enforce 5 non-empty options + a valid correct key,
+        and force the taxonomy topic id so mastery tracking stays consistent. */
+    function normalizeGen(
+        raw: GmatQuestion,
+        topicId: string,
+        difficulty: string,
+    ): GmatQuestion | null {
+        if (!raw || typeof raw !== "object") return null;
+        const src = (raw.options ?? {}) as Record<string, string>;
+        const options: Record<string, string> = {};
+        for (const k of KEYS) {
+            const v = src[k];
+            if (typeof v !== "string" || !v.trim()) return null;
+            options[k] = v;
+        }
+        const correct = String(raw.correct ?? "").trim().toUpperCase();
+        if (correct.length !== 1 || !KEYS.includes(correct)) return null;
+        const stem = String(raw.stem ?? "").trim();
+        if (!stem) return null;
+        return {
+            stem,
+            options,
+            correct,
+            explanation: String(raw.explanation ?? ""),
+            topic: topicId,
+            difficulty: String(raw.difficulty ?? difficulty) || difficulty,
+        };
+    }
+
+    /** Generate a batch and keep only items that PASS the 7f checker (fail-closed
+        when AI is unavailable). Never throws. */
+    async function generateChecked(
+        topicId: string,
+        label: string,
+        difficulty: string,
+        n: number,
+    ): Promise<GmatQuestion[]> {
+        const res = await generateJson<GmatQuestion[]>(
+            genPrompt(label, difficulty, n),
+            AI_GEN_SCHEMA,
+        );
+        if (!res.ok || !Array.isArray(res.value)) return [];
+        const items: GmatQuestion[] = [];
+        for (const raw of res.value) {
+            const item = normalizeGen(raw, topicId, difficulty);
+            if (item) items.push(item);
+        }
+        if (items.length === 0) return [];
+        const checks = await Promise.all(
+            items.map((it) =>
+                checkItem({
+                    stem: it.stem,
+                    options: it.options,
+                    correct: it.correct,
+                    explanation: it.explanation,
+                    topic: it.topic,
+                }),
+            ),
+        );
+        return items.filter((_, i) => checks[i].pass);
+    }
+
+    function toMock(q: GmatQuestion): MockQuestion {
+        return {
+            stem: q.stem,
+            options: q.options,
+            correct: q.correct,
+            topic: q.topic,
+            difficulty: q.difficulty,
+            seen: false,
+            explanation: q.explanation,
+        };
+    }
+
+    /** Practice a generated batch ephemerally (topic mode): no scheduler writes,
+        but wrong answers still flow to the error log. Used on mobile and when the
+        scheduler can't yet serve freshly-added desktop cards. */
+    function startEphemeralPractice(
+        items: GmatQuestion[],
+        topicId: string,
+        label: string,
+    ): void {
+        practiceMode = "topic";
+        practiceTopicId = topicId;
+        topicLabelText = label;
+        topicPool = items.map(toMock);
+        topicIdx = 0;
+        selected = null;
+        revealed = false;
+        pendingWhy = false;
+        guessLogged = false;
+        started = Date.now();
+        restartPracticeTimer();
+    }
+
+    /** Append more generated items to the current ephemeral/topic pool and resume
+        (the button only shows when the pool is exhausted, so this steps forward). */
+    function appendEphemeral(items: GmatQuestion[]): void {
+        topicPool = [...topicPool, ...items.map(toMock)];
+        selected = null;
+        revealed = false;
+        pendingWhy = false;
+        guessLogged = false;
+        started = Date.now();
+        restartPracticeTimer();
+    }
+
+    /** On-demand generation for whichever practice mode is running. Targets the
+        current topic (Study/ephemeral) or the weakest planned topic (Drill). */
+    async function generateMore(): Promise<void> {
+        if (aiGenerating) return;
+        aiNote = "";
+        if (!aiOn) {
+            aiNote = "AI is off — turn it on in Progress to generate questions.";
+            return;
+        }
+        const target =
+            practiceMode === "topic" && practiceTopicId
+                ? {
+                      id: practiceTopicId,
+                      label: topicLabelText || topicLabel(practiceTopicId),
+                      difficulty: topicDifficulty(practiceTopicId),
+                  }
+                : weakestTopic();
+        if (!target) {
+            aiNote = "No target topic yet — take your diagnostic first.";
+            return;
+        }
+        aiGenerating = true;
+        let survivors: GmatQuestion[] = [];
+        try {
+            survivors = await generateChecked(
+                target.id,
+                target.label,
+                target.difficulty,
+                AI_BATCH_SIZE,
+            );
+        } catch (_e) {
+            survivors = [];
+        }
+        if (survivors.length === 0) {
+            aiNote = "AI unavailable — couldn't generate usable questions. Using your fixed bank.";
+            aiGenerating = false;
+            return;
+        }
+        let added = 0;
+        try {
+            added = (await addGeneratedQuestions(survivors)).added;
+        } catch (_e) {
+            added = 0;
+        }
+        if (practiceMode === "topic") {
+            // Study / ephemeral session: keep it ephemeral and continue.
+            appendEphemeral(survivors);
+        } else if (added > 0) {
+            // Desktop Drill: persisted as real notes — serve via the scheduler.
+            await loadNextCard();
+            if (!card) startEphemeralPractice(survivors, target.id, target.label);
+        } else {
+            // Mobile Drill (no-op add) or a failed add: practice ephemerally.
+            startEphemeralPractice(survivors, target.id, target.label);
+        }
+        pushIfAuthed();
+        aiGenerating = false;
+    }
+
     function paceLabel(p: GmatPacing): string {
         if (p.status === "on_track") return "On track";
         if (p.status === "behind") return "Behind pace";
@@ -547,6 +964,17 @@ chrome77/es2020 webview.
         answered += 1;
         answerMs = Date.now() - started;
         const isCorrect = selected === activeQuestion.correct;
+        // Record the answer for the End-session review (both practice modes).
+        sessionLog = [
+            ...sessionLog,
+            {
+                stem: activeQuestion.stem,
+                topic: activeQuestion.topic,
+                chosen: selected,
+                correct: activeQuestion.correct,
+                isCorrect,
+            },
+        ];
         if (isCorrect) {
             correctCount += 1;
         } else {
@@ -813,6 +1241,8 @@ chrome77/es2020 webview.
         stopTimer();
         mockPhase = "intro";
         mockReport = null;
+        mockKind = "mock";
+        mockReturnView = "home";
         view = "mock";
         if (formId) {
             mockFormId = formId;
@@ -831,6 +1261,51 @@ chrome77/es2020 webview.
             mockCount = Math.min(data.count, data.pool.length);
             mockSecondsLeft = data.seconds;
         }
+    }
+
+    /** A single-topic quiz (soft mastery gate) run through the timed-mock flow:
+        7 questions, lighter clock, submitted via gmatSubmitQuiz. */
+    async function startQuiz(
+        topic: string,
+        label: string,
+        returnView: View,
+    ): Promise<void> {
+        stopTimer();
+        mockPhase = "intro";
+        mockReport = null;
+        mockKind = "quiz";
+        mockReturnView = returnView;
+        mockFormId = null;
+        mockFormYear = null;
+        mockLabel = "";
+        mockQuizTopic = topic;
+        mockQuizLabel = label;
+        view = "mock";
+        const data = await fetchTopicQuestions(topic, QUIZ_N);
+        mockPool = data.pool;
+        mockCount = Math.min(QUIZ_N, data.pool.length);
+        // lighter than a full section: ~2:08/question
+        mockSecondsLeft = Math.max(1, mockCount) * TARGET_SECS;
+    }
+
+    /** A milestone checkpoint (mixed across learned topics) through the timed
+        flow: ~12 questions, timed, submitted via gmatSubmitQuiz. */
+    async function startMilestone(count = 12, returnView: View = "home"): Promise<void> {
+        stopTimer();
+        mockPhase = "intro";
+        mockReport = null;
+        mockKind = "milestone";
+        mockReturnView = returnView;
+        mockFormId = null;
+        mockFormYear = null;
+        mockLabel = "";
+        mockQuizTopic = "";
+        mockQuizLabel = "";
+        view = "mock";
+        const data = await fetchMilestoneQuestions(count);
+        mockPool = data.pool;
+        mockCount = Math.min(data.count, data.pool.length);
+        mockSecondsLeft = data.seconds;
     }
 
     const MOCK_DIFFS = ["easy", "medium", "hard"];
@@ -948,11 +1423,21 @@ chrome77/es2020 webview.
             chosen: it.answer ?? "",
             correct_key: it.q.correct,
         }));
-        mockReport = await submitMock(
-            results,
-            mockFormId ?? undefined,
-            mockFormYear ?? undefined,
-        );
+        if (mockKind === "quiz") {
+            mockReport = await submitQuiz({
+                kind: "topic",
+                topic: mockQuizTopic,
+                results,
+            });
+        } else if (mockKind === "milestone") {
+            mockReport = await submitQuiz({ kind: "milestone", results });
+        } else {
+            mockReport = await submitMock(
+                results,
+                mockFormId ?? undefined,
+                mockFormYear ?? undefined,
+            );
+        }
         mockMissResults = results.filter((r) => !r.correct);
         mockWhy = mockMissResults.map(() => null);
         mockPhase = "report";
@@ -983,7 +1468,9 @@ chrome77/es2020 webview.
         const fresh = await refreshOverview();
         if (fresh) overview = fresh;
         pushIfAuthed();
-        await go("home");
+        // quiz/milestone return to wherever they were launched (Study vs Today);
+        // a plain mock/practice-test returns to Today.
+        await go(mockReturnView);
     }
 
     /** Refresh the on-screen data from local state WITHOUT changing the current
@@ -992,13 +1479,16 @@ chrome77/es2020 webview.
     async function applyRemoteState(): Promise<void> {
         const fresh = await refreshOverview();
         if (fresh) overview = fresh;
+        reconcileAiFlag();
         if (overview.plan) {
             lessonTopics = (await fetchLessonsIndex()).topics;
             today = await fetchToday();
+            calendar = await fetchCalendar();
         }
     }
 
     onMount(() => {
+        reconcileAiFlag();
         const unsub = onUser(async (u) => {
             authUser = u;
             authReady = true;
@@ -1022,6 +1512,7 @@ chrome77/es2020 webview.
         if (overview.plan) {
             fetchLessonsIndex().then((r) => (lessonTopics = r.topics));
             fetchToday().then((t) => (today = t));
+            fetchCalendar().then((c) => (calendar = c));
         }
         return () => {
             unsub();
@@ -1169,6 +1660,45 @@ chrome77/es2020 webview.
         {#if ctx}
             <button class="ghost back-inline" on:click={ctx.onExit}>&larr; {ctx.exitLabel}</button>
         {/if}
+        {#if sessionEnded}
+            <section class="q-card summary-card">
+                <p class="eyebrow">Session review</p>
+                <h1 class="stem">
+                    You answered {sessionLog.length} question{sessionLog.length === 1 ? "" : "s"}.
+                </h1>
+                <p class="summary-tally">
+                    <span class="tally-ok">{sessionRight} right</span>
+                    &middot; <span class="tally-no">{sessionWrong} wrong</span>
+                    {#if sessionLog.length}&middot; {sessionPct}% accurate{/if}
+                </p>
+                {#if sessionLog.length}
+                    <ul class="summary-list">
+                        {#each sessionLog as a}
+                            <li class="summary-row {a.isCorrect ? 'ok' : 'no'}">
+                                <span class="sr-mark">{a.isCorrect ? "✓" : "✗"}</span>
+                                <div class="sr-main">
+                                    <span class="pill">{a.topic ? topicLabel(a.topic) : "Quant"}</span>
+                                    <span class="sr-stem">{a.stem}</span>
+                                </div>
+                                <span class="sr-ans">
+                                    {a.isCorrect ? a.correct : `${a.chosen} \u2192 ${a.correct}`}
+                                </span>
+                            </li>
+                        {/each}
+                    </ul>
+                {:else}
+                    <p class="explain">No questions answered this session.</p>
+                {/if}
+                <div class="summary-actions">
+                    {#if practiceMode === "scheduler" || !ctx}
+                        <button class="primary" on:click={startDrill}>Start a new session</button>
+                    {/if}
+                    {#if ctx}
+                        <button class="ghost" on:click={ctx.onExit}>{ctx.exitLabel}</button>
+                    {/if}
+                </div>
+            </section>
+        {:else}
         <div class="session-meter">
             <span class="readout">{answered}</span> answered
             {#if answered > 0}
@@ -1186,6 +1716,11 @@ chrome77/es2020 webview.
                 <span class="muted">/ {fmtTime(TARGET_SECS)} pace</span>
             {/if}
         </div>
+        {#if activeQuestion || answered > 0}
+            <div class="session-controls">
+                <button class="ghost end-session" on:click={endSession}>End session</button>
+            </div>
+        {/if}
 
         {#if loading}
             <section class="q-card empty"><p>Loading&hellip;</p></section>
@@ -1264,33 +1799,46 @@ chrome77/es2020 webview.
                     {/if}
                 {/if}
             </section>
-        {:else if practiceMode === "topic" && ctx}
-            <section class="q-card">
-                {#if topicPool.length === 0}
-                    <p class="eyebrow">Nothing to practice</p>
-                    <h1 class="stem">No questions for this topic yet.</h1>
-                    <p class="explain">
-                        The fixed bank has no items tagged for {topicLabelText} right now &mdash; try a
-                        lesson, or another topic. Targeted generation comes later.
-                    </p>
-                {:else}
-                    <p class="eyebrow">Session complete</p>
-                    <h1 class="stem">Nice work on {topicLabelText}.</h1>
-                    <p class="explain">
-                        You worked through {answered} question{answered === 1 ? "" : "s"}{#if answered > 0}
-                            &middot; {sessionAccuracy}% correct{/if}. Any misses are in your error log
-                        for repair.
-                    </p>
-                {/if}
-                <button class="primary" on:click={ctx.onExit}>{ctx.exitLabel}</button>
-            </section>
         {:else}
             <section class="q-card empty">
-                <p>
-                    You're caught up for now. Import GMAT Quant from the Tools menu, or come
-                    back later for scheduled review.
-                </p>
+                {#if practiceMode === "topic"}
+                    {#if topicPool.length === 0}
+                        <p class="eyebrow">Nothing to practice yet</p>
+                        <h1 class="stem">No bank questions for {topicLabelText}.</h1>
+                        <p class="explain">
+                            The fixed bank has nothing tagged here right now.{#if aiOn} Generate a few
+                            with AI, or try another topic.{:else} Turn on AI in Progress to generate
+                            targeted questions, or try another topic.{/if}
+                        </p>
+                    {:else}
+                        <p class="eyebrow">Session complete</p>
+                        <h1 class="stem">Nice work on {topicLabelText}.</h1>
+                        <p class="explain">
+                            You worked through {answered} question{answered === 1 ? "" : "s"}{#if answered > 0}
+                                &middot; {sessionAccuracy}% correct{/if}. Any misses are in your error
+                            log for repair.
+                        </p>
+                    {/if}
+                {:else}
+                    <p class="eyebrow">Queue clear</p>
+                    <h1 class="stem">You're caught up for now.</h1>
+                    <p class="explain">
+                        No scheduled cards are due.{#if aiOn} Generate fresh questions on your weakest
+                        topic, or come back later for review.{:else} Come back later for scheduled
+                        review, or import more GMAT Quant from the Tools menu.{/if}
+                    </p>
+                {/if}
+                {#if aiOn}
+                    <button class="primary gen-btn" disabled={aiGenerating} on:click={generateMore}>
+                        {aiGenerating ? "Generating…" : "Generate more with AI"}
+                    </button>
+                {/if}
+                {#if aiNote}<p class="muted ai-note">{aiNote}</p>{/if}
+                {#if ctx}
+                    <button class="ghost" on:click={ctx.onExit}>{ctx.exitLabel}</button>
+                {/if}
             </section>
+        {/if}
         {/if}
     {/snippet}
 
@@ -1484,11 +2032,23 @@ chrome77/es2020 webview.
                                 <span class="pill cal-ok">complete</span>
                             </div>
                             <h2 class="action-title">You're done for today.</h2>
-                            <p class="muted">
-                                Every task on today's plan is finished. Rest &mdash; or jump ahead and
-                                keep the momentum going with extra spaced practice.
-                            </p>
-                            <button class="primary" on:click={jumpAhead}>Jump ahead</button>
+                            {#if nextLessonItem}
+                                <p class="muted">
+                                    Every task on today's plan is finished. Rest &mdash; or pull
+                                    tomorrow's lesson forward and get ahead. Your plan recalibrates
+                                    as you go.
+                                </p>
+                                <button class="primary" on:click={startTomorrow}>
+                                    Start tomorrow's plan: {topicLabel(nextLessonItem.topic ?? "")}
+                                </button>
+                                <button class="ghost" on:click={jumpAhead}>Extra practice instead</button>
+                            {:else}
+                                <p class="muted">
+                                    Every task on today's plan is finished, and there's nothing new
+                                    left to learn. Rest &mdash; or keep sharp with extra spaced practice.
+                                </p>
+                                <button class="primary" on:click={jumpAhead}>Extra practice</button>
+                            {/if}
                             <button class="ghost" on:click={() => go("plan")}>View full plan</button>
                         {:else}
                             <div class="action-head">
@@ -1507,7 +2067,9 @@ chrome77/es2020 webview.
                                                     ? `Learn: ${topicLabel(b.topic)}`
                                                     : b.kind === "repair" && b.topic
                                                       ? `Repair: ${topicLabel(b.topic)}`
-                                                      : b.title}
+                                                      : b.kind === "quiz" && b.topic
+                                                        ? `Quiz: ${topicLabel(b.topic)}`
+                                                        : b.title}
                                             </span>
                                             <span class="tb-detail">{b.detail}</span>
                                         </div>
@@ -1521,7 +2083,9 @@ chrome77/es2020 webview.
                                                 ? "Done"
                                                 : b.kind === "learn" || b.kind === "repair"
                                                   ? "Learn"
-                                                  : b.kind === "mock"
+                                                  : b.kind === "mock" ||
+                                                      b.kind === "milestone" ||
+                                                      b.kind === "quiz"
                                                     ? "Begin"
                                                     : "Start"}
                                         </button>
@@ -1793,6 +2357,86 @@ chrome77/es2020 webview.
                 </section>
             </div>
 
+            <!-- Forward study calendar: the tentative run-up to the exam, derived
+                 live so it recalibrates as topics are mastered / pulled forward. -->
+            <section class="calendar">
+                <div class="cal-head">
+                    <span class="eyebrow">The run-up &mdash; your plan to exam day</span>
+                    <span class="pill">tentative &middot; recalibrates</span>
+                </div>
+                {#if calendar && calendar.days.length}
+                    <p class="cal-lede">
+                        {calendar.study_days} study day{calendar.study_days === 1 ? "" : "s"}
+                        to your exam{#if calendar.days_to_exam !== null}
+                            ({calendar.days_to_exam} days away){/if}.
+                        {#if calendar.lessons_finish_date}
+                            New lessons wrap up by <strong>{shortDate(calendar.lessons_finish_date)}</strong>
+                            &mdash; then the last stretch is review and timed tests.
+                        {:else}
+                            Lessons are done &mdash; the run-up is consolidation and timed tests.
+                        {/if}
+                    </p>
+                    <div class="cal-legend">
+                        <span class="cal-leg phase-learn">Learn</span>
+                        <span class="cal-leg phase-review">Review</span>
+                        <span class="cal-leg phase-final">Final 10 &middot; tests only</span>
+                    </div>
+                    <div class="cal-weeks">
+                        {#each calendarWeeks as week, wi}
+                            <div class="cal-week">
+                                <span class="cal-week-label">Wk {wi + 1}</span>
+                                <div class="cal-row">
+                                    {#each week as d (d.day_offset)}
+                                        <div
+                                            class="cal-day phase-{d.phase}"
+                                            class:today={d.is_today}
+                                            class:exam={d.is_exam}
+                                            class:rest={!d.is_study_day && !d.is_exam}
+                                        >
+                                            <div class="cal-day-top">
+                                                <span class="cal-dow">{d.weekday}</span>
+                                                <span class="cal-date">{shortDate(d.date)}</span>
+                                            </div>
+                                            {#if d.is_today}
+                                                <span class="cal-flag">Today</span>
+                                            {/if}
+                                            {#if d.is_exam}
+                                                <div class="cal-exam">
+                                                    <span class="cal-exam-g">&#9733;</span>
+                                                    <span>Exam day</span>
+                                                </div>
+                                            {:else if d.is_study_day}
+                                                <ul class="cal-items">
+                                                    {#each d.items as it}
+                                                        <li
+                                                            class="cal-chip chip-{it.kind}"
+                                                            title="{it.title} &middot; ~{it.est_minutes} min"
+                                                        >
+                                                            <span class="cal-chip-g">{CAL_ITEM_GLYPH[it.kind]}</span>
+                                                            <span class="cal-chip-t">{calChipLabel(it)}</span>
+                                                        </li>
+                                                    {/each}
+                                                </ul>
+                                                {#if d.est_minutes > 0}
+                                                    <span class="cal-min">~{d.est_minutes}m</span>
+                                                {/if}
+                                            {:else}
+                                                <div class="cal-rest">Rest</div>
+                                            {/if}
+                                        </div>
+                                    {/each}
+                                </div>
+                            </div>
+                        {/each}
+                    </div>
+                {:else}
+                    <p class="muted">
+                        Your day-by-day plan appears here once your exam date is set. It's built from
+                        where you are now and updates every time you master a topic or get ahead.
+                    </p>
+                {/if}
+            </section>
+
             <section class="action-card tests-cta">
                 <div class="action-head">
                     <span class="eyebrow">Practice tests</span>
@@ -1943,6 +2587,36 @@ chrome77/es2020 webview.
                     </ul>
                 {/if}
             </section>
+
+            <section class="action-card ai-card">
+                <div class="action-head">
+                    <span class="eyebrow">AI features</span>
+                    <button
+                        class="ai-switch"
+                        class:on={aiOn}
+                        role="switch"
+                        aria-checked={aiOn}
+                        aria-label="AI question generation and coaching"
+                        disabled={aiBusy}
+                        on:click={toggleAi}
+                    >
+                        <span class="ai-track"><span class="ai-knob"></span></span>
+                        <span class="ai-state">{aiOn ? "On" : "Off"}</span>
+                    </button>
+                </div>
+                <p class="ai-title">AI question generation &amp; coaching</p>
+                <p class="muted">
+                    When on, Drill and Study can generate fresh questions on your weakest topics,
+                    and the Error Log can coach each miss. Off by default &mdash; it needs the
+                    Firebase AI setup (a Blaze project with the Gemini API enabled). Reviews,
+                    scores, and the fixed question bank work the same either way.
+                </p>
+                {#if aiOn}
+                    <p class="ai-hint">
+                        AI is on. Every generated question is quality-checked before it's added.
+                    </p>
+                {/if}
+            </section>
         </main>
     {:else if view === "onboarding"}
         <main class="col">
@@ -2085,10 +2759,15 @@ chrome77/es2020 webview.
                         </div>
                         <ul class="study-list">
                             {#each quantTopics as t}
-                                <li class="study-row">
+                                <li class="study-row" class:mastered={t.mastered}>
                                     <div class="sr-body">
                                         <span class="sr-name">
-                                            {t.title}{#if t.learned} &check;{/if}
+                                            {t.title}
+                                            {#if t.mastered}
+                                                <span class="pill mastered-pill">&check; mastered</span>
+                                            {:else if t.learned}
+                                                <span class="pill learned-pill">learned</span>
+                                            {/if}
                                         </span>
                                         <span class="sr-meta">
                                             <span class="focus-bar">
@@ -2112,6 +2791,12 @@ chrome77/es2020 webview.
                                         >
                                             Practice
                                         </button>
+                                        <button
+                                            class="tb-go"
+                                            on:click={() => startQuiz(t.topic_id, t.title, "study")}
+                                        >
+                                            Quiz
+                                        </button>
                                     </div>
                                 </li>
                             {/each}
@@ -2130,23 +2815,43 @@ chrome77/es2020 webview.
     {:else if view === "mock"}
         <main class="col">
             {#if mockPhase === "intro"}
-                <p class="eyebrow">
-                    {#if mockFormId}
-                        Practice test{#if mockLabel} &middot; {mockLabel}{/if}
-                    {:else}
-                        Mock section &mdash; exam conditions
-                    {/if}
-                </p>
-                <h1 class="display">45 minutes. 21 questions. No feedback.</h1>
-                <p class="lede">
-                    This simulates the GMAT Focus Quant section: timed, adaptive (harder when you're
-                    right, easier when you're wrong), and sealed &mdash; no answers until the end.
-                    It's also how we check the Readiness projection against reality.
-                </p>
+                {#if mockKind === "quiz"}
+                    <p class="eyebrow">Topic quiz &mdash; mastery check</p>
+                    <h1 class="display">Prove you've got {mockQuizLabel}.</h1>
+                    <p class="lede">
+                        A short, timed check on one topic. Pass it twice on two different days
+                        (85%+) and the topic counts as mastered. Miss and it stays in your plan for
+                        repair &mdash; no penalty for trying.
+                    </p>
+                {:else if mockKind === "milestone"}
+                    <p class="eyebrow">Milestone test &mdash; checkpoint</p>
+                    <h1 class="display">A checkpoint across what you've learned.</h1>
+                    <p class="lede">
+                        A timed, mixed set drawn from your learned topics &mdash; a periodic read on
+                        whether it's holding together. It feeds Readiness like a mock does.
+                    </p>
+                {:else}
+                    <p class="eyebrow">
+                        {#if mockFormId}
+                            Practice test{#if mockLabel} &middot; {mockLabel}{/if}
+                        {:else}
+                            Mock section &mdash; exam conditions
+                        {/if}
+                    </p>
+                    <h1 class="display">45 minutes. 21 questions. No feedback.</h1>
+                    <p class="lede">
+                        This simulates the GMAT Focus Quant section: timed, adaptive (harder when
+                        you're right, easier when you're wrong), and sealed &mdash; no answers until
+                        the end. It's also how we check the Readiness projection against reality.
+                    </p>
+                {/if}
                 <section class="action-card">
                     <div class="action-head">
                         <span class="eyebrow">Ready?</span>
-                        <span class="pill">{Math.min(mockCount, mockPool.length)} questions &middot; 45:00</span>
+                        <span class="pill">
+                            {Math.min(mockCount, mockPool.length)} questions &middot;
+                            {fmtTime(mockSecondsLeft)}
+                        </span>
                     </div>
                     <p class="muted">
                         Aim for ~2:08 per question. Flag anything to revisit, then review and change
@@ -2161,7 +2866,7 @@ chrome77/es2020 webview.
                     >
                         Start the clock
                     </button>
-                    <button class="ghost" on:click={() => go("home")}>Not now</button>
+                    <button class="ghost" on:click={() => go(mockReturnView)}>Not now</button>
                 </section>
             {:else if mockPhase === "run"}
                 <div class="session-meter">
@@ -2260,17 +2965,43 @@ chrome77/es2020 webview.
                     {/if}
                 </section>
             {:else if mockReport}
-                <p class="eyebrow">Mock report</p>
+                <p class="eyebrow">
+                    {#if mockKind === "quiz"}
+                        Topic quiz report{#if mockQuizLabel} &middot; {mockQuizLabel}{/if}
+                    {:else if mockKind === "milestone"}
+                        Milestone report
+                    {:else}
+                        Mock report
+                    {/if}
+                </p>
                 <h1 class="display">
-                    {#if mockReport.q != null}Q{mockReport.q}{:else}Done.{/if}
+                    {#if mockKind === "quiz"}
+                        {#if mockReport.mastered}Mastered{:else}Not yet{/if}
+                    {:else if mockReport.q != null}Q{mockReport.q}{:else}Done.{/if}
                     <span class="muted-display">
                         &middot; {Math.round(mockReport.accuracy * 100)}% of {mockReport.n}
                     </span>
                 </h1>
-                <p class="lede">
-                    Estimated from this section alone, on the same transparent scale as Readiness.
-                    One mock is a data point, not a verdict.
-                </p>
+                {#if mockKind === "quiz"}
+                    <p class="lede">
+                        {#if mockReport.mastered}
+                            You've cleared the gate for {mockQuizLabel} &mdash; two passes on two
+                            days. It now counts as mastered in your plan.
+                        {:else if mockReport.accuracy >= 0.85}
+                            A pass. One more on a different day (85%+) and {mockQuizLabel} is
+                            mastered &mdash; we'll bring it back after a short gap.
+                        {:else}
+                            Not there yet. {mockQuizLabel} goes back into repair &mdash; relearn it,
+                            then re-quiz. No penalty for the attempt.
+                        {/if}
+                    </p>
+                {:else}
+                    <p class="lede">
+                        Estimated from this section alone, on the same transparent scale as
+                        Readiness. One {mockKind === "milestone" ? "checkpoint" : "mock"} is a data
+                        point, not a verdict.
+                    </p>
+                {/if}
                 <section class="action-card">
                     <div class="action-head">
                         <span class="eyebrow">Pace</span>
@@ -2500,7 +3231,7 @@ chrome77/es2020 webview.
                                     <p class="eyebrow">Next</p>
                                     <p class="explain">{e.ai_takeaway.next_action}</p>
                                 </section>
-                            {:else if getAiEnabled()}
+                            {:else if aiOn}
                                 {#if coachLoadingTs === e.ts}
                                     <p class="muted">Coaching&hellip;</p>
                                 {:else}
@@ -2945,6 +3676,9 @@ chrome77/es2020 webview.
     .today-block.kind-practice { border-left-color: var(--clay-ink, #b4531f); }
     .today-block.kind-repair { border-left-color: var(--clay-ink, #8c4233); }
     .today-block.kind-mock { border-left-color: var(--ink); }
+    /* assessment tiers: quiz = mastery gate (emerald), milestone = checkpoint (gold) */
+    .today-block.kind-quiz { border-left-color: var(--emerald-ink, #3fb98a); }
+    .today-block.kind-milestone { border-left-color: var(--gold-ink, #e8b84b); }
     .tb-index {
         flex: none;
         width: 22px;
@@ -3504,6 +4238,262 @@ chrome77/es2020 webview.
         background: var(--clay-ink, #b4531f);
     }
 
+    /* --- forward study calendar (Progress) ------------------------------- */
+    .calendar {
+        margin-bottom: 22px;
+    }
+    .cal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+    .cal-lede {
+        font-size: 14px;
+        line-height: 1.55;
+        color: var(--ink-soft);
+        margin: 0 0 12px;
+    }
+    .cal-lede strong {
+        color: var(--gold);
+        font-weight: 600;
+    }
+    .cal-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-bottom: 14px;
+    }
+    .cal-leg {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .cal-leg::before {
+        content: "";
+        width: 10px;
+        height: 10px;
+        border-radius: 3px;
+        background: var(--line-strong);
+    }
+    .cal-leg.phase-learn::before {
+        background: var(--indicator);
+    }
+    .cal-leg.phase-review::before {
+        background: var(--brass-ink);
+    }
+    .cal-leg.phase-final::before {
+        background: var(--emerald-ink);
+    }
+
+    .cal-weeks {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .cal-week {
+        display: flex;
+        align-items: stretch;
+        gap: 10px;
+    }
+    .cal-week-label {
+        flex: none;
+        width: 34px;
+        padding-top: 6px;
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--ink-faint);
+        text-align: right;
+    }
+    .cal-row {
+        flex: 1;
+        min-width: 0;
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 6px;
+    }
+    .cal-day {
+        min-width: 0;
+        min-height: 86px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 8px;
+        border: 1px solid var(--line);
+        border-top: 3px solid var(--line-strong);
+        border-radius: 10px;
+        background: var(--surface);
+        position: relative;
+    }
+    .cal-day.phase-learn {
+        border-top-color: var(--indicator);
+    }
+    .cal-day.phase-review {
+        border-top-color: var(--brass-ink);
+    }
+    /* the tests-only final stretch reads as a distinct emerald band */
+    .cal-day.phase-final {
+        border-top-color: var(--emerald-ink);
+        background:
+            linear-gradient(180deg, var(--emerald-tint) 0%, transparent 62%),
+            var(--sunk);
+    }
+    .cal-day.today {
+        border-color: var(--indicator);
+        box-shadow: var(--glow);
+    }
+    .cal-day.exam {
+        border-color: var(--gold-ink);
+        border-top-color: var(--gold-ink);
+        background:
+            radial-gradient(120% 80% at 50% 0%, var(--brass-tint) 0%, transparent 70%),
+            var(--surface);
+        text-align: center;
+    }
+    .cal-day.rest {
+        background: transparent;
+        border-style: dashed;
+        border-top-style: solid;
+        opacity: 0.6;
+    }
+    .cal-day-top {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 4px;
+    }
+    .cal-dow {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.04em;
+        color: var(--ink-faint);
+        text-transform: uppercase;
+    }
+    .cal-date {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--ink-soft);
+    }
+    .cal-flag {
+        align-self: flex-start;
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #fff;
+        background: var(--indicator);
+        border-radius: 999px;
+        padding: 1px 7px;
+    }
+    .cal-items {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        flex: 1;
+    }
+    .cal-chip {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        min-width: 0;
+        font-size: 11px;
+        line-height: 1.3;
+        color: var(--ink-soft);
+        border-radius: 6px;
+        padding: 2px 5px;
+        background: var(--sunk);
+        border-left: 2px solid var(--line-strong);
+    }
+    .cal-chip-g {
+        flex: none;
+        font-family: var(--mono);
+        font-size: 10px;
+        opacity: 0.9;
+    }
+    .cal-chip-t {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .cal-chip.chip-lesson {
+        border-left-color: var(--brass-ink);
+        color: var(--ink);
+    }
+    .cal-chip.chip-quiz {
+        border-left-color: var(--emerald-ink);
+    }
+    .cal-chip.chip-requiz {
+        border-left-color: var(--emerald-ink);
+        opacity: 0.85;
+    }
+    .cal-chip.chip-milestone {
+        border-left-color: var(--gold-ink);
+        color: var(--gold);
+    }
+    .cal-chip.chip-practice_test {
+        border-left-color: var(--emerald-ink);
+        color: var(--ink);
+        background: var(--emerald-tint);
+    }
+    .cal-chip.chip-review {
+        border-left-color: var(--line-strong);
+        color: var(--ink-faint);
+    }
+    .cal-chip.chip-drill {
+        border-left-color: var(--indicator-ink);
+    }
+    .cal-min {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--ink-faint);
+        align-self: flex-end;
+    }
+    .cal-rest {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--ink-faint);
+        margin: auto 0;
+    }
+    .cal-exam {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        margin: auto 0;
+        font-family: var(--voice);
+        font-size: 13px;
+        color: var(--gold);
+    }
+    .cal-exam-g {
+        font-size: 20px;
+        filter: drop-shadow(var(--gold-glow));
+    }
+    @media (max-width: 720px) {
+        .cal-week-label {
+            width: 22px;
+            font-size: 10px;
+        }
+        .cal-row {
+            gap: 4px;
+        }
+        .cal-day {
+            min-height: 70px;
+            padding: 5px;
+        }
+        .cal-chip-t {
+            display: none;
+        }
+    }
+
     .mini-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -3741,6 +4731,17 @@ chrome77/es2020 webview.
         background: var(--clay-tint);
         border-color: var(--clay-ink);
         color: var(--clay-ink);
+    }
+    /* Study: soft-gate state on a topic */
+    .mastered-pill {
+        background: var(--emerald-tint);
+        border-color: var(--emerald-ink);
+        color: var(--emerald-ink);
+    }
+    .learned-pill {
+        background: var(--brass-tint);
+        border-color: var(--brass-ink);
+        color: var(--gold-ink);
     }
     .calib-bars {
         display: flex;
@@ -3993,6 +4994,166 @@ chrome77/es2020 webview.
     .opt sup,
     .explain sup {
         font-size: 0.72em;
+    }
+
+    /* AI features toggle card (Progress) */
+    .ai-title {
+        font-family: var(--voice);
+        font-size: 20px;
+        margin: 2px 0 8px;
+    }
+    .ai-hint {
+        margin-top: 10px;
+        color: var(--emerald);
+    }
+    .ai-switch {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0;
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-family: var(--ui);
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--ink-faint);
+    }
+    .ai-switch:disabled {
+        opacity: 0.6;
+        cursor: default;
+    }
+    .ai-track {
+        position: relative;
+        width: 44px;
+        height: 24px;
+        border-radius: 999px;
+        background: var(--sunk);
+        border: 1px solid var(--line-strong);
+        transition:
+            background 0.15s ease,
+            border-color 0.15s ease;
+    }
+    .ai-knob {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--ink-soft);
+        transition:
+            left 0.15s ease,
+            background 0.15s ease;
+    }
+    .ai-switch.on .ai-track {
+        background: linear-gradient(180deg, var(--indicator) 0%, var(--indicator-ink) 100%);
+        border-color: var(--gold-ink);
+        box-shadow: var(--glow);
+    }
+    .ai-switch.on .ai-knob {
+        left: 22px;
+        background: #fff;
+    }
+    .ai-switch.on .ai-state {
+        color: var(--indicator);
+    }
+    .ai-switch:focus-visible {
+        outline: 2px solid var(--indicator-ink);
+        outline-offset: 3px;
+        border-radius: 4px;
+    }
+
+    /* generation affordance + soft "AI unavailable" note */
+    .gen-btn {
+        margin-top: 16px;
+    }
+    .ai-note {
+        margin-top: 12px;
+    }
+
+    /* End-session control + review summary */
+    .session-controls {
+        display: flex;
+        justify-content: flex-end;
+        margin: -4px 0 12px;
+    }
+    button.end-session {
+        font-size: 13px;
+    }
+    .summary-tally {
+        font-family: var(--mono);
+        font-size: 15px;
+        color: var(--ink-soft);
+        margin: 6px 0 16px;
+    }
+    .tally-ok {
+        color: var(--emerald);
+    }
+    .tally-no {
+        color: var(--clay-ink);
+    }
+    .summary-list {
+        list-style: none;
+        margin: 0 0 18px;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 360px;
+        overflow-y: auto;
+    }
+    .summary-row {
+        display: grid;
+        grid-template-columns: 20px 1fr auto;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--line-strong);
+        border-radius: 10px;
+        background: var(--surface);
+    }
+    .summary-row.ok {
+        border-left-color: var(--emerald-ink);
+    }
+    .summary-row.no {
+        border-left-color: var(--clay-ink);
+    }
+    .summary-row .sr-mark {
+        font-family: var(--mono);
+        font-weight: 700;
+        text-align: center;
+    }
+    .summary-row.ok .sr-mark {
+        color: var(--emerald);
+    }
+    .summary-row.no .sr-mark {
+        color: var(--clay-ink);
+    }
+    .sr-main {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+    .summary-row .sr-stem {
+        font-size: 13px;
+        color: var(--ink-soft);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .summary-row .sr-ans {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--ink-faint);
+        white-space: nowrap;
+    }
+    .summary-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
     }
 
     @media (max-width: 720px) {
