@@ -2788,6 +2788,10 @@ def gmat_milestone_questions() -> bytes:
 # Tag applied to AI-generated PS notes so they're identifiable (and could be
 # audited or bulk-removed) separately from the curated bank.
 GMAT_AI_GENERATED_TAG = "gmatwiz::ai-generated"
+# Named-source provenance stamped on every admitted AI item (traces the output
+# back to the model + the quality gate it passed). Keep the model in sync with the
+# Cloud Function default (functions/src/index.ts OPENAI_MODEL).
+GMAT_AI_SOURCE = "AI-generated (gpt-4.1-mini) - 7f-checked"
 
 
 def gmat_add_questions() -> bytes:
@@ -2819,7 +2823,7 @@ def gmat_add_questions() -> bytes:
                 "explanation": str(q.get("explanation", "")),
                 "topic": str(q.get("topic", "")),
                 "difficulty": str(q.get("difficulty", "medium") or "medium"),
-                "source": "GMATWiz AI",
+                "source": GMAT_AI_SOURCE,
             }
         )
     if not questions:

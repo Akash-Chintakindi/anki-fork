@@ -1,0 +1,94 @@
+===============================================================================
+GMATWiz - AI EVAL + BASELINE  (Friday proof: "AI added and checked")
+===============================================================================
+What this proves (checklist items 3 + 4):
+  3. An eval that runs BEFORE students see anything: accuracy + wrong-answer rate
+     on a held-out set, with a documented cutoff.
+  4. A side-by-side showing the AI beats a simpler method (keyword / vector search).
+
+TASK EVALUATED: topic auto-tagging. Every question is routed to exactly one
+taxonomy leaf topic; coverage %, mastery, and topic-aware scheduling all key off
+that tag, so a wrong tag makes a student practice the wrong thing. The tagger is
+therefore a gate the content pipeline runs before shipping questions.
+
+HELD-OUT SET: gmatwiz/content/seed.json - 42 authored questions, each with a
+human-assigned gold leaf topic. All three taggers are zero-shot (none is trained
+on this set), so it is a valid held-out evaluation.
+
+TAGGERS:
+  - ai      : the app's model (OpenAI gpt-4.1-mini) via ai_ingest.OpenAIClient.
+  - keyword : taxonomy keyword rules (ai_ingest.HeuristicClient) - simple baseline 1.
+  - vector  : tf-idf cosine 1-NN over the set, leave-one-out - simple baseline 2.
+
+CUTOFF (the ship gate): confidence >= 0.6 (ai_ingest.CONFIDENCE_THRESHOLD). An
+item below the cutoff is flagged for human review instead of auto-shipping.
+Metrics:
+  accuracy          - exact leaf-topic match vs gold
+  domain-acc        - correct top-level category (arithmetic vs algebra)
+  coverage>=cut     - fraction confident enough to auto-ship
+  acc@accepted      - accuracy among the items at/above the cutoff (what ships)
+  conf-wrong        - share of ALL items that are >= cutoff AND wrong (a wrong tag
+                      that would reach a student - the number the cutoff minimizes)
+
+-------------------------------------------------------------------------------
+REPRODUCE
+-------------------------------------------------------------------------------
+  cd gmatwiz/content
+
+  # Baselines only (no key, offline) - keyword + vector:
+  python3 eval_tagging.py
+
+  # Full run incl. the AI tagger - uses the SAME key as the app (the Functions
+  # secret). One line pulls it from Firebase and scores the AI row:
+  export OPENAI_API_KEY="$(npx -y firebase-tools@latest functions:secrets:access OPENAI_API_KEY --project gmatwiz)"
+  python3 eval_tagging.py            # writes gmatwiz/content/eval_report.json
+
+  # Offline deterministic smoke test (AI = mock, random - not a real score):
+  python3 eval_tagging.py --mock
+
+Full machine-readable results (per-item predictions incl. confidences) are written
+to gmatwiz/content/eval_report.json.
+
+-------------------------------------------------------------------------------
+RESULTS - BASELINES (real, this commit; gold=42, cutoff=0.6)
+-------------------------------------------------------------------------------
+metric                 keyword        vector
+accuracy                 69.0%         35.7%
+domain-acc               88.1%         78.6%
+coverage>=cut            66.7%          0.0%
+acc@accepted             96.4%           -
+conf-wrong                2.4%          0.0%
+
+Reading it: the keyword baseline is strong on this authored set (69% exact leaf,
+96.4% among the items it is confident enough to ship, and only 2.4% confidently-
+wrong). The tf-idf vector baseline is weak here (35.7% leaf) and never clears the
+0.6 cutoff on such short math stems (0% coverage) - i.e. vector search alone is
+not confident enough to auto-ship anything.
+
+-------------------------------------------------------------------------------
+RESULTS - FULL RUN with the AI tagger (real; OpenAI gpt-4.1-mini; gold=42, cut=0.6)
+-------------------------------------------------------------------------------
+metric                      ai       keyword        vector
+accuracy                 81.0%         69.0%         35.7%
+domain-acc               83.3%         88.1%         78.6%
+coverage>=cut           100.0%         66.7%          0.0%
+acc@accepted             81.0%         96.4%           -
+conf-wrong               19.1%          2.4%          0.0%
+
+RESULT: the AI tagger BEATS both baselines on accuracy (81.0% > 69.0% > 35.7%).
+(eval_report.json records "ai_beats_baselines": true.)
+
+Reading it (the honest nuance): the AI wins on raw leaf accuracy AND tags every
+item confidently (100% coverage). The keyword baseline is lower-accuracy (69%) but
+ABSTAINS on ~1/3 of items, so the tags it DOES ship are very clean (96.4%
+acc@accepted, 2.4% confidently-wrong) - whereas the AI, being confident on
+everything, ships more wrong tags (19.1% confidently-wrong). Practical takeaway
+supported by these numbers: use the AI tagger for coverage/accuracy, but keep the
+0.6 cutoff + human review on the confidently-wrong tail (and the keyword rules make
+a good cheap cross-check). This is exactly the "runs before students see anything"
+gate the cutoff exists for.
+
+NOTE (honesty): the gold set is 42 items - a demonstrative held-out eval. Hand-
+labeling ~50-100 more items from questions.json would tighten the estimates; the
+harness takes any labeled set via --gold.
+===============================================================================

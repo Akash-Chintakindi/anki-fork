@@ -31,6 +31,39 @@ import { authEnabled } from "./auth";
 
 const CONTENT_TYPE = "application/octet-stream";
 
+// Which account's data the LOCAL collection file currently holds. Used to detect
+// an account SWITCH on login: the local file belongs to the PREVIOUS account, so
+// last-writer-wins by col.mod is meaningless (it would upload the old account's
+// collection over the new account's cloud copy). Persisted so it survives reloads.
+const COL_OWNER_KEY = "gmatwiz.colOwner";
+
+/** The uid the local collection currently belongs to, or null if unknown. */
+export function getColOwner(): string | null {
+    try {
+        return typeof localStorage !== "undefined" ? localStorage.getItem(COL_OWNER_KEY) : null;
+    } catch {
+        return null;
+    }
+}
+
+function setColOwner(uid: string): void {
+    try {
+        if (typeof localStorage !== "undefined") localStorage.setItem(COL_OWNER_KEY, uid);
+    } catch {
+        /* localStorage unavailable (private mode / SSR) - owner tracking degrades. */
+    }
+}
+
+/** Mark the local collection as belonging to this account WITHOUT touching the
+ * cloud - used when a brand-new account resets locally and must not inherit (or
+ * download) any leftover/stale collection. */
+export function claimCollectionOwner(uid: string): void {
+    setColOwner(uid);
+}
+
+/** How the collection landed on login - lets the caller decide the config step. */
+export type ColLanding = "downloaded" | "seeded" | "uploaded" | "empty" | "skipped";
+
 /** Path of the account's live collection object. */
 function collectionPath(uid: string): string {
     return `users/${uid}/collection.anki2`;
@@ -101,6 +134,15 @@ export async function uploadCollection(uid: string): Promise<void> {
     const r = storageRef(collectionPath(uid));
     if (!r) return;
     try {
+        // SAFETY: never push a plan-less (blank / freshly-reset) local collection
+        // OVER an account that already has a cloud copy - that would erase real
+        // progress. A blank local has nothing worth syncing anyway. (It may still
+        // seed the cloud when none exists yet.)
+        const ov = await refreshOverview();
+        if (!ov || !ov.plan) {
+            const remoteMod = await readRemoteMod(r);
+            if (remoteMod !== null) return;
+        }
         const { mod } = await colMeta();
         const { b64 } = await colExport();
         if (!b64) return;
@@ -131,25 +173,58 @@ async function backupRemote(uid: string, current: StorageReference, remoteMod: n
 }
 
 /**
- * Reconcile this device's collection with the account's cloud copy on login,
- * last-writer-wins by col.mod. Runs AFTER the Firestore config pull so config
- * and collection both land. Never throws.
+ * Reconcile this device's collection with the account's cloud copy on login.
+ * Never throws; returns how the collection landed so the caller can pick the
+ * right config step.
  *
- *   1. no cloud copy yet -> seed it from this device.
- *   2. cloud is newer     -> download and replace locally (desktop backs up the
- *                            local file first), then refresh the overview.
- *   3. local is newer/equal -> back up the cloud copy, then upload this device.
+ * ACCOUNT SWITCH (opts.switching): the local file belongs to the PREVIOUS
+ * account, so last-writer-wins by col.mod is wrong (the local file is "newer"
+ * and would clobber the new account's cloud data). Instead the new account's
+ * cloud copy is AUTHORITATIVE:
+ *   - cloud copy exists -> download + replace locally ("downloaded").
+ *   - no cloud copy     -> the account has no collection on any device yet; do
+ *                          NOT upload the previous account's file over it. Return
+ *                          "empty" so the caller resets / imports config cleanly.
+ *
+ * SAME ACCOUNT (default): last-writer-wins by col.mod, as before:
+ *   - no cloud copy yet     -> seed it from this device ("seeded").
+ *   - cloud is newer        -> download + replace locally ("downloaded").
+ *   - local is newer/equal  -> back up the cloud copy, then upload ("uploaded").
  */
-export async function pullCollectionOnLogin(uid: string): Promise<void> {
+export async function pullCollectionOnLogin(
+    uid: string,
+    opts: { switching?: boolean } = {},
+): Promise<{ landed: ColLanding }> {
     const r = storageRef(collectionPath(uid));
-    if (!r) return;
+    if (!r) return { landed: "skipped" };
     try {
-        const { mod: localMod } = await colMeta();
         const remoteMod = await readRemoteMod(r);
+
+        if (opts.switching) {
+            if (remoteMod === null) {
+                // New account on this device with no cloud collection. Claim
+                // ownership but leave the cloud empty until it creates its own
+                // data - the caller resets local state for a clean start.
+                setColOwner(uid);
+                return { landed: "empty" };
+            }
+            const buf = await getBytes(r);
+            const b64 = bytesToBase64(new Uint8Array(buf));
+            const res = await colReplace(b64);
+            if (res.ok) {
+                setColOwner(uid);
+                await refreshOverview();
+                return { landed: "downloaded" };
+            }
+            return { landed: "skipped" };
+        }
+
+        const { mod: localMod } = await colMeta();
 
         if (remoteMod === null) {
             await uploadCollection(uid); // first device seeds the cloud
-            return;
+            setColOwner(uid);
+            return { landed: "seeded" };
         }
 
         if (remoteMod > localMod) {
@@ -157,15 +232,21 @@ export async function pullCollectionOnLogin(uid: string): Promise<void> {
             const b64 = bytesToBase64(new Uint8Array(buf));
             const res = await colReplace(b64);
             if (res.ok) {
+                setColOwner(uid);
                 await refreshOverview();
+                return { landed: "downloaded" };
             }
-        } else {
-            // We're about to overwrite the cloud copy: preserve it first.
-            await backupRemote(uid, r, remoteMod);
-            await uploadCollection(uid);
+            return { landed: "skipped" };
         }
+
+        // We're about to overwrite the cloud copy: preserve it first.
+        await backupRemote(uid, r, remoteMod);
+        await uploadCollection(uid);
+        setColOwner(uid);
+        return { landed: "uploaded" };
     } catch (e) {
         console.error("GMATWiz colsync: login pull failed", e);
+        return { landed: "skipped" };
     }
 }
 

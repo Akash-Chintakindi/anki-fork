@@ -368,6 +368,142 @@ class GeminiClient:
         return _rule_validity(item)
 
 
+class OpenAIClient:
+    """OpenAI wrapper over the REST API via stdlib urllib (no SDK required).
+
+    Uses the SAME key the runtime proxy holds (OPENAI_API_KEY) and the same model
+    default (gpt-4.1-mini, overridable via OPENAI_MODEL), so the eval and any
+    build-time curation score the model the app actually ships with.
+    """
+
+    name = "openai"
+    _CHAT_URL = "https://api.openai.com/v1/chat/completions"
+    _EMBED_URL = "https://api.openai.com/v1/embeddings"
+
+    def __init__(self, api_key: str, model: str = "gpt-4.1-mini"):
+        self.api_key = api_key
+        self.model = os.environ.get("OPENAI_MODEL") or model
+
+    @classmethod
+    def available(cls) -> bool:
+        return bool(os.environ.get("OPENAI_API_KEY"))
+
+    @classmethod
+    def from_env(cls) -> Optional["OpenAIClient"]:
+        key = os.environ.get("OPENAI_API_KEY")
+        return cls(api_key=key) if key else None
+
+    def _post(self, url: str, payload: Dict) -> Optional[Dict]:
+        import urllib.request  # stdlib; imported lazily like the Gemini guard
+        data = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(
+            url, data=data, method="POST",
+            headers={
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json",
+            },
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+        except Exception:
+            return None
+
+    def _chat(self, prompt: str, json_mode: bool = True) -> Optional[str]:
+        payload: Dict[str, Any] = {
+            "model": self.model,
+            "messages": [
+                {"role": "system",
+                 "content": "You are a precise GMAT Quant content classifier. Reply with JSON only."},
+                {"role": "user", "content": prompt},
+            ],
+            "temperature": 0,
+        }
+        if json_mode:
+            payload["response_format"] = {"type": "json_object"}
+        out = self._post(self._CHAT_URL, payload)
+        if not out:
+            return None
+        try:
+            return out["choices"][0]["message"]["content"]
+        except Exception:
+            return None
+
+    def _parse_json(self, text: Optional[str]) -> Optional[Dict]:
+        if not text:
+            return None
+        try:
+            return json.loads(text)
+        except Exception:
+            m = re.search(r"\{.*\}", text, re.DOTALL)
+            if not m:
+                return None
+            try:
+                return json.loads(m.group(0))
+            except Exception:
+                return None
+
+    def classify_topic(self, item: Dict) -> Tuple[str, float]:
+        topics = "\n".join(f"  - {t}" for t in taxonomy.ALL_TOPICS)
+        prompt = (
+            "Classify this GMAT Quant Problem Solving question to exactly ONE leaf topic.\n"
+            f"Valid topics:\n{topics}\n\n"
+            f"Question:\n{item.get('stem', '')}\n\n"
+            f"Options:\n{json.dumps(item.get('options', {}), ensure_ascii=False)}\n\n"
+            'Reply JSON only: {"topic": "<full topic id>", "confidence": 0.0-1.0}'
+        )
+        parsed = self._parse_json(self._chat(prompt))
+        if parsed and parsed.get("topic") in taxonomy.ALL_TOPICS:
+            conf = float(parsed.get("confidence", 0.7))
+            return parsed["topic"], max(0.0, min(1.0, conf))
+        return HeuristicClient().classify_topic(item)
+
+    def estimate_difficulty(self, item: Dict) -> Optional[str]:
+        prompt = (
+            "Rate GMAT Quant PS difficulty as exactly one of: easy, medium, hard.\n\n"
+            f"Question:\n{item.get('stem', '')}\n\n"
+            f"Options:\n{json.dumps(item.get('options', {}), ensure_ascii=False)}\n\n"
+            'Reply JSON only: {"difficulty": "easy"|"medium"|"hard"}'
+        )
+        parsed = self._parse_json(self._chat(prompt))
+        diff = (parsed or {}).get("difficulty")
+        return diff if diff in taxonomy.VALID_DIFFICULTIES else None
+
+    def similar(self, text_a: str, text_b: str) -> float:
+        out = self._post(self._EMBED_URL, {
+            "model": "text-embedding-3-small",
+            "input": [text_a, text_b],
+        })
+        try:
+            vecs = [d["embedding"] for d in out["data"]]  # type: ignore[index]
+            if len(vecs) != 2:
+                return token_set_ratio(text_a, text_b)
+            dot = sum(a * b for a, b in zip(vecs[0], vecs[1]))
+            na = sum(a * a for a in vecs[0]) ** 0.5
+            nb = sum(b * b for b in vecs[1]) ** 0.5
+            if na == 0 or nb == 0:
+                return token_set_ratio(text_a, text_b)
+            return max(0.0, min(1.0, dot / (na * nb)))
+        except Exception:
+            return token_set_ratio(text_a, text_b)
+
+    def check_validity(self, item: Dict) -> Tuple[bool, Optional[str]]:
+        prompt = (
+            "Is this a valid, solvable GMAT Quant Problem Solving question "
+            "(arithmetic/algebra only, NOT geometry, NOT data sufficiency)?\n\n"
+            f"Question:\n{item.get('stem', '')}\n\n"
+            f"Options:\n{json.dumps(item.get('options', {}), ensure_ascii=False)}\n\n"
+            f"Marked correct: {item.get('correct')}\n\n"
+            'Reply JSON only: {"valid": true|false, "reason": "<short reason if invalid>"}'
+        )
+        parsed = self._parse_json(self._chat(prompt))
+        if parsed is not None:
+            if parsed.get("valid") is True:
+                return True, None
+            return False, f"ai:{parsed.get('reason') or 'ai_invalid'}"
+        return _rule_validity(item)
+
+
 # ---------------------------------------------------------------------------
 # Validity / scope (shared rules)
 # ---------------------------------------------------------------------------
@@ -434,7 +570,7 @@ def pass_validity(
     quarantined: List[Dict] = []
 
     for item in items:
-        if use_ai_check and client.name in ("gemini", "mock"):
+        if use_ai_check and client.name in ("gemini", "openai", "mock"):
             ok, reason = _cached_call(
                 cache, client, item, "validity",
                 lambda i=item: client.check_validity(i),
@@ -617,12 +753,12 @@ def run_pipeline(
     cache: Optional[AiCache] = None,
 ) -> Tuple[List[Dict], Dict]:
     cache = cache or AiCache()
-    ai_difficulty = client.name in ("gemini", "mock")
+    ai_difficulty = client.name in ("gemini", "openai", "mock")
 
     diff_before = difficulty_distribution(items)
 
     kept, dropped, quarantined_scope = pass_validity(
-        items, client, cache, use_ai_check=client.name == "gemini",
+        items, client, cache, use_ai_check=client.name in ("gemini", "openai"),
     )
     tagged, retagged, low_conf = pass_auto_tag(
         kept, client, cache, confidence_threshold,
@@ -680,6 +816,9 @@ def run_pipeline(
 def select_client(mock: bool) -> AiClient:
     if mock:
         return MockClient()
+    oai = OpenAIClient.from_env()
+    if oai is not None:
+        return oai
     gem = GeminiClient.from_env()
     if gem is not None:
         return gem

@@ -70,8 +70,17 @@ chrome77/es2020 webview.
     import { getAiEnabled, setAiEnabled, generateJson, Schema } from "./ai";
     import { checkItem } from "./aiChecker";
     import { coachMiss } from "./coach";
-    import { pullAccountState, scheduleStatePush, startAutoSync, stopAutoSync } from "./sync";
     import {
+        applyAccountState,
+        loadAccountState,
+        resetAccountState,
+        scheduleStatePush,
+        startAutoSync,
+        stopAutoSync,
+    } from "./sync";
+    import {
+        claimCollectionOwner,
+        getColOwner,
         pullCollectionOnLogin,
         scheduleCollectionUpload,
         uploadCollection,
@@ -216,11 +225,50 @@ chrome77/es2020 webview.
     // ---- forward study calendar (Progress tab + jump-ahead) ----
     // Derived server-side from CURRENT state, so re-fetching recalibrates it.
     let calendar: StudyCalendar | null = null;
-    // group the projected days into rows of 7 (aligned to the study/rest cycle)
-    // for the week-by-week grid
-    $: calendarWeeks = calendar
-        ? chunk(calendar.days, 7)
-        : ([] as CalendarDay[][]);
+    // The full calendar opens in a modal (the Progress tab shows a summary + a
+    // "View calendar" button, so it isn't a massive inline block).
+    let calendarOpen = false;
+    const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    /** Svelte action: re-parent an overlay to the `.gw` root so its fixed position
+     * + z-index escape the `.col` stacking context (which sets z-index and would
+     * otherwise trap the modal beneath the app's top layers). Stays inside `.gw`,
+     * so the theme CSS variables still resolve. */
+    function portalToRoot(node: HTMLElement) {
+        const root = node.closest(".gw") ?? document.querySelector(".gw");
+        if (root) root.appendChild(node);
+        return {
+            destroy() {
+                node.remove();
+            },
+        };
+    }
+    /** Day-of-week 0..6 (Sun..Sat) from a YYYY-MM-DD string, local, no TZ shift. */
+    function dowIndex(iso: string): number {
+        const [y, m, d] = iso.split("-").map((x) => parseInt(x, 10));
+        if (!y || !m || !d) return 0;
+        return new Date(y, m - 1, d).getDay();
+    }
+    // Weekday-aligned grid: each week is 7 cells (Sun..Sat) with leading/trailing
+    // blanks (null), so Sunday is leftmost and Saturday rightmost - a neat month
+    // grid instead of a ragged run of days.
+    $: calendarGrid = ((): (CalendarDay | null)[][] => {
+        const days = calendar?.days ?? [];
+        if (!days.length) return [];
+        const weeks: (CalendarDay | null)[][] = [];
+        let week: (CalendarDay | null)[] = new Array(dowIndex(days[0].date)).fill(null);
+        for (const d of days) {
+            week.push(d);
+            if (dowIndex(d.date) === 6) {
+                weeks.push(week);
+                week = [];
+            }
+        }
+        if (week.length) {
+            while (week.length < 7) week.push(null);
+            weeks.push(week);
+        }
+        return weeks;
+    })();
     // the next FUTURE day that carries a lesson - powers "Start tomorrow's plan"
     $: nextLessonDay =
         calendar?.days.find(
@@ -228,12 +276,6 @@ chrome77/es2020 webview.
         ) ?? null;
     $: nextLessonItem =
         nextLessonDay?.items.find((it) => it.kind === "lesson") ?? null;
-
-    function chunk<T>(arr: T[], n: number): T[][] {
-        const out: T[][] = [];
-        for (let i = 0; i < arr.length; i += n) out.push(arr.slice(i, i + n));
-        return out;
-    }
 
     /** Short, human date like "Aug 4" from a YYYY-MM-DD string (local, no TZ shift). */
     function shortDate(iso: string): string {
@@ -382,6 +424,7 @@ chrome77/es2020 webview.
         explanation: string;
         topic: string;
         difficulty: string;
+        ai?: boolean;
     }
     $: activeQuestion =
         practiceMode === "topic"
@@ -393,6 +436,7 @@ chrome77/es2020 webview.
                       explanation: topicPool[topicIdx].explanation ?? "",
                       topic: topicPool[topicIdx].topic,
                       difficulty: topicPool[topicIdx].difficulty,
+                      ai: topicPool[topicIdx].ai ?? false,
                   } as ActiveQuestion)
                 : null
             : aiFront.length > 0
@@ -403,6 +447,7 @@ chrome77/es2020 webview.
                     explanation: aiFront[0].explanation ?? "",
                     topic: aiFront[0].topic,
                     difficulty: aiFront[0].difficulty,
+                    ai: true,
                 } as ActiveQuestion)
               : card
                 ? ({
@@ -412,6 +457,7 @@ chrome77/es2020 webview.
                       explanation: card.explanation,
                       topic: card.topic,
                       difficulty: card.difficulty,
+                      ai: false,
                   } as ActiveQuestion)
                 : null;
     $: queueRemaining =
@@ -444,6 +490,9 @@ chrome77/es2020 webview.
     // Study is section-split; only Quant exists in Phase 2, so every authored
     // lesson topic is a Quant topic. A later section would filter on domain here.
     $: quantTopics = lessonTopics;
+    // Each Study section is a collapsible accordion (default open). Verbal/DI will
+    // add their own flags here later.
+    let quantOpen = true;
 
     // ---- mock exam state (timed, exam conditions, no mid-test feedback) ----
     // Exam-accurate: adaptive selection, bookmark/flag, a pre-submit review
@@ -688,14 +737,29 @@ chrome77/es2020 webview.
     }
 
     /** Finish (or step out of) the inline Today task and return to the task list,
-        refreshing so completed work drops off and progress updates. A lesson only
-        counts as done once its player reaches the "done" phase; a drill counts as
-        done whenever the student steps back (there is no natural end to it). */
+        refreshing so completed work drops off and progress updates.
+
+        A task is marked DONE only when its planned work is actually complete:
+        - lesson/repair: the player reached its "done" phase.
+        - review/practice: the block's target count was met (answered >= count) OR
+          the scheduler queue emptied (all due cards cleared). Simply stepping back
+          mid-review must NOT complete it - otherwise a spaced review is wrongly
+          registered as finished and the plan skips ahead. */
     async function backToToday(): Promise<void> {
         if (todayActive) {
             const isLesson =
                 todayActive.kind === "learn" || todayActive.kind === "repair";
-            if (!isLesson || lessonPhase === "done") {
+            let done: boolean;
+            if (isLesson) {
+                done = lessonPhase === "done";
+            } else {
+                const target = todayActive.count ?? 0;
+                const metTarget = target > 0 && answered >= target;
+                const queueEmpty =
+                    practiceMode === "scheduler" && !card && aiFront.length === 0;
+                done = metTarget || queueEmpty;
+            }
+            if (done) {
                 todayDone = new Set(todayDone).add(blockKey(todayActive));
             }
         }
@@ -797,6 +861,9 @@ chrome77/es2020 webview.
         }),
     });
     const AI_BATCH_SIZE = 4;
+    // Named source for AI provenance labels (matches the Cloud Function default
+    // model in functions/; keep in sync if OPENAI_MODEL is overridden at deploy).
+    const AI_MODEL_LABEL = "gpt-4.1-mini";
     const KEYS = ["A", "B", "C", "D", "E"];
 
     /** Map a topic's current mastery onto a target difficulty for generation. */
@@ -910,7 +977,9 @@ chrome77/es2020 webview.
     /** Append more generated items to the current ephemeral/topic pool and resume
         (the button only shows when the pool is exhausted, so this steps forward). */
     function appendEphemeral(items: GmatQuestion[]): void {
-        topicPool = [...topicPool, ...items.map(toMock)];
+        // These come straight from the AI generator (7f-checked) -> flag them so the
+        // practice card can show the "AI-generated - checked" provenance badge.
+        topicPool = [...topicPool, ...items.map((q) => ({ ...toMock(q), ai: true }))];
         selected = null;
         revealed = false;
         pendingWhy = false;
@@ -1569,17 +1638,59 @@ chrome77/es2020 webview.
                 stopAutoSync();
                 return;
             }
-            // Load this account's data (or reset to a fresh start if brand-new),
-            // then refresh the app so the right screen/plan shows on this device.
+            const sameAccount = getColOwner() === u.uid;
             try {
-                await pullAccountState(u.uid);
+                const remote = await loadAccountState(u.uid);
+                // Current LOCAL state. This only informs the same-account decision,
+                // where the local file already belongs to this account.
+                const localNow = await refreshOverview();
+                const localHasPlan = !!(localNow && localNow.plan);
+
+                if (sameAccount && localHasPlan) {
+                    // This account's local copy has real progress -> trust it. Apply
+                    // any newer synced config, then last-writer-wins reconcile the
+                    // whole collection. Never reset; never clobber real local work.
+                    if (remote) await applyAccountState(remote);
+                    await pullCollectionOnLogin(u.uid);
+                } else {
+                    // A DIFFERENT account than the local file (a switch), OR the same
+                    // account with a blank local (nothing to lose). An account's
+                    // progress lives in ITS OWN cloud collection - that is the sole
+                    // source of truth here. DOWNLOAD it (never last-writer-wins upload,
+                    // so the previous account's leftover local can never clobber this
+                    // account's cloud; this also AUTO-RECOVERS an account whose local
+                    // was blanked, e.g. Bob after an earlier bad reset).
+                    const col = await pullCollectionOnLogin(u.uid, { switching: true });
+                    if (col.landed === "downloaded") {
+                        // This account's own cloud collection was restored - done.
+                        claimCollectionOwner(u.uid);
+                    } else if (col.landed === "empty") {
+                        // DEFINITIVELY no cloud collection for this account (it doesn't
+                        // exist). Clear the previous account's leftover local so it
+                        // can't be inherited, restore any config-only progress (a plan
+                        // in this account's Firestore doc), else land on the diagnostic.
+                        // Safe: only the local shared file is cleared - never a cloud
+                        // copy - and a blank local can't be uploaded over any cloud
+                        // (uploadCollection guard), so no real progress is lost.
+                        await resetAccountState();
+                        if (remote) await applyAccountState(remote);
+                        claimCollectionOwner(u.uid);
+                    } else {
+                        // "skipped" = a transient/blocked Storage op (network, CORS,
+                        // colReplace failure). NEVER reset here - that would make an
+                        // account look wiped just because we couldn't REACH its cloud
+                        // (this was the desktop CORS bug). Fall back to its Firestore
+                        // config if present; leave ownership unclaimed so the next
+                        // login retries the authoritative download.
+                        if (remote) await applyAccountState(remote);
+                    }
+                }
             } catch (e) {
                 console.error("GMATWiz account load failed", e);
             }
-            // Then reconcile the WHOLE collection file (cards + revlog) via Cloud
-            // Storage - AFTER the config pull, so config + collection both land.
-            // Guarded internally; a Storage/network failure never breaks login.
-            await pullCollectionOnLogin(u.uid);
+            // Always re-derive the on-screen state from local (recomputes `locked`
+            // from overview.plan) and land on Today, so the correct screen shows
+            // live - no app restart needed after an account switch.
             await applyRemoteState();
             view = "home";
             // Cross-device sync runs automatically: pull newer remote state on a
@@ -1831,6 +1942,12 @@ chrome77/es2020 webview.
                         {activeQuestion.topic ? topicLabel(activeQuestion.topic) : "GMAT Quant"}
                     </span>
                     <span class="pill diff-{activeQuestion.difficulty}">{activeQuestion.difficulty}</span>
+                    {#if activeQuestion.ai}
+                        <span
+                            class="pill ai-source-pill"
+                            title="Generated by {AI_MODEL_LABEL} and passed the 7f quality check before admission"
+                        >AI-generated &middot; checked</span>
+                    {/if}
                 </div>
                 <h1 class="stem">{@html renderMath(activeQuestion.stem)}</h1>
 
@@ -2476,59 +2593,9 @@ chrome77/es2020 webview.
                             Lessons are done &mdash; the run-up is consolidation and timed tests.
                         {/if}
                     </p>
-                    <div class="cal-legend">
-                        <span class="cal-leg phase-learn">Learn</span>
-                        <span class="cal-leg phase-review">Review</span>
-                        <span class="cal-leg phase-final">Final 10 &middot; tests only</span>
-                    </div>
-                    <div class="cal-weeks">
-                        {#each calendarWeeks as week, wi}
-                            <div class="cal-week">
-                                <span class="cal-week-label">Wk {wi + 1}</span>
-                                <div class="cal-row">
-                                    {#each week as d (d.day_offset)}
-                                        <div
-                                            class="cal-day phase-{d.phase}"
-                                            class:today={d.is_today}
-                                            class:exam={d.is_exam}
-                                            class:rest={!d.is_study_day && !d.is_exam}
-                                        >
-                                            <div class="cal-day-top">
-                                                <span class="cal-dow">{d.weekday}</span>
-                                                <span class="cal-date">{shortDate(d.date)}</span>
-                                            </div>
-                                            {#if d.is_today}
-                                                <span class="cal-flag">Today</span>
-                                            {/if}
-                                            {#if d.is_exam}
-                                                <div class="cal-exam">
-                                                    <span class="cal-exam-g">&#9733;</span>
-                                                    <span>Exam day</span>
-                                                </div>
-                                            {:else if d.is_study_day}
-                                                <ul class="cal-items">
-                                                    {#each d.items as it}
-                                                        <li
-                                                            class="cal-chip chip-{it.kind}"
-                                                            title="{it.title} &middot; ~{it.est_minutes} min"
-                                                        >
-                                                            <span class="cal-chip-g">{CAL_ITEM_GLYPH[it.kind]}</span>
-                                                            <span class="cal-chip-t">{calChipLabel(it)}</span>
-                                                        </li>
-                                                    {/each}
-                                                </ul>
-                                                {#if d.est_minutes > 0}
-                                                    <span class="cal-min">~{d.est_minutes}m</span>
-                                                {/if}
-                                            {:else}
-                                                <div class="cal-rest">Rest</div>
-                                            {/if}
-                                        </div>
-                                    {/each}
-                                </div>
-                            </div>
-                        {/each}
-                    </div>
+                    <button class="primary" on:click={() => (calendarOpen = true)}>
+                        View calendar
+                    </button>
                 {:else}
                     <p class="muted">
                         Your day-by-day plan appears here once your exam date is set. It's built from
@@ -2536,6 +2603,86 @@ chrome77/es2020 webview.
                     </p>
                 {/if}
             </section>
+
+            {#if calendarOpen && calendar && calendar.days.length}
+                <div
+                    class="modal-wrap"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label="Study calendar"
+                    use:portalToRoot
+                >
+                    <button
+                        class="modal-backdrop"
+                        aria-label="Close calendar"
+                        on:click={() => (calendarOpen = false)}
+                    ></button>
+                    <div class="modal-panel cal-modal">
+                        <div class="modal-head">
+                            <span class="eyebrow">The run-up &mdash; your plan to exam day</span>
+                            <button class="nav-util" on:click={() => (calendarOpen = false)}>Close</button>
+                        </div>
+                        <div class="cal-legend">
+                            <span class="cal-leg phase-learn">Learn</span>
+                            <span class="cal-leg phase-review">Review</span>
+                            <span class="cal-leg phase-final">Final 10 &middot; tests only</span>
+                        </div>
+                        <div class="cal-grid">
+                            <div class="cal-dow-head">
+                                {#each WEEKDAYS as w}
+                                    <span class="cal-dow-h">{w}</span>
+                                {/each}
+                            </div>
+                            {#each calendarGrid as week}
+                                <div class="cal-grid-row">
+                                    {#each week as d}
+                                        {#if d}
+                                            <div
+                                                class="cal-day phase-{d.phase}"
+                                                class:today={d.is_today}
+                                                class:exam={d.is_exam}
+                                                class:rest={!d.is_study_day && !d.is_exam}
+                                            >
+                                                <div class="cal-day-top">
+                                                    <span class="cal-date">{shortDate(d.date)}</span>
+                                                </div>
+                                                {#if d.is_today}
+                                                    <span class="cal-flag">Today</span>
+                                                {/if}
+                                                {#if d.is_exam}
+                                                    <div class="cal-exam">
+                                                        <span class="cal-exam-g">&#9733;</span>
+                                                        <span>Exam</span>
+                                                    </div>
+                                                {:else if d.is_study_day}
+                                                    <ul class="cal-items">
+                                                        {#each d.items as it}
+                                                            <li
+                                                                class="cal-chip chip-{it.kind}"
+                                                                title="{it.title} &middot; ~{it.est_minutes} min"
+                                                            >
+                                                                <span class="cal-chip-g">{CAL_ITEM_GLYPH[it.kind]}</span>
+                                                                <span class="cal-chip-t">{calChipLabel(it)}</span>
+                                                            </li>
+                                                        {/each}
+                                                    </ul>
+                                                    {#if d.est_minutes > 0}
+                                                        <span class="cal-min">~{d.est_minutes}m</span>
+                                                    {/if}
+                                                {:else}
+                                                    <div class="cal-rest">Rest</div>
+                                                {/if}
+                                            </div>
+                                        {:else}
+                                            <div class="cal-day blank" aria-hidden="true"></div>
+                                        {/if}
+                                    {/each}
+                                </div>
+                            {/each}
+                        </div>
+                    </div>
+                </div>
+            {/if}
 
             <section class="action-card tests-cta">
                 <div class="action-head">
@@ -2705,12 +2852,6 @@ chrome77/es2020 webview.
                     </button>
                 </div>
                 <p class="ai-title">AI question generation &amp; coaching</p>
-                <p class="muted">
-                    When on, Drill and Study can generate fresh questions on your weakest topics,
-                    and the Error Log can coach each miss. Off by default &mdash; it needs the
-                    Firebase AI setup (a Blaze project with the Gemini API enabled). Reviews,
-                    scores, and the fixed question bank work the same either way.
-                </p>
                 {#if aiOn}
                     <p class="ai-hint">
                         AI is on. Every generated question is quality-checked before it's added.
@@ -2853,10 +2994,18 @@ chrome77/es2020 webview.
                     </section>
                 {:else}
                     <section class="action-card">
-                        <div class="action-head">
+                        <button
+                            class="section-toggle"
+                            aria-expanded={quantOpen}
+                            on:click={() => (quantOpen = !quantOpen)}
+                        >
+                            <span class="section-chevron" class:open={quantOpen} aria-hidden="true"
+                                >&#9656;</span
+                            >
                             <span class="eyebrow">Quant</span>
                             <span class="pill">{quantTopics.length} topics</span>
-                        </div>
+                        </button>
+                        {#if quantOpen}
                         <ul class="study-list">
                             {#each quantTopics as t}
                                 <li class="study-row" class:mastered={t.mastered}>
@@ -2901,6 +3050,7 @@ chrome77/es2020 webview.
                                 </li>
                             {/each}
                         </ul>
+                        {/if}
                     </section>
                     <p class="muted">
                         Verbal and Data Insights arrive later; Quant is the focus for now.
@@ -3330,6 +3480,11 @@ chrome77/es2020 webview.
                                     <p class="explain">{e.ai_takeaway.check}</p>
                                     <p class="eyebrow">Next</p>
                                     <p class="explain">{e.ai_takeaway.next_action}</p>
+                                    <p class="coach-source">
+                                        Source: {AI_MODEL_LABEL}, grounded in this item's correct
+                                        answer ({e.correct}){#if e.explanation} + its official
+                                            explanation{/if}.
+                                    </p>
                                 </section>
                             {:else if aiOn}
                                 {#if coachLoadingTs === e.ts}
@@ -3706,6 +3861,37 @@ chrome77/es2020 webview.
         align-items: center;
         justify-content: space-between;
         margin-bottom: 10px;
+    }
+    /* Collapsible Study section header (accordion) */
+    .section-toggle {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        margin: 0;
+        padding: 4px 0;
+        background: none;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+        color: inherit;
+    }
+    .section-toggle .pill {
+        margin-left: auto;
+    }
+    .section-chevron {
+        display: inline-flex;
+        color: var(--ink-faint);
+        font-size: 12px;
+        transition: transform 0.18s ease;
+    }
+    .section-chevron.open {
+        transform: rotate(90deg);
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .section-chevron {
+            transition: none;
+        }
     }
     .action-title {
         font-family: var(--voice);
@@ -4391,31 +4577,93 @@ chrome77/es2020 webview.
         background: var(--emerald-ink);
     }
 
-    .cal-weeks {
+    /* "View calendar" modal + month-style weekday grid */
+    .modal-wrap {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    .modal-backdrop {
+        position: absolute;
+        inset: 0;
+        margin: 0;
+        padding: 0;
+        border: none;
+        background: rgba(9, 6, 24, 0.72);
+        cursor: pointer;
+    }
+    .modal-panel {
+        position: relative;
+        z-index: 1;
+        width: min(560px, 94vw);
+        max-height: 78vh;
+        overflow: auto;
+        padding: 18px 20px 20px;
+        background: var(--paper-2);
+        border: 1px solid var(--line-strong);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+    }
+    .modal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+    .cal-grid {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 6px;
     }
-    .cal-week {
-        display: flex;
-        align-items: stretch;
-        gap: 10px;
-    }
-    .cal-week-label {
-        flex: none;
-        width: 34px;
-        padding-top: 6px;
-        font-family: var(--mono);
-        font-size: 11px;
-        color: var(--ink-faint);
-        text-align: right;
-    }
-    .cal-row {
-        flex: 1;
-        min-width: 0;
+    .cal-dow-head {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
         gap: 6px;
+        margin-bottom: 2px;
+    }
+    .cal-dow-h {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        text-align: center;
+    }
+    .cal-grid-row {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 6px;
+    }
+    .cal-day.blank {
+        background: transparent;
+        border: none;
+        min-height: 0;
+    }
+    /* Compact cells inside the smaller "View calendar" popup: chips collapse to
+       their glyphs (the day's full detail is on hover via each chip's title). */
+    .cal-modal .cal-grid-row,
+    .cal-modal .cal-dow-head {
+        gap: 4px;
+    }
+    .cal-modal .cal-day {
+        min-height: 52px;
+        padding: 5px 4px;
+        gap: 4px;
+    }
+    .cal-modal .cal-date {
+        font-size: 10px;
+    }
+    .cal-modal .cal-chip {
+        justify-content: center;
+        padding: 2px;
+    }
+    .cal-modal .cal-chip-t {
+        display: none;
     }
     .cal-day {
         min-width: 0;
@@ -4466,13 +4714,6 @@ chrome77/es2020 webview.
         align-items: baseline;
         justify-content: space-between;
         gap: 4px;
-    }
-    .cal-dow {
-        font-family: var(--mono);
-        font-size: 11px;
-        letter-spacing: 0.04em;
-        color: var(--ink-faint);
-        text-transform: uppercase;
     }
     .cal-date {
         font-family: var(--mono);
@@ -4578,11 +4819,8 @@ chrome77/es2020 webview.
         filter: drop-shadow(var(--gold-glow));
     }
     @media (max-width: 720px) {
-        .cal-week-label {
-            width: 22px;
-            font-size: 10px;
-        }
-        .cal-row {
+        .cal-grid-row,
+        .cal-dow-head {
             gap: 4px;
         }
         .cal-day {
@@ -4976,6 +5214,18 @@ chrome77/es2020 webview.
     .coach-card .explain {
         margin: 0 0 4px;
     }
+    .coach-source {
+        margin: 8px 0 0;
+        font-size: 11px;
+        color: var(--ink-faint);
+        font-style: italic;
+    }
+    /* AI provenance badge on generated practice items */
+    .ai-source-pill {
+        background: var(--emerald-tint);
+        color: var(--emerald);
+        border-color: color-mix(in srgb, var(--emerald) 40%, transparent);
+    }
     .coach-btn {
         margin: 8px 0 0;
     }
@@ -5096,14 +5346,22 @@ chrome77/es2020 webview.
         font-size: 0.72em;
     }
 
-    /* AI features toggle card (Progress) */
+    /* AI features toggle card (Progress) - compact */
+    .ai-card {
+        padding: 14px 18px;
+        margin-bottom: 18px;
+    }
+    .ai-card .action-head {
+        margin-bottom: 0;
+    }
     .ai-title {
         font-family: var(--voice);
-        font-size: 20px;
-        margin: 2px 0 8px;
+        font-size: 16px;
+        margin: 4px 0 0;
     }
     .ai-hint {
-        margin-top: 10px;
+        margin-top: 8px;
+        font-size: 13px;
         color: var(--emerald);
     }
     .ai-switch {

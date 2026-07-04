@@ -75,6 +75,32 @@ export async function pullAccountState(uid: string): Promise<{ isNew: boolean }>
     return { isNew: true };
 }
 
+/** Read the account's stored config WITHOUT applying it. This is the oracle for
+ * "established vs brand-new": a real account always has a config doc (pushed on
+ * any progress), a brand-new one has none. Never throws - returns null on error
+ * so a transient failure can't be mistaken for a new account. */
+export async function loadAccountState(uid: string): Promise<GmatState | null> {
+    if (!provider) return null;
+    try {
+        return await provider.load(uid);
+    } catch (e) {
+        console.error("GMATWiz account state load failed", e);
+        return null;
+    }
+}
+
+/** Apply a previously-loaded account config to this device. */
+export async function applyAccountState(remote: GmatState): Promise<void> {
+    await importState(remote);
+    lastSyncedAt = stampOf(remote) || Date.now();
+}
+
+/** Clear local GMATWiz state so a brand-new account begins at the diagnostic. */
+export async function resetAccountState(): Promise<void> {
+    await resetState();
+    lastSyncedAt = 0;
+}
+
 let pushTimer: ReturnType<typeof setTimeout> | null = null;
 
 /** Debounced upload of this device's state to the account (call after mutations). */

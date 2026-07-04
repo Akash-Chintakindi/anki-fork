@@ -123,3 +123,63 @@ sqlite3 "$DB" "select count() from revlog;"
 - Installer on a clean machine -> `installer.log` + Recording 2
 - Phone builds/runs + real review on the shared engine -> Recording 3
 - Proof: commit hash (`commit.txt`) + the recordings + test/build logs
+
+---
+
+# Friday deliverables - "AI added and checked; phone syncs"
+
+## AI eval + baseline (checklist items 3 + 4)
+
+Full write-up + numbers: [`proof/ai-eval.txt`](ai-eval.txt). The eval scores topic
+auto-tagging on a held-out labeled set (`gmatwiz/content/seed.json`, 42 gold items)
+with a 0.6 ship cutoff, side-by-side against a keyword baseline and a tf-idf vector
+baseline.
+
+```bash
+cd gmatwiz/content
+# Full run incl. the AI tagger (uses the app's key from the Functions secret):
+export OPENAI_API_KEY="$(npx -y firebase-tools@latest functions:secrets:access OPENAI_API_KEY --project gmatwiz)"
+python3 eval_tagging.py            # prints the table; writes eval_report.json
+# baselines-only (offline): python3 eval_tagging.py
+```
+
+The command prints a "RESULT: the AI tagger BEATS both baselines..." line and
+`eval_report.json` records `ai_beats_baselines`. Screenshot/copy that table.
+
+## AI provenance (checklist item 2 - "traces back to a named source")
+
+- Generated Drill/Study questions carry an "AI-generated - checked" badge in the
+  practice header, and are stored with `source = "AI-generated (gpt-4.1-mini) -
+  7f-checked"` ([qt/aqt/mediasrv.py](../qt/aqt/mediasrv.py) `gmat_add_questions`).
+- Each Error-Log Coach takeaway ends with a "Source: gpt-4.1-mini, grounded in
+  this item's correct answer (+ official explanation)" line.
+- Content tagging provenance (model + confidence per item) is in
+  `gmatwiz/content/eval_report.json` / the `ai_ingest` report.
+
+## Recording 4 - phone review shows up on desktop after sync
+
+Proves two-way sync with no lost/double-counted reviews (revlog is append-only and
+union-merged by the sync server).
+
+1. Start the self-hosted sync server (leave it running):
+   ```bash
+   ./tools/gmat-sync-server.sh      # gmat:wiz @ 127.0.0.1:27811
+   ```
+2. Launch desktop (`./run`), note the review/revlog count in Progress.
+3. On the phone (simulator), answer a few reviews, then tap Sync up.
+4. On desktop, tap Sync (GMATWiz header) and show the new reviews/count appear.
+5. Optional hard proof - revlog grew on both (quit each app first, it holds an
+   exclusive lock):
+   ```bash
+   # desktop collection:
+   sqlite3 "$HOME/Library/Application Support/Anki2/User 1/collection.anki2" \
+     "select count() from revlog;"
+   # phone collection:
+   DB="$(xcrun simctl get_app_container booted com.gmatwiz.phone data)/Documents/gmat.anki2"
+   sqlite3 "$DB" "select count() from revlog;"
+   ```
+
+Record the phone review -> sync -> the same review/count appearing on desktop.
+(The Firebase Cloud Storage collection layer also syncs now that the bucket CORS
+is set, but the sync-server path above is the one to record for the strict
+no-lost/no-double-count claim.)

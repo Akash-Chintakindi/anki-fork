@@ -634,6 +634,9 @@ export interface MockQuestion {
     // Present only for AI-generated items practiced ephemerally (mobile / when
     // the scheduler can't yet serve them); the fixed bank omits it.
     explanation?: string;
+    // True for AI-generated items (drives the "AI-generated - checked" provenance
+    // badge). Omitted/false for fixed-bank questions.
+    ai?: boolean;
 }
 
 export interface MockPool {
