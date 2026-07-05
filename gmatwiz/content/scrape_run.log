@@ -1,0 +1,37 @@
+GMATWiz scraper — sources: aqua_rat  (requests=no, urllib)
+
+=== aqua_rat (ignore_robots=True) ===
+    robots_allowed=True  http=200  raw=97467  normalized=6000  [ok]
+    note: AQuA-RAT (Ling et al., 2017), Apache-2.0. GMAT/GRE-style PS word problems; geometry & data-sufficiency items filtered out per PRD scope.
+Merge: seeded 231 existing questions from /Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork/gmatwiz/content/questions.json
+Merge: 6000 scraped + existing -> 5252 total after dedupe
+
+Dedup: 6231 -> 5252 kept (979 near/exact dupes removed)
+Per-topic cap 60: 5252 -> 808 kept
+
+Wrote 808 questions -> /Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork/gmatwiz/content/questions.json
+Wrote scrape report -> /Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork/gmatwiz/content/scrape_report.json
+Raw captures (1) -> /Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork/gmatwiz/content/raw
+
+Per-source normalized counts:
+  aqua_rat  : 6000  
+
+Topic counts (non-zero):
+  gmat::quant::algebra::absolute_value          25
+  gmat::quant::algebra::expressions             33
+  gmat::quant::algebra::functions               20
+  gmat::quant::algebra::inequalities            23
+  gmat::quant::algebra::linear_equations        5
+  gmat::quant::algebra::quadratics              54
+  gmat::quant::algebra::sequences               47
+  gmat::quant::algebra::word_problems           60
+  gmat::quant::arithmetic::counting             60
+  gmat::quant::arithmetic::decimals             19
+  gmat::quant::arithmetic::exponents_roots      60
+  gmat::quant::arithmetic::fractions            45
+  gmat::quant::arithmetic::number_properties    60
+  gmat::quant::arithmetic::percents             60
+  gmat::quant::arithmetic::probability          60
+  gmat::quant::arithmetic::ratios_proportions   60
+  gmat::quant::arithmetic::sets                 57
+  gmat::quant::arithmetic::statistics           60

@@ -34,7 +34,8 @@ GMAT_DI_DECK_NAME = "GMAT::DI"
 # adds genuinely new questions.
 #   1 = initial all-three-section import (Quant + Verbal + Data Insights)
 #   2 = + deepened Quant bank (AQuA-RAT scrape, ~60/topic)
-GMAT_BUNDLED_CONTENT_VERSION = 2
+#   3 = re-apply reasonable exam-paced new/day limits (fix the "due today" flood)
+GMAT_BUNDLED_CONTENT_VERSION = 3
 
 
 def render_gmat_screen(mw: aqt.main.AnkiQt) -> None:
@@ -97,10 +98,44 @@ def _load_di_question_dicts() -> list[dict]:
     return questions
 
 
+def _gmat_daily_new_target(col, deck_name: str, fallback: int = 15) -> int:
+    """A REASONABLE new-cards-per-day for a GMAT deck, so importing the whole
+    question bank doesn't dump every card in as "due today" at once (the cause of
+    absurd multi-hour daily estimates). Paced from the exam date + weekly
+    availability: introduce this deck's new cards evenly across the study days in
+    the learn window (up to ~10 days before the exam), clamped to a sane range.
+    Falls back to a fixed default when there's no exam date yet."""
+    from datetime import date, datetime
+
+    try:
+        new_count = len(col.find_cards(f'deck:"{deck_name}" is:new'))
+    except Exception:
+        new_count = 0
+    if new_count <= 0:
+        return fallback
+    profile = col.get_config("gmatProfile", {}) or {}
+    exam_date = profile.get("exam_date", "") or ""
+    days_per_week = int(profile.get("days_per_week", 5) or 5)
+    if not exam_date:
+        return min(fallback, new_count)
+    try:
+        days_to_exam = (
+            datetime.strptime(exam_date, "%Y-%m-%d").date() - date.today()
+        ).days
+    except Exception:
+        return min(fallback, new_count)
+    learn_days = max(1, days_to_exam - 10)  # finish new intake ~10 days pre-exam
+    study_days = max(1, round(learn_days * days_per_week / 7.0))
+    per_day = round(new_count / study_days)
+    return max(6, min(40, per_day))
+
+
 def _ensure_generous_limits(col, deck_name: str = GMAT_DECK_NAME) -> None:
-    """Give a GMAT deck its own preset with high daily limits so the guided
-    app isn't capped at Anki's default 20 new/day. Leaves the Default preset
-    untouched. Idempotent."""
+    """Give a GMAT deck its own preset with a REASONABLE, exam-paced new/day (see
+    _gmat_daily_new_target) instead of Anki's fixed default - so the bulk-imported
+    bank drips in over the run-up to the exam rather than all becoming due at once.
+    Reviews stay uncapped (you should always clear what's actually due). Leaves the
+    Default preset untouched. Idempotent."""
     deck_id = col.decks.id(deck_name)
     conf = col.decks.config_dict_for_deck_id(deck_id)
     if conf.get("name") == "Default":
@@ -109,7 +144,7 @@ def _ensure_generous_limits(col, deck_name: str = GMAT_DECK_NAME) -> None:
         if deck is not None:
             deck["conf"] = conf["id"]
             col.decks.save(deck)
-    conf["new"]["perDay"] = 9999
+    conf["new"]["perDay"] = _gmat_daily_new_target(col, deck_name)
     conf["rev"]["perDay"] = 9999
     col.decks.update_config(conf)
 

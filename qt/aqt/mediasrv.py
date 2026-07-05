@@ -1262,6 +1262,16 @@ def gmat_save_profile() -> bytes:
         diag = col.get_config(diag_key, None)
         if diag:
             col.set_config(plan_key, _gmat_build_section_plan(col, diag, sec))
+    # Re-pace each existing section deck's daily new-card intake to the (possibly
+    # new) exam date, so the daily session stays reasonable.
+    try:
+        import aqt.gmat
+
+        for deck in ("GMAT::Quant", "GMAT::Verbal", "GMAT::DI"):
+            if col.decks.id_for_name(deck) is not None:
+                aqt.gmat._ensure_generous_limits(col, deck)
+    except Exception as exc:
+        print(f"GMATWiz: re-pace deck limits failed: {exc}")
     return b""
 
 

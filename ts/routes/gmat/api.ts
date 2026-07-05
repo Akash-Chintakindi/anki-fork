@@ -837,13 +837,18 @@ export async function fetchTestQuestions(
 /**
  * Render simple math notation as HTML: caret exponents (x^2, x^{2}) and the
  * scraped "x2" style (a variable letter directly followed by digits) become
- * superscripts. Input is HTML-escaped first, so the result is safe for {@html}.
+ * superscripts. Input is HTML-escaped first, so the result is safe for {@html};
+ * a small allowlist of authored formatting tags (bold/italic/underline/sub/sup,
+ * e.g. the <b>...</b> that marks the boldfaced portions of a Critical Reasoning
+ * question) is then restored so it renders instead of showing as literal text.
  */
 export function renderMath(text: string): string {
     const escaped = (text ?? "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
+        .replace(/>/g, "&gt;")
+        // restore the authored inline-formatting allowlist (content is trusted)
+        .replace(/&lt;(\/?)(b|strong|i|em|u|sub|sup|br\s*\/?)&gt;/gi, "<$1$2>");
     return (
         escaped
             // caret: x^2, x^{2}, 2^10
