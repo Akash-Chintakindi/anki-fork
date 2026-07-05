@@ -1,0 +1,281 @@
+{
+  "topic_id": "gmat::verbal::cr::flaw",
+  "slug": "cr-flaw",
+  "title": "Critical Reasoning: Find the Flaw",
+  "prerequisites": [
+    "identify an argument's conclusion and evidence",
+    "recognize common reasoning errors"
+  ],
+  "learning_objectives": [
+    "Name the specific reasoning error an argument commits.",
+    "Recognize classic flaws: ad hominem, appeal to popularity, post hoc, hasty generalization, appeal to ignorance, slippery slope.",
+    "Match the abstract flaw description to what the argument actually did."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do -> we do -> you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Separating an argument's conclusion from its evidence.",
+    "do_now": {
+      "instructions": "No notes. 4 minutes.",
+      "items": [
+        {
+          "prompt": "Name the flaw: 'X happened after Y, so Y caused X.'",
+          "answer": "Post hoc (correlation/sequence mistaken for causation).",
+          "targets": "post hoc"
+        },
+        {
+          "prompt": "Name the flaw: 'Most people buy it, so it's the best.'",
+          "answer": "Appeal to popularity.",
+          "targets": "popularity"
+        },
+        {
+          "prompt": "Name the flaw: 'No one has proven it's harmful, so it's safe.'",
+          "answer": "Appeal to ignorance.",
+          "targets": "ignorance"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Recalls the named flaw families so learners can match them to the argument.",
+      "if_students_struggle": "Have them describe in their own words what the author did wrong before reading the choices.",
+      "questions": [
+        {
+          "prompt": "Name the flaw: 'She's rich, so ignore her economic argument.'",
+          "answer": "Ad hominem (attacking the person).",
+          "targets": "ad hominem"
+        },
+        {
+          "prompt": "Name the flaw: 'Every swan I've seen is white, so all swans are white.'",
+          "answer": "Hasty generalization from a limited sample.",
+          "targets": "generalization"
+        }
+      ]
+    },
+    "prior_knowledge_bridge": "You can find a conclusion and its evidence. A flaw question asks WHY the leap between them is illegitimate - and the answer is usually one of a handful of named reasoning errors. Describe the mistake in your own words first, then match it.",
+    "learning_intention": "By the end you can name the specific reasoning error an argument commits and match it to the correct abstract description.",
+    "success_criteria": [
+      "I can describe, in plain words, what the argument did wrong.",
+      "I can recognize the classic named flaws.",
+      "I can match my description to the answer choice that states it."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00-4:00",
+        "move": "Do Now on screen; learners answer from memory, no notes."
+      },
+      {
+        "time": "4:00-6:00",
+        "move": "Cold-call answers; name the argument's conclusion vs premises."
+      },
+      {
+        "time": "6:00-8:00",
+        "move": "Bridge to today's question type; state what the stem is really asking."
+      },
+      {
+        "time": "8:00-10:00",
+        "move": "Move to I do: model the reasoning on one worked item."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "Critic: The restaurant's owner says his food is the healthiest in town, but he is trying to sell meals, so his claim is worthless. The critic's reasoning is most vulnerable to the criticism that it",
+    "options": {
+      "A": "rejects a claim based on the source's motive rather than on any evidence about the claim itself.",
+      "B": "relies on a sample of diners that is too small.",
+      "C": "assumes that healthy food cannot be profitable.",
+      "D": "confuses a cause with an effect.",
+      "E": "treats the owner's opinion as expert testimony."
+    },
+    "correct": "A",
+    "explanation": "The critic dismisses the health claim only because the owner has a motive to sell - an ad hominem that ignores whether the food is actually healthy. A names that error.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "Conclusion: the owner's claim is worthless. Evidence: he wants to sell meals.",
+      "In my words: attacking the person's motive, not the claim - that's ad hominem.",
+      "Find the choice describing that: A.",
+      "The other choices name flaws the argument didn't commit."
+    ],
+    "key_takeaway": "Describe the reasoning error in plain words first, then match it to the choice - don't be lured by real flaws the argument didn't make.",
+    "topic": "gmat::verbal::cr::flaw",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Critical Reasoning"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "Advertisement: More dentists choose BrightSmile toothpaste than any other brand, so BrightSmile must be the most effective toothpaste. The reasoning is most vulnerable to the criticism that it",
+      "options": {
+        "A": "treats a product's popularity as proof of its effectiveness.",
+        "B": "relies on the opinion of a single dentist.",
+        "C": "assumes dentists never change brands.",
+        "D": "ignores the price of competing toothpastes.",
+        "E": "confuses effectiveness with safety."
+      },
+      "correct": "A",
+      "explanation": "The ad slides from 'most chosen' to 'most effective' - an appeal to popularity. A names that error.",
+      "difficulty": "easy",
+      "scaffold_hints": [
+        "What is the evidence, and what is concluded from it?",
+        "Popularity -> quality is a classic named flaw.",
+        "Match your description to the choice."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right - popularity doesn't establish effectiveness.",
+        "if_incorrect": "The ad cites many dentists, not one; the core error is popularity -> quality."
+      },
+      "topic": "gmat::verbal::cr::flaw",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning"
+    },
+    {
+      "id": "we_2",
+      "stem": "Politician: No study has ever shown that our new tax policy harms small businesses, so the policy is clearly safe for them. The reasoning is most vulnerable to the criticism that it",
+      "options": {
+        "A": "treats the absence of evidence of harm as proof that there is no harm.",
+        "B": "relies on studies funded by the government.",
+        "C": "assumes all small businesses are alike.",
+        "D": "confuses correlation with causation.",
+        "E": "attacks the motives of the policy's critics."
+      },
+      "correct": "A",
+      "explanation": "Concluding the policy is safe merely because harm hasn't been shown is an appeal to ignorance. A names it.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "The evidence is a LACK of evidence.",
+        "Absence of proof of harm is not proof of safety.",
+        "Which named flaw is that?"
+      ],
+      "immediate_feedback": {
+        "if_correct": "Exactly - appeal to ignorance.",
+        "if_incorrect": "The argument doesn't attack critics or cite studies; it leans on missing evidence."
+      },
+      "topic": "gmat::verbal::cr::flaw",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "Manager: Right after we repainted the office, output went up, so the new paint color is boosting productivity. The reasoning is most vulnerable to the criticism that it",
+      "options": {
+        "A": "concludes that the paint caused the rise simply because the rise came after the painting.",
+        "B": "relies on the testimony of a few employees.",
+        "C": "assumes all employees like the color.",
+        "D": "ignores the cost of the paint.",
+        "E": "treats productivity and morale as the same thing."
+      },
+      "correct": "A",
+      "explanation": "Inferring causation from mere sequence (output rose after painting) is a post hoc flaw. A names it.",
+      "difficulty": "medium",
+      "topic": "gmat::verbal::cr::flaw",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "Editorial: If the city allows food trucks on Main Street, soon every sidewalk will be blocked and no pedestrian will be able to walk downtown. So food trucks must be banned. The reasoning is most vulnerable to the criticism that it",
+      "options": {
+        "A": "assumes without support that a limited step will inevitably lead to an extreme outcome.",
+        "B": "relies on an unrepresentative survey.",
+        "C": "attacks the character of food-truck owners.",
+        "D": "confuses a necessary condition with a sufficient one.",
+        "E": "treats popularity as evidence of quality."
+      },
+      "correct": "A",
+      "explanation": "Claiming one modest allowance must snowball into total blockage is a slippery-slope flaw. A names it.",
+      "difficulty": "medium",
+      "topic": "gmat::verbal::cr::flaw",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "Reviewer: This author's last three novels were bestsellers, so her next book is certain to be a bestseller too. The reasoning is most vulnerable to the criticism that it",
+      "options": {
+        "A": "assumes that a past pattern must continue without considering factors that could change the outcome.",
+        "B": "relies on the opinions of unqualified readers.",
+        "C": "attacks the author rather than the books.",
+        "D": "confuses sales with literary quality.",
+        "E": "treats the absence of failure as proof of success."
+      },
+      "correct": "A",
+      "explanation": "Projecting a past streak forward as a certainty ignores factors that could break the pattern - an unwarranted assumption of continuity. A names it.",
+      "difficulty": "hard",
+      "topic": "gmat::verbal::cr::flaw",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "GMAC - GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Verbal Reasoning scope.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy - LSAT Logical Reasoning (free)",
+      "url": "https://www.khanacademy.org/prep/lsat",
+      "note": "Free lessons on argument structure, assumptions, strengthen/weaken, and flaws."
+    }
+  ],
+  "domain": "Critical Reasoning",
+  "section": "Verbal Reasoning",
+  "question_type": "Critical Reasoning",
+  "estimated_minutes": 18,
+  "schema_version": "1.0",
+  "exam": "GMAT Focus Edition"
+}

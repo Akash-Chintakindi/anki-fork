@@ -1,0 +1,280 @@
+{
+  "topic_id": "gmat::verbal::rc::function",
+  "slug": "rc-function",
+  "title": "Reading Comprehension: Function",
+  "prerequisites": [
+    "identify a passage's main point",
+    "see how a sentence relates to that point"
+  ],
+  "learning_objectives": [
+    "Explain WHY the author includes a specific detail (its role), not just what it says.",
+    "Common roles: give an example, support a claim, raise an objection, provide contrast.",
+    "Reject options that merely restate the detail or misstate its role."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do -> we do -> you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Seeing how a sentence supports or complicates a main point.",
+    "do_now": {
+      "instructions": "No notes. 4 minutes.",
+      "items": [
+        {
+          "prompt": "A function question asks what about a detail?",
+          "answer": "Why the author included it - its role in the passage.",
+          "targets": "role vs content"
+        },
+        {
+          "prompt": "Name two common roles a detail can play.",
+          "answer": "Give an example; support (or object to) a claim.",
+          "targets": "role types"
+        },
+        {
+          "prompt": "Is restating the detail a correct function answer?",
+          "answer": "No - you must say what job it does.",
+          "targets": "traps"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Recalls that function = the author's reason for including a detail.",
+      "if_students_struggle": "Ask 'what would be lost if this sentence were deleted?' to reveal its role.",
+      "questions": [
+        {
+          "prompt": "How can you reveal a sentence's role?",
+          "answer": "Ask what the passage would lose without it.",
+          "targets": "role test"
+        },
+        {
+          "prompt": "Why is 'it repeats the main idea' rarely the role of an example?",
+          "answer": "An example usually supports or illustrates, not repeats.",
+          "targets": "roles"
+        }
+      ]
+    },
+    "prior_knowledge_bridge": "You can see how a sentence relates to the main point. A function question makes that explicit: name the JOB a detail does - example, support, objection, contrast - rather than repeating what it says.",
+    "learning_intention": "By the end you can state the role a specific detail plays in a passage and match it to the right option.",
+    "success_criteria": [
+      "I can say why the author included a detail, not just what it says.",
+      "I can name the role (example, support, objection, contrast).",
+      "I can reject options that restate the detail or misname its role."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00-4:00",
+        "move": "Do Now on screen; learners answer from memory, no notes."
+      },
+      {
+        "time": "4:00-6:00",
+        "move": "Cold-call answers; name the argument's conclusion vs premises."
+      },
+      {
+        "time": "6:00-8:00",
+        "move": "Bridge to today's question type; state what the stem is really asking."
+      },
+      {
+        "time": "8:00-10:00",
+        "move": "Move to I do: model the reasoning on one worked item."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "Passage: Some claim that working from home lowers productivity. Yet at one large firm, output per employee rose after a shift to remote work - evidence that the claim is not universally true.\n\nQuestion: The author mentions the large firm's rising output primarily in order to",
+    "options": {
+      "A": "provide evidence against the claim that remote work lowers productivity",
+      "B": "prove that all firms should adopt remote work",
+      "C": "describe how the firm measures output",
+      "D": "introduce a new claim about employee morale",
+      "E": "explain why some people work from home"
+    },
+    "correct": "A",
+    "explanation": "The firm's rising output is offered right after the claim, as counter-evidence ('evidence that the claim is not universally true'). Its role is to rebut the claim. A names that role.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "Main point: the 'remote lowers productivity' claim isn't universally true.",
+      "The firm's rising output is the evidence for that point.",
+      "So its role is to counter the claim - choice A."
+    ],
+    "key_takeaway": "Name the JOB a detail does for the argument, not what it literally says.",
+    "topic": "gmat::verbal::rc::function",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Reading Comprehension"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "Passage: Vitamin supplements are widely believed to prevent colds. In a large trial, however, people taking the supplement caught colds just as often as those taking a placebo.\n\nQuestion: The author mentions the trial primarily in order to",
+      "options": {
+        "A": "challenge the belief that supplements prevent colds",
+        "B": "recommend a specific brand of supplement",
+        "C": "explain how placebos are manufactured",
+        "D": "prove that colds are impossible to prevent",
+        "E": "describe the symptoms of the common cold"
+      },
+      "correct": "A",
+      "explanation": "The trial's result (no difference from placebo) is introduced with 'however' to push back on the belief. Its role is to challenge that belief. A matches.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "What belief is stated first?",
+        "The trial is introduced with 'however' - a contrast signal.",
+        "So the trial's job is to counter the belief."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right - the trial challenges the belief.",
+        "if_incorrect": "D is too strong; the trial challenges ONE belief, not all prevention."
+      },
+      "topic": "gmat::verbal::rc::function",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Reading Comprehension"
+    },
+    {
+      "id": "we_2",
+      "stem": "Passage: The new policy has clear benefits. It will, for instance, cut commute times for thousands of workers who currently drive across town each day.\n\nQuestion: The reference to cutting commute times functions primarily to",
+      "options": {
+        "A": "give a specific example of the policy's benefits",
+        "B": "raise an objection to the policy",
+        "C": "prove the policy has no drawbacks",
+        "D": "define what a commute is",
+        "E": "compare the policy to an older one"
+      },
+      "correct": "A",
+      "explanation": "'For instance' marks the commute detail as an example illustrating the stated benefits. A names that role; the others misstate it.",
+      "difficulty": "easy",
+      "scaffold_hints": [
+        "The signal 'for instance' tells you the role.",
+        "It illustrates the 'clear benefits' claim.",
+        "That's an example, not an objection."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Yes - it's an illustrative example.",
+        "if_incorrect": "'For instance' signals an example, not an objection or proof of no drawbacks."
+      },
+      "topic": "gmat::verbal::rc::function",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Reading Comprehension"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "Passage: Critics say the museum's new wing clashes with the old building. Supporters counter that the contrast draws visitors in - attendance has risen 30 percent since the wing opened.\n\nQuestion: The author mentions the 30 percent rise in attendance primarily in order to",
+      "options": {
+        "A": "support the supporters' response to the critics",
+        "B": "concede that the critics are correct",
+        "C": "explain how attendance is counted",
+        "D": "argue that the old building should be demolished",
+        "E": "describe the design of the new wing"
+      },
+      "correct": "A",
+      "explanation": "The attendance rise backs the supporters' counter to the critics. Its role is to support that response. A matches; the others misname it.",
+      "difficulty": "medium",
+      "topic": "gmat::verbal::rc::function",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Reading Comprehension",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "Passage: The device is marketed as waterproof. In testing, however, it failed after ten minutes in shallow water, casting doubt on that description.\n\nQuestion: The author refers to the testing result primarily in order to",
+      "options": {
+        "A": "cast doubt on the device's waterproof marketing",
+        "B": "explain how the device is manufactured",
+        "C": "recommend the device to consumers",
+        "D": "prove that no device can be waterproof",
+        "E": "describe the price of the device"
+      },
+      "correct": "A",
+      "explanation": "The failed test is introduced with 'however' to undercut the waterproof claim. Its role is to cast doubt on that marketing. A matches.",
+      "difficulty": "medium",
+      "topic": "gmat::verbal::rc::function",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Reading Comprehension",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "Passage: Many cities have tried to reduce littering with fines, but enforcement is costly. One city instead added colorful, conveniently placed bins and saw litter drop sharply, suggesting that design can sometimes succeed where penalties struggle.\n\nQuestion: The author mentions the city that added bins primarily in order to",
+      "options": {
+        "A": "offer an example of an alternative to fines that worked",
+        "B": "argue that fines should be increased",
+        "C": "explain how litter is measured",
+        "D": "prove that fines never reduce littering",
+        "E": "describe the color of the new bins"
+      },
+      "correct": "A",
+      "explanation": "The bin city illustrates an alternative to fines that succeeded, supporting the point that design can work where penalties struggle. A names that role; the others misstate or overstate.",
+      "difficulty": "hard",
+      "topic": "gmat::verbal::rc::function",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Reading Comprehension",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "GMAC - GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Verbal Reasoning scope.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy - LSAT Logical Reasoning (free)",
+      "url": "https://www.khanacademy.org/prep/lsat",
+      "note": "Free lessons on argument structure, assumptions, strengthen/weaken, and flaws."
+    }
+  ],
+  "domain": "Reading Comprehension",
+  "section": "Verbal Reasoning",
+  "question_type": "Reading Comprehension",
+  "estimated_minutes": 18,
+  "schema_version": "1.0",
+  "exam": "GMAT Focus Edition"
+}

@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reading Comprehension: Main Idea &middot; GMATWiz Verbal Reasoning</title>
+<style>
+:root{
+  --ink:#1a1813; --muted:#6b6358; --rule:#d9d2c5; --bg:#fbf9f4; --card:#fffdf8;
+  --accent:#7a3b2e; --accent2:#3a5a40; --link:#7a3b2e; --code:#2b2b2b;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:3rem 2rem 6rem;}
+.content{max-width:720px;}
+header.masthead{border-bottom:1px solid var(--rule); padding-bottom:1.2rem; margin-bottom:2rem;}
+.kicker{font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:0 0 .4rem;}
+h1{font-size:2.3rem; line-height:1.1; margin:.1rem 0 .6rem; font-weight:600; letter-spacing:-.01em;}
+.meta{color:var(--muted); font-size:.9rem; margin:0;}
+.meta b{color:var(--ink); font-weight:600;}
+h2{font-size:1.45rem; margin:2.8rem 0 .3rem; font-weight:600; letter-spacing:-.01em;}
+h2 .num{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:.5rem;}
+h3{font-size:1.06rem; margin:1.6rem 0 .4rem; font-weight:600;}
+.sub{color:var(--muted); font-style:italic; margin:.1rem 0 1rem; font-size:.95rem;}
+p{margin:.6rem 0;} ul,ol{margin:.5rem 0 .9rem; padding-left:1.3rem;} li{margin:.25rem 0;}
+a{color:var(--link); text-decoration:none; border-bottom:1px solid rgba(122,59,46,.35);}
+a:hover{border-bottom-color:var(--link);}
+.lead{font-size:1.08rem;}
+section{position:relative;}
+.note{font-size:.8rem; color:var(--muted); line-height:1.4;}
+.objectives{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1rem 1.2rem;}
+.objectives ul{margin:.3rem 0 0;}
+.intent{border-left:3px solid var(--accent2); padding:.4rem 0 .4rem 1rem; margin:1rem 0; font-size:1.05rem;}
+.donow{background:#2b2620; color:#f3ecde; border-radius:8px; padding:1.1rem 1.3rem; margin:1rem 0;}
+.donow .tag{font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:#d8b48a;}
+.donow ol{padding-left:1.2rem;} .donow li{margin:.4rem 0;}
+.donow .ans{color:#b9c6a9; font-style:italic; font-size:.86rem; display:block; margin-top:.15rem;}
+table{border-collapse:collapse; width:100%; font-size:.92rem; margin:.6rem 0 1rem;}
+th,td{text-align:left; padding:.45rem .6rem; border-bottom:1px solid var(--rule); vertical-align:top;}
+th{font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+td.t{white-space:nowrap; color:var(--accent); font-variant-numeric:tabular-nums; width:6.5rem;}
+.q{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1.1rem 1.3rem; margin:1.1rem 0;}
+.q .qid{font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+.q .qid .diff{float:right; color:var(--accent2);}
+.q .stem{font-size:1.03rem; margin:.35rem 0 .6rem;}
+.choices{list-style:none; padding:0; margin:.2rem 0 .4rem; counter-reset:c;}
+.choices li{padding:.32rem .6rem; border:1px solid var(--rule); border-radius:6px; margin:.3rem 0; background:#fff;}
+.choices li .lab{display:inline-block; width:1.5rem; font-weight:600; color:var(--accent);}
+.choices li.correct{border-color:var(--accent2); background:#eef3ec;}
+.choices li.correct .lab{color:var(--accent2);}
+details{margin:.5rem 0 .2rem; border-top:1px dashed var(--rule); padding-top:.5rem;}
+details>summary{cursor:pointer; font-size:.86rem; color:var(--accent); font-weight:600; list-style:none;}
+details>summary::-webkit-details-marker{display:none;}
+details>summary::before{content:"\25B8  "; color:var(--accent);}
+details[open]>summary::before{content:"\25BE  ";}
+.expl{font-size:.95rem; margin-top:.5rem;}
+.hints{font-size:.92rem;} .hints li{margin:.2rem 0;}
+.feedback{font-size:.9rem;} .feedback .ok{color:var(--accent2);} .feedback .no{color:var(--accent);}
+.appfirst{font-size:.78rem; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin:.2rem 0;}
+.mastery{background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--accent2); border-radius:8px; padding:1rem 1.2rem;}
+.pill{display:inline-block; font-size:.72rem; padding:.12rem .5rem; border:1px solid var(--rule); border-radius:999px; color:var(--muted); margin:.1rem .2rem .1rem 0;}
+footer{margin-top:3.5rem; border-top:1px solid var(--rule); padding-top:1rem; color:var(--muted); font-size:.82rem;}
+.src{background:#eef3ec; border:1px solid #cfe0cf; border-radius:8px; padding:.9rem 1.1rem; margin:1.2rem 0;}
+.src .tag{font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent2); font-weight:600;}
+.crumbs{font-size:.85rem; margin-bottom:1.2rem;}
+.ask{font-size:.9rem; background:#fff8ec; border:1px dashed #e0c590; border-radius:8px; padding:.7rem 1rem; margin:1.4rem 0;}
+@media print{ body{background:#fff} .wrap{padding:0} a{border:none} .donow{-webkit-print-color-adjust:exact; print-color-adjust:exact} }
+</style></head>
+<body><div class="wrap"><div class="content">
+  <div class="crumbs"><a href="index.html">&larr; All topics</a> &middot; Verbal Reasoning &middot; Reading Comprehension</div>
+  <header class="masthead">
+    <p class="kicker">GMATWiz &middot; GMAT Focus Edition &middot; Verbal Reasoning (Reading Comprehension)</p>
+    <h1>Reading Comprehension: Main Idea</h1>
+    <p class="meta"><b>Topic id</b> <code>gmat::verbal::rc::main_idea</code> &middot; <b>Domain</b> Reading Comprehension
+      &middot; <b>Prereqs</b> read a short passage for its overall point, tell a main point from a supporting detail &middot; <b>~18 min</b></p>
+  </header>
+
+  <div class="objectives">
+    <p class="note"><b>Learning objectives</b></p>
+    <ul><li>State the passage&#x27;s primary purpose in one sentence before reading the choices.</li><li>Choose the option that covers the WHOLE passage, not just one paragraph.</li><li>Reject options that are too narrow, too broad, or not discussed.</li></ul>
+    <p class="note">Model: I do -&gt; we do -&gt; you do &middot; application-first (explanations revealed after an attempt) &middot; Rosenshine (daily review), Archer (I-do/we-do/you-do), SPOV2 application-first.</p>
+  </div>
+
+  
+    <section>
+      <h2><span class="num">1</span>Opening &mdash; retrieval &amp; bridge</h2>
+      <p class="sub">Builds on: Summarizing a paragraph in a single sentence.</p>
+      <div class="donow">
+        <div class="tag">Do Now &middot; from memory, no notes</div>
+        <p>No notes. 4 minutes.</p>
+        <ol><li>What is a passage&#x27;s &#x27;primary purpose&#x27;?<span class="ans">The main job the whole passage does (e.g. explain, argue, describe).</span></li><li>Is a detail from one sentence usually the main idea?<span class="ans">No - the main idea covers the whole passage.</span></li><li>Why predict the main idea before reading choices?<span class="ans">To avoid being pulled by narrow but tempting options.</span></li></ol>
+      </div>
+      <p class="note"><b>Retrieval starter (5 min).</b> Recalls the difference between a whole-passage point and a single detail.
+      <br><b>If students struggle:</b> Have them write a one-line summary of the passage first, then match it to an option.</p>
+      <h3>Prior-knowledge bridge</h3>
+      <p>You can summarize a paragraph. A main-idea question just scales that up: capture what the ENTIRE passage is doing in one sentence, then pick the choice that matches that sentence - not a true-but-narrow detail.</p>
+      <h3>Learning intention</h3>
+      <p class="intent">By the end you can state a passage&#x27;s primary purpose and select the option that matches the whole passage.</p>
+      <p class="note"><b>You'll know you've got it when:</b></p>
+      <ul><li>I can summarize a passage&#x27;s overall point in one sentence.</li><li>I can reject options that are too narrow or not discussed.</li><li>I can pick the option that spans the whole passage.</li></ul>
+      <details><summary>Complete timed opening script</summary>
+        <table><thead><tr><th>Time</th><th>Move</th></tr></thead><tbody><tr><td class="t">0:00-4:00</td><td>Do Now on screen; learners answer from memory, no notes.</td></tr><tr><td class="t">4:00-6:00</td><td>Cold-call answers; name the argument&#x27;s conclusion vs premises.</td></tr><tr><td class="t">6:00-8:00</td><td>Bridge to today&#x27;s question type; state what the stem is really asking.</td></tr><tr><td class="t">8:00-10:00</td><td>Move to I do: model the reasoning on one worked item.</td></tr></tbody></table>
+      </details>
+    </section>
+
+  <section>
+    <h2><span class="num">2</span>I do &mdash; worked example</h2>
+    <p class="sub">Watch the reasoning modeled end to end before you try.</p>
+    
+    <div class="q">
+      <div class="qid">I DO &middot; worked example<span class="diff">medium</span></div>
+      <div class="stem">Passage: The invention of cheap aluminum in the late nineteenth century transformed industries far beyond the obvious. Once as costly as silver, aluminum became affordable after a new electrolytic process was devised, and it soon reshaped packaging, transportation, and construction.
+
+Question: The primary purpose of the passage is to</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>describe how a technological change had wide-ranging effects</li><li><span class="lab">B</span>argue that aluminum is more useful than silver</li><li><span class="lab">C</span>explain the chemistry of the electrolytic process in detail</li><li><span class="lab">D</span>criticize nineteenth-century packaging methods</li><li><span class="lab">E</span>predict future uses of aluminum in construction</li></ul>
+      <h3>Think-aloud</h3>
+      <ol><li>One-line summary: a new process made aluminum cheap, and that changed many industries.</li><li>Predict: purpose = show a technological change had broad effects.</li><li>Match to A; reject B/C/D/E as narrow or unstated.</li></ol>
+      <p class="expl"><b>Correct: A.</b> The passage says cheap aluminum &#x27;reshaped packaging, transportation, and construction&#x27; - a wide-ranging effect. A covers the whole passage; the others are narrow or not stated.</p>
+      <p class="note"><b>Takeaway.</b> Predict the whole-passage point first, then pick the option that matches it.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>We do &mdash; guided practice</h2>
+    <p class="sub">Scaffolds and immediate feedback are one click away. Fade them as you gain confidence.</p>
+    
+    <div class="q">
+      <div class="qid">we_1 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">Passage: Coral reefs occupy a tiny fraction of the ocean floor, yet they shelter a quarter of all marine species. Scientists studying reef resilience have found that reefs exposed to mild, occasional heat stress sometimes withstand later, severe heat waves better than reefs that had been fully protected.
+
+Question: The passage is primarily concerned with</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>a surprising finding about what helps reefs survive heat</li><li><span class="lab">B</span>proving that reefs cover very little of the ocean floor</li><li><span class="lab">C</span>listing the species that live on coral reefs</li><li><span class="lab">D</span>arguing that reefs should be fully protected from all stress</li><li><span class="lab">E</span>describing how heat waves form in the ocean</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>What is the passage&#x27;s most important, whole-passage point?</li><li>The reef-area fact is just a setup detail.</li><li>Watch for an option that contradicts the finding (full protection).</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Right - the resilience finding is the main point.<br>
+        <span class="no">If incorrect:</span> The area statistic and species count are supporting details, not the main idea.</p>
+        <p class="expl"><b>Answer: A.</b> The passage&#x27;s point is the surprising resilience finding (mild prior stress can help). A matches the whole passage; the others are narrow or contradicted.</p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">we_2 &middot; we do (guided)<span class="diff">easy</span></div>
+      <div class="stem">Passage: The invention of cheap aluminum in the late nineteenth century transformed industries far beyond the obvious. Once as costly as silver, aluminum became affordable after a new electrolytic process was devised, and it soon reshaped packaging, transportation, and construction.
+
+Question: Which of the following best expresses the main idea of the passage?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>A drop in aluminum&#x27;s cost led it to affect many industries.</li><li><span class="lab">B</span>Aluminum was once as expensive as silver.</li><li><span class="lab">C</span>The electrolytic process is difficult to describe.</li><li><span class="lab">D</span>Packaging improved more than transportation did.</li><li><span class="lab">E</span>Construction depends entirely on aluminum.</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>Pick the sentence that could headline the whole passage.</li><li>A single fact (once costly as silver) is too narrow.</li><li>Avoid extreme wording (entirely).</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Yes - broad impact from a cost drop.<br>
+        <span class="no">If incorrect:</span> B is true but narrow; the main idea must span the passage.</p>
+        <p class="expl"><b>Answer: A.</b> The whole passage is about cheap aluminum&#x27;s broad impact. A states that; B is a setup detail, and C/D/E are unstated or overstated.</p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>You do &mdash; independent application</h2>
+    <p class="sub">Application-first (SPOV2): commit to an answer, then reveal the explanation. Log every miss.</p>
+    
+    <div class="q">
+      <div class="qid">you_1 &middot; you do (independent)<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Passage: Before refrigerated railcars, most fresh meat was slaughtered near cities. Refrigerated cars let packers centralize slaughter in a few large plants and ship dressed meat long distances, lowering costs but drawing complaints from local butchers.
+
+Question: The primary purpose of the passage is to</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>explain how a new technology changed an industry and note a reaction to it</li><li><span class="lab">B</span>argue that local butchers produced better meat</li><li><span class="lab">C</span>describe the mechanical design of refrigerated railcars</li><li><span class="lab">D</span>prove that centralized slaughter was a mistake</li><li><span class="lab">E</span>trace the history of cities near railways</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> The passage explains the change (refrigerated cars centralized slaughter) and notes a reaction (butchers&#x27; complaints). A captures both; the others are narrow or unstated.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_2 &middot; you do (independent)<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Passage: Many assume bird migration is triggered mainly by falling temperature. Studies of caged birds, however, show that even in constant warmth the birds grow restless at the usual migration time, suggesting an internal calendar plays a large role.
+
+Question: Which of the following best states the main point of the passage?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>An internal timing mechanism, not just temperature, drives migration.</li><li><span class="lab">B</span>Caged birds behave exactly like wild birds.</li><li><span class="lab">C</span>Temperature has no effect on birds at all.</li><li><span class="lab">D</span>Bird migration occurs at the same time every year everywhere.</li><li><span class="lab">E</span>Studying caged birds is the only way to understand migration.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> The study shows restlessness even in constant warmth, pointing to an internal calendar. A states the main point; the others overstate or contradict.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_3 &middot; you do (independent)<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Passage: Public libraries were once quiet halls devoted almost entirely to books. Today many devote space to computers, meeting rooms, and classes, reflecting a broader idea of the library as a community hub rather than a mere book repository.
+
+Question: The passage is primarily concerned with</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>a shift in how libraries are conceived and used</li><li><span class="lab">B</span>proving that books are no longer important</li><li><span class="lab">C</span>describing the layout of a specific library</li><li><span class="lab">D</span>arguing that libraries should ban computers</li><li><span class="lab">E</span>explaining how meeting rooms are scheduled</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> The passage contrasts the old book-only library with today&#x27;s community hub - a shift in conception. A matches; the others are narrow, extreme, or unstated.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+  </section>
+
+  
+    <section>
+      <h2><span class="num">5</span>Mastery check</h2>
+      <div class="mastery">
+        <p>A topic is mastered at &gt;=85% correct on new/held-out-style questions across &gt;=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.</p>
+        <p class="note"><b>Threshold</b> 0.85 &middot; <b>spaced sessions</b> &ge; 2</p>
+        <ul><li>&gt;=85% correct on new/held-out-style items (not flashcard recall) per session</li><li>sustained across &gt;=2 spaced sessions with a delay between them</li><li>per-topic memory surfaced only after &gt;=20 graded reviews (PRD give-up rule)</li><li>per-topic performance surfaced only after &gt;=8 application attempts (PRD give-up rule)</li></ul>
+        <p class="note"><b>If not yet mastered:</b> Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -&gt; you-do loop before re-testing.</p>
+      </div>
+      
+    </section>
+
+  <div class="src">
+    <div class="tag">Primary source</div>
+    <p><a href="https://www.mba.com/exams/gmat-focus-edition">GMAC - GMAT Focus Edition (official exam overview)</a> &mdash; Official exam structure and Verbal Reasoning scope.</p>
+    <p class='note'>Further reading:</p><ul><li><a href="https://www.khanacademy.org/prep/lsat">Khan Academy - LSAT Logical Reasoning (free)</a> &mdash; Free lessons on argument structure, assumptions, strengthen/weaken, and flaws.</li></ul>
+  </div>
+
+  <div class="ask">Stuck on any step? Ask your GMATWiz coach for a worked walkthrough &mdash; that's what it's here for.</div>
+
+  <footer>
+    <p>GMATWiz lesson &middot; <code>rc-main-idea.json</code> &middot; schema v1.0 &middot; authored content (OfficialFlag=false), reserved official items used only for late checkpoints.</p>
+  </footer>
+</div></div></body></html>

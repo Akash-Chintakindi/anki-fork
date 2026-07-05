@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Critical Reasoning: Inference &middot; GMATWiz Verbal Reasoning</title>
+<style>
+:root{
+  --ink:#1a1813; --muted:#6b6358; --rule:#d9d2c5; --bg:#fbf9f4; --card:#fffdf8;
+  --accent:#7a3b2e; --accent2:#3a5a40; --link:#7a3b2e; --code:#2b2b2b;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:3rem 2rem 6rem;}
+.content{max-width:720px;}
+header.masthead{border-bottom:1px solid var(--rule); padding-bottom:1.2rem; margin-bottom:2rem;}
+.kicker{font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:0 0 .4rem;}
+h1{font-size:2.3rem; line-height:1.1; margin:.1rem 0 .6rem; font-weight:600; letter-spacing:-.01em;}
+.meta{color:var(--muted); font-size:.9rem; margin:0;}
+.meta b{color:var(--ink); font-weight:600;}
+h2{font-size:1.45rem; margin:2.8rem 0 .3rem; font-weight:600; letter-spacing:-.01em;}
+h2 .num{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:.5rem;}
+h3{font-size:1.06rem; margin:1.6rem 0 .4rem; font-weight:600;}
+.sub{color:var(--muted); font-style:italic; margin:.1rem 0 1rem; font-size:.95rem;}
+p{margin:.6rem 0;} ul,ol{margin:.5rem 0 .9rem; padding-left:1.3rem;} li{margin:.25rem 0;}
+a{color:var(--link); text-decoration:none; border-bottom:1px solid rgba(122,59,46,.35);}
+a:hover{border-bottom-color:var(--link);}
+.lead{font-size:1.08rem;}
+section{position:relative;}
+.note{font-size:.8rem; color:var(--muted); line-height:1.4;}
+.objectives{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1rem 1.2rem;}
+.objectives ul{margin:.3rem 0 0;}
+.intent{border-left:3px solid var(--accent2); padding:.4rem 0 .4rem 1rem; margin:1rem 0; font-size:1.05rem;}
+.donow{background:#2b2620; color:#f3ecde; border-radius:8px; padding:1.1rem 1.3rem; margin:1rem 0;}
+.donow .tag{font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:#d8b48a;}
+.donow ol{padding-left:1.2rem;} .donow li{margin:.4rem 0;}
+.donow .ans{color:#b9c6a9; font-style:italic; font-size:.86rem; display:block; margin-top:.15rem;}
+table{border-collapse:collapse; width:100%; font-size:.92rem; margin:.6rem 0 1rem;}
+th,td{text-align:left; padding:.45rem .6rem; border-bottom:1px solid var(--rule); vertical-align:top;}
+th{font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+td.t{white-space:nowrap; color:var(--accent); font-variant-numeric:tabular-nums; width:6.5rem;}
+.q{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1.1rem 1.3rem; margin:1.1rem 0;}
+.q .qid{font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+.q .qid .diff{float:right; color:var(--accent2);}
+.q .stem{font-size:1.03rem; margin:.35rem 0 .6rem;}
+.choices{list-style:none; padding:0; margin:.2rem 0 .4rem; counter-reset:c;}
+.choices li{padding:.32rem .6rem; border:1px solid var(--rule); border-radius:6px; margin:.3rem 0; background:#fff;}
+.choices li .lab{display:inline-block; width:1.5rem; font-weight:600; color:var(--accent);}
+.choices li.correct{border-color:var(--accent2); background:#eef3ec;}
+.choices li.correct .lab{color:var(--accent2);}
+details{margin:.5rem 0 .2rem; border-top:1px dashed var(--rule); padding-top:.5rem;}
+details>summary{cursor:pointer; font-size:.86rem; color:var(--accent); font-weight:600; list-style:none;}
+details>summary::-webkit-details-marker{display:none;}
+details>summary::before{content:"\25B8  "; color:var(--accent);}
+details[open]>summary::before{content:"\25BE  ";}
+.expl{font-size:.95rem; margin-top:.5rem;}
+.hints{font-size:.92rem;} .hints li{margin:.2rem 0;}
+.feedback{font-size:.9rem;} .feedback .ok{color:var(--accent2);} .feedback .no{color:var(--accent);}
+.appfirst{font-size:.78rem; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin:.2rem 0;}
+.mastery{background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--accent2); border-radius:8px; padding:1rem 1.2rem;}
+.pill{display:inline-block; font-size:.72rem; padding:.12rem .5rem; border:1px solid var(--rule); border-radius:999px; color:var(--muted); margin:.1rem .2rem .1rem 0;}
+footer{margin-top:3.5rem; border-top:1px solid var(--rule); padding-top:1rem; color:var(--muted); font-size:.82rem;}
+.src{background:#eef3ec; border:1px solid #cfe0cf; border-radius:8px; padding:.9rem 1.1rem; margin:1.2rem 0;}
+.src .tag{font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent2); font-weight:600;}
+.crumbs{font-size:.85rem; margin-bottom:1.2rem;}
+.ask{font-size:.9rem; background:#fff8ec; border:1px dashed #e0c590; border-radius:8px; padding:.7rem 1rem; margin:1.4rem 0;}
+@media print{ body{background:#fff} .wrap{padding:0} a{border:none} .donow{-webkit-print-color-adjust:exact; print-color-adjust:exact} }
+</style></head>
+<body><div class="wrap"><div class="content">
+  <div class="crumbs"><a href="index.html">&larr; All topics</a> &middot; Verbal Reasoning &middot; Critical Reasoning</div>
+  <header class="masthead">
+    <p class="kicker">GMATWiz &middot; GMAT Focus Edition &middot; Verbal Reasoning (Critical Reasoning)</p>
+    <h1>Critical Reasoning: Inference</h1>
+    <p class="meta"><b>Topic id</b> <code>gmat::verbal::cr::inference</code> &middot; <b>Domain</b> Critical Reasoning
+      &middot; <b>Prereqs</b> read a set of statements precisely, distinguish &#x27;must be true&#x27; from &#x27;could be true&#x27; &middot; <b>~18 min</b></p>
+  </header>
+
+  <div class="objectives">
+    <p class="note"><b>Learning objectives</b></p>
+    <ul><li>Choose the statement that MUST be true given the premises - nothing more.</li><li>Combine conditional statements and use the contrapositive.</li><li>Reject choices that go even slightly beyond what the text guarantees.</li></ul>
+    <p class="note">Model: I do -&gt; we do -&gt; you do &middot; application-first (explanations revealed after an attempt) &middot; Rosenshine (daily review), Archer (I-do/we-do/you-do), SPOV2 application-first.</p>
+  </div>
+
+  
+    <section>
+      <h2><span class="num">1</span>Opening &mdash; retrieval &amp; bridge</h2>
+      <p class="sub">Builds on: Reading conditional (&#x27;if-then&#x27;) statements and their contrapositives.</p>
+      <div class="donow">
+        <div class="tag">Do Now &middot; from memory, no notes</div>
+        <p>No notes. 4 minutes.</p>
+        <ol><li>Contrapositive of &#x27;If it rains, the game is canceled.&#x27;<span class="ans">If the game is not canceled, it did not rain.</span></li><li>Does &#x27;most A are B&#x27; let you conclude &#x27;most B are A&#x27;?<span class="ans">No.</span></li><li>&#x27;Must be true&#x27; vs &#x27;could be true&#x27; - which does inference require?<span class="ans">Must be true.</span></li></ol>
+      </div>
+      <p class="note"><b>Retrieval starter (5 min).</b> Recalls the contrapositive and the strict &#x27;must be true&#x27; bar - the backbone of inference questions.
+      <br><b>If students struggle:</b> Have them cross out any choice that adds a new idea not in the text.</p>
+      <h3>Prior-knowledge bridge</h3>
+      <p>Unlike strengthen/weaken, inference gives you the premises as true and asks what they force. Your job isn&#x27;t to judge an argument - it&#x27;s to find the one choice the statements guarantee, using chaining and the contrapositive, and to reject anything that reaches beyond the text.</p>
+      <h3>Learning intention</h3>
+      <p class="intent">By the end you can select the only choice that must be true given the statements, combining conditionals and rejecting overreach.</p>
+      <p class="note"><b>You'll know you've got it when:</b></p>
+      <ul><li>I can take the premises as given and not add outside assumptions.</li><li>I can chain conditionals and apply the contrapositive.</li><li>I can eliminate &#x27;could be true but not guaranteed&#x27; choices.</li></ul>
+      <details><summary>Complete timed opening script</summary>
+        <table><thead><tr><th>Time</th><th>Move</th></tr></thead><tbody><tr><td class="t">0:00-4:00</td><td>Do Now on screen; learners answer from memory, no notes.</td></tr><tr><td class="t">4:00-6:00</td><td>Cold-call answers; name the argument&#x27;s conclusion vs premises.</td></tr><tr><td class="t">6:00-8:00</td><td>Bridge to today&#x27;s question type; state what the stem is really asking.</td></tr><tr><td class="t">8:00-10:00</td><td>Move to I do: model the reasoning on one worked item.</td></tr></tbody></table>
+      </details>
+    </section>
+
+  <section>
+    <h2><span class="num">2</span>I do &mdash; worked example</h2>
+    <p class="sub">Watch the reasoning modeled end to end before you try.</p>
+    
+    <div class="q">
+      <div class="qid">I DO &middot; worked example<span class="diff">medium</span></div>
+      <div class="stem">Every product in the store&#x27;s front display is on sale. Nothing that is on sale can be returned for a refund. If the statements above are true, which of the following must also be true?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>No product in the front display can be returned for a refund.</li><li><span class="lab">B</span>Every product that cannot be returned is in the front display.</li><li><span class="lab">C</span>Products not on sale are all in the back of the store.</li><li><span class="lab">D</span>Some products in the front display can be returned.</li><li><span class="lab">E</span>The store rarely gives refunds.</li></ul>
+      <h3>Think-aloud</h3>
+      <ol><li>Premise 1: front display -&gt; on sale. Premise 2: on sale -&gt; no refund.</li><li>Chain them: front display -&gt; on sale -&gt; no refund.</li><li>So every front-display product cannot be refunded - that&#x27;s A.</li><li>B reverses the chain; C, D, E add facts the text never gives.</li></ol>
+      <p class="expl"><b>Correct: A.</b> Front-display items are all on sale, and on-sale items cannot be refunded; chaining these, no front-display item can be refunded. A is forced; the others reverse the logic or add new claims.</p>
+      <p class="note"><b>Takeaway.</b> Inference = what the premises force. Chain conditionals forward; never reverse them or add outside information.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>We do &mdash; guided practice</h2>
+    <p class="sub">Scaffolds and immediate feedback are one click away. Fade them as you gain confidence.</p>
+    
+    <div class="q">
+      <div class="qid">we_1 &middot; we do (guided)<span class="diff">easy</span></div>
+      <div class="stem">All of the interns attended the safety briefing. Anyone who attended the safety briefing received a badge. If the statements above are true, which of the following must be true?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>Every intern received a badge.</li><li><span class="lab">B</span>Only interns received badges.</li><li><span class="lab">C</span>Everyone with a badge is an intern.</li><li><span class="lab">D</span>Some interns did not attend the briefing.</li><li><span class="lab">E</span>The briefing was required by law.</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>Write the two conditionals and chain them.</li><li>intern -&gt; attended -&gt; badge.</li><li>Beware choices that flip the arrow (&#x27;everyone with a badge is an intern&#x27;).</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Right - chaining gives intern -&gt; badge.<br>
+        <span class="no">If incorrect:</span> B and C reverse the logic; the text only guarantees intern -&gt; badge.</p>
+        <p class="expl"><b>Answer: A.</b> Interns -&gt; attended -&gt; received a badge, so every intern got a badge. The reversed and added-fact choices aren&#x27;t guaranteed.</p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">we_2 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">No book in the reference room may be borrowed. Every atlas in this library is kept in the reference room. If the statements above are true, which of the following must be true?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>No atlas in this library may be borrowed.</li><li><span class="lab">B</span>Every book that may not be borrowed is an atlas.</li><li><span class="lab">C</span>All borrowable books are outside the reference room.</li><li><span class="lab">D</span>Some atlases may be borrowed.</li><li><span class="lab">E</span>The reference room contains only atlases.</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>atlas -&gt; in reference room -&gt; cannot be borrowed.</li><li>Chain forward to the guaranteed result.</li><li>Reject choices that reverse or add claims.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Exactly - the chain forces &#x27;no atlas may be borrowed.&#x27;<br>
+        <span class="no">If incorrect:</span> C reverses the relationship; only atlas -&gt; not borrowable is guaranteed.</p>
+        <p class="expl"><b>Answer: A.</b> Atlases are in the reference room, and reference-room books cannot be borrowed; so no atlas can be borrowed. The rest reverse the logic or overreach.</p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>You do &mdash; independent application</h2>
+    <p class="sub">Application-first (SPOV2): commit to an answer, then reveal the explanation. Log every miss.</p>
+    
+    <div class="q">
+      <div class="qid">you_1 &middot; you do (independent)<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">The theater sells out every show that opens on a Saturday. Last week&#x27;s show did not sell out. If the statements above are true, which of the following must be true?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>Last week&#x27;s show did not open on a Saturday.</li><li><span class="lab">B</span>The theater never opens shows on Saturdays.</li><li><span class="lab">C</span>Last week&#x27;s show was poorly reviewed.</li><li><span class="lab">D</span>The theater will sell out its next Saturday show.</li><li><span class="lab">E</span>Most of the theater&#x27;s shows open on Saturdays.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> Opening on Saturday guarantees a sellout; since the show did not sell out, by the contrapositive it did not open on a Saturday.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_2 &middot; you do (independent)<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Every applicant who passed the exam was invited to an interview. Maria was not invited to an interview. If the statements above are true, which of the following must be true?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>Maria did not pass the exam.</li><li><span class="lab">B</span>Maria did not apply.</li><li><span class="lab">C</span>Everyone who was invited passed the exam.</li><li><span class="lab">D</span>Maria will be invited later.</li><li><span class="lab">E</span>The exam was difficult.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> Passing guarantees an invitation; Maria wasn&#x27;t invited, so by the contrapositive she did not pass. The others aren&#x27;t forced.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_3 &middot; you do (independent)<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">All the vehicles in the company fleet run on electricity. No electric vehicle in the city is allowed in the old tunnel. If the statements above are true, which of the following must be true?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>No vehicle in the company fleet is allowed in the old tunnel.</li><li><span class="lab">B</span>Every vehicle barred from the tunnel is in the company fleet.</li><li><span class="lab">C</span>The company fleet is the largest in the city.</li><li><span class="lab">D</span>Some fleet vehicles are allowed in the tunnel.</li><li><span class="lab">E</span>Electric vehicles are cheaper to operate.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> Fleet vehicles are electric, and city electric vehicles are barred from the tunnel; so no fleet vehicle is allowed in the tunnel. The rest reverse or overreach.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+  </section>
+
+  
+    <section>
+      <h2><span class="num">5</span>Mastery check</h2>
+      <div class="mastery">
+        <p>A topic is mastered at &gt;=85% correct on new/held-out-style questions across &gt;=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.</p>
+        <p class="note"><b>Threshold</b> 0.85 &middot; <b>spaced sessions</b> &ge; 2</p>
+        <ul><li>&gt;=85% correct on new/held-out-style items (not flashcard recall) per session</li><li>sustained across &gt;=2 spaced sessions with a delay between them</li><li>per-topic memory surfaced only after &gt;=20 graded reviews (PRD give-up rule)</li><li>per-topic performance surfaced only after &gt;=8 application attempts (PRD give-up rule)</li></ul>
+        <p class="note"><b>If not yet mastered:</b> Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -&gt; you-do loop before re-testing.</p>
+      </div>
+      
+    </section>
+
+  <div class="src">
+    <div class="tag">Primary source</div>
+    <p><a href="https://www.mba.com/exams/gmat-focus-edition">GMAC - GMAT Focus Edition (official exam overview)</a> &mdash; Official exam structure and Verbal Reasoning scope.</p>
+    <p class='note'>Further reading:</p><ul><li><a href="https://www.khanacademy.org/prep/lsat">Khan Academy - LSAT Logical Reasoning (free)</a> &mdash; Free lessons on argument structure, assumptions, strengthen/weaken, and flaws.</li></ul>
+  </div>
+
+  <div class="ask">Stuck on any step? Ask your GMATWiz coach for a worked walkthrough &mdash; that's what it's here for.</div>
+
+  <footer>
+    <p>GMATWiz lesson &middot; <code>cr-inference.json</code> &middot; schema v1.0 &middot; authored content (OfficialFlag=false), reserved official items used only for late checkpoints.</p>
+  </footer>
+</div></div></body></html>

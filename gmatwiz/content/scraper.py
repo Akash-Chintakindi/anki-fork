@@ -560,6 +560,12 @@ def scrape_reddit(robots: RobotsGate, raw: RawSink, limit: int,
 # AQuA-RAT: open, Apache-2.0 licensed dataset of GMAT/GRE-style multiple-choice
 # algebraic word problems with rationales. https://github.com/google-deepmind/AQuA
 _AQUA_CANDIDATES = [
+    # Prefer the large train split (~97k items) so we can deepen thin topics;
+    # fall back to dev/test (small splits) if train is unreachable.
+    "https://raw.githubusercontent.com/google-deepmind/AQuA/master/train.json",
+    "https://raw.githubusercontent.com/google-deepmind/AQuA/main/train.json",
+    "https://raw.githubusercontent.com/deepmind/AQuA/master/train.json",
+    "https://raw.githubusercontent.com/google-deepmind/AQuA/master/dev.json",
     "https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
     "https://raw.githubusercontent.com/google-deepmind/AQuA/main/test.json",
     "https://raw.githubusercontent.com/deepmind/AQuA/master/test.json",
@@ -643,6 +649,9 @@ def scrape_aqua_rat(robots: RobotsGate, raw: RawSink, limit: int,
                 ok = False
                 break
             letter, val = m.group(1), m.group(2).strip()
+            # A few AQuA rows double-label the value (e.g. "A)A) 5y3..." or
+            # "A.3/16"); strip a leading duplicate of the option's own letter.
+            val = re.sub(rf"^{letter}[).]\s*", "", val, count=1).strip()
             options[letter] = val
         if not ok or set(options.keys()) != set(taxonomy.OPTION_KEYS):
             dropped["unparseable_options"] = dropped.get("unparseable_options", 0) + 1
@@ -738,6 +747,14 @@ def main(argv: Optional[List[str]] = None) -> int:
                         help="Output path for the machine-readable scrape report.")
     parser.add_argument("--jaccard", type=float, default=0.85,
                         help="Near-duplicate Jaccard threshold (default 0.85).")
+    parser.add_argument("--merge", action="store_true",
+                        help="Merge with (and dedupe against) the existing --out file instead "
+                             "of overwriting it, so a run ADDS new questions and keeps the "
+                             "current bank. Existing items win ties in dedup.")
+    parser.add_argument("--per-topic-cap", type=int, default=0,
+                        help="If >0, keep at most this many questions PER leaf topic (existing "
+                             "kept first). Balances the bank + fills thin topics without letting "
+                             "word-problem-heavy sources balloon a few topics.")
     args = parser.parse_args(argv)
 
     robots = RobotsGate()
@@ -769,9 +786,39 @@ def main(argv: Optional[List[str]] = None) -> int:
         all_questions.extend(qs)
         reports.append(rep)
 
+    # Merge mode: seed with the existing bank FIRST so current questions win the
+    # dedupe (their token sets are seen first) and only genuinely-new items are added.
+    scraped_new = len(all_questions)
+    if args.merge and os.path.isfile(args.out):
+        try:
+            with open(args.out, encoding="utf-8") as fh:
+                existing = json.load(fh)
+            if isinstance(existing, dict):
+                existing = existing.get("questions", [])
+            if isinstance(existing, list) and existing:
+                all_questions = existing + all_questions
+                print(f"Merge: seeded {len(existing)} existing questions from {args.out}")
+        except Exception as exc:
+            print(f"Merge: could not read existing {args.out}: {exc}")
+
     before = len(all_questions)
     deduped, removed = dedupe(all_questions, args.jaccard)
+    if args.merge:
+        print(f"Merge: {scraped_new} scraped + existing -> {len(deduped)} total after dedupe")
     print(f"\nDedup: {before} -> {len(deduped)} kept ({removed} near/exact dupes removed)")
+
+    # Optional balance: cap questions per leaf topic (existing kept first thanks to
+    # merge ordering) so word-problem-heavy sources don't swamp a few topics.
+    if args.per_topic_cap and args.per_topic_cap > 0:
+        per: Dict[str, int] = {}
+        capped: List[Dict] = []
+        for q in deduped:
+            t = q.get("topic", "")
+            per[t] = per.get(t, 0) + 1
+            if per[t] <= args.per_topic_cap:
+                capped.append(q)
+        print(f"Per-topic cap {args.per_topic_cap}: {len(deduped)} -> {len(capped)} kept")
+        deduped = capped
 
     # Stable ordering: by topic then id.
     deduped.sort(key=lambda q: (q["topic"], q["id"]))

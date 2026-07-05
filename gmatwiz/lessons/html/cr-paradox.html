@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Critical Reasoning: Explain the Paradox &middot; GMATWiz Verbal Reasoning</title>
+<style>
+:root{
+  --ink:#1a1813; --muted:#6b6358; --rule:#d9d2c5; --bg:#fbf9f4; --card:#fffdf8;
+  --accent:#7a3b2e; --accent2:#3a5a40; --link:#7a3b2e; --code:#2b2b2b;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:3rem 2rem 6rem;}
+.content{max-width:720px;}
+header.masthead{border-bottom:1px solid var(--rule); padding-bottom:1.2rem; margin-bottom:2rem;}
+.kicker{font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:0 0 .4rem;}
+h1{font-size:2.3rem; line-height:1.1; margin:.1rem 0 .6rem; font-weight:600; letter-spacing:-.01em;}
+.meta{color:var(--muted); font-size:.9rem; margin:0;}
+.meta b{color:var(--ink); font-weight:600;}
+h2{font-size:1.45rem; margin:2.8rem 0 .3rem; font-weight:600; letter-spacing:-.01em;}
+h2 .num{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:.5rem;}
+h3{font-size:1.06rem; margin:1.6rem 0 .4rem; font-weight:600;}
+.sub{color:var(--muted); font-style:italic; margin:.1rem 0 1rem; font-size:.95rem;}
+p{margin:.6rem 0;} ul,ol{margin:.5rem 0 .9rem; padding-left:1.3rem;} li{margin:.25rem 0;}
+a{color:var(--link); text-decoration:none; border-bottom:1px solid rgba(122,59,46,.35);}
+a:hover{border-bottom-color:var(--link);}
+.lead{font-size:1.08rem;}
+section{position:relative;}
+.note{font-size:.8rem; color:var(--muted); line-height:1.4;}
+.objectives{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1rem 1.2rem;}
+.objectives ul{margin:.3rem 0 0;}
+.intent{border-left:3px solid var(--accent2); padding:.4rem 0 .4rem 1rem; margin:1rem 0; font-size:1.05rem;}
+.donow{background:#2b2620; color:#f3ecde; border-radius:8px; padding:1.1rem 1.3rem; margin:1rem 0;}
+.donow .tag{font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:#d8b48a;}
+.donow ol{padding-left:1.2rem;} .donow li{margin:.4rem 0;}
+.donow .ans{color:#b9c6a9; font-style:italic; font-size:.86rem; display:block; margin-top:.15rem;}
+table{border-collapse:collapse; width:100%; font-size:.92rem; margin:.6rem 0 1rem;}
+th,td{text-align:left; padding:.45rem .6rem; border-bottom:1px solid var(--rule); vertical-align:top;}
+th{font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+td.t{white-space:nowrap; color:var(--accent); font-variant-numeric:tabular-nums; width:6.5rem;}
+.q{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1.1rem 1.3rem; margin:1.1rem 0;}
+.q .qid{font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+.q .qid .diff{float:right; color:var(--accent2);}
+.q .stem{font-size:1.03rem; margin:.35rem 0 .6rem;}
+.choices{list-style:none; padding:0; margin:.2rem 0 .4rem; counter-reset:c;}
+.choices li{padding:.32rem .6rem; border:1px solid var(--rule); border-radius:6px; margin:.3rem 0; background:#fff;}
+.choices li .lab{display:inline-block; width:1.5rem; font-weight:600; color:var(--accent);}
+.choices li.correct{border-color:var(--accent2); background:#eef3ec;}
+.choices li.correct .lab{color:var(--accent2);}
+details{margin:.5rem 0 .2rem; border-top:1px dashed var(--rule); padding-top:.5rem;}
+details>summary{cursor:pointer; font-size:.86rem; color:var(--accent); font-weight:600; list-style:none;}
+details>summary::-webkit-details-marker{display:none;}
+details>summary::before{content:"\25B8  "; color:var(--accent);}
+details[open]>summary::before{content:"\25BE  ";}
+.expl{font-size:.95rem; margin-top:.5rem;}
+.hints{font-size:.92rem;} .hints li{margin:.2rem 0;}
+.feedback{font-size:.9rem;} .feedback .ok{color:var(--accent2);} .feedback .no{color:var(--accent);}
+.appfirst{font-size:.78rem; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin:.2rem 0;}
+.mastery{background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--accent2); border-radius:8px; padding:1rem 1.2rem;}
+.pill{display:inline-block; font-size:.72rem; padding:.12rem .5rem; border:1px solid var(--rule); border-radius:999px; color:var(--muted); margin:.1rem .2rem .1rem 0;}
+footer{margin-top:3.5rem; border-top:1px solid var(--rule); padding-top:1rem; color:var(--muted); font-size:.82rem;}
+.src{background:#eef3ec; border:1px solid #cfe0cf; border-radius:8px; padding:.9rem 1.1rem; margin:1.2rem 0;}
+.src .tag{font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent2); font-weight:600;}
+.crumbs{font-size:.85rem; margin-bottom:1.2rem;}
+.ask{font-size:.9rem; background:#fff8ec; border:1px dashed #e0c590; border-radius:8px; padding:.7rem 1rem; margin:1.4rem 0;}
+@media print{ body{background:#fff} .wrap{padding:0} a{border:none} .donow{-webkit-print-color-adjust:exact; print-color-adjust:exact} }
+</style></head>
+<body><div class="wrap"><div class="content">
+  <div class="crumbs"><a href="index.html">&larr; All topics</a> &middot; Verbal Reasoning &middot; Critical Reasoning</div>
+  <header class="masthead">
+    <p class="kicker">GMATWiz &middot; GMAT Focus Edition &middot; Verbal Reasoning (Critical Reasoning)</p>
+    <h1>Critical Reasoning: Explain the Paradox</h1>
+    <p class="meta"><b>Topic id</b> <code>gmat::verbal::cr::explain_paradox</code> &middot; <b>Domain</b> Critical Reasoning
+      &middot; <b>Prereqs</b> state two facts that seem to conflict, distinguish an explanation from a mere comment &middot; <b>~18 min</b></p>
+  </header>
+
+  <div class="objectives">
+    <p class="note"><b>Learning objectives</b></p>
+    <ul><li>Pin down the two facts that seem to contradict each other.</li><li>Choose the option that lets BOTH facts be true at once.</li><li>Reject options that deepen the mystery or address only one fact.</li></ul>
+    <p class="note">Model: I do -&gt; we do -&gt; you do &middot; application-first (explanations revealed after an attempt) &middot; Rosenshine (daily review), Archer (I-do/we-do/you-do), SPOV2 application-first.</p>
+  </div>
+
+  
+    <section>
+      <h2><span class="num">1</span>Opening &mdash; retrieval &amp; bridge</h2>
+      <p class="sub">Builds on: Reading two facts and noticing the tension between them.</p>
+      <div class="donow">
+        <div class="tag">Do Now &middot; from memory, no notes</div>
+        <p>No notes. 4 minutes.</p>
+        <ol><li>What does a paradox/resolve question ask you to do?<span class="ans">Explain how two seemingly conflicting facts can both be true.</span></li><li>Should the right answer make one fact false?<span class="ans">No - both facts stay true; the answer explains the gap.</span></li><li>Resolve: prices rose but revenue fell.<span class="ans">So many customers left that the loss outweighed the higher price.</span></li></ol>
+      </div>
+      <p class="note"><b>Retrieval starter (5 min).</b> Recalls that a resolution must let both surprising facts coexist.
+      <br><b>If students struggle:</b> Have them write the two facts as &#x27;X, yet Y&#x27; and look for the missing bridge.</p>
+      <h3>Prior-knowledge bridge</h3>
+      <p>A paradox question hands you two facts that seem to clash. You&#x27;re not judging an argument - you&#x27;re finding the missing piece of information that makes the clash disappear so both facts can be true together.</p>
+      <h3>Learning intention</h3>
+      <p class="intent">By the end you can identify two conflicting facts and pick the option that reconciles them without denying either.</p>
+      <p class="note"><b>You'll know you've got it when:</b></p>
+      <ul><li>I can restate the paradox as &#x27;X, yet surprisingly Y.&#x27;</li><li>I can pick the option that lets both X and Y be true.</li><li>I can reject options that ignore one fact or make it worse.</li></ul>
+      <details><summary>Complete timed opening script</summary>
+        <table><thead><tr><th>Time</th><th>Move</th></tr></thead><tbody><tr><td class="t">0:00-4:00</td><td>Do Now on screen; learners answer from memory, no notes.</td></tr><tr><td class="t">4:00-6:00</td><td>Cold-call answers; name the argument&#x27;s conclusion vs premises.</td></tr><tr><td class="t">6:00-8:00</td><td>Bridge to today&#x27;s question type; state what the stem is really asking.</td></tr><tr><td class="t">8:00-10:00</td><td>Move to I do: model the reasoning on one worked item.</td></tr></tbody></table>
+      </details>
+    </section>
+
+  <section>
+    <h2><span class="num">2</span>I do &mdash; worked example</h2>
+    <p class="sub">Watch the reasoning modeled end to end before you try.</p>
+    
+    <div class="q">
+      <div class="qid">I DO &middot; worked example<span class="diff">medium</span></div>
+      <div class="stem">A coffee shop replaced its paper cups with more expensive reusable-style cups, yet its total cup costs for the year went down. Which of the following, if true, best explains this result?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>Customers who brought the reusable-style cups back for refills sharply reduced the number of new cups the shop had to buy.</li><li><span class="lab">B</span>The reusable-style cups come in several colors.</li><li><span class="lab">C</span>The shop&#x27;s coffee sales rose slightly during the year.</li><li><span class="lab">D</span>Paper cups had been the shop&#x27;s cheapest supply.</li><li><span class="lab">E</span>The new cups are made by a local manufacturer.</li></ul>
+      <h3>Think-aloud</h3>
+      <ol><li>Fact 1: each new cup is more expensive. Fact 2: total cup costs fell (surprising).</li><li>I need a reason total cost could drop despite higher unit price.</li><li>A: reuse cut the NUMBER of cups bought - fewer cups times higher price can still be less.</li><li>Both facts remain true; the other choices don&#x27;t explain the drop.</li></ol>
+      <p class="expl"><b>Correct: A.</b> Both facts stay true: the cups cost more each, yet total cup costs fell because far fewer cups were purchased overall. A supplies the bridge; the others don&#x27;t reconcile the two facts.</p>
+      <p class="note"><b>Takeaway.</b> A good resolution keeps both surprising facts true and supplies the missing information that removes the conflict.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>We do &mdash; guided practice</h2>
+    <p class="sub">Scaffolds and immediate feedback are one click away. Fade them as you gain confidence.</p>
+    
+    <div class="q">
+      <div class="qid">we_1 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">A factory installed faster machines expecting to produce more units per day, but its daily output actually fell. Which of the following, if true, best explains the drop?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>The faster machines broke down often and sat idle awaiting repairs for long stretches.</li><li><span class="lab">B</span>The faster machines use more electricity.</li><li><span class="lab">C</span>The factory kept the same number of workers.</li><li><span class="lab">D</span>The old machines had been in use for years.</li><li><span class="lab">E</span>The new machines are larger than the old ones.</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>State it as &#x27;faster machines, yet lower output.&#x27;</li><li>What could make faster machines produce less overall?</li><li>Look for downtime, not for irrelevant details.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Right - idle time from breakdowns explains the paradox.<br>
+        <span class="no">If incorrect:</span> Electricity use and size don&#x27;t explain why fewer units came out.</p>
+        <p class="expl"><b>Answer: A.</b> Frequent breakdowns and idle time can lower output even though the machines are faster when running - reconciling &#x27;faster machines&#x27; with &#x27;lower output.&#x27;</p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">we_2 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">A library extended its hours to increase the number of visitors, but the number of visitors decreased afterward. Which of the following, if true, best explains this outcome?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>To fund the longer hours, the library cut its budget for new books, and many regulars stopped coming once new titles grew scarce.</li><li><span class="lab">B</span>The library is located near a university.</li><li><span class="lab">C</span>The extended hours were advertised on the library&#x27;s website.</li><li><span class="lab">D</span>The library employs several part-time staff.</li><li><span class="lab">E</span>Library visits are counted by an electronic gate.</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>Frame it: &#x27;longer hours, yet fewer visitors.&#x27;</li><li>What trade-off could the longer hours have caused?</li><li>The bridge must explain why visitors fell.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Yes - a hidden trade-off (fewer new books) explains the decline.<br>
+        <span class="no">If incorrect:</span> Location and staffing don&#x27;t account for the drop in visitors.</p>
+        <p class="expl"><b>Answer: A.</b> The longer hours came at the cost of fewer new books, driving regulars away; both facts hold, and A bridges them.</p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>You do &mdash; independent application</h2>
+    <p class="sub">Application-first (SPOV2): commit to an answer, then reveal the explanation. Log every miss.</p>
+    
+    <div class="q">
+      <div class="qid">you_1 &middot; you do (independent)<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A phone maker lowered the price of its flagship model, expecting to sell more units, but it sold fewer units than before. Which of the following, if true, best explains this result?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>Buyers took the lower price as a sign the model was about to be discontinued and avoided it.</li><li><span class="lab">B</span>The phone comes in three colors.</li><li><span class="lab">C</span>The price cut was announced online.</li><li><span class="lab">D</span>The company also makes tablets.</li><li><span class="lab">E</span>The phone&#x27;s battery lasts a full day.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> If the lower price signaled impending discontinuation, buyers would shy away - explaining why a price cut reduced sales while both facts remain true.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_2 &middot; you do (independent)<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A city added dozens of new bus routes to reduce car traffic, yet car traffic increased in the following year. Which of the following, if true, best explains this?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>The new routes made the city more attractive to newcomers, and the resulting population growth put more cars on the road than the buses removed.</li><li><span class="lab">B</span>The buses run on a fixed schedule.</li><li><span class="lab">C</span>The new routes were mapped by transit planners.</li><li><span class="lab">D</span>Bus fares stayed the same.</li><li><span class="lab">E</span>The buses are wheelchair-accessible.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> Population growth spurred by better transit can add more cars than the buses take off the road, letting both facts be true.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_3 &middot; you do (independent)<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A software company started offering generous unlimited vacation, expecting employees to feel less burned out, but reported burnout rose. Which of the following, if true, best explains the increase?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>Without a set number of days, employees felt unsure how much leave was acceptable and ended up taking less time off than before.</li><li><span class="lab">B</span>The company has offices in several countries.</li><li><span class="lab">C</span>The policy was announced in a company email.</li><li><span class="lab">D</span>Employees can also work from home.</li><li><span class="lab">E</span>The company&#x27;s software is used worldwide.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> Ambiguity about acceptable leave led employees to take less vacation, raising burnout - reconciling the generous policy with the worse outcome.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+  </section>
+
+  
+    <section>
+      <h2><span class="num">5</span>Mastery check</h2>
+      <div class="mastery">
+        <p>A topic is mastered at &gt;=85% correct on new/held-out-style questions across &gt;=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.</p>
+        <p class="note"><b>Threshold</b> 0.85 &middot; <b>spaced sessions</b> &ge; 2</p>
+        <ul><li>&gt;=85% correct on new/held-out-style items (not flashcard recall) per session</li><li>sustained across &gt;=2 spaced sessions with a delay between them</li><li>per-topic memory surfaced only after &gt;=20 graded reviews (PRD give-up rule)</li><li>per-topic performance surfaced only after &gt;=8 application attempts (PRD give-up rule)</li></ul>
+        <p class="note"><b>If not yet mastered:</b> Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -&gt; you-do loop before re-testing.</p>
+      </div>
+      
+    </section>
+
+  <div class="src">
+    <div class="tag">Primary source</div>
+    <p><a href="https://www.mba.com/exams/gmat-focus-edition">GMAC - GMAT Focus Edition (official exam overview)</a> &mdash; Official exam structure and Verbal Reasoning scope.</p>
+    <p class='note'>Further reading:</p><ul><li><a href="https://www.khanacademy.org/prep/lsat">Khan Academy - LSAT Logical Reasoning (free)</a> &mdash; Free lessons on argument structure, assumptions, strengthen/weaken, and flaws.</li></ul>
+  </div>
+
+  <div class="ask">Stuck on any step? Ask your GMATWiz coach for a worked walkthrough &mdash; that's what it's here for.</div>
+
+  <footer>
+    <p>GMATWiz lesson &middot; <code>cr-paradox.json</code> &middot; schema v1.0 &middot; authored content (OfficialFlag=false), reserved official items used only for late checkpoints.</p>
+  </footer>
+</div></div></body></html>

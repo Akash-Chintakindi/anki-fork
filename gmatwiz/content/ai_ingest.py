@@ -45,6 +45,26 @@ CONFIDENCE_THRESHOLD = 0.6
 DEDUPE_THRESHOLD = 0.85
 OFFICIAL_LICENSE_MARKERS = ("official", "copyrighted")
 
+
+def _section_desc(section: str) -> str:
+    """Human-readable description of a section for AI prompt wording."""
+    if section == "verbal":
+        return (
+            "GMAT Critical Reasoning question (a short argument or set of "
+            "statements followed by a question stem and five answer choices; "
+            "NOT Sentence Correction)"
+        )
+    if section == "di":
+        return (
+            "GMAT Data Insights question (Data Sufficiency with the standard five "
+            "options, Two-Part Analysis, or Multi-Source Reasoning) presented in "
+            "multiple-choice form with five answer choices"
+        )
+    return (
+        "GMAT Quant Problem Solving question (arithmetic/algebra only, NOT "
+        "geometry, NOT data sufficiency)"
+    )
+
 # ---------------------------------------------------------------------------
 # Cache
 # ---------------------------------------------------------------------------
@@ -151,9 +171,12 @@ class HeuristicClient:
 
     name = "heuristic"
 
+    def __init__(self, section: str = "quant"):
+        self.section = section
+
     def classify_topic(self, item: Dict) -> Tuple[str, float]:
         text = item_blob(item)
-        topic, score = taxonomy.tag_topic_with_score(text)
+        topic, score = taxonomy.tag_topic_with_score(text, section=self.section)
         # Map keyword score to a pseudo-confidence (cap at 0.95).
         if score <= 0:
             conf = 0.35
@@ -169,7 +192,7 @@ class HeuristicClient:
         return token_set_ratio(text_a, text_b)
 
     def check_validity(self, item: Dict) -> Tuple[bool, Optional[str]]:
-        return _rule_validity(item)
+        return _rule_validity(item, section=self.section)
 
 
 class MockClient:
@@ -177,13 +200,17 @@ class MockClient:
 
     name = "mock"
 
+    def __init__(self, section: str = "quant"):
+        self.section = section
+
     def _h(self, item: Dict, salt: str = "") -> int:
         basis = AiCache.item_basis(item) + salt
         return int(hashlib.sha256(basis.encode("utf-8")).hexdigest(), 16)
 
     def classify_topic(self, item: Dict) -> Tuple[str, float]:
         h = self._h(item, "topic")
-        topic = taxonomy.ALL_TOPICS[h % len(taxonomy.ALL_TOPICS)]
+        universe = taxonomy.topics_for_section(self.section)
+        topic = universe[h % len(universe)]
         conf = 0.50 + (h % 46) / 100.0  # 0.50 .. 0.95
         return topic, round(conf, 4)
 
@@ -203,7 +230,7 @@ class MockClient:
         return min(1.0, base * 0.85 + jitter)
 
     def check_validity(self, item: Dict) -> Tuple[bool, Optional[str]]:
-        ok, reason = _rule_validity(item)
+        ok, reason = _rule_validity(item, section=self.section)
         return ok, reason
 
 
@@ -212,9 +239,10 @@ class GeminiClient:
 
     name = "gemini"
 
-    def __init__(self, api_key: str, model: str = "gemini-2.0-flash"):
+    def __init__(self, api_key: str, model: str = "gemini-2.0-flash", section: str = "quant"):
         self.api_key = api_key
         self.model = model
+        self.section = section
         self._genai = None
         self._client = None
         self._use_new_sdk = False
@@ -236,13 +264,13 @@ class GeminiClient:
             return False
 
     @classmethod
-    def from_env(cls) -> Optional["GeminiClient"]:
+    def from_env(cls, section: str = "quant") -> Optional["GeminiClient"]:
         key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
         if not key:
             return None
         if not cls.available():
             return None
-        return cls(api_key=key)
+        return cls(api_key=key, section=section)
 
     def _ensure(self) -> bool:
         if self._genai is not None or self._client is not None:
@@ -293,24 +321,26 @@ class GeminiClient:
             return None
 
     def classify_topic(self, item: Dict) -> Tuple[str, float]:
-        topics = "\n".join(f"  - {t}" for t in taxonomy.ALL_TOPICS)
+        universe = taxonomy.topics_for_section(self.section)
+        topics = "\n".join(f"  - {t}" for t in universe)
         prompt = (
-            "Classify this GMAT Quant Problem Solving question to exactly ONE leaf topic.\n"
+            f"Classify this {_section_desc(self.section)} to exactly ONE leaf topic.\n"
             f"Valid topics:\n{topics}\n\n"
             f"Question:\n{item.get('stem', '')}\n\n"
             f"Options:\n{json.dumps(item.get('options', {}), ensure_ascii=False)}\n\n"
             'Reply JSON only: {"topic": "<full topic id>", "confidence": 0.0-1.0}'
         )
         parsed = self._parse_json(self._generate_text(prompt) or "")
-        if parsed and parsed.get("topic") in taxonomy.ALL_TOPICS:
+        if parsed and parsed.get("topic") in universe:
             conf = float(parsed.get("confidence", 0.7))
             return parsed["topic"], max(0.0, min(1.0, conf))
         # Degrade to heuristic for this call.
-        return HeuristicClient().classify_topic(item)
+        return HeuristicClient(section=self.section).classify_topic(item)
 
     def estimate_difficulty(self, item: Dict) -> Optional[str]:
         prompt = (
-            "Rate GMAT Quant PS difficulty as exactly one of: easy, medium, hard.\n\n"
+            f"Rate the difficulty of this {_section_desc(self.section)} as exactly "
+            "one of: easy, medium, hard.\n\n"
             f"Question:\n{item.get('stem', '')}\n\n"
             f"Options:\n{json.dumps(item.get('options', {}), ensure_ascii=False)}\n\n"
             'Reply JSON only: {"difficulty": "easy"|"medium"|"hard"}'
@@ -352,8 +382,7 @@ class GeminiClient:
 
     def check_validity(self, item: Dict) -> Tuple[bool, Optional[str]]:
         prompt = (
-            "Is this a valid, solvable GMAT Quant Problem Solving question "
-            "(arithmetic/algebra only, NOT geometry, NOT data sufficiency)?\n\n"
+            f"Is this a valid, answerable {_section_desc(self.section)}?\n\n"
             f"Question:\n{item.get('stem', '')}\n\n"
             f"Options:\n{json.dumps(item.get('options', {}), ensure_ascii=False)}\n\n"
             f"Marked correct: {item.get('correct')}\n\n"
@@ -365,7 +394,7 @@ class GeminiClient:
                 return True, None
             reason = parsed.get("reason") or "ai_invalid"
             return False, f"ai:{reason}"
-        return _rule_validity(item)
+        return _rule_validity(item, section=self.section)
 
 
 class OpenAIClient:
@@ -380,18 +409,19 @@ class OpenAIClient:
     _CHAT_URL = "https://api.openai.com/v1/chat/completions"
     _EMBED_URL = "https://api.openai.com/v1/embeddings"
 
-    def __init__(self, api_key: str, model: str = "gpt-4.1-mini"):
+    def __init__(self, api_key: str, model: str = "gpt-4.1-mini", section: str = "quant"):
         self.api_key = api_key
         self.model = os.environ.get("OPENAI_MODEL") or model
+        self.section = section
 
     @classmethod
     def available(cls) -> bool:
         return bool(os.environ.get("OPENAI_API_KEY"))
 
     @classmethod
-    def from_env(cls) -> Optional["OpenAIClient"]:
+    def from_env(cls, section: str = "quant") -> Optional["OpenAIClient"]:
         key = os.environ.get("OPENAI_API_KEY")
-        return cls(api_key=key) if key else None
+        return cls(api_key=key, section=section) if key else None
 
     def _post(self, url: str, payload: Dict) -> Optional[Dict]:
         import urllib.request  # stdlib; imported lazily like the Gemini guard
@@ -410,11 +440,13 @@ class OpenAIClient:
             return None
 
     def _chat(self, prompt: str, json_mode: bool = True) -> Optional[str]:
+        section_label = {"verbal": "Verbal", "di": "Data Insights"}.get(self.section, "Quant")
         payload: Dict[str, Any] = {
             "model": self.model,
             "messages": [
                 {"role": "system",
-                 "content": "You are a precise GMAT Quant content classifier. Reply with JSON only."},
+                 "content": f"You are a precise GMAT {section_label} content classifier. "
+                            "Reply with JSON only."},
                 {"role": "user", "content": prompt},
             ],
             "temperature": 0,
@@ -444,23 +476,25 @@ class OpenAIClient:
                 return None
 
     def classify_topic(self, item: Dict) -> Tuple[str, float]:
-        topics = "\n".join(f"  - {t}" for t in taxonomy.ALL_TOPICS)
+        universe = taxonomy.topics_for_section(self.section)
+        topics = "\n".join(f"  - {t}" for t in universe)
         prompt = (
-            "Classify this GMAT Quant Problem Solving question to exactly ONE leaf topic.\n"
+            f"Classify this {_section_desc(self.section)} to exactly ONE leaf topic.\n"
             f"Valid topics:\n{topics}\n\n"
             f"Question:\n{item.get('stem', '')}\n\n"
             f"Options:\n{json.dumps(item.get('options', {}), ensure_ascii=False)}\n\n"
             'Reply JSON only: {"topic": "<full topic id>", "confidence": 0.0-1.0}'
         )
         parsed = self._parse_json(self._chat(prompt))
-        if parsed and parsed.get("topic") in taxonomy.ALL_TOPICS:
+        if parsed and parsed.get("topic") in universe:
             conf = float(parsed.get("confidence", 0.7))
             return parsed["topic"], max(0.0, min(1.0, conf))
-        return HeuristicClient().classify_topic(item)
+        return HeuristicClient(section=self.section).classify_topic(item)
 
     def estimate_difficulty(self, item: Dict) -> Optional[str]:
         prompt = (
-            "Rate GMAT Quant PS difficulty as exactly one of: easy, medium, hard.\n\n"
+            f"Rate the difficulty of this {_section_desc(self.section)} as exactly "
+            "one of: easy, medium, hard.\n\n"
             f"Question:\n{item.get('stem', '')}\n\n"
             f"Options:\n{json.dumps(item.get('options', {}), ensure_ascii=False)}\n\n"
             'Reply JSON only: {"difficulty": "easy"|"medium"|"hard"}'
@@ -489,8 +523,7 @@ class OpenAIClient:
 
     def check_validity(self, item: Dict) -> Tuple[bool, Optional[str]]:
         prompt = (
-            "Is this a valid, solvable GMAT Quant Problem Solving question "
-            "(arithmetic/algebra only, NOT geometry, NOT data sufficiency)?\n\n"
+            f"Is this a valid, answerable {_section_desc(self.section)}?\n\n"
             f"Question:\n{item.get('stem', '')}\n\n"
             f"Options:\n{json.dumps(item.get('options', {}), ensure_ascii=False)}\n\n"
             f"Marked correct: {item.get('correct')}\n\n"
@@ -501,7 +534,7 @@ class OpenAIClient:
             if parsed.get("valid") is True:
                 return True, None
             return False, f"ai:{parsed.get('reason') or 'ai_invalid'}"
-        return _rule_validity(item)
+        return _rule_validity(item, section=self.section)
 
 
 # ---------------------------------------------------------------------------
@@ -509,7 +542,7 @@ class OpenAIClient:
 # ---------------------------------------------------------------------------
 
 
-def _rule_validity(item: Dict) -> Tuple[bool, Optional[str]]:
+def _rule_validity(item: Dict, section: str = "quant") -> Tuple[bool, Optional[str]]:
     errs = taxonomy.validate_question(item)
     if errs:
         return False, "validation:" + ";".join(errs)
@@ -524,7 +557,7 @@ def _rule_validity(item: Dict) -> Tuple[bool, Optional[str]]:
         return False, "duplicate_options"
 
     blob = item_blob(item) + " " + (item.get("explanation") or "")
-    scope = taxonomy.out_of_scope_reason(blob)
+    scope = taxonomy.out_of_scope_reason(blob, section=section)
     if scope:
         return False, f"out_of_scope:{scope}"
 
@@ -563,6 +596,7 @@ def pass_validity(
     client: AiClient,
     cache: AiCache,
     use_ai_check: bool,
+    section: str = "quant",
 ) -> Tuple[List[Dict], List[Dict], List[Dict]]:
     """Return (kept, dropped, quarantined)."""
     kept: List[Dict] = []
@@ -576,7 +610,7 @@ def pass_validity(
                 lambda i=item: client.check_validity(i),
             )
         else:
-            ok, reason = _rule_validity(item)
+            ok, reason = _rule_validity(item, section=section)
 
         if ok:
             kept.append(dict(item))
@@ -751,6 +785,7 @@ def run_pipeline(
     confidence_threshold: float = CONFIDENCE_THRESHOLD,
     dedupe_threshold: float = DEDUPE_THRESHOLD,
     cache: Optional[AiCache] = None,
+    section: str = "quant",
 ) -> Tuple[List[Dict], Dict]:
     cache = cache or AiCache()
     ai_difficulty = client.name in ("gemini", "openai", "mock")
@@ -758,7 +793,9 @@ def run_pipeline(
     diff_before = difficulty_distribution(items)
 
     kept, dropped, quarantined_scope = pass_validity(
-        items, client, cache, use_ai_check=client.name in ("gemini", "openai"),
+        items, client, cache,
+        use_ai_check=client.name in ("gemini", "openai"),
+        section=section,
     )
     tagged, retagged, low_conf = pass_auto_tag(
         kept, client, cache, confidence_threshold,
@@ -785,6 +822,7 @@ def run_pipeline(
         .replace(microsecond=0)
         .isoformat(),
         "client": client.name,
+        "section": section,
         "confidence_threshold": confidence_threshold,
         "dedupe_threshold": dedupe_threshold,
         "totals": {
@@ -813,16 +851,16 @@ def run_pipeline(
     return final, report
 
 
-def select_client(mock: bool) -> AiClient:
+def select_client(mock: bool, section: str = "quant") -> AiClient:
     if mock:
-        return MockClient()
-    oai = OpenAIClient.from_env()
+        return MockClient(section=section)
+    oai = OpenAIClient.from_env(section=section)
     if oai is not None:
         return oai
-    gem = GeminiClient.from_env()
+    gem = GeminiClient.from_env(section=section)
     if gem is not None:
         return gem
-    return HeuristicClient()
+    return HeuristicClient(section=section)
 
 
 def load_items(path: str) -> List[Dict]:
@@ -860,6 +898,8 @@ def main(argv: Optional[List[str]] = None) -> int:
                         help=f"Topic confidence threshold (default {CONFIDENCE_THRESHOLD}).")
     parser.add_argument("--dedupe", type=float, default=DEDUPE_THRESHOLD,
                         help=f"Near-duplicate similarity threshold (default {DEDUPE_THRESHOLD}).")
+    parser.add_argument("--section", choices=["quant", "verbal", "di"], default="quant",
+                        help="Which GMAT section's taxonomy/prompts to curate against.")
     args = parser.parse_args(argv)
 
     in_path = os.path.abspath(args.in_path)
@@ -878,8 +918,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         print(f"Input not found: {in_path}", file=sys.stderr)
         return 1
 
-    client = select_client(args.mock)
-    print(f"GMATWiz ai_ingest — client={client.name}  in={in_path}")
+    client = select_client(args.mock, section=args.section)
+    print(f"GMATWiz ai_ingest — client={client.name}  section={args.section}  in={in_path}")
 
     items = load_items(in_path)
     curated, report = run_pipeline(
@@ -887,6 +927,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         client,
         confidence_threshold=args.confidence,
         dedupe_threshold=args.dedupe,
+        section=args.section,
     )
 
     val_errs = validate_output(curated)

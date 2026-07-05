@@ -56,10 +56,24 @@ MASTERY_ON_FAIL = (
 
 
 # ---------------------------------------------------------------------------
-# CONTENT: the 18 GMAT Focus Quant leaf topics (PRD Section 5).
-# Authored in topics_data.py (the content source of truth).
+# CONTENT: GMAT Focus leaf topics (PRD Section 5). Quant (arithmetic + algebra)
+# lives in topics_data.py; Verbal (Critical Reasoning) in topics_data_verbal.py.
+# Each topic dict carries its own section / question_type / domain so a single
+# build produces a merged, section-aware lesson library.
 # ---------------------------------------------------------------------------
-from topics_data import TOPICS  # noqa: E402
+from topics_data import TOPICS as _QUANT_TOPICS  # noqa: E402
+
+try:
+    from topics_data_verbal import TOPICS as _VERBAL_TOPICS  # noqa: E402
+except Exception:  # pragma: no cover - verbal content optional
+    _VERBAL_TOPICS = []
+
+try:
+    from topics_data_di import TOPICS as _DI_TOPICS  # noqa: E402
+except Exception:  # pragma: no cover - data insights content optional
+    _DI_TOPICS = []
+
+TOPICS = list(_QUANT_TOPICS) + list(_VERBAL_TOPICS) + list(_DI_TOPICS)
 
 
 # ---------------------------------------------------------------------------
@@ -81,11 +95,12 @@ def finalize(t):
     t["mastery_check"].setdefault("min_spaced_sessions", 2)
     t["mastery_check"].setdefault("conditions", MASTERY_CONDITIONS)
     t["mastery_check"].setdefault("on_fail", MASTERY_ON_FAIL)
+    item_qtype = t.get("question_type", QTYPE)
     for it in all_items(t):
         it["topic"] = t["topic_id"]
         it.setdefault("source", AUTHORED_SOURCE)
         it.setdefault("official_flag", False)
-        it.setdefault("question_type", QTYPE)
+        it.setdefault("question_type", item_qtype)
     # you_do is application-first: explanation revealed only after an attempt.
     for it in t["you_do"]:
         it["reveal_explanation_after_attempt"] = True
@@ -311,10 +326,10 @@ def render_html(t):
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{esc(t['title'])} &middot; GMATWiz Quant</title>
+<title>{esc(t['title'])} &middot; GMATWiz {esc(t['section'])}</title>
 <style>{CSS}</style></head>
 <body><div class="wrap"><div class="content">
-  <div class="crumbs"><a href="index.html">&larr; All Quant topics</a> &middot; {esc(t['domain'])}</div>
+  <div class="crumbs"><a href="index.html">&larr; All topics</a> &middot; {esc(t['section'])} &middot; {esc(t['domain'])}</div>
   <header class="masthead">
     <p class="kicker">GMATWiz &middot; {esc(t['exam'])} &middot; {esc(t['section'])} ({esc(t['question_type'])})</p>
     <h1>{esc(t['title'])}</h1>
@@ -364,12 +379,21 @@ def render_html(t):
 </div></div></body></html>"""
 
 
+def _domain_order(topics):
+    """Domains in first-appearance order (section-agnostic)."""
+    order = []
+    for t in topics:
+        if t["domain"] not in order:
+            order.append(t["domain"])
+    return order
+
+
 def render_hub(topics):
     by_domain = {}
     for t in topics:
         by_domain.setdefault(t["domain"], []).append(t)
     blocks = ""
-    for dom in ["Arithmetic", "Algebra"]:
+    for dom in _domain_order(topics):
         rows = "".join(
             f'<tr><td><a href="{esc(t["slug"])}.html">{esc(t["title"])}</a></td>'
             f'<td><code>{esc(t["topic_id"])}</code></td>'
@@ -380,12 +404,12 @@ def render_hub(topics):
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GMATWiz &middot; Quant Problem Solving lessons</title>
+<title>GMATWiz &middot; lesson library</title>
 <style>{CSS}</style></head>
 <body><div class="wrap"><div class="content">
   <header class="masthead">
-    <p class="kicker">GMATWiz &middot; {esc(EXAM)} &middot; {esc(SECTION)}</p>
-    <h1>Quant Problem Solving &mdash; lesson library</h1>
+    <p class="kicker">GMATWiz &middot; {esc(EXAM)}</p>
+    <h1>GMATWiz &mdash; lesson library</h1>
     <p class="meta">{len(topics)} leaf topics &middot; retrieval opening &rarr; I-do / we-do / you-do &rarr; mastery check &middot; application-first (SPOV2).</p>
   </header>
   <p class="lead">Each lesson opens with a low-stakes retrieval starter, models one worked example, fades support through guided practice, then puts you on new exam-style items where the explanation is withheld until you commit to an answer.</p>
@@ -556,6 +580,14 @@ def build():
             "topics": len(topics),
             "arithmetic": sum(1 for t in topics if t["domain"] == "Arithmetic"),
             "algebra": sum(1 for t in topics if t["domain"] == "Algebra"),
+            "by_domain": {
+                dom: sum(1 for t in topics if t["domain"] == dom)
+                for dom in _domain_order(topics)
+            },
+            "by_section": {
+                sec: sum(1 for t in topics if t.get("section") == sec)
+                for sec in dict.fromkeys(t.get("section") for t in topics)
+            },
             "practice_items": sum(
                 1 + len(t["we_do"]) + len(t["you_do"]) for t in topics
             ),
@@ -676,7 +708,7 @@ def render_readme(topics, index):
     A("COVERAGE (" + str(index["counts"]["topics"]) + " leaf topics, "
       + str(index["counts"]["practice_items"]) + " practice items)")
     A("-" * 12)
-    for dom in ["Arithmetic", "Algebra"]:
+    for dom in _domain_order(topics):
         A(dom + ":")
         for t in topics:
             if t["domain"] == dom:
@@ -688,7 +720,7 @@ def render_readme(topics, index):
     A("-" * 12)
     A("  schema.json     JSON Schema (draft-07) for a topic file")
     A("  index.json      manifest: topics, paths, counts, notetype mapping")
-    A("  <slug>.json     one lesson per topic (18 files)")
+    A("  <slug>.json     one lesson per topic ({} files)".format(len(topics)))
     A("  html/<slug>.html  self-contained Tufte-clean review page per topic")
     A("  html/index.html   hub linking every topic page")
     A("  build.py        authoring source of truth; regenerates all of the above")

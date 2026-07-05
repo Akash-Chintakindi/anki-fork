@@ -1,0 +1,281 @@
+{
+  "topic_id": "gmat::verbal::cr::boldface",
+  "slug": "cr-boldface",
+  "title": "Critical Reasoning: Boldface (Describe the Role)",
+  "prerequisites": [
+    "identify the author's conclusion",
+    "distinguish evidence, opposing views, and conclusions"
+  ],
+  "learning_objectives": [
+    "Determine the author's overall conclusion first.",
+    "Label each boldfaced portion by its role: conclusion, supporting evidence, opposing position, or objection.",
+    "Match both labels to the answer choice that describes them."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do -> we do -> you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Telling an author's own conclusion from a view the author opposes.",
+    "do_now": {
+      "instructions": "No notes. 4 minutes.",
+      "items": [
+        {
+          "prompt": "What roles can a boldfaced statement play?",
+          "answer": "Conclusion, supporting evidence, an opposing position, or an objection the author answers.",
+          "targets": "role types"
+        },
+        {
+          "prompt": "First step on a boldface question?",
+          "answer": "Find the author's own conclusion.",
+          "targets": "method"
+        },
+        {
+          "prompt": "If a portion is a view the author argues against, its role is...",
+          "answer": "An opposing position (not the author's conclusion).",
+          "targets": "opposing view"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Recalls the small set of roles a boldfaced portion can play and the 'find the conclusion first' method.",
+      "if_students_struggle": "Have them mark each boldface as 'author agrees' or 'author disagrees' before labeling.",
+      "questions": [
+        {
+          "prompt": "How do you tell the author's conclusion from an opposing view?",
+          "answer": "The author supports the conclusion and argues against the opposing view.",
+          "targets": "stance"
+        },
+        {
+          "prompt": "Why label roles before reading the choices?",
+          "answer": "To avoid being swayed by tempting but wrong role labels.",
+          "targets": "method"
+        }
+      ]
+    },
+    "prior_knowledge_bridge": "Boldface questions are structure questions: they ask what job each bolded sentence does. If you first pin down the author's own conclusion, every other sentence becomes easy to label as support, an opposing view, or an objection the author rebuts.",
+    "learning_intention": "By the end you can label each boldfaced portion by its role in the argument and match both to the correct answer choice.",
+    "success_criteria": [
+      "I can state the author's overall conclusion.",
+      "I can label a boldface as support, opposing view, or objection.",
+      "I can match both role labels to the answer choice."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00-4:00",
+        "move": "Do Now on screen; learners answer from memory, no notes."
+      },
+      {
+        "time": "4:00-6:00",
+        "move": "Cold-call answers; name the argument's conclusion vs premises."
+      },
+      {
+        "time": "6:00-8:00",
+        "move": "Bridge to today's question type; state what the stem is really asking."
+      },
+      {
+        "time": "8:00-10:00",
+        "move": "Move to I do: model the reasoning on one worked item."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "Analyst: <b>The company should keep its downtown store open.</b> Critics point to the store's high rent. However, <b>the downtown store attracts customers who then shop at the company's other locations.</b> In the analyst's argument, the two boldfaced portions play which of the following roles?",
+    "options": {
+      "A": "The first is the conclusion the analyst defends; the second is evidence the analyst offers in support of that conclusion.",
+      "B": "The first is an objection the analyst rejects; the second is the analyst's conclusion.",
+      "C": "Both portions are evidence for the analyst's conclusion.",
+      "D": "The first is the conclusion; the second is an objection to it.",
+      "E": "The first is evidence; the second is the analyst's conclusion."
+    },
+    "correct": "A",
+    "explanation": "The analyst's own view is 'keep the store open' (conclusion). The second bold portion (it draws customers to other stores) is support answering the rent objection. So first = conclusion, second = supporting evidence.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "Find the author's conclusion: 'keep the downtown store open.' That's the first bold portion.",
+      "The critics' rent point is an objection (not bolded).",
+      "The second bold portion answers that objection - it's supporting evidence.",
+      "So first = conclusion, second = support -> choice A."
+    ],
+    "key_takeaway": "Find the author's conclusion first; then every boldface is either that conclusion, support for it, or a view the author opposes.",
+    "topic": "gmat::verbal::cr::boldface",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Critical Reasoning"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "Columnist: Many believe that <b>working longer hours always increases a company's output.</b> But <b>studies show that overworked employees make more errors, which lowers total output.</b> The belief is therefore mistaken. In the columnist's argument, the two boldfaced portions play which of the following roles?",
+      "options": {
+        "A": "The first is a position the columnist argues against; the second is evidence used to reject that position.",
+        "B": "The first is the columnist's conclusion; the second supports it.",
+        "C": "Both portions are the columnist's evidence.",
+        "D": "The first is evidence; the second is the conclusion.",
+        "E": "The first is the conclusion; the second is an objection to it."
+      },
+      "correct": "A",
+      "explanation": "The columnist's conclusion is 'the belief is mistaken.' The first bold portion is that popular belief (opposed); the second is evidence against it.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "What does the columnist actually conclude?",
+        "Is the first bold portion something the columnist agrees or disagrees with?",
+        "Label the second: does it support the belief or attack it?"
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right - first = opposed position, second = evidence against it.",
+        "if_incorrect": "The columnist's conclusion is unbolded ('the belief is mistaken'); the first bold is the view being refuted."
+      },
+      "topic": "gmat::verbal::cr::boldface",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning"
+    },
+    {
+      "id": "we_2",
+      "stem": "Scientist: <b>This drug does not reduce recovery time.</b> Its supporters cite a trial in which patients on the drug recovered faster, but <b>those patients were also much younger than the comparison group.</b> In the scientist's argument, the two boldfaced portions play which of the following roles?",
+      "options": {
+        "A": "The first is the scientist's conclusion; the second is evidence used to undermine a study offered against that conclusion.",
+        "B": "The first is evidence; the second is the scientist's conclusion.",
+        "C": "Both portions are conclusions the scientist draws.",
+        "D": "The first is an objection; the second is the scientist's conclusion.",
+        "E": "The first is the conclusion; the second is an assumption it relies on."
+      },
+      "correct": "A",
+      "explanation": "The scientist concludes the drug doesn't help (first bold). The second bold points out a confounder (younger patients) that undercuts the supporting trial - it's evidence for the conclusion.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "The first bold is a flat claim - likely the conclusion.",
+        "The second bold weakens the opponents' trial - so it supports the scientist.",
+        "Match: conclusion + supporting evidence."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Yes - conclusion first, confounder-evidence second.",
+        "if_incorrect": "The 'younger patients' point backs the scientist by discrediting the rival trial."
+      },
+      "topic": "gmat::verbal::cr::boldface",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "Official: <b>The city should build the new light-rail line.</b> Opponents cite its cost. Still, <b>the line is projected to remove thousands of cars from the roads each day, easing congestion.</b> In the official's argument, the two boldfaced portions play which of the following roles?",
+      "options": {
+        "A": "The first is the conclusion the official defends; the second is evidence offered to support it against an objection.",
+        "B": "The first is an objection; the second is the conclusion.",
+        "C": "Both portions are objections the official concedes.",
+        "D": "The first is evidence; the second is the conclusion.",
+        "E": "The first is the conclusion; the second is an assumption it requires."
+      },
+      "correct": "A",
+      "explanation": "The official's conclusion is 'build the line' (first bold). The projected car reduction (second bold) is supporting evidence that answers the cost objection.",
+      "difficulty": "medium",
+      "topic": "gmat::verbal::cr::boldface",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "Editor: Some argue that <b>printed newspapers will disappear within a decade.</b> Yet <b>subscriptions to several major print papers have grown steadily over the past five years.</b> The prediction is therefore doubtful. In the editor's argument, the two boldfaced portions play which of the following roles?",
+      "options": {
+        "A": "The first is a prediction the editor disputes; the second is evidence the editor uses against it.",
+        "B": "The first is the editor's conclusion; the second supports it.",
+        "C": "Both portions are the editor's evidence.",
+        "D": "The first is evidence against the conclusion; the second is the conclusion.",
+        "E": "The first is the editor's conclusion; the second is an objection to it."
+      },
+      "correct": "A",
+      "explanation": "The editor concludes the prediction is doubtful. The first bold is that disputed prediction; the second is evidence (rising subscriptions) against it.",
+      "difficulty": "medium",
+      "topic": "gmat::verbal::cr::boldface",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "Consultant: <b>The firm should adopt a four-day workweek.</b> Skeptics worry productivity will fall. However, <b>at similar firms that made the switch, output per employee stayed the same or rose.</b> In the consultant's argument, the two boldfaced portions play which of the following roles?",
+      "options": {
+        "A": "The first is the recommendation the consultant makes; the second is evidence offered to support it against a worry.",
+        "B": "The first is a worry the consultant shares; the second is the recommendation.",
+        "C": "Both portions are evidence for the recommendation.",
+        "D": "The first is evidence; the second is the recommendation.",
+        "E": "The first is the recommendation; the second is an objection to it."
+      },
+      "correct": "A",
+      "explanation": "The consultant's recommendation (conclusion) is the four-day week (first bold). The comparable-firm data (second bold) supports it against the productivity worry.",
+      "difficulty": "hard",
+      "topic": "gmat::verbal::cr::boldface",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "GMAC - GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Verbal Reasoning scope.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy - LSAT Logical Reasoning (free)",
+      "url": "https://www.khanacademy.org/prep/lsat",
+      "note": "Free lessons on argument structure, assumptions, strengthen/weaken, and flaws."
+    }
+  ],
+  "domain": "Critical Reasoning",
+  "section": "Verbal Reasoning",
+  "question_type": "Critical Reasoning",
+  "estimated_minutes": 18,
+  "schema_version": "1.0",
+  "exam": "GMAT Focus Edition"
+}

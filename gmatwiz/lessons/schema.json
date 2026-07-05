@@ -28,14 +28,14 @@
     "schema_version": { "type": "string" },
     "topic_id": {
       "type": "string",
-      "description": "Leaf topic id in the PRD Section 5 taxonomy, e.g. gmat::quant::algebra::quadratics",
-      "pattern": "^gmat::quant::(arithmetic|algebra)::[a-z_]+$"
+      "description": "Leaf topic id in the PRD Section 5 taxonomy, e.g. gmat::quant::algebra::quadratics or gmat::verbal::cr::weaken or gmat::di::reasoning::data_sufficiency",
+      "pattern": "^gmat::(quant::(arithmetic|algebra)|verbal::(cr|rc)|di::reasoning)::[a-z_]+$"
     },
     "slug": { "type": "string", "pattern": "^[a-z0-9-]+$" },
     "title": { "type": "string" },
-    "section": { "type": "string", "enum": ["Quantitative Reasoning"] },
-    "question_type": { "type": "string", "enum": ["Problem Solving"] },
-    "domain": { "type": "string", "enum": ["Arithmetic", "Algebra"] },
+    "section": { "type": "string", "enum": ["Quantitative Reasoning", "Verbal Reasoning", "Data Insights"] },
+    "question_type": { "type": "string", "enum": ["Problem Solving", "Critical Reasoning", "Reading Comprehension", "Data Sufficiency", "Two-Part Analysis", "Multi-Source Reasoning"] },
+    "domain": { "type": "string", "enum": ["Arithmetic", "Algebra", "Critical Reasoning", "Reading Comprehension", "Data Insights"] },
     "exam": { "type": "string" },
     "estimated_minutes": { "type": "number" },
     "prerequisites": { "type": "array", "items": { "type": "string" } },

@@ -1,0 +1,281 @@
+{
+  "topic_id": "gmat::verbal::cr::evaluate",
+  "slug": "cr-evaluate",
+  "title": "Critical Reasoning: Evaluate the Argument",
+  "prerequisites": [
+    "identify an argument's assumption",
+    "understand strengthen and weaken"
+  ],
+  "learning_objectives": [
+    "Identify the question whose answer would most affect the argument's validity.",
+    "Use the 'variance test': a good evaluate answer helps either way it is resolved.",
+    "Avoid questions whose answers leave the conclusion unchanged."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do -> we do -> you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Knowing what strengthens and weakens an argument.",
+    "do_now": {
+      "instructions": "No notes. 4 minutes.",
+      "items": [
+        {
+          "prompt": "What makes a good 'evaluate' answer?",
+          "answer": "Its answer would strengthen the argument one way and weaken it the other.",
+          "targets": "variance test"
+        },
+        {
+          "prompt": "If a question's answer doesn't change the conclusion either way, is it a good evaluate choice?",
+          "answer": "No.",
+          "targets": "relevance"
+        },
+        {
+          "prompt": "Turn 'the plan will cut costs' into an evaluate target.",
+          "answer": "Ask whether the savings exceed the plan's added expenses.",
+          "targets": "forming the question"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Recalls that an evaluate answer must be able to swing the argument both ways.",
+      "if_students_struggle": "Have them literally answer the choice 'yes' then 'no' and see if the conclusion moves.",
+      "questions": [
+        {
+          "prompt": "State the variance (both-ways) test.",
+          "answer": "A good evaluate question strengthens if answered one way and weakens if answered the other.",
+          "targets": "variance test"
+        },
+        {
+          "prompt": "Why test both answers to a choice?",
+          "answer": "To confirm the answer actually affects the conclusion.",
+          "targets": "method"
+        }
+      ]
+    },
+    "prior_knowledge_bridge": "Strengthen and weaken each move the argument one direction. An evaluate question asks for the single fact that could move it EITHER direction - so you test a choice by answering it both ways and watching whether the conclusion shifts.",
+    "learning_intention": "By the end you can select the question whose answer would most affect the argument, verified by the both-ways variance test.",
+    "success_criteria": [
+      "I can state what the argument concludes and assumes.",
+      "I can apply the both-ways test to a candidate question.",
+      "I can reject questions that don't move the conclusion."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00-4:00",
+        "move": "Do Now on screen; learners answer from memory, no notes."
+      },
+      {
+        "time": "4:00-6:00",
+        "move": "Cold-call answers; name the argument's conclusion vs premises."
+      },
+      {
+        "time": "6:00-8:00",
+        "move": "Bridge to today's question type; state what the stem is really asking."
+      },
+      {
+        "time": "8:00-10:00",
+        "move": "Move to I do: model the reasoning on one worked item."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "A hospital plans to shorten patient wait times by adding a second check-in clerk. The answer to which of the following would be most useful in evaluating whether the plan will work?",
+    "options": {
+      "A": "Whether the check-in step, rather than a later step such as seeing a doctor, is what causes most of the waiting.",
+      "B": "Whether the second clerk will be paid the same as the first.",
+      "C": "Whether patients are satisfied with the current clerks.",
+      "D": "Whether the hospital has enough desks for two clerks.",
+      "E": "Whether wait times are longer on weekends."
+    },
+    "correct": "A",
+    "explanation": "Test A both ways: if check-in is the bottleneck, a second clerk helps (strengthens); if the delay is later, a second clerk won't help (weakens). Because its answer swings the plan either way, A is the best evaluation target.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "Conclusion: a second clerk will cut wait times. Assumption: check-in is the bottleneck.",
+      "Apply the both-ways test to A: bottleneck at check-in -> helps; bottleneck later -> useless.",
+      "Since A's answer can strengthen or weaken, it's the key evaluation question.",
+      "The others (pay, desks, satisfaction) don't change whether the plan works."
+    ],
+    "key_takeaway": "The best evaluate answer is the question whose two possible answers push the conclusion in opposite directions.",
+    "topic": "gmat::verbal::cr::evaluate",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Critical Reasoning"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "A publisher plans to raise profit by releasing its novels only as e-books. Which of the following would be most useful to determine in order to evaluate the plan?",
+      "options": {
+        "A": "Whether most current print buyers would switch to e-books rather than buy from print competitors.",
+        "B": "Whether e-books can display cover art.",
+        "C": "How long it takes to format an e-book.",
+        "D": "Whether the publisher's authors write fiction.",
+        "E": "Whether e-readers are dropping in price."
+      },
+      "correct": "A",
+      "explanation": "Both ways: if buyers switch to e-books, profit can rise; if they defect to print rivals, profit falls. Its answer swings the plan, so it is the key question.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "What must be true for e-book-only to raise profit?",
+        "Answer the choice 'yes' and 'no' - does the conclusion move?",
+        "Only one choice changes the outcome either way."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right - buyer switching is the pivot the plan turns on.",
+        "if_incorrect": "Formatting time and cover art don't determine whether profit rises."
+      },
+      "topic": "gmat::verbal::cr::evaluate",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning"
+    },
+    {
+      "id": "we_2",
+      "stem": "A farm plans to raise its apple yield by switching to a new irrigation system. The answer to which of the following would be most useful in evaluating the plan?",
+      "options": {
+        "A": "Whether water supply, rather than something like soil quality, is what currently limits the yield.",
+        "B": "Whether the new system is quieter than the old one.",
+        "C": "Whether neighboring farms use the same system.",
+        "D": "Whether the apples are sold locally.",
+        "E": "Whether the system was installed by certified technicians."
+      },
+      "correct": "A",
+      "explanation": "Both ways: if water is the limiting factor, better irrigation raises yield; if soil is the limit, it won't. The answer moves the conclusion either way, making A decisive.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "The plan assumes water is the bottleneck to yield.",
+        "Test that assumption with the both-ways method.",
+        "Which choice's answer could sink or save the plan?"
+      ],
+      "immediate_feedback": {
+        "if_correct": "Yes - if water isn't the limit, better irrigation won't help.",
+        "if_incorrect": "Noise, installers, and sales location don't affect whether yield rises."
+      },
+      "topic": "gmat::verbal::cr::evaluate",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "A streaming service plans to gain subscribers by producing more original comedies. The answer to which of the following would be most useful in evaluating the plan?",
+      "options": {
+        "A": "Whether the viewers the service hopes to attract choose a service based on its original comedies.",
+        "B": "Whether comedies cost less to produce than dramas.",
+        "C": "Whether the service currently offers any comedies.",
+        "D": "Whether competitors also produce comedies.",
+        "E": "Whether comedies win more awards than dramas."
+      },
+      "correct": "A",
+      "explanation": "Both ways: if target viewers pick services for comedies, the plan can add subscribers; if not, it won't. The answer swings the conclusion, so A is the key question.",
+      "difficulty": "medium",
+      "topic": "gmat::verbal::cr::evaluate",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "A company plans to cut costs by letting most employees work from home and giving up its office lease. The answer to which of the following would be most useful in evaluating the plan?",
+      "options": {
+        "A": "Whether the productivity of remote employees would fall enough to outweigh the rent savings.",
+        "B": "Whether employees prefer working from home.",
+        "C": "Whether the office is in a downtown location.",
+        "D": "Whether the lease has a renewal option.",
+        "E": "Whether other firms have gone remote."
+      },
+      "correct": "A",
+      "explanation": "Both ways: if remote productivity holds, savings are real; if it drops sharply, the losses can exceed the rent saved. The answer moves the conclusion, so A is decisive.",
+      "difficulty": "medium",
+      "topic": "gmat::verbal::cr::evaluate",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "A museum plans to increase attendance by staying open late on Fridays. The answer to which of the following would be most useful in evaluating the plan?",
+      "options": {
+        "A": "Whether a substantial number of potential visitors are unable to attend during current hours but could attend on Friday evenings.",
+        "B": "Whether the museum's cafe is open on Fridays.",
+        "C": "Whether staff are willing to work late.",
+        "D": "Whether the museum is near public transit.",
+        "E": "Whether other museums stay open late."
+      },
+      "correct": "A",
+      "explanation": "Both ways: if many would-be visitors are free only on Friday evenings, attendance can rise; if not, late hours add little. The answer swings the plan, so A is the key question.",
+      "difficulty": "hard",
+      "topic": "gmat::verbal::cr::evaluate",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "GMAC - GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Verbal Reasoning scope.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy - LSAT Logical Reasoning (free)",
+      "url": "https://www.khanacademy.org/prep/lsat",
+      "note": "Free lessons on argument structure, assumptions, strengthen/weaken, and flaws."
+    }
+  ],
+  "domain": "Critical Reasoning",
+  "section": "Verbal Reasoning",
+  "question_type": "Critical Reasoning",
+  "estimated_minutes": 18,
+  "schema_version": "1.0",
+  "exam": "GMAT Focus Edition"
+}

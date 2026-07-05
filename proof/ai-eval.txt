@@ -91,4 +91,105 @@ gate the cutoff exists for.
 NOTE (honesty): the gold set is 42 items - a demonstrative held-out eval. Hand-
 labeling ~50-100 more items from questions.json would tighten the estimates; the
 harness takes any labeled set via --gold.
+
+===============================================================================
+VERBAL (Critical Reasoning + Reading Comprehension) - same eval, section-aware
+===============================================================================
+The taxonomy tagger, ai_ingest clients, and eval harness are all section-aware
+(--section quant|verbal). Verbal adds 16 leaf topics: 9 Critical Reasoning under
+gmat::verbal::cr::* (assumption, strengthen, weaken, evaluate, inference,
+explain_paradox, flaw, boldface, complete_argument) and 7 Reading Comprehension
+under gmat::verbal::rc::* (main_idea, detail, inference, function, structure,
+tone, application).
+
+HELD-OUT SET: gmatwiz/content/verbal_gold.json - 39 authored items (27 CR from
+verbal_seed.json + 12 RC from verbal_rc_seed.json), each with a human-assigned
+gold leaf topic. All content is ORIGINAL (license authored-gmatwiz): the CR
+arguments and the RC passages are written for GMATWiz. The prep books provided by
+the user were used only to confirm the standard CR/RC question-type taxonomy,
+never as a source of text. The ai_ingest leakage-quarantine
+(near-duplicate-of-official -> dropped) stays active so any AI-generated item that
+reproduces copyrighted source text is removed before admission.
+
+REPRODUCE (verbal):
+  cd gmatwiz/content
+  python3 make_verbal_rc.py            # (re)build the RC passages + gold
+  python3 -c "import json;a=json.load(open('verbal_seed.json'));b=json.load(open('verbal_rc_seed.json'));json.dump(a+b,open('verbal_gold.json','w'),indent=2)"
+  # Baselines only (offline) - keyword + vector on the CR+RC gold set:
+  python3 eval_tagging.py --section verbal --gold verbal_gold.json \
+      --report eval_report_verbal.json
+  # Full run incl. the AI tagger (same app key as quant):
+  export OPENAI_API_KEY="$(npx -y firebase-tools@latest functions:secrets:access OPENAI_API_KEY --project gmatwiz)"
+  python3 eval_tagging.py --section verbal --gold verbal_gold.json \
+      --report eval_report_verbal.json
+
+RESULTS - BASELINES (real, this commit; gold=39 [27 CR + 12 RC], cutoff=0.6)
+metric                 keyword        vector
+accuracy                 92.3%         23.1%
+domain-acc               94.9%        100.0%
+coverage>=cut            97.4%          0.0%
+acc@accepted             94.7%           -
+conf-wrong                5.1%          0.0%
+
+Reading it (honest nuance): the KEYWORD baseline is strong on this authored set
+(92.3% exact leaf) because CR/RC question types are signalled by stereotyped stem
+phrasing (CR: "most seriously weakens", "two portions in boldface"; RC: "primary
+purpose", "according to the passage", "the author mentions X in order to") that
+regex rules capture well, and the gold was authored in the same house as the
+rules. domain-acc (94.9%) is now meaningful: with two verbal domains (cr vs rc)
+present, it measures whether an item is at least routed to the right family. The
+tf-idf vector baseline is weak (23.1%) and never clears the 0.6 cutoff. The AI row
+requires the OpenAI key (offline --mock is random, not a real score); on this
+deliberately keyword-friendly gold the bar for "AI beats keyword" is high, so the
+honest read is that the keyword rules are the cheap high-precision tagger for
+CR/RC while the AI tagger is the coverage/robustness layer for the varied phrasing
+that authored gold under-samples.
+
+===============================================================================
+DATA INSIGHTS (Data Sufficiency + Two-Part + Multi-Source) - same eval
+===============================================================================
+The taxonomy tagger, ai_ingest clients, and eval harness are section-aware for a
+third section too (--section di). Data Insights adds 3 leaf topics under
+gmat::di::reasoning::* (data_sufficiency, two_part_analysis, multi_source_reasoning)
+- the pragmatic MCQ-compatible scope (Data Sufficiency on the standard 5-option
+card, Two-Part Analysis authored MCQ-compatible, Multi-Source Reasoning with its
+source stimulus carried in the passage field). Graphics Interpretation + Table
+Analysis are deferred (they need an interactive, non-MCQ UI).
+
+HELD-OUT SET: gmatwiz/content/di_seed.json - 12 authored items (4 per leaf), each
+with a human-assigned gold leaf topic. All content is ORIGINAL (license
+authored-gmatwiz): the DS statement pairs, Two-Part scenarios, and Multi-Source
+sources are written for GMATWiz on neutral topics. The official GMAC Data Insights
+guides provided by the user were used only to confirm the standard DI question-type
+structure, never as a source of text. The ai_ingest leakage-quarantine
+(near-duplicate-of-official -> dropped) stays active so any AI-generated DI item
+that reproduces copyrighted source text is removed before admission.
+
+REPRODUCE (di):
+  cd gmatwiz/content
+  python3 make_di_seed.py               # (re)build di_seed.json + di_questions.json
+  # Baselines only (offline) - keyword + vector on the DI gold set:
+  python3 eval_tagging.py --section di --gold di_seed.json \
+      --report eval_report_di.json
+  # Full run incl. the AI tagger (same app key as quant):
+  export OPENAI_API_KEY="$(npx -y firebase-tools@latest functions:secrets:access OPENAI_API_KEY --project gmatwiz)"
+  python3 eval_tagging.py --section di --gold di_seed.json \
+      --report eval_report_di.json
+
+RESULTS - FULL RUN (real, this commit; gold=12 [4 DS + 4 Two-Part + 4 MSR], cut=0.6)
+metric                      ai       keyword        vector
+accuracy                100.0%        100.0%         91.7%
+domain-acc              100.0%        100.0%        100.0%
+coverage>=cut           100.0%        100.0%         33.3%
+acc@accepted            100.0%        100.0%        100.0%
+conf-wrong                0.0%          0.0%          0.0%
+
+Reading it (honest nuance): DI's three question types are the MOST separable of any
+section - each carries an unmistakable signature (DS: "statement (1) ALONE is
+sufficient"; Two-Part: "select one option in each column"; Multi-Source: "based on
+the sources"). So the cheap KEYWORD baseline already hits 100% exact leaf on this
+gold, the AI ties it (100%), and even tf-idf gets 91.7%. The honest read: for DI
+routing the deterministic keyword rules are sufficient and the AI is the robustness
+layer for messier real-world phrasing; the 0.6 cutoff + leakage-quarantine remain
+the ship gate. (12-item gold is demonstrative; --gold takes any larger labeled set.)
 ===============================================================================

@@ -746,6 +746,10 @@ def gmat_questions() -> bytes:
 
 # Number of leaf topics in the GMAT Focus Quant coverage map (PRD Section 5).
 GMAT_QUANT_TOPIC_TOTAL = 18
+# Verbal leaf topics: 9 Critical Reasoning + 7 Reading Comprehension = 16.
+GMAT_VERBAL_TOPIC_TOTAL = 16
+# Data Insights leaf topics (pragmatic MCQ scope): DS + Two-Part + Multi-Source.
+GMAT_DI_TOPIC_TOTAL = 3
 
 
 def _score_unavailable() -> dict:
@@ -762,15 +766,20 @@ def _gmat_scores(col) -> dict:
     numbers and give-up abstentions can never drift between platforms. Degrades
     cleanly to abstention if the engine call fails, so reviews keep working.
     """
+    total_topics = (
+        GMAT_QUANT_TOPIC_TOTAL + GMAT_VERBAL_TOPIC_TOTAL + GMAT_DI_TOPIC_TOTAL
+    )
     try:
         raw = col._backend.gmat_scores()
         data = json.loads(getattr(raw, "val", raw))
+        # One Memory / Performance / Readiness, each carrying a by_section
+        # breakdown (Quant / Verbal / DI); Readiness headline is the 205-805 Total.
         return {
             "memory": data.get("memory", _score_unavailable()),
             "performance": data.get("performance", _score_unavailable()),
             "readiness": data.get("readiness", _score_unavailable()),
             "topics_covered": data.get("topics_covered", 0),
-            "topics_total": data.get("topics_total", GMAT_QUANT_TOPIC_TOTAL),
+            "topics_total": data.get("topics_total", total_topics),
         }
     except Exception as exc:
         print(f"GMATWiz: score engine unavailable: {exc}")
@@ -779,7 +788,7 @@ def _gmat_scores(col) -> dict:
             "performance": _score_unavailable(),
             "readiness": _score_unavailable(),
             "topics_covered": 0,
-            "topics_total": GMAT_QUANT_TOPIC_TOTAL,
+            "topics_total": total_topics,
         }
 
 
@@ -824,6 +833,8 @@ def gmat_overview() -> bytes:
             "readiness": scores["readiness"],
             "profile": col.get_config("gmatProfile", None),
             "plan": col.get_config("gmatPlan", None),
+            "planVerbal": col.get_config("gmatPlanVerbal", None),
+            "planDI": col.get_config("gmatPlanDI", None),
             # null when never set on any device, so the app can tell "unset" from
             # an explicit off and let synced config win over the local override.
             "gmatAiEnabled": col.get_config("gmatAiEnabled", None),
@@ -953,7 +964,8 @@ def gmat_next_card() -> bytes:
     from anki.cards import Card
 
     col = aqt.mw.col
-    deck_id = col.decks.id("GMAT::Quant")
+    section = _gmat_req_section()
+    deck_id = col.decks.id(_gmat_deck_for_section(section))
     if col.decks.get_current_id() != deck_id:
         col.decks.select(deck_id)
     queued = col.sched.get_queued_cards(fetch_limit=1)
@@ -977,6 +989,7 @@ def gmat_next_card() -> bytes:
                 "explanation": fields.get("Explanation", ""),
                 "topic": fields.get("Topic", ""),
                 "difficulty": fields.get("Difficulty", ""),
+                "passage": fields.get("Passage", ""),
             },
             "counts": counts,
         }
@@ -1001,7 +1014,9 @@ def gmat_answer_card() -> bytes:
     correct = bool(body.get("correct", False))
     ms = int(body.get("ms", 0))
 
-    deck_id = col.decks.id("GMAT::Quant")
+    _sec_raw = str(body.get("section") or "")
+    section = _sec_raw if _sec_raw in ("verbal", "di") else "quant"
+    deck_id = col.decks.id(_gmat_deck_for_section(section))
     if col.decks.get_current_id() != deck_id:
         col.decks.select(deck_id)
     # Answer the SPECIFIED card even when it isn't the very top of the queue, so
@@ -1136,17 +1151,90 @@ def _gmat_topic_mastered(col, topic: str) -> bool:
     return len(distinct_days) >= GMAT_QUIZ_PASS_DISTINCT_DAYS
 
 
-def _gmat_notes_by_topic() -> dict:
+def _gmat_notetype_for_section(section: str) -> str:
+    return {"verbal": "GMAT Verbal", "di": "GMAT DI"}.get(section, "GMAT PS")
+
+
+def _gmat_deck_for_section(section: str) -> str:
+    return {"verbal": "GMAT::Verbal", "di": "GMAT::DI"}.get(section, "GMAT::Quant")
+
+
+def _gmat_section_of_topic(topic: str) -> str:
+    """Section ('quant' | 'verbal' | 'di') for a leaf topic id, 2nd segment."""
+    parts = (topic or "").split("::")
+    if len(parts) >= 2 and parts[1] in ("verbal", "di"):
+        return parts[1]
+    return "quant"
+
+
+def _gmat_notes_by_topic(section: str = "quant") -> dict:
     from collections import defaultdict
 
     col = aqt.mw.col
     by_topic: dict = defaultdict(list)
-    for nid in col.find_notes('note:"GMAT PS"'):
+    notetype = _gmat_notetype_for_section(section)
+    for nid in col.find_notes(f'note:"{notetype}"'):
         fields = dict(col.get_note(nid).items())
         topic = fields.get("Topic", "")
         if topic:
             by_topic[topic].append(fields)
     return by_topic
+
+
+def _gmat_content_dir() -> str:
+    # qt/aqt/mediasrv.py -> aqt -> qt -> repo root; content at gmatwiz/content.
+    root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    return os.path.join(root, "gmatwiz", "content")
+
+
+def _gmat_pool_by_topic(section: str = "quant") -> dict:
+    """Notes grouped by topic for a section, falling back to the bundled content
+    files when the collection has no notes for that section yet (mirrors the Rust
+    engine's seed fallback on a fresh phone)."""
+    from collections import defaultdict
+
+    by_topic = _gmat_notes_by_topic(section)
+    if by_topic:
+        return by_topic
+    # Bundled fallback per section (mirrors the Rust engine's seed fallback on a
+    # fresh phone), so verbal/DI still render before notes are imported.
+    section_files = {
+        "verbal": ("verbal_seed.json", "verbal_questions.json", "verbal_rc_questions.json"),
+        "di": ("di_seed.json", "di_questions.json"),
+    }
+    if section not in section_files:
+        return by_topic
+    import anki.gmatwiz
+
+    fallback: dict = defaultdict(list)
+    for name in section_files[section]:
+        path = os.path.join(_gmat_content_dir(), name)
+        if not os.path.exists(path):
+            continue
+        try:
+            with open(path, encoding="utf-8") as fh:
+                data = json.load(fh)
+        except Exception:
+            continue
+        for q in anki.gmatwiz.flatten_verbal_items(data):
+            topic = str(q.get("topic", ""))
+            if not topic:
+                continue
+            fallback[topic].append(
+                {
+                    "Stem": q.get("stem", ""),
+                    "OptionA": (q.get("options") or {}).get("A", ""),
+                    "OptionB": (q.get("options") or {}).get("B", ""),
+                    "OptionC": (q.get("options") or {}).get("C", ""),
+                    "OptionD": (q.get("options") or {}).get("D", ""),
+                    "OptionE": (q.get("options") or {}).get("E", ""),
+                    "Correct": q.get("correct", ""),
+                    "Topic": topic,
+                    "Difficulty": q.get("difficulty", ""),
+                    "Passage": q.get("passage", "") or "",
+                }
+            )
+    return fallback
 
 
 def gmat_save_profile() -> bytes:
@@ -1163,7 +1251,34 @@ def gmat_save_profile() -> bytes:
         "target_score": target_score,
     }
     col.set_config("gmatProfile", profile)
+    # Profile can be set/changed AFTER the diagnostics (gated onboarding), so
+    # rebuild every section plan that already has a diagnosis, giving the new
+    # exam date / weekly availability its pacing across all three tracks.
+    for sec, plan_key, diag_key in (
+        ("quant", "gmatPlan", "gmatDiagnosis"),
+        ("verbal", "gmatPlanVerbal", "gmatDiagnosisVerbal"),
+        ("di", "gmatPlanDI", "gmatDiagnosisDI"),
+    ):
+        diag = col.get_config(diag_key, None)
+        if diag:
+            col.set_config(plan_key, _gmat_build_section_plan(col, diag, sec))
     return b""
+
+
+def gmat_ensure_content() -> bytes:
+    """Import the bundled GMAT content (all three sections) into the collection if
+    it is behind the current content version. Idempotent (stem-hash dedup). The
+    CLIENT calls this AFTER the cloud collection sync settles, then uploads if
+    anything changed - so a fresh device gets the full syllabus without the sync
+    clobbering it. Returns {"imported": n, "changed": bool}."""
+    import aqt.gmat
+
+    try:
+        added = aqt.gmat.ensure_bundled_content_sync(aqt.mw.col)
+    except Exception as exc:
+        print(f"GMATWiz: ensure content failed: {exc}")
+        added = 0
+    return json.dumps({"imported": added, "changed": added > 0}).encode("utf-8")
 
 
 def gmat_set_ai_enabled() -> bytes:
@@ -1603,11 +1718,33 @@ def gmat_save_official_score() -> bytes:
     return json.dumps({"ok": True, "entry": entry}).encode("utf-8")
 
 
+def _gmat_req_section() -> str:
+    """Read the target section ('quant' | 'verbal') from the request; default quant."""
+    try:
+        body = json.loads(request.data or b"{}")
+    except Exception:
+        body = {}
+    sec = str(body.get("section") or request.args.get("section") or "quant").lower()
+    return sec if sec in ("verbal", "di") else "quant"
+
+
 def gmat_pretest_questions() -> bytes:
-    """Return a 21-question diagnostic sampled across all Quant topics."""
+    """Return a short diagnostic sampled across a section's topics.
+
+    Section ('quant' | 'verbal' | 'di') and an optional `count` (default 12,
+    clamped [6, 30]) are read from the request. One item per topic first, then
+    filled at random up to `count`.
+    """
     import random
 
-    by_topic = _gmat_notes_by_topic()
+    section = _gmat_req_section()
+    try:
+        body = json.loads(request.data or b"{}")
+    except Exception:
+        body = {}
+    count = int(body.get("count") or request.args.get("count") or 12)
+    count = max(6, min(30, count))
+    by_topic = _gmat_pool_by_topic(section)
     picked: list = []
     seen: set = set()
     for notes in by_topic.values():
@@ -1617,12 +1754,12 @@ def gmat_pretest_questions() -> bytes:
     all_notes = [n for notes in by_topic.values() for n in notes]
     random.shuffle(all_notes)
     for note in all_notes:
-        if len(picked) >= 21:
+        if len(picked) >= count:
             break
         if id(note) not in seen:
             picked.append(note)
             seen.add(id(note))
-    picked = picked[:21]
+    picked = picked[:count]
     random.shuffle(picked)
     questions = [
         {
@@ -1631,10 +1768,46 @@ def gmat_pretest_questions() -> bytes:
             "correct": f.get("Correct", ""),
             "topic": f.get("Topic", ""),
             "difficulty": f.get("Difficulty", ""),
+            "passage": f.get("Passage", ""),
         }
         for f in picked
     ]
     return json.dumps({"questions": questions, "seconds": 45 * 60}).encode("utf-8")
+
+
+def _gmat_build_section_plan(col, diagnosis: dict, section: str) -> dict:
+    """Build a section plan dict from a topic->mastery diagnosis + the CURRENT
+    profile (exam date / days-per-week / target). Pure: writes no config, so it
+    can be reused both at diagnostic-submit time and when the profile changes
+    (the profile is set AFTER the three diagnostics in the gated onboarding)."""
+    from datetime import date, datetime
+
+    def status(m: float) -> str:
+        return "weak" if m < 0.5 else ("developing" if m < 0.8 else "strong")
+
+    profile = col.get_config("gmatProfile", {}) or {}
+    days_to_exam = None
+    exam_date = profile.get("exam_date", "")
+    if exam_date:
+        try:
+            days_to_exam = (
+                datetime.strptime(exam_date, "%Y-%m-%d").date() - date.today()
+            ).days
+        except Exception:
+            days_to_exam = None
+    ranked = sorted(diagnosis.items(), key=lambda kv: kv[1])
+    target_score = max(205, min(805, int(profile.get("target_score", 645) or 645)))
+    return {
+        "topics": [
+            {"topic": t, "mastery": m, "status": status(m)} for t, m in ranked
+        ],
+        "days_per_week": int(profile.get("days_per_week", 5) or 5),
+        "days_to_exam": days_to_exam,
+        "created_ts": int(time.time()),
+        "target_score": target_score,
+        "mastery_bar": _gmat_mastery_bar(target_score),
+        "section": section,
+    }
 
 
 def gmat_submit_pretest() -> bytes:
@@ -1652,6 +1825,7 @@ def gmat_submit_pretest() -> bytes:
     except Exception:
         body = {}
     results = body.get("results", []) or []
+    section = _gmat_req_section()
 
     agg: dict = defaultdict(lambda: [0, 0])  # topic -> [correct, total]
     for r in results:
@@ -1663,7 +1837,7 @@ def gmat_submit_pretest() -> bytes:
             agg[topic][0] += 1
 
     diagnosis: dict = {}
-    for topic in _gmat_notes_by_topic().keys():
+    for topic in _gmat_pool_by_topic(section).keys():
         correct, total = agg.get(topic, [0, 0])
         mastery = (correct / total) if total > 0 else 0.5
         diagnosis[topic] = round(mastery, 3)
@@ -1675,35 +1849,15 @@ def gmat_submit_pretest() -> bytes:
     # Now that mastery is populated, turn on topic-aware scheduling.
     col.set_config("topicAwareScheduling", True)
 
-    def status(m: float) -> str:
-        return "weak" if m < 0.5 else ("developing" if m < 0.8 else "strong")
-
-    profile = col.get_config("gmatProfile", {}) or {}
-    days_to_exam = None
-    exam_date = profile.get("exam_date", "")
-    if exam_date:
-        try:
-            days_to_exam = (
-                datetime.strptime(exam_date, "%Y-%m-%d").date() - date.today()
-            ).days
-        except Exception:
-            days_to_exam = None
-
-    ranked = sorted(diagnosis.items(), key=lambda kv: kv[1])
-    target_score = max(205, min(805, int(profile.get("target_score", 645) or 645)))
-    plan = {
-        "topics": [
-            {"topic": t, "mastery": m, "status": status(m)} for t, m in ranked
-        ],
-        "days_per_week": int(profile.get("days_per_week", 5) or 5),
-        "days_to_exam": days_to_exam,
-        "created_ts": int(time.time()),
-        "target_score": target_score,
-        "mastery_bar": _gmat_mastery_bar(target_score),
-    }
-    col.set_config("gmatDiagnosis", diagnosis)
-    col.set_config("gmatPlan", plan)
-    return json.dumps({"diagnosis": diagnosis, "plan": plan}).encode("utf-8")
+    plan = _gmat_build_section_plan(col, diagnosis, section)
+    # Quant keeps the original config keys; Verbal + DI are parallel tracks.
+    diag_key = {"verbal": "gmatDiagnosisVerbal", "di": "gmatDiagnosisDI"}.get(
+        section, "gmatDiagnosis"
+    )
+    plan_key = {"verbal": "gmatPlanVerbal", "di": "gmatPlanDI"}.get(section, "gmatPlan")
+    col.set_config(diag_key, diagnosis)
+    col.set_config(plan_key, plan)
+    return json.dumps({"diagnosis": diagnosis, "plan": plan, "section": section}).encode("utf-8")
 
 
 def _gmat_pacing(col) -> dict:
@@ -2067,12 +2221,138 @@ def _gmat_build_today(col) -> dict:
     if timed_block is not None and not taken_timed_today:
         blocks.append(timed_block)
 
+    # Tag the Quant blocks, then append the additive Verbal track (when the user
+    # has taken the Verbal diagnostic). Verbal is best-effort so a failure there
+    # never breaks the Quant session.
+    for b in blocks:
+        b.setdefault("section", "quant")
+    for sec in ("verbal", "di"):
+        try:
+            blocks.extend(_gmat_section_today_blocks(col, now_ts, sec))
+        except Exception as exc:
+            print(f"GMATWiz: {sec} today blocks unavailable: {exc}")
+
     return {
         "has_plan": True,
         "pacing": pacing,
         "blocks": blocks,
         "daily_minutes": sum(int(b.get("est_minutes", 0)) for b in blocks),
     }
+
+
+def _gmat_section_today_blocks(col, now_ts: int, section: str) -> list:
+    """The additive Verbal / Data Insights portion of Today for one section:
+    spaced review, one lesson, one topic quiz, and targeted practice - each tagged
+    with `section` so the client routes execution to the right deck / pool. Returns
+    [] when the student hasn't taken that section's diagnostic yet."""
+    plan_key = {"verbal": "gmatPlanVerbal", "di": "gmatPlanDI"}.get(section)
+    if not plan_key:
+        return []
+    plan = col.get_config(plan_key, None)
+    if not plan:
+        return []
+    label = "Data Insights" if section == "di" else "Verbal"
+    deck = _gmat_deck_for_section(section)
+    prefix = f"gmat::{section}"
+    learned = col.get_config("gmatLearned", {}) or {}
+    topics = plan.get("topics", []) or []
+    lesson_ids = {
+        t.get("topic_id")
+        for t in _load_lessons_index().get("topics", [])
+        if str(t.get("topic_id", "")).startswith(prefix)
+    }
+    blocks: list = []
+
+    # spaced review (due from the section deck, topic-aware order)
+    due_total = 0
+    try:
+        deck_id = col.decks.id(deck)
+        if col.decks.get_current_id() != deck_id:
+            col.decks.select(deck_id)
+        queued = col.sched.get_queued_cards(fetch_limit=1)
+        due_total = queued.new_count + queued.learning_count + queued.review_count
+    except Exception:
+        due_total = 0
+    if due_total > 0:
+        blocks.append(
+            {
+                "kind": "review",
+                "section": section,
+                "title": f"{label} spaced review",
+                "detail": f"{due_total} question(s) due today",
+                "count": due_total,
+                "est_minutes": round(due_total * _REVIEW_MIN),
+            }
+        )
+
+    # learn the weakest unlearned topic that has an authored lesson
+    to_learn = [
+        t for t in topics
+        if t.get("topic") not in learned and t.get("topic") in lesson_ids
+    ]
+    if to_learn:
+        entry = to_learn[0]
+        blocks.append(
+            {
+                "kind": "learn",
+                "section": section,
+                "title": f"Learn a {label} topic",
+                "detail": _gmat_status(float(entry.get("mastery", 0.5))) + f" · {label}",
+                "topic": entry.get("topic"),
+                "est_minutes": round(_LESSON_MIN),
+            }
+        )
+
+    # one topic quiz for a lesson-done, not-yet-mastered topic
+    quizzes_cfg = col.get_config("gmatQuizzes", {}) or {}
+    for t in topics:
+        tid = t.get("topic")
+        if not tid or tid not in learned or tid not in lesson_ids:
+            continue
+        if _gmat_topic_mastered(col, tid):
+            continue
+        sessions = quizzes_cfg.get(tid, []) or []
+        passing = [
+            s for s in sessions
+            if float(s.get("accuracy", 0) or 0) >= GMAT_QUIZ_PASS_ACCURACY
+        ]
+        spaced = False
+        if passing:
+            last_pass = max(int(s.get("ts", 0) or 0) for s in passing)
+            if now_ts - last_pass < GMAT_QUIZ_RESPACE_SECS:
+                continue
+            spaced = True
+        blocks.append(
+            {
+                "kind": "quiz",
+                "section": section,
+                "title": f"{label} quiz (spaced)" if spaced else f"{label} quiz",
+                "detail": f"prove {topic_leaf(tid)} - {GMAT_QUIZ_N} questions, timed",
+                "topic": tid,
+                "count": GMAT_QUIZ_N,
+                "est_minutes": round(_QUIZ_MIN),
+            }
+        )
+        break
+
+    # targeted practice on the weakest learned topic
+    learned_topics = [t for t in topics if t.get("topic") in learned]
+    if learned_topics:
+        weak = learned_topics[0]
+        n = 10
+        blocks.append(
+            {
+                "kind": "practice",
+                "section": section,
+                "title": f"{label} targeted practice",
+                "detail": f"{n} on {topic_leaf(weak.get('topic'))}",
+                "count": n,
+                "topic": weak.get("topic"),
+                "est_minutes": round(n * _PRACTICE_MIN),
+            }
+        )
+
+    return blocks
 
 
 # --- forward study calendar (Progress tab) -----------------------------------
@@ -2243,6 +2523,47 @@ def _gmat_build_calendar(col) -> dict:
 
     last_lesson_off = max(lessons_by.keys()) if lessons_by else -1
 
+    # --- Verbal + Data Insights (additive): project each section's un-mastered
+    # topics across the SAME eligible study days, interleaved with Quant. Display-
+    # only (the calendar is a tentative projection); each item is tagged with its
+    # section so the UI can style/label it.
+    sec_proj: dict = {}
+    for sec in ("verbal", "di"):
+        plan_s = col.get_config(
+            {"verbal": "gmatPlanVerbal", "di": "gmatPlanDI"}[sec], None
+        )
+        s_lessons: dict = defaultdict(list)
+        s_quizzes: dict = defaultdict(list)
+        s_requizzes: dict = defaultdict(list)
+        if plan_s:
+            remaining_s = [
+                t.get("topic")
+                for t in (plan_s.get("topics", []) or [])
+                if t.get("topic") and not _gmat_topic_mastered(col, t.get("topic"))
+            ]
+            rs = len(remaining_s)
+            if rs > 0 and e > 0:
+                for k in range(rs):
+                    idx = min(e - 1, (k * e) // rs)
+                    o = eligible[idx]
+                    topic = remaining_s[k]
+                    if topic in learned_ids:
+                        s_quizzes[o].append(topic)
+                        rq = study_at_least(o + respace_days)
+                        if rq is not None:
+                            s_requizzes[rq].append(topic)
+                    else:
+                        s_lessons[o].append(topic)
+                        q_off = next_study(o)
+                        if q_off is not None:
+                            s_quizzes[q_off].append(topic)
+                            rq = study_at_least(q_off + respace_days)
+                            if rq is not None:
+                                s_requizzes[rq].append(topic)
+        if s_lessons:
+            last_lesson_off = max([last_lesson_off, *s_lessons.keys()])
+        sec_proj[sec] = (s_lessons, s_quizzes, s_requizzes)
+
     # cumulative topics learned by each offset (already lesson-done + lessons
     # placed up to and including that day) -> review scaling + the milestone gate
     prefix = [0] * (days_to_exam + 1)
@@ -2286,7 +2607,9 @@ def _gmat_build_calendar(col) -> dict:
         d = today + timedelta(days=off)
         is_exam = off == days_to_exam
         study = is_study(off) and not is_exam
-        has_lesson = off in lessons_by
+        has_lesson = off in lessons_by or any(
+            off in proj[0] for proj in sec_proj.values()
+        )
         has_test = off in practice_tests
         has_ms = off in milestones
         items: list = []
@@ -2329,6 +2652,39 @@ def _gmat_build_calendar(col) -> dict:
                             "est_minutes": round(_QUIZ_MIN),
                         }
                     )
+                # Verbal + Data Insights (additive) projection for this day.
+                for sec, (s_lessons, s_quizzes, s_requizzes) in sec_proj.items():
+                    label = "Data Insights" if sec == "di" else "Verbal"
+                    for tp in s_lessons.get(off, []):
+                        items.append(
+                            {
+                                "kind": "lesson",
+                                "section": sec,
+                                "topic": tp,
+                                "title": f"Learn {label}: {topic_leaf(tp)}",
+                                "est_minutes": round(_LESSON_MIN),
+                            }
+                        )
+                    for tp in s_quizzes.get(off, []):
+                        items.append(
+                            {
+                                "kind": "quiz",
+                                "section": sec,
+                                "topic": tp,
+                                "title": f"{label} quiz: {topic_leaf(tp)}",
+                                "est_minutes": round(_QUIZ_MIN),
+                            }
+                        )
+                    for tp in s_requizzes.get(off, []):
+                        items.append(
+                            {
+                                "kind": "requiz",
+                                "section": sec,
+                                "topic": tp,
+                                "title": f"{label} re-quiz: {topic_leaf(tp)}",
+                                "est_minutes": round(_QUIZ_MIN),
+                            }
+                        )
                 if has_ms:
                     items.append(
                         {
@@ -2571,11 +2927,19 @@ def _schedule_lesson_items(col, topic_id: str) -> int:
                 "topic": topic_id,
                 "difficulty": item.get("difficulty", "medium"),
                 "source": "GMATWiz lesson",
+                "passage": item.get("passage", "") or "",
             }
         )
     if not questions:
         return 0
-    added = anki.gmatwiz.import_questions(col, questions, "GMAT::Quant")
+    # Route lesson items to the matching notetype/deck per section.
+    _sec = _gmat_section_of_topic(topic_id)
+    if _sec == "verbal":
+        added = anki.gmatwiz.import_verbal_questions(col, questions, "GMAT::Verbal")
+    elif _sec == "di":
+        added = anki.gmatwiz.import_di_questions(col, questions, "GMAT::DI")
+    else:
+        added = anki.gmatwiz.import_questions(col, questions, "GMAT::Quant")
     col.set_config("gmatLessonScheduled", scheduled + [topic_id])
     return added
 
@@ -2674,6 +3038,10 @@ def gmat_topic_questions() -> bytes:
     except Exception:
         n = 10
     n = max(1, min(50, n))
+    # The requested topic encodes its section (gmat::quant / gmat::verbal), so a
+    # verbal practice/quiz pulls from GMAT Verbal notes; quant is unchanged.
+    section = _gmat_section_of_topic(topic)
+    notetype = _gmat_notetype_for_section(section)
 
     col = aqt.mw.col
     seen_nids: set = set()
@@ -2686,7 +3054,7 @@ def gmat_topic_questions() -> bytes:
         pass
 
     pool: list = []
-    for nid in col.find_notes('note:"GMAT PS"'):
+    for nid in col.find_notes(f'note:"{notetype}"'):
         fields = dict(col.get_note(nid).items())
         if topic and fields.get("Topic", "") != topic:
             continue
@@ -2698,8 +3066,23 @@ def gmat_topic_questions() -> bytes:
                 "topic": fields.get("Topic", ""),
                 "difficulty": fields.get("Difficulty", "medium") or "medium",
                 "seen": nid in seen_nids,
+                "passage": fields.get("Passage", ""),
             }
         )
+    # Bundled fallback (no notes imported yet for this section, e.g. verbal/di).
+    if not pool and section in ("verbal", "di"):
+        for f in _gmat_pool_by_topic(section).get(topic, []):
+            pool.append(
+                {
+                    "stem": f.get("Stem", ""),
+                    "options": {k: f.get(f"Option{k}", "") for k in "ABCDE"},
+                    "correct": f.get("Correct", ""),
+                    "topic": f.get("Topic", ""),
+                    "difficulty": f.get("Difficulty", "medium") or "medium",
+                    "seen": False,
+                    "passage": f.get("Passage", ""),
+                }
+            )
     random.shuffle(pool)
     # unseen first so a fresh session prefers held-out items
     pool.sort(key=lambda q: q["seen"])
@@ -3183,6 +3566,7 @@ post_handler_list = [
     gmat_log_error,
     gmat_set_error_takeaway,
     gmat_save_profile,
+    gmat_ensure_content,
     gmat_set_ai_enabled,
     gmat_add_questions,
     gmat_pretest_questions,
@@ -3376,6 +3760,7 @@ def _check_dynamic_request_permissions():
         "/_anki/gmatColMeta",
         "/_anki/gmatColExport",
         "/_anki/gmatColReplace",
+        "/_anki/gmatEnsureContent",
     ):
         pass
     else:

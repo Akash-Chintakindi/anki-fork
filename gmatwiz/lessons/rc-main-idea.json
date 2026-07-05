@@ -1,0 +1,280 @@
+{
+  "topic_id": "gmat::verbal::rc::main_idea",
+  "slug": "rc-main-idea",
+  "title": "Reading Comprehension: Main Idea",
+  "prerequisites": [
+    "read a short passage for its overall point",
+    "tell a main point from a supporting detail"
+  ],
+  "learning_objectives": [
+    "State the passage's primary purpose in one sentence before reading the choices.",
+    "Choose the option that covers the WHOLE passage, not just one paragraph.",
+    "Reject options that are too narrow, too broad, or not discussed."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do -> we do -> you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Summarizing a paragraph in a single sentence.",
+    "do_now": {
+      "instructions": "No notes. 4 minutes.",
+      "items": [
+        {
+          "prompt": "What is a passage's 'primary purpose'?",
+          "answer": "The main job the whole passage does (e.g. explain, argue, describe).",
+          "targets": "primary purpose"
+        },
+        {
+          "prompt": "Is a detail from one sentence usually the main idea?",
+          "answer": "No - the main idea covers the whole passage.",
+          "targets": "scope"
+        },
+        {
+          "prompt": "Why predict the main idea before reading choices?",
+          "answer": "To avoid being pulled by narrow but tempting options.",
+          "targets": "method"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Recalls the difference between a whole-passage point and a single detail.",
+      "if_students_struggle": "Have them write a one-line summary of the passage first, then match it to an option.",
+      "questions": [
+        {
+          "prompt": "A right main-idea answer must cover how much of the passage?",
+          "answer": "All of it (the whole passage), not one part.",
+          "targets": "scope"
+        },
+        {
+          "prompt": "Name two wrong-answer traps for main idea.",
+          "answer": "Too narrow (one detail) and too broad / not discussed.",
+          "targets": "traps"
+        }
+      ]
+    },
+    "prior_knowledge_bridge": "You can summarize a paragraph. A main-idea question just scales that up: capture what the ENTIRE passage is doing in one sentence, then pick the choice that matches that sentence - not a true-but-narrow detail.",
+    "learning_intention": "By the end you can state a passage's primary purpose and select the option that matches the whole passage.",
+    "success_criteria": [
+      "I can summarize a passage's overall point in one sentence.",
+      "I can reject options that are too narrow or not discussed.",
+      "I can pick the option that spans the whole passage."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00-4:00",
+        "move": "Do Now on screen; learners answer from memory, no notes."
+      },
+      {
+        "time": "4:00-6:00",
+        "move": "Cold-call answers; name the argument's conclusion vs premises."
+      },
+      {
+        "time": "6:00-8:00",
+        "move": "Bridge to today's question type; state what the stem is really asking."
+      },
+      {
+        "time": "8:00-10:00",
+        "move": "Move to I do: model the reasoning on one worked item."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "Passage: The invention of cheap aluminum in the late nineteenth century transformed industries far beyond the obvious. Once as costly as silver, aluminum became affordable after a new electrolytic process was devised, and it soon reshaped packaging, transportation, and construction.\n\nQuestion: The primary purpose of the passage is to",
+    "options": {
+      "A": "describe how a technological change had wide-ranging effects",
+      "B": "argue that aluminum is more useful than silver",
+      "C": "explain the chemistry of the electrolytic process in detail",
+      "D": "criticize nineteenth-century packaging methods",
+      "E": "predict future uses of aluminum in construction"
+    },
+    "correct": "A",
+    "explanation": "The passage says cheap aluminum 'reshaped packaging, transportation, and construction' - a wide-ranging effect. A covers the whole passage; the others are narrow or not stated.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "One-line summary: a new process made aluminum cheap, and that changed many industries.",
+      "Predict: purpose = show a technological change had broad effects.",
+      "Match to A; reject B/C/D/E as narrow or unstated."
+    ],
+    "key_takeaway": "Predict the whole-passage point first, then pick the option that matches it.",
+    "topic": "gmat::verbal::rc::main_idea",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Reading Comprehension"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "Passage: Coral reefs occupy a tiny fraction of the ocean floor, yet they shelter a quarter of all marine species. Scientists studying reef resilience have found that reefs exposed to mild, occasional heat stress sometimes withstand later, severe heat waves better than reefs that had been fully protected.\n\nQuestion: The passage is primarily concerned with",
+      "options": {
+        "A": "a surprising finding about what helps reefs survive heat",
+        "B": "proving that reefs cover very little of the ocean floor",
+        "C": "listing the species that live on coral reefs",
+        "D": "arguing that reefs should be fully protected from all stress",
+        "E": "describing how heat waves form in the ocean"
+      },
+      "correct": "A",
+      "explanation": "The passage's point is the surprising resilience finding (mild prior stress can help). A matches the whole passage; the others are narrow or contradicted.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "What is the passage's most important, whole-passage point?",
+        "The reef-area fact is just a setup detail.",
+        "Watch for an option that contradicts the finding (full protection)."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right - the resilience finding is the main point.",
+        "if_incorrect": "The area statistic and species count are supporting details, not the main idea."
+      },
+      "topic": "gmat::verbal::rc::main_idea",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Reading Comprehension"
+    },
+    {
+      "id": "we_2",
+      "stem": "Passage: The invention of cheap aluminum in the late nineteenth century transformed industries far beyond the obvious. Once as costly as silver, aluminum became affordable after a new electrolytic process was devised, and it soon reshaped packaging, transportation, and construction.\n\nQuestion: Which of the following best expresses the main idea of the passage?",
+      "options": {
+        "A": "A drop in aluminum's cost led it to affect many industries.",
+        "B": "Aluminum was once as expensive as silver.",
+        "C": "The electrolytic process is difficult to describe.",
+        "D": "Packaging improved more than transportation did.",
+        "E": "Construction depends entirely on aluminum."
+      },
+      "correct": "A",
+      "explanation": "The whole passage is about cheap aluminum's broad impact. A states that; B is a setup detail, and C/D/E are unstated or overstated.",
+      "difficulty": "easy",
+      "scaffold_hints": [
+        "Pick the sentence that could headline the whole passage.",
+        "A single fact (once costly as silver) is too narrow.",
+        "Avoid extreme wording (entirely)."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Yes - broad impact from a cost drop.",
+        "if_incorrect": "B is true but narrow; the main idea must span the passage."
+      },
+      "topic": "gmat::verbal::rc::main_idea",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Reading Comprehension"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "Passage: Before refrigerated railcars, most fresh meat was slaughtered near cities. Refrigerated cars let packers centralize slaughter in a few large plants and ship dressed meat long distances, lowering costs but drawing complaints from local butchers.\n\nQuestion: The primary purpose of the passage is to",
+      "options": {
+        "A": "explain how a new technology changed an industry and note a reaction to it",
+        "B": "argue that local butchers produced better meat",
+        "C": "describe the mechanical design of refrigerated railcars",
+        "D": "prove that centralized slaughter was a mistake",
+        "E": "trace the history of cities near railways"
+      },
+      "correct": "A",
+      "explanation": "The passage explains the change (refrigerated cars centralized slaughter) and notes a reaction (butchers' complaints). A captures both; the others are narrow or unstated.",
+      "difficulty": "medium",
+      "topic": "gmat::verbal::rc::main_idea",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Reading Comprehension",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "Passage: Many assume bird migration is triggered mainly by falling temperature. Studies of caged birds, however, show that even in constant warmth the birds grow restless at the usual migration time, suggesting an internal calendar plays a large role.\n\nQuestion: Which of the following best states the main point of the passage?",
+      "options": {
+        "A": "An internal timing mechanism, not just temperature, drives migration.",
+        "B": "Caged birds behave exactly like wild birds.",
+        "C": "Temperature has no effect on birds at all.",
+        "D": "Bird migration occurs at the same time every year everywhere.",
+        "E": "Studying caged birds is the only way to understand migration."
+      },
+      "correct": "A",
+      "explanation": "The study shows restlessness even in constant warmth, pointing to an internal calendar. A states the main point; the others overstate or contradict.",
+      "difficulty": "medium",
+      "topic": "gmat::verbal::rc::main_idea",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Reading Comprehension",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "Passage: Public libraries were once quiet halls devoted almost entirely to books. Today many devote space to computers, meeting rooms, and classes, reflecting a broader idea of the library as a community hub rather than a mere book repository.\n\nQuestion: The passage is primarily concerned with",
+      "options": {
+        "A": "a shift in how libraries are conceived and used",
+        "B": "proving that books are no longer important",
+        "C": "describing the layout of a specific library",
+        "D": "arguing that libraries should ban computers",
+        "E": "explaining how meeting rooms are scheduled"
+      },
+      "correct": "A",
+      "explanation": "The passage contrasts the old book-only library with today's community hub - a shift in conception. A matches; the others are narrow, extreme, or unstated.",
+      "difficulty": "hard",
+      "topic": "gmat::verbal::rc::main_idea",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Reading Comprehension",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "GMAC - GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Verbal Reasoning scope.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy - LSAT Logical Reasoning (free)",
+      "url": "https://www.khanacademy.org/prep/lsat",
+      "note": "Free lessons on argument structure, assumptions, strengthen/weaken, and flaws."
+    }
+  ],
+  "domain": "Reading Comprehension",
+  "section": "Verbal Reasoning",
+  "question_type": "Reading Comprehension",
+  "estimated_minutes": 18,
+  "schema_version": "1.0",
+  "exam": "GMAT Focus Edition"
+}

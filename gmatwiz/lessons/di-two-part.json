@@ -1,0 +1,282 @@
+{
+  "topic_id": "gmat::di::reasoning::two_part_analysis",
+  "slug": "di-two-part",
+  "title": "Data Insights: Two-Part Analysis",
+  "question_type": "Two-Part Analysis",
+  "prerequisites": [
+    "solve a system of two linear equations in two unknowns",
+    "check a candidate solution against every condition"
+  ],
+  "learning_objectives": [
+    "Translate a two-condition scenario into two equations.",
+    "Solve the two equations together for both unknown quantities.",
+    "Select the single answer pair that satisfies both conditions at once."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do -> we do -> you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Setting up and solving two linear equations in two unknowns.",
+    "do_now": {
+      "instructions": "No notes. Answer from memory in 4 minutes.",
+      "items": [
+        {
+          "prompt": "Solve: x + y = 10 and 2x + y = 16.",
+          "answer": "x = 6, y = 4.",
+          "targets": "solving a 2x2 system"
+        },
+        {
+          "prompt": "Buying 3 items for $9, with pens at $2 and notebooks at $5, write two equations.",
+          "answer": "p + n = 3 and 2p + 5n = 9.",
+          "targets": "translating words into two equations"
+        },
+        {
+          "prompt": "Does (x, y) = (2, 3) satisfy both x + y = 5 and 2x + y = 8?",
+          "answer": "First yes (5); second no (7 != 8) - so it is not a solution.",
+          "targets": "checking a candidate against BOTH conditions"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Recalls solving two equations at once and the habit of testing a candidate against every condition - the heart of Two-Part Analysis.",
+      "if_students_struggle": "Have them plug a wrong pair into both equations to watch it pass one condition and fail the other.",
+      "questions": [
+        {
+          "prompt": "To accept a candidate answer for two conditions, how many must it satisfy?",
+          "answer": "Both - all conditions at once.",
+          "targets": "simultaneous constraints"
+        },
+        {
+          "prompt": "If a pair fits the total count but not the total cost, is it a valid answer?",
+          "answer": "No - it must fit every condition.",
+          "targets": "verify against all constraints"
+        }
+      ]
+    },
+    "prior_knowledge_bridge": "You can solve two equations in two unknowns and check a pair against both. Two-Part Analysis is exactly that in table form: the two 'parts' are two related quantities, and the correct choice is the single pair that makes BOTH given conditions true at once. Translate each fact into an equation, solve, then verify the pair against both facts.",
+    "learning_intention": "By the end you can translate a two-condition scenario into two equations and select the one answer pair that satisfies both conditions simultaneously.",
+    "success_criteria": [
+      "I turn each stated fact into its own equation.",
+      "I solve the two equations together for both quantities.",
+      "I confirm the chosen pair satisfies both conditions before selecting it."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00-4:00",
+        "move": "Do Now on screen; learners answer from memory, no notes."
+      },
+      {
+        "time": "4:00-6:00",
+        "move": "Cold-call answers; name the argument's conclusion vs premises."
+      },
+      {
+        "time": "6:00-8:00",
+        "move": "Bridge to today's question type; state what the stem is really asking."
+      },
+      {
+        "time": "8:00-10:00",
+        "move": "Move to I do: model the reasoning on one worked item."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "A customer paid a vending machine exactly $17 using exactly 12 coins, all of them either one-dollar coins or two-dollar coins. Select the pair that gives the number of one-dollar coins and the number of two-dollar coins used. Each option lists the count of one-dollar coins and the count of two-dollar coins.",
+    "options": {
+      "A": "5 one-dollar coins and 7 two-dollar coins",
+      "B": "7 one-dollar coins and 5 two-dollar coins",
+      "C": "8 one-dollar coins and 4 two-dollar coins",
+      "D": "6 one-dollar coins and 6 two-dollar coins",
+      "E": "9 one-dollar coins and 3 two-dollar coins"
+    },
+    "correct": "B",
+    "explanation": "Let x = one-dollar coins and y = two-dollar coins. The count gives x + y = 12; the value gives x + 2y = 17. Subtracting, y = 5, so x = 7. Check: 7 + 5 = 12 coins and 7 + 10 = $17 - both hold. The pair is 7 one-dollar and 5 two-dollar coins, option B.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "Two unknowns: the count of one-dollar coins (x) and two-dollar coins (y). I need one pair that fits both facts.",
+      "Fact 1 (12 coins): x + y = 12. Fact 2 ($17 paid): x + 2y = 17.",
+      "Subtract the first from the second: y = 5, so x = 12 - 5 = 7.",
+      "Verify the pair (7, 5): 7 + 5 = 12 coins and 7 + 2(5) = $17 - both conditions hold.",
+      "The pair '7 one-dollar coins and 5 two-dollar coins' is option B."
+    ],
+    "key_takeaway": "In Two-Part Analysis, write one equation per condition, solve them together, and pick the single pair that satisfies BOTH - then verify before committing.",
+    "topic": "gmat::di::reasoning::two_part_analysis",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Two-Part Analysis"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "A theater sold adult tickets for $12 each and child tickets for $8 each. One evening it sold 20 tickets for a total of $216. Select the pair giving the number of adult tickets and the number of child tickets sold. Each option lists the adult count and the child count.",
+      "options": {
+        "A": "14 adult and 6 child",
+        "B": "6 adult and 14 child",
+        "C": "12 adult and 8 child",
+        "D": "10 adult and 10 child",
+        "E": "16 adult and 4 child"
+      },
+      "correct": "A",
+      "explanation": "Let a = adult tickets, c = child tickets. Count: a + c = 20; money: 12a + 8c = 216. Substituting c = 20 - a gives 12a + 8(20 - a) = 216, so 4a + 160 = 216 and a = 14, c = 6. Check: 14 + 6 = 20 and 12(14) + 8(6) = 168 + 48 = 216. The pair is 14 adult and 6 child, option A.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "Let a = adult tickets and c = child tickets; write the count equation and the money equation.",
+        "a + c = 20 and 12a + 8c = 216. Substitute to eliminate one variable.",
+        "Solve for a, then c, and check both totals before choosing."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right - 14 adult and 6 child give 20 tickets and $216.",
+        "if_incorrect": "A correct pair must hit BOTH the 20-ticket count and the $216 total; test your pair against each."
+      },
+      "topic": "gmat::di::reasoning::two_part_analysis",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Two-Part Analysis"
+    },
+    {
+      "id": "we_2",
+      "stem": "A gardener plants 15 plants in total, using 46 liters of water, with each rose bush needing 4 liters and each lavender plant needing 2 liters. Select the pair giving the number of rose bushes and the number of lavender plants. Each option lists the rose-bush count and the lavender count.",
+      "options": {
+        "A": "6 rose bushes and 9 lavender plants",
+        "B": "7 rose bushes and 8 lavender plants",
+        "C": "8 rose bushes and 7 lavender plants",
+        "D": "9 rose bushes and 6 lavender plants",
+        "E": "10 rose bushes and 5 lavender plants"
+      },
+      "correct": "C",
+      "explanation": "Let r = rose bushes, l = lavender plants. Count: r + l = 15; water: 4r + 2l = 46. Substituting l = 15 - r gives 4r + 2(15 - r) = 46, so 2r + 30 = 46 and r = 8, l = 7. Check: 8 + 7 = 15 and 4(8) + 2(7) = 32 + 14 = 46. The pair is 8 rose bushes and 7 lavender plants, option C.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "Let r = rose bushes and l = lavender plants; write one equation for the plant count and one for the water.",
+        "r + l = 15 and 4r + 2l = 46.",
+        "Solve the two together, then verify both totals."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Exactly - 8 rose bushes and 7 lavender plants give 15 plants and 46 liters.",
+        "if_incorrect": "Check your pair against BOTH the 15-plant count and the 46-liter total."
+      },
+      "topic": "gmat::di::reasoning::two_part_analysis",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Two-Part Analysis"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "A print shop charges a fixed setup fee plus a per-page fee. A 100-page order costs $45 and a 250-page order costs $90. Select the pair giving the setup fee and the per-page fee. Each option lists the setup fee and the per-page fee.",
+      "options": {
+        "A": "$10 setup and $0.35 per page",
+        "B": "$15 setup and $0.30 per page",
+        "C": "$20 setup and $0.25 per page",
+        "D": "$5 setup and $0.40 per page",
+        "E": "$15 setup and $0.35 per page"
+      },
+      "correct": "B",
+      "explanation": "Let s = setup fee and p = per-page fee. Then s + 100p = 45 and s + 250p = 90. Subtracting, 150p = 45, so p = 0.30 and s = 45 - 100(0.30) = 15. Check: 15 + 250(0.30) = 15 + 75 = 90. The pair is $15 setup and $0.30 per page, option B. Choices that fit only the 100-page order (like $10 and $0.35) fail the 250-page order.",
+      "difficulty": "hard",
+      "topic": "gmat::di::reasoning::two_part_analysis",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Two-Part Analysis",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "A quiz has 30 questions worth 96 points in total, all answered correctly, where each Section 1 question is worth 2 points and each Section 2 question is worth 5 points. Select the pair giving the number of Section 1 questions and the number of Section 2 questions. Each option lists the Section 1 count and the Section 2 count.",
+      "options": {
+        "A": "12 two-point and 18 five-point",
+        "B": "15 two-point and 15 five-point",
+        "C": "20 two-point and 10 five-point",
+        "D": "18 two-point and 12 five-point",
+        "E": "22 two-point and 8 five-point"
+      },
+      "correct": "D",
+      "explanation": "Let a = 2-point questions and b = 5-point questions. Count: a + b = 30; points: 2a + 5b = 96. Substituting a = 30 - b gives 2(30 - b) + 5b = 96, so 60 + 3b = 96 and b = 12, a = 18. Check: 18 + 12 = 30 and 2(18) + 5(12) = 36 + 60 = 96. The pair is 18 two-point and 12 five-point, option D.",
+      "difficulty": "medium",
+      "topic": "gmat::di::reasoning::two_part_analysis",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Two-Part Analysis",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "A charity sold small candles at $6 each and large candles at $10 each, selling 24 candles for a total of $200. Select the pair giving the number of small candles and the number of large candles sold. Each option lists the small-candle count and the large-candle count.",
+      "options": {
+        "A": "16 small and 8 large",
+        "B": "14 small and 10 large",
+        "C": "12 small and 12 large",
+        "D": "8 small and 16 large",
+        "E": "10 small and 14 large"
+      },
+      "correct": "E",
+      "explanation": "Let s = small candles and l = large candles. Count: s + l = 24; money: 6s + 10l = 200. Substituting s = 24 - l gives 6(24 - l) + 10l = 200, so 144 + 4l = 200 and l = 14, s = 10. Check: 10 + 14 = 24 and 6(10) + 10(14) = 60 + 140 = 200. The pair is 10 small and 14 large, option E.",
+      "difficulty": "easy",
+      "topic": "gmat::di::reasoning::two_part_analysis",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Two-Part Analysis",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "GMAC - GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Data Insights section scope.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy - Statistics & Probability (free)",
+      "url": "https://www.khanacademy.org/math/statistics-probability",
+      "note": "Free lessons on reading tables and graphs and reasoning from data."
+    }
+  ],
+  "domain": "Data Insights",
+  "section": "Data Insights",
+  "estimated_minutes": 18,
+  "schema_version": "1.0",
+  "exam": "GMAT Focus Edition"
+}

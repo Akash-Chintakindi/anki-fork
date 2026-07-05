@@ -1,0 +1,280 @@
+{
+  "topic_id": "gmat::verbal::rc::inference",
+  "slug": "rc-inference",
+  "title": "Reading Comprehension: Inference",
+  "prerequisites": [
+    "read a passage precisely",
+    "distinguish what is stated from what is implied"
+  ],
+  "learning_objectives": [
+    "Choose the option that must be true given the passage - no outside knowledge.",
+    "Prefer small, well-supported inferences over large leaps.",
+    "Reject options that go beyond, distort, or contradict the passage."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do -> we do -> you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Telling a stated fact from an implied one.",
+    "do_now": {
+      "instructions": "No notes. 4 minutes.",
+      "items": [
+        {
+          "prompt": "An RC inference must be what, relative to the passage?",
+          "answer": "Strongly supported / must be true given the text.",
+          "targets": "standard"
+        },
+        {
+          "prompt": "May you use outside knowledge on inference questions?",
+          "answer": "No - only the passage.",
+          "targets": "scope"
+        },
+        {
+          "prompt": "Are big, dramatic inferences usually right on the GMAT?",
+          "answer": "No - the GMAT rewards small, safe inferences.",
+          "targets": "safe inference"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Recalls the strict 'supported by the passage only' bar for inference.",
+      "if_students_struggle": "Have them point to the exact sentence that supports a candidate inference.",
+      "questions": [
+        {
+          "prompt": "How do you test a candidate inference?",
+          "answer": "Find the passage sentence(s) that force it.",
+          "targets": "support test"
+        },
+        {
+          "prompt": "Why reject an inference that needs outside facts?",
+          "answer": "RC inferences must rest on the passage alone.",
+          "targets": "scope"
+        }
+      ]
+    },
+    "prior_knowledge_bridge": "You can tell stated from implied. An inference question asks for the implied claim the passage makes almost inevitable - the smallest safe step beyond the words, supported by a specific sentence, never a leap that needs outside facts.",
+    "learning_intention": "By the end you can select the choice the passage most supports and reject leaps beyond it.",
+    "success_criteria": [
+      "I can point to the sentence that supports my inference.",
+      "I can prefer a small, safe inference over a dramatic one.",
+      "I can reject options that add outside information."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00-4:00",
+        "move": "Do Now on screen; learners answer from memory, no notes."
+      },
+      {
+        "time": "4:00-6:00",
+        "move": "Cold-call answers; name the argument's conclusion vs premises."
+      },
+      {
+        "time": "6:00-8:00",
+        "move": "Bridge to today's question type; state what the stem is really asking."
+      },
+      {
+        "time": "8:00-10:00",
+        "move": "Move to I do: model the reasoning on one worked item."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "Passage: The town's only bridge is closed for repairs until spring. During the closure, the ferry is the sole way to cross the river, and it does not run after dark.\n\nQuestion: It can be inferred from the passage that, during the closure,",
+    "options": {
+      "A": "there is no way to cross the river after dark",
+      "B": "the bridge will never reopen",
+      "C": "the ferry is faster than the bridge was",
+      "D": "most residents rarely need to cross the river",
+      "E": "the ferry runs more often than it did before"
+    },
+    "correct": "A",
+    "explanation": "The ferry is the SOLE crossing and doesn't run after dark, so during the closure there is no after-dark crossing. A is a small, forced inference; the others add facts the passage never gives.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "Facts: ferry is the only crossing; ferry stops after dark.",
+      "Combine: after dark, no crossing at all.",
+      "A is forced; B/C/D/E need outside information."
+    ],
+    "key_takeaway": "Combine the passage's own statements into the smallest claim they force - nothing extra.",
+    "topic": "gmat::verbal::rc::inference",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Reading Comprehension"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "Passage: Every painting in the exhibit was completed after 1950. The museum's oldest painting was completed in 1600.\n\nQuestion: The passage most strongly supports which of the following?",
+      "options": {
+        "A": "The museum's oldest painting is not in the exhibit.",
+        "B": "The exhibit contains the museum's most valuable paintings.",
+        "C": "Paintings from 1600 are rare.",
+        "D": "The exhibit has more paintings than the rest of the museum.",
+        "E": "The museum was founded after 1950."
+      },
+      "correct": "A",
+      "explanation": "Exhibit paintings are all post-1950; the 1600 painting is pre-1950, so it can't be in the exhibit. A is forced; the rest add unsupported claims.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "Compare the dates: exhibit is post-1950; the oldest is 1600.",
+        "A pre-1950 painting cannot be in a post-1950 exhibit.",
+        "Reject options needing value, rarity, or founding date."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right - the date rule excludes the 1600 painting.",
+        "if_incorrect": "Value and rarity aren't in the passage; only dates are."
+      },
+      "topic": "gmat::verbal::rc::inference",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Reading Comprehension"
+    },
+    {
+      "id": "we_2",
+      "stem": "Passage: The clinic accepts walk-in patients only on weekday mornings. On weekday afternoons and all weekend, patients must have an appointment.\n\nQuestion: It can be inferred that a patient without an appointment",
+      "options": {
+        "A": "cannot be seen on a Saturday",
+        "B": "will always be seen faster than one with an appointment",
+        "C": "prefers mornings to afternoons",
+        "D": "is never accepted by the clinic",
+        "E": "must pay more than a patient with an appointment"
+      },
+      "correct": "A",
+      "explanation": "Walk-ins are allowed only weekday mornings; weekends require an appointment, so a walk-in cannot be seen Saturday. A is forced; the others add unsupported facts.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "When are walk-ins allowed? Only weekday mornings.",
+        "Saturday is a weekend, so an appointment is required.",
+        "Avoid options about speed or cost - not stated."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Exactly - no walk-ins on weekends.",
+        "if_incorrect": "D is too strong (walk-ins ARE accepted weekday mornings)."
+      },
+      "topic": "gmat::verbal::rc::inference",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Reading Comprehension"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "Passage: All of the company's electric vehicles were built at its newest plant. The company's first plant, built in 1980, produces only gasoline vehicles.\n\nQuestion: The passage most strongly supports which of the following?",
+      "options": {
+        "A": "No electric vehicle was built at the 1980 plant.",
+        "B": "The newest plant is larger than the 1980 plant.",
+        "C": "Gasoline vehicles are cheaper to build.",
+        "D": "The company stopped building gasoline vehicles.",
+        "E": "The 1980 plant will be closed soon."
+      },
+      "correct": "A",
+      "explanation": "Electric vehicles all come from the newest plant, and the 1980 plant makes only gasoline vehicles, so no electric vehicle came from it. A is forced; the rest add facts.",
+      "difficulty": "medium",
+      "topic": "gmat::verbal::rc::inference",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Reading Comprehension",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "Passage: The festival is held outdoors and is canceled whenever it rains. This year the festival was held as scheduled.\n\nQuestion: It can be inferred from the passage that this year",
+      "options": {
+        "A": "it did not rain on the festival day",
+        "B": "the festival was more popular than last year",
+        "C": "the weather is usually sunny in the region",
+        "D": "the festival will be held indoors next year",
+        "E": "more people attended than expected"
+      },
+      "correct": "A",
+      "explanation": "Rain forces cancellation; the festival was held, so by the contrapositive it did not rain. A is forced; the others are unsupported.",
+      "difficulty": "medium",
+      "topic": "gmat::verbal::rc::inference",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Reading Comprehension",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "Passage: Researchers noted that a certain frog species is found only in caves that stay near a constant cool temperature year-round. A newly surveyed cave has temperatures that swing widely between seasons.\n\nQuestion: The passage most strongly supports which of the following about the newly surveyed cave?",
+      "options": {
+        "A": "The frog species is unlikely to be found living there.",
+        "B": "The cave is larger than the frogs' usual caves.",
+        "C": "The frogs would thrive there if introduced.",
+        "D": "The cave has no other animal species.",
+        "E": "The temperature swings are caused by the frogs."
+      },
+      "correct": "A",
+      "explanation": "The frog needs constant cool temperatures; this cave swings widely, so the frog is unlikely to live there. A is the supported inference; the others add or reverse facts.",
+      "difficulty": "hard",
+      "topic": "gmat::verbal::rc::inference",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Reading Comprehension",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "GMAC - GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Verbal Reasoning scope.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy - LSAT Logical Reasoning (free)",
+      "url": "https://www.khanacademy.org/prep/lsat",
+      "note": "Free lessons on argument structure, assumptions, strengthen/weaken, and flaws."
+    }
+  ],
+  "domain": "Reading Comprehension",
+  "section": "Verbal Reasoning",
+  "question_type": "Reading Comprehension",
+  "estimated_minutes": 18,
+  "schema_version": "1.0",
+  "exam": "GMAT Focus Edition"
+}

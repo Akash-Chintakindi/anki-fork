@@ -45,7 +45,7 @@ onto the PRD Section 8 'GMAT PS' notetype so the app can import directly:
   Stem=stem  OptionA..E=options.A..E  Correct=correct  Explanation=explanation
   Topic=topic  Difficulty=difficulty  Source=source  OfficialFlag=official_flag
 
-COVERAGE (18 leaf topics, 126 practice items)
+COVERAGE (33 leaf topics, 216 practice items)
 ------------
 Arithmetic:
   - Number Properties          gmat::quant::arithmetic::number_properties
@@ -87,11 +87,47 @@ Algebra:
   - Word Problems: Rate, Work, Mixture & Interest gmat::quant::algebra::word_problems
       json: word-problems.json         html: html/word-problems.html
 
+Critical Reasoning:
+  - Critical Reasoning: Assumption gmat::verbal::cr::assumption
+      json: cr-assumption.json         html: html/cr-assumption.html
+  - Critical Reasoning: Strengthen gmat::verbal::cr::strengthen
+      json: cr-strengthen.json         html: html/cr-strengthen.html
+  - Critical Reasoning: Weaken gmat::verbal::cr::weaken
+      json: cr-weaken.json             html: html/cr-weaken.html
+  - Critical Reasoning: Evaluate the Argument gmat::verbal::cr::evaluate
+      json: cr-evaluate.json           html: html/cr-evaluate.html
+  - Critical Reasoning: Inference gmat::verbal::cr::inference
+      json: cr-inference.json          html: html/cr-inference.html
+  - Critical Reasoning: Explain the Paradox gmat::verbal::cr::explain_paradox
+      json: cr-paradox.json            html: html/cr-paradox.html
+  - Critical Reasoning: Find the Flaw gmat::verbal::cr::flaw
+      json: cr-flaw.json               html: html/cr-flaw.html
+  - Critical Reasoning: Boldface (Describe the Role) gmat::verbal::cr::boldface
+      json: cr-boldface.json           html: html/cr-boldface.html
+  - Critical Reasoning: Complete the Argument gmat::verbal::cr::complete_argument
+      json: cr-complete.json           html: html/cr-complete.html
+
+Reading Comprehension:
+  - Reading Comprehension: Main Idea gmat::verbal::rc::main_idea
+      json: rc-main-idea.json          html: html/rc-main-idea.html
+  - Reading Comprehension: Inference gmat::verbal::rc::inference
+      json: rc-inference.json          html: html/rc-inference.html
+  - Reading Comprehension: Function gmat::verbal::rc::function
+      json: rc-function.json           html: html/rc-function.html
+
+Data Insights:
+  - Data Insights: Data Sufficiency gmat::di::reasoning::data_sufficiency
+      json: di-data-sufficiency.json   html: html/di-data-sufficiency.html
+  - Data Insights: Two-Part Analysis gmat::di::reasoning::two_part_analysis
+      json: di-two-part.json           html: html/di-two-part.html
+  - Data Insights: Multi-Source Reasoning gmat::di::reasoning::multi_source_reasoning
+      json: di-multi-source.json       html: html/di-multi-source.html
+
 FILES
 ------------
   schema.json     JSON Schema (draft-07) for a topic file
   index.json      manifest: topics, paths, counts, notetype mapping
-  <slug>.json     one lesson per topic (18 files)
+  <slug>.json     one lesson per topic (33 files)
   html/<slug>.html  self-contained Tufte-clean review page per topic
   html/index.html   hub linking every topic page
   build.py        authoring source of truth; regenerates all of the above

@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reading Comprehension: Inference &middot; GMATWiz Verbal Reasoning</title>
+<style>
+:root{
+  --ink:#1a1813; --muted:#6b6358; --rule:#d9d2c5; --bg:#fbf9f4; --card:#fffdf8;
+  --accent:#7a3b2e; --accent2:#3a5a40; --link:#7a3b2e; --code:#2b2b2b;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:3rem 2rem 6rem;}
+.content{max-width:720px;}
+header.masthead{border-bottom:1px solid var(--rule); padding-bottom:1.2rem; margin-bottom:2rem;}
+.kicker{font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:0 0 .4rem;}
+h1{font-size:2.3rem; line-height:1.1; margin:.1rem 0 .6rem; font-weight:600; letter-spacing:-.01em;}
+.meta{color:var(--muted); font-size:.9rem; margin:0;}
+.meta b{color:var(--ink); font-weight:600;}
+h2{font-size:1.45rem; margin:2.8rem 0 .3rem; font-weight:600; letter-spacing:-.01em;}
+h2 .num{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:.5rem;}
+h3{font-size:1.06rem; margin:1.6rem 0 .4rem; font-weight:600;}
+.sub{color:var(--muted); font-style:italic; margin:.1rem 0 1rem; font-size:.95rem;}
+p{margin:.6rem 0;} ul,ol{margin:.5rem 0 .9rem; padding-left:1.3rem;} li{margin:.25rem 0;}
+a{color:var(--link); text-decoration:none; border-bottom:1px solid rgba(122,59,46,.35);}
+a:hover{border-bottom-color:var(--link);}
+.lead{font-size:1.08rem;}
+section{position:relative;}
+.note{font-size:.8rem; color:var(--muted); line-height:1.4;}
+.objectives{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1rem 1.2rem;}
+.objectives ul{margin:.3rem 0 0;}
+.intent{border-left:3px solid var(--accent2); padding:.4rem 0 .4rem 1rem; margin:1rem 0; font-size:1.05rem;}
+.donow{background:#2b2620; color:#f3ecde; border-radius:8px; padding:1.1rem 1.3rem; margin:1rem 0;}
+.donow .tag{font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:#d8b48a;}
+.donow ol{padding-left:1.2rem;} .donow li{margin:.4rem 0;}
+.donow .ans{color:#b9c6a9; font-style:italic; font-size:.86rem; display:block; margin-top:.15rem;}
+table{border-collapse:collapse; width:100%; font-size:.92rem; margin:.6rem 0 1rem;}
+th,td{text-align:left; padding:.45rem .6rem; border-bottom:1px solid var(--rule); vertical-align:top;}
+th{font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+td.t{white-space:nowrap; color:var(--accent); font-variant-numeric:tabular-nums; width:6.5rem;}
+.q{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1.1rem 1.3rem; margin:1.1rem 0;}
+.q .qid{font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+.q .qid .diff{float:right; color:var(--accent2);}
+.q .stem{font-size:1.03rem; margin:.35rem 0 .6rem;}
+.choices{list-style:none; padding:0; margin:.2rem 0 .4rem; counter-reset:c;}
+.choices li{padding:.32rem .6rem; border:1px solid var(--rule); border-radius:6px; margin:.3rem 0; background:#fff;}
+.choices li .lab{display:inline-block; width:1.5rem; font-weight:600; color:var(--accent);}
+.choices li.correct{border-color:var(--accent2); background:#eef3ec;}
+.choices li.correct .lab{color:var(--accent2);}
+details{margin:.5rem 0 .2rem; border-top:1px dashed var(--rule); padding-top:.5rem;}
+details>summary{cursor:pointer; font-size:.86rem; color:var(--accent); font-weight:600; list-style:none;}
+details>summary::-webkit-details-marker{display:none;}
+details>summary::before{content:"\25B8  "; color:var(--accent);}
+details[open]>summary::before{content:"\25BE  ";}
+.expl{font-size:.95rem; margin-top:.5rem;}
+.hints{font-size:.92rem;} .hints li{margin:.2rem 0;}
+.feedback{font-size:.9rem;} .feedback .ok{color:var(--accent2);} .feedback .no{color:var(--accent);}
+.appfirst{font-size:.78rem; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin:.2rem 0;}
+.mastery{background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--accent2); border-radius:8px; padding:1rem 1.2rem;}
+.pill{display:inline-block; font-size:.72rem; padding:.12rem .5rem; border:1px solid var(--rule); border-radius:999px; color:var(--muted); margin:.1rem .2rem .1rem 0;}
+footer{margin-top:3.5rem; border-top:1px solid var(--rule); padding-top:1rem; color:var(--muted); font-size:.82rem;}
+.src{background:#eef3ec; border:1px solid #cfe0cf; border-radius:8px; padding:.9rem 1.1rem; margin:1.2rem 0;}
+.src .tag{font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent2); font-weight:600;}
+.crumbs{font-size:.85rem; margin-bottom:1.2rem;}
+.ask{font-size:.9rem; background:#fff8ec; border:1px dashed #e0c590; border-radius:8px; padding:.7rem 1rem; margin:1.4rem 0;}
+@media print{ body{background:#fff} .wrap{padding:0} a{border:none} .donow{-webkit-print-color-adjust:exact; print-color-adjust:exact} }
+</style></head>
+<body><div class="wrap"><div class="content">
+  <div class="crumbs"><a href="index.html">&larr; All topics</a> &middot; Verbal Reasoning &middot; Reading Comprehension</div>
+  <header class="masthead">
+    <p class="kicker">GMATWiz &middot; GMAT Focus Edition &middot; Verbal Reasoning (Reading Comprehension)</p>
+    <h1>Reading Comprehension: Inference</h1>
+    <p class="meta"><b>Topic id</b> <code>gmat::verbal::rc::inference</code> &middot; <b>Domain</b> Reading Comprehension
+      &middot; <b>Prereqs</b> read a passage precisely, distinguish what is stated from what is implied &middot; <b>~18 min</b></p>
+  </header>
+
+  <div class="objectives">
+    <p class="note"><b>Learning objectives</b></p>
+    <ul><li>Choose the option that must be true given the passage - no outside knowledge.</li><li>Prefer small, well-supported inferences over large leaps.</li><li>Reject options that go beyond, distort, or contradict the passage.</li></ul>
+    <p class="note">Model: I do -&gt; we do -&gt; you do &middot; application-first (explanations revealed after an attempt) &middot; Rosenshine (daily review), Archer (I-do/we-do/you-do), SPOV2 application-first.</p>
+  </div>
+
+  
+    <section>
+      <h2><span class="num">1</span>Opening &mdash; retrieval &amp; bridge</h2>
+      <p class="sub">Builds on: Telling a stated fact from an implied one.</p>
+      <div class="donow">
+        <div class="tag">Do Now &middot; from memory, no notes</div>
+        <p>No notes. 4 minutes.</p>
+        <ol><li>An RC inference must be what, relative to the passage?<span class="ans">Strongly supported / must be true given the text.</span></li><li>May you use outside knowledge on inference questions?<span class="ans">No - only the passage.</span></li><li>Are big, dramatic inferences usually right on the GMAT?<span class="ans">No - the GMAT rewards small, safe inferences.</span></li></ol>
+      </div>
+      <p class="note"><b>Retrieval starter (5 min).</b> Recalls the strict &#x27;supported by the passage only&#x27; bar for inference.
+      <br><b>If students struggle:</b> Have them point to the exact sentence that supports a candidate inference.</p>
+      <h3>Prior-knowledge bridge</h3>
+      <p>You can tell stated from implied. An inference question asks for the implied claim the passage makes almost inevitable - the smallest safe step beyond the words, supported by a specific sentence, never a leap that needs outside facts.</p>
+      <h3>Learning intention</h3>
+      <p class="intent">By the end you can select the choice the passage most supports and reject leaps beyond it.</p>
+      <p class="note"><b>You'll know you've got it when:</b></p>
+      <ul><li>I can point to the sentence that supports my inference.</li><li>I can prefer a small, safe inference over a dramatic one.</li><li>I can reject options that add outside information.</li></ul>
+      <details><summary>Complete timed opening script</summary>
+        <table><thead><tr><th>Time</th><th>Move</th></tr></thead><tbody><tr><td class="t">0:00-4:00</td><td>Do Now on screen; learners answer from memory, no notes.</td></tr><tr><td class="t">4:00-6:00</td><td>Cold-call answers; name the argument&#x27;s conclusion vs premises.</td></tr><tr><td class="t">6:00-8:00</td><td>Bridge to today&#x27;s question type; state what the stem is really asking.</td></tr><tr><td class="t">8:00-10:00</td><td>Move to I do: model the reasoning on one worked item.</td></tr></tbody></table>
+      </details>
+    </section>
+
+  <section>
+    <h2><span class="num">2</span>I do &mdash; worked example</h2>
+    <p class="sub">Watch the reasoning modeled end to end before you try.</p>
+    
+    <div class="q">
+      <div class="qid">I DO &middot; worked example<span class="diff">medium</span></div>
+      <div class="stem">Passage: The town&#x27;s only bridge is closed for repairs until spring. During the closure, the ferry is the sole way to cross the river, and it does not run after dark.
+
+Question: It can be inferred from the passage that, during the closure,</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>there is no way to cross the river after dark</li><li><span class="lab">B</span>the bridge will never reopen</li><li><span class="lab">C</span>the ferry is faster than the bridge was</li><li><span class="lab">D</span>most residents rarely need to cross the river</li><li><span class="lab">E</span>the ferry runs more often than it did before</li></ul>
+      <h3>Think-aloud</h3>
+      <ol><li>Facts: ferry is the only crossing; ferry stops after dark.</li><li>Combine: after dark, no crossing at all.</li><li>A is forced; B/C/D/E need outside information.</li></ol>
+      <p class="expl"><b>Correct: A.</b> The ferry is the SOLE crossing and doesn&#x27;t run after dark, so during the closure there is no after-dark crossing. A is a small, forced inference; the others add facts the passage never gives.</p>
+      <p class="note"><b>Takeaway.</b> Combine the passage&#x27;s own statements into the smallest claim they force - nothing extra.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>We do &mdash; guided practice</h2>
+    <p class="sub">Scaffolds and immediate feedback are one click away. Fade them as you gain confidence.</p>
+    
+    <div class="q">
+      <div class="qid">we_1 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">Passage: Every painting in the exhibit was completed after 1950. The museum&#x27;s oldest painting was completed in 1600.
+
+Question: The passage most strongly supports which of the following?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>The museum&#x27;s oldest painting is not in the exhibit.</li><li><span class="lab">B</span>The exhibit contains the museum&#x27;s most valuable paintings.</li><li><span class="lab">C</span>Paintings from 1600 are rare.</li><li><span class="lab">D</span>The exhibit has more paintings than the rest of the museum.</li><li><span class="lab">E</span>The museum was founded after 1950.</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>Compare the dates: exhibit is post-1950; the oldest is 1600.</li><li>A pre-1950 painting cannot be in a post-1950 exhibit.</li><li>Reject options needing value, rarity, or founding date.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Right - the date rule excludes the 1600 painting.<br>
+        <span class="no">If incorrect:</span> Value and rarity aren&#x27;t in the passage; only dates are.</p>
+        <p class="expl"><b>Answer: A.</b> Exhibit paintings are all post-1950; the 1600 painting is pre-1950, so it can&#x27;t be in the exhibit. A is forced; the rest add unsupported claims.</p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">we_2 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">Passage: The clinic accepts walk-in patients only on weekday mornings. On weekday afternoons and all weekend, patients must have an appointment.
+
+Question: It can be inferred that a patient without an appointment</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>cannot be seen on a Saturday</li><li><span class="lab">B</span>will always be seen faster than one with an appointment</li><li><span class="lab">C</span>prefers mornings to afternoons</li><li><span class="lab">D</span>is never accepted by the clinic</li><li><span class="lab">E</span>must pay more than a patient with an appointment</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>When are walk-ins allowed? Only weekday mornings.</li><li>Saturday is a weekend, so an appointment is required.</li><li>Avoid options about speed or cost - not stated.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Exactly - no walk-ins on weekends.<br>
+        <span class="no">If incorrect:</span> D is too strong (walk-ins ARE accepted weekday mornings).</p>
+        <p class="expl"><b>Answer: A.</b> Walk-ins are allowed only weekday mornings; weekends require an appointment, so a walk-in cannot be seen Saturday. A is forced; the others add unsupported facts.</p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>You do &mdash; independent application</h2>
+    <p class="sub">Application-first (SPOV2): commit to an answer, then reveal the explanation. Log every miss.</p>
+    
+    <div class="q">
+      <div class="qid">you_1 &middot; you do (independent)<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Passage: All of the company&#x27;s electric vehicles were built at its newest plant. The company&#x27;s first plant, built in 1980, produces only gasoline vehicles.
+
+Question: The passage most strongly supports which of the following?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>No electric vehicle was built at the 1980 plant.</li><li><span class="lab">B</span>The newest plant is larger than the 1980 plant.</li><li><span class="lab">C</span>Gasoline vehicles are cheaper to build.</li><li><span class="lab">D</span>The company stopped building gasoline vehicles.</li><li><span class="lab">E</span>The 1980 plant will be closed soon.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> Electric vehicles all come from the newest plant, and the 1980 plant makes only gasoline vehicles, so no electric vehicle came from it. A is forced; the rest add facts.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_2 &middot; you do (independent)<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Passage: The festival is held outdoors and is canceled whenever it rains. This year the festival was held as scheduled.
+
+Question: It can be inferred from the passage that this year</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>it did not rain on the festival day</li><li><span class="lab">B</span>the festival was more popular than last year</li><li><span class="lab">C</span>the weather is usually sunny in the region</li><li><span class="lab">D</span>the festival will be held indoors next year</li><li><span class="lab">E</span>more people attended than expected</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> Rain forces cancellation; the festival was held, so by the contrapositive it did not rain. A is forced; the others are unsupported.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_3 &middot; you do (independent)<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Passage: Researchers noted that a certain frog species is found only in caves that stay near a constant cool temperature year-round. A newly surveyed cave has temperatures that swing widely between seasons.
+
+Question: The passage most strongly supports which of the following about the newly surveyed cave?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>The frog species is unlikely to be found living there.</li><li><span class="lab">B</span>The cave is larger than the frogs&#x27; usual caves.</li><li><span class="lab">C</span>The frogs would thrive there if introduced.</li><li><span class="lab">D</span>The cave has no other animal species.</li><li><span class="lab">E</span>The temperature swings are caused by the frogs.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> The frog needs constant cool temperatures; this cave swings widely, so the frog is unlikely to live there. A is the supported inference; the others add or reverse facts.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+  </section>
+
+  
+    <section>
+      <h2><span class="num">5</span>Mastery check</h2>
+      <div class="mastery">
+        <p>A topic is mastered at &gt;=85% correct on new/held-out-style questions across &gt;=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.</p>
+        <p class="note"><b>Threshold</b> 0.85 &middot; <b>spaced sessions</b> &ge; 2</p>
+        <ul><li>&gt;=85% correct on new/held-out-style items (not flashcard recall) per session</li><li>sustained across &gt;=2 spaced sessions with a delay between them</li><li>per-topic memory surfaced only after &gt;=20 graded reviews (PRD give-up rule)</li><li>per-topic performance surfaced only after &gt;=8 application attempts (PRD give-up rule)</li></ul>
+        <p class="note"><b>If not yet mastered:</b> Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -&gt; you-do loop before re-testing.</p>
+      </div>
+      
+    </section>
+
+  <div class="src">
+    <div class="tag">Primary source</div>
+    <p><a href="https://www.mba.com/exams/gmat-focus-edition">GMAC - GMAT Focus Edition (official exam overview)</a> &mdash; Official exam structure and Verbal Reasoning scope.</p>
+    <p class='note'>Further reading:</p><ul><li><a href="https://www.khanacademy.org/prep/lsat">Khan Academy - LSAT Logical Reasoning (free)</a> &mdash; Free lessons on argument structure, assumptions, strengthen/weaken, and flaws.</li></ul>
+  </div>
+
+  <div class="ask">Stuck on any step? Ask your GMATWiz coach for a worked walkthrough &mdash; that's what it's here for.</div>
+
+  <footer>
+    <p>GMATWiz lesson &middot; <code>rc-inference.json</code> &middot; schema v1.0 &middot; authored content (OfficialFlag=false), reserved official items used only for late checkpoints.</p>
+  </footer>
+</div></div></body></html>

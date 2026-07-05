@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Critical Reasoning: Find the Flaw &middot; GMATWiz Verbal Reasoning</title>
+<style>
+:root{
+  --ink:#1a1813; --muted:#6b6358; --rule:#d9d2c5; --bg:#fbf9f4; --card:#fffdf8;
+  --accent:#7a3b2e; --accent2:#3a5a40; --link:#7a3b2e; --code:#2b2b2b;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:3rem 2rem 6rem;}
+.content{max-width:720px;}
+header.masthead{border-bottom:1px solid var(--rule); padding-bottom:1.2rem; margin-bottom:2rem;}
+.kicker{font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:0 0 .4rem;}
+h1{font-size:2.3rem; line-height:1.1; margin:.1rem 0 .6rem; font-weight:600; letter-spacing:-.01em;}
+.meta{color:var(--muted); font-size:.9rem; margin:0;}
+.meta b{color:var(--ink); font-weight:600;}
+h2{font-size:1.45rem; margin:2.8rem 0 .3rem; font-weight:600; letter-spacing:-.01em;}
+h2 .num{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:.5rem;}
+h3{font-size:1.06rem; margin:1.6rem 0 .4rem; font-weight:600;}
+.sub{color:var(--muted); font-style:italic; margin:.1rem 0 1rem; font-size:.95rem;}
+p{margin:.6rem 0;} ul,ol{margin:.5rem 0 .9rem; padding-left:1.3rem;} li{margin:.25rem 0;}
+a{color:var(--link); text-decoration:none; border-bottom:1px solid rgba(122,59,46,.35);}
+a:hover{border-bottom-color:var(--link);}
+.lead{font-size:1.08rem;}
+section{position:relative;}
+.note{font-size:.8rem; color:var(--muted); line-height:1.4;}
+.objectives{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1rem 1.2rem;}
+.objectives ul{margin:.3rem 0 0;}
+.intent{border-left:3px solid var(--accent2); padding:.4rem 0 .4rem 1rem; margin:1rem 0; font-size:1.05rem;}
+.donow{background:#2b2620; color:#f3ecde; border-radius:8px; padding:1.1rem 1.3rem; margin:1rem 0;}
+.donow .tag{font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:#d8b48a;}
+.donow ol{padding-left:1.2rem;} .donow li{margin:.4rem 0;}
+.donow .ans{color:#b9c6a9; font-style:italic; font-size:.86rem; display:block; margin-top:.15rem;}
+table{border-collapse:collapse; width:100%; font-size:.92rem; margin:.6rem 0 1rem;}
+th,td{text-align:left; padding:.45rem .6rem; border-bottom:1px solid var(--rule); vertical-align:top;}
+th{font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+td.t{white-space:nowrap; color:var(--accent); font-variant-numeric:tabular-nums; width:6.5rem;}
+.q{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1.1rem 1.3rem; margin:1.1rem 0;}
+.q .qid{font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+.q .qid .diff{float:right; color:var(--accent2);}
+.q .stem{font-size:1.03rem; margin:.35rem 0 .6rem;}
+.choices{list-style:none; padding:0; margin:.2rem 0 .4rem; counter-reset:c;}
+.choices li{padding:.32rem .6rem; border:1px solid var(--rule); border-radius:6px; margin:.3rem 0; background:#fff;}
+.choices li .lab{display:inline-block; width:1.5rem; font-weight:600; color:var(--accent);}
+.choices li.correct{border-color:var(--accent2); background:#eef3ec;}
+.choices li.correct .lab{color:var(--accent2);}
+details{margin:.5rem 0 .2rem; border-top:1px dashed var(--rule); padding-top:.5rem;}
+details>summary{cursor:pointer; font-size:.86rem; color:var(--accent); font-weight:600; list-style:none;}
+details>summary::-webkit-details-marker{display:none;}
+details>summary::before{content:"\25B8  "; color:var(--accent);}
+details[open]>summary::before{content:"\25BE  ";}
+.expl{font-size:.95rem; margin-top:.5rem;}
+.hints{font-size:.92rem;} .hints li{margin:.2rem 0;}
+.feedback{font-size:.9rem;} .feedback .ok{color:var(--accent2);} .feedback .no{color:var(--accent);}
+.appfirst{font-size:.78rem; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin:.2rem 0;}
+.mastery{background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--accent2); border-radius:8px; padding:1rem 1.2rem;}
+.pill{display:inline-block; font-size:.72rem; padding:.12rem .5rem; border:1px solid var(--rule); border-radius:999px; color:var(--muted); margin:.1rem .2rem .1rem 0;}
+footer{margin-top:3.5rem; border-top:1px solid var(--rule); padding-top:1rem; color:var(--muted); font-size:.82rem;}
+.src{background:#eef3ec; border:1px solid #cfe0cf; border-radius:8px; padding:.9rem 1.1rem; margin:1.2rem 0;}
+.src .tag{font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent2); font-weight:600;}
+.crumbs{font-size:.85rem; margin-bottom:1.2rem;}
+.ask{font-size:.9rem; background:#fff8ec; border:1px dashed #e0c590; border-radius:8px; padding:.7rem 1rem; margin:1.4rem 0;}
+@media print{ body{background:#fff} .wrap{padding:0} a{border:none} .donow{-webkit-print-color-adjust:exact; print-color-adjust:exact} }
+</style></head>
+<body><div class="wrap"><div class="content">
+  <div class="crumbs"><a href="index.html">&larr; All topics</a> &middot; Verbal Reasoning &middot; Critical Reasoning</div>
+  <header class="masthead">
+    <p class="kicker">GMATWiz &middot; GMAT Focus Edition &middot; Verbal Reasoning (Critical Reasoning)</p>
+    <h1>Critical Reasoning: Find the Flaw</h1>
+    <p class="meta"><b>Topic id</b> <code>gmat::verbal::cr::flaw</code> &middot; <b>Domain</b> Critical Reasoning
+      &middot; <b>Prereqs</b> identify an argument&#x27;s conclusion and evidence, recognize common reasoning errors &middot; <b>~18 min</b></p>
+  </header>
+
+  <div class="objectives">
+    <p class="note"><b>Learning objectives</b></p>
+    <ul><li>Name the specific reasoning error an argument commits.</li><li>Recognize classic flaws: ad hominem, appeal to popularity, post hoc, hasty generalization, appeal to ignorance, slippery slope.</li><li>Match the abstract flaw description to what the argument actually did.</li></ul>
+    <p class="note">Model: I do -&gt; we do -&gt; you do &middot; application-first (explanations revealed after an attempt) &middot; Rosenshine (daily review), Archer (I-do/we-do/you-do), SPOV2 application-first.</p>
+  </div>
+
+  
+    <section>
+      <h2><span class="num">1</span>Opening &mdash; retrieval &amp; bridge</h2>
+      <p class="sub">Builds on: Separating an argument&#x27;s conclusion from its evidence.</p>
+      <div class="donow">
+        <div class="tag">Do Now &middot; from memory, no notes</div>
+        <p>No notes. 4 minutes.</p>
+        <ol><li>Name the flaw: &#x27;X happened after Y, so Y caused X.&#x27;<span class="ans">Post hoc (correlation/sequence mistaken for causation).</span></li><li>Name the flaw: &#x27;Most people buy it, so it&#x27;s the best.&#x27;<span class="ans">Appeal to popularity.</span></li><li>Name the flaw: &#x27;No one has proven it&#x27;s harmful, so it&#x27;s safe.&#x27;<span class="ans">Appeal to ignorance.</span></li></ol>
+      </div>
+      <p class="note"><b>Retrieval starter (5 min).</b> Recalls the named flaw families so learners can match them to the argument.
+      <br><b>If students struggle:</b> Have them describe in their own words what the author did wrong before reading the choices.</p>
+      <h3>Prior-knowledge bridge</h3>
+      <p>You can find a conclusion and its evidence. A flaw question asks WHY the leap between them is illegitimate - and the answer is usually one of a handful of named reasoning errors. Describe the mistake in your own words first, then match it.</p>
+      <h3>Learning intention</h3>
+      <p class="intent">By the end you can name the specific reasoning error an argument commits and match it to the correct abstract description.</p>
+      <p class="note"><b>You'll know you've got it when:</b></p>
+      <ul><li>I can describe, in plain words, what the argument did wrong.</li><li>I can recognize the classic named flaws.</li><li>I can match my description to the answer choice that states it.</li></ul>
+      <details><summary>Complete timed opening script</summary>
+        <table><thead><tr><th>Time</th><th>Move</th></tr></thead><tbody><tr><td class="t">0:00-4:00</td><td>Do Now on screen; learners answer from memory, no notes.</td></tr><tr><td class="t">4:00-6:00</td><td>Cold-call answers; name the argument&#x27;s conclusion vs premises.</td></tr><tr><td class="t">6:00-8:00</td><td>Bridge to today&#x27;s question type; state what the stem is really asking.</td></tr><tr><td class="t">8:00-10:00</td><td>Move to I do: model the reasoning on one worked item.</td></tr></tbody></table>
+      </details>
+    </section>
+
+  <section>
+    <h2><span class="num">2</span>I do &mdash; worked example</h2>
+    <p class="sub">Watch the reasoning modeled end to end before you try.</p>
+    
+    <div class="q">
+      <div class="qid">I DO &middot; worked example<span class="diff">medium</span></div>
+      <div class="stem">Critic: The restaurant&#x27;s owner says his food is the healthiest in town, but he is trying to sell meals, so his claim is worthless. The critic&#x27;s reasoning is most vulnerable to the criticism that it</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>rejects a claim based on the source&#x27;s motive rather than on any evidence about the claim itself.</li><li><span class="lab">B</span>relies on a sample of diners that is too small.</li><li><span class="lab">C</span>assumes that healthy food cannot be profitable.</li><li><span class="lab">D</span>confuses a cause with an effect.</li><li><span class="lab">E</span>treats the owner&#x27;s opinion as expert testimony.</li></ul>
+      <h3>Think-aloud</h3>
+      <ol><li>Conclusion: the owner&#x27;s claim is worthless. Evidence: he wants to sell meals.</li><li>In my words: attacking the person&#x27;s motive, not the claim - that&#x27;s ad hominem.</li><li>Find the choice describing that: A.</li><li>The other choices name flaws the argument didn&#x27;t commit.</li></ol>
+      <p class="expl"><b>Correct: A.</b> The critic dismisses the health claim only because the owner has a motive to sell - an ad hominem that ignores whether the food is actually healthy. A names that error.</p>
+      <p class="note"><b>Takeaway.</b> Describe the reasoning error in plain words first, then match it to the choice - don&#x27;t be lured by real flaws the argument didn&#x27;t make.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>We do &mdash; guided practice</h2>
+    <p class="sub">Scaffolds and immediate feedback are one click away. Fade them as you gain confidence.</p>
+    
+    <div class="q">
+      <div class="qid">we_1 &middot; we do (guided)<span class="diff">easy</span></div>
+      <div class="stem">Advertisement: More dentists choose BrightSmile toothpaste than any other brand, so BrightSmile must be the most effective toothpaste. The reasoning is most vulnerable to the criticism that it</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>treats a product&#x27;s popularity as proof of its effectiveness.</li><li><span class="lab">B</span>relies on the opinion of a single dentist.</li><li><span class="lab">C</span>assumes dentists never change brands.</li><li><span class="lab">D</span>ignores the price of competing toothpastes.</li><li><span class="lab">E</span>confuses effectiveness with safety.</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>What is the evidence, and what is concluded from it?</li><li>Popularity -&gt; quality is a classic named flaw.</li><li>Match your description to the choice.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Right - popularity doesn&#x27;t establish effectiveness.<br>
+        <span class="no">If incorrect:</span> The ad cites many dentists, not one; the core error is popularity -&gt; quality.</p>
+        <p class="expl"><b>Answer: A.</b> The ad slides from &#x27;most chosen&#x27; to &#x27;most effective&#x27; - an appeal to popularity. A names that error.</p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">we_2 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">Politician: No study has ever shown that our new tax policy harms small businesses, so the policy is clearly safe for them. The reasoning is most vulnerable to the criticism that it</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>treats the absence of evidence of harm as proof that there is no harm.</li><li><span class="lab">B</span>relies on studies funded by the government.</li><li><span class="lab">C</span>assumes all small businesses are alike.</li><li><span class="lab">D</span>confuses correlation with causation.</li><li><span class="lab">E</span>attacks the motives of the policy&#x27;s critics.</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>The evidence is a LACK of evidence.</li><li>Absence of proof of harm is not proof of safety.</li><li>Which named flaw is that?</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Exactly - appeal to ignorance.<br>
+        <span class="no">If incorrect:</span> The argument doesn&#x27;t attack critics or cite studies; it leans on missing evidence.</p>
+        <p class="expl"><b>Answer: A.</b> Concluding the policy is safe merely because harm hasn&#x27;t been shown is an appeal to ignorance. A names it.</p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>You do &mdash; independent application</h2>
+    <p class="sub">Application-first (SPOV2): commit to an answer, then reveal the explanation. Log every miss.</p>
+    
+    <div class="q">
+      <div class="qid">you_1 &middot; you do (independent)<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Manager: Right after we repainted the office, output went up, so the new paint color is boosting productivity. The reasoning is most vulnerable to the criticism that it</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>concludes that the paint caused the rise simply because the rise came after the painting.</li><li><span class="lab">B</span>relies on the testimony of a few employees.</li><li><span class="lab">C</span>assumes all employees like the color.</li><li><span class="lab">D</span>ignores the cost of the paint.</li><li><span class="lab">E</span>treats productivity and morale as the same thing.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> Inferring causation from mere sequence (output rose after painting) is a post hoc flaw. A names it.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_2 &middot; you do (independent)<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Editorial: If the city allows food trucks on Main Street, soon every sidewalk will be blocked and no pedestrian will be able to walk downtown. So food trucks must be banned. The reasoning is most vulnerable to the criticism that it</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>assumes without support that a limited step will inevitably lead to an extreme outcome.</li><li><span class="lab">B</span>relies on an unrepresentative survey.</li><li><span class="lab">C</span>attacks the character of food-truck owners.</li><li><span class="lab">D</span>confuses a necessary condition with a sufficient one.</li><li><span class="lab">E</span>treats popularity as evidence of quality.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> Claiming one modest allowance must snowball into total blockage is a slippery-slope flaw. A names it.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_3 &middot; you do (independent)<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Reviewer: This author&#x27;s last three novels were bestsellers, so her next book is certain to be a bestseller too. The reasoning is most vulnerable to the criticism that it</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>assumes that a past pattern must continue without considering factors that could change the outcome.</li><li><span class="lab">B</span>relies on the opinions of unqualified readers.</li><li><span class="lab">C</span>attacks the author rather than the books.</li><li><span class="lab">D</span>confuses sales with literary quality.</li><li><span class="lab">E</span>treats the absence of failure as proof of success.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> Projecting a past streak forward as a certainty ignores factors that could break the pattern - an unwarranted assumption of continuity. A names it.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+  </section>
+
+  
+    <section>
+      <h2><span class="num">5</span>Mastery check</h2>
+      <div class="mastery">
+        <p>A topic is mastered at &gt;=85% correct on new/held-out-style questions across &gt;=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.</p>
+        <p class="note"><b>Threshold</b> 0.85 &middot; <b>spaced sessions</b> &ge; 2</p>
+        <ul><li>&gt;=85% correct on new/held-out-style items (not flashcard recall) per session</li><li>sustained across &gt;=2 spaced sessions with a delay between them</li><li>per-topic memory surfaced only after &gt;=20 graded reviews (PRD give-up rule)</li><li>per-topic performance surfaced only after &gt;=8 application attempts (PRD give-up rule)</li></ul>
+        <p class="note"><b>If not yet mastered:</b> Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -&gt; you-do loop before re-testing.</p>
+      </div>
+      
+    </section>
+
+  <div class="src">
+    <div class="tag">Primary source</div>
+    <p><a href="https://www.mba.com/exams/gmat-focus-edition">GMAC - GMAT Focus Edition (official exam overview)</a> &mdash; Official exam structure and Verbal Reasoning scope.</p>
+    <p class='note'>Further reading:</p><ul><li><a href="https://www.khanacademy.org/prep/lsat">Khan Academy - LSAT Logical Reasoning (free)</a> &mdash; Free lessons on argument structure, assumptions, strengthen/weaken, and flaws.</li></ul>
+  </div>
+
+  <div class="ask">Stuck on any step? Ask your GMATWiz coach for a worked walkthrough &mdash; that's what it's here for.</div>
+
+  <footer>
+    <p>GMATWiz lesson &middot; <code>cr-flaw.json</code> &middot; schema v1.0 &middot; authored content (OfficialFlag=false), reserved official items used only for late checkpoints.</p>
+  </footer>
+</div></div></body></html>

@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data Insights: Data Sufficiency &middot; GMATWiz Data Insights</title>
+<style>
+:root{
+  --ink:#1a1813; --muted:#6b6358; --rule:#d9d2c5; --bg:#fbf9f4; --card:#fffdf8;
+  --accent:#7a3b2e; --accent2:#3a5a40; --link:#7a3b2e; --code:#2b2b2b;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:3rem 2rem 6rem;}
+.content{max-width:720px;}
+header.masthead{border-bottom:1px solid var(--rule); padding-bottom:1.2rem; margin-bottom:2rem;}
+.kicker{font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:0 0 .4rem;}
+h1{font-size:2.3rem; line-height:1.1; margin:.1rem 0 .6rem; font-weight:600; letter-spacing:-.01em;}
+.meta{color:var(--muted); font-size:.9rem; margin:0;}
+.meta b{color:var(--ink); font-weight:600;}
+h2{font-size:1.45rem; margin:2.8rem 0 .3rem; font-weight:600; letter-spacing:-.01em;}
+h2 .num{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:.5rem;}
+h3{font-size:1.06rem; margin:1.6rem 0 .4rem; font-weight:600;}
+.sub{color:var(--muted); font-style:italic; margin:.1rem 0 1rem; font-size:.95rem;}
+p{margin:.6rem 0;} ul,ol{margin:.5rem 0 .9rem; padding-left:1.3rem;} li{margin:.25rem 0;}
+a{color:var(--link); text-decoration:none; border-bottom:1px solid rgba(122,59,46,.35);}
+a:hover{border-bottom-color:var(--link);}
+.lead{font-size:1.08rem;}
+section{position:relative;}
+.note{font-size:.8rem; color:var(--muted); line-height:1.4;}
+.objectives{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1rem 1.2rem;}
+.objectives ul{margin:.3rem 0 0;}
+.intent{border-left:3px solid var(--accent2); padding:.4rem 0 .4rem 1rem; margin:1rem 0; font-size:1.05rem;}
+.donow{background:#2b2620; color:#f3ecde; border-radius:8px; padding:1.1rem 1.3rem; margin:1rem 0;}
+.donow .tag{font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:#d8b48a;}
+.donow ol{padding-left:1.2rem;} .donow li{margin:.4rem 0;}
+.donow .ans{color:#b9c6a9; font-style:italic; font-size:.86rem; display:block; margin-top:.15rem;}
+table{border-collapse:collapse; width:100%; font-size:.92rem; margin:.6rem 0 1rem;}
+th,td{text-align:left; padding:.45rem .6rem; border-bottom:1px solid var(--rule); vertical-align:top;}
+th{font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+td.t{white-space:nowrap; color:var(--accent); font-variant-numeric:tabular-nums; width:6.5rem;}
+.q{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1.1rem 1.3rem; margin:1.1rem 0;}
+.q .qid{font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+.q .qid .diff{float:right; color:var(--accent2);}
+.q .stem{font-size:1.03rem; margin:.35rem 0 .6rem;}
+.choices{list-style:none; padding:0; margin:.2rem 0 .4rem; counter-reset:c;}
+.choices li{padding:.32rem .6rem; border:1px solid var(--rule); border-radius:6px; margin:.3rem 0; background:#fff;}
+.choices li .lab{display:inline-block; width:1.5rem; font-weight:600; color:var(--accent);}
+.choices li.correct{border-color:var(--accent2); background:#eef3ec;}
+.choices li.correct .lab{color:var(--accent2);}
+details{margin:.5rem 0 .2rem; border-top:1px dashed var(--rule); padding-top:.5rem;}
+details>summary{cursor:pointer; font-size:.86rem; color:var(--accent); font-weight:600; list-style:none;}
+details>summary::-webkit-details-marker{display:none;}
+details>summary::before{content:"\25B8  "; color:var(--accent);}
+details[open]>summary::before{content:"\25BE  ";}
+.expl{font-size:.95rem; margin-top:.5rem;}
+.hints{font-size:.92rem;} .hints li{margin:.2rem 0;}
+.feedback{font-size:.9rem;} .feedback .ok{color:var(--accent2);} .feedback .no{color:var(--accent);}
+.appfirst{font-size:.78rem; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin:.2rem 0;}
+.mastery{background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--accent2); border-radius:8px; padding:1rem 1.2rem;}
+.pill{display:inline-block; font-size:.72rem; padding:.12rem .5rem; border:1px solid var(--rule); border-radius:999px; color:var(--muted); margin:.1rem .2rem .1rem 0;}
+footer{margin-top:3.5rem; border-top:1px solid var(--rule); padding-top:1rem; color:var(--muted); font-size:.82rem;}
+.src{background:#eef3ec; border:1px solid #cfe0cf; border-radius:8px; padding:.9rem 1.1rem; margin:1.2rem 0;}
+.src .tag{font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent2); font-weight:600;}
+.crumbs{font-size:.85rem; margin-bottom:1.2rem;}
+.ask{font-size:.9rem; background:#fff8ec; border:1px dashed #e0c590; border-radius:8px; padding:.7rem 1rem; margin:1.4rem 0;}
+@media print{ body{background:#fff} .wrap{padding:0} a{border:none} .donow{-webkit-print-color-adjust:exact; print-color-adjust:exact} }
+</style></head>
+<body><div class="wrap"><div class="content">
+  <div class="crumbs"><a href="index.html">&larr; All topics</a> &middot; Data Insights &middot; Data Insights</div>
+  <header class="masthead">
+    <p class="kicker">GMATWiz &middot; GMAT Focus Edition &middot; Data Insights (Data Sufficiency)</p>
+    <h1>Data Insights: Data Sufficiency</h1>
+    <p class="meta"><b>Topic id</b> <code>gmat::di::reasoning::data_sufficiency</code> &middot; <b>Domain</b> Data Insights
+      &middot; <b>Prereqs</b> solve a simple linear equation for one unknown, recognize when given facts pin down a single value &middot; <b>~18 min</b></p>
+  </header>
+
+  <div class="objectives">
+    <p class="note"><b>Learning objectives</b></p>
+    <ul><li>Evaluate each statement independently, then together, without computing the final answer.</li><li>Judge sufficiency by whether the value or yes/no answer is uniquely determined.</li><li>Map the result onto the correct one of the five standard Data Sufficiency choices.</li></ul>
+    <p class="note">Model: I do -&gt; we do -&gt; you do &middot; application-first (explanations revealed after an attempt) &middot; Rosenshine (daily review), Archer (I-do/we-do/you-do), SPOV2 application-first.</p>
+  </div>
+
+  
+    <section>
+      <h2><span class="num">1</span>Opening &mdash; retrieval &amp; bridge</h2>
+      <p class="sub">Builds on: Solving a linear equation and telling when facts fix a single value.</p>
+      <div class="donow">
+        <div class="tag">Do Now &middot; from memory, no notes</div>
+        <p>No notes. Answer from memory in 4 minutes.</p>
+        <ol><li>Solve for x: 2x + 6 = 20.<span class="ans">x = 7.</span></li><li>From only a + b = 10, can you find a unique value for a?<span class="ans">No - many pairs work (3 and 7, 4 and 6, ...).</span></li><li>If a + b = 10 and a - b = 2, is the pair (a, b) determined?<span class="ans">Yes - a = 6, b = 4.</span></li></ol>
+      </div>
+      <p class="note"><b>Retrieval starter (5 min).</b> Recalls that a unique answer needs enough independent constraints - the core idea Data Sufficiency tests.
+      <br><b>If students struggle:</b> Have them list two different number pairs that fit one equation to feel why a single fact is often not enough.</p>
+      <h3>Prior-knowledge bridge</h3>
+      <p>You already sense when facts pin down one answer and when they leave many options. Data Sufficiency makes that the whole task: you never compute the final answer - you decide whether the information is enough to determine it. The discipline is to test statement (1) alone, then statement (2) alone (forgetting (1)), then both together.</p>
+      <h3>Learning intention</h3>
+      <p class="intent">By the end you can decide, for a two-statement Data Sufficiency question, whether statement (1) alone, statement (2) alone, both together, or neither is sufficient - and choose the matching answer.</p>
+      <p class="note"><b>You'll know you've got it when:</b></p>
+      <ul><li>I evaluate each statement on its own before combining them.</li><li>I decide sufficiency by whether the answer is uniquely determined, not by computing it.</li><li>I map my finding onto the correct one of the five standard Data Sufficiency choices.</li></ul>
+      <details><summary>Complete timed opening script</summary>
+        <table><thead><tr><th>Time</th><th>Move</th></tr></thead><tbody><tr><td class="t">0:00-4:00</td><td>Do Now on screen; learners answer from memory, no notes.</td></tr><tr><td class="t">4:00-6:00</td><td>Cold-call answers; name the argument&#x27;s conclusion vs premises.</td></tr><tr><td class="t">6:00-8:00</td><td>Bridge to today&#x27;s question type; state what the stem is really asking.</td></tr><tr><td class="t">8:00-10:00</td><td>Move to I do: model the reasoning on one worked item.</td></tr></tbody></table>
+      </details>
+    </section>
+
+  <section>
+    <h2><span class="num">2</span>I do &mdash; worked example</h2>
+    <p class="sub">Watch the reasoning modeled end to end before you try.</p>
+    
+    <div class="q">
+      <div class="qid">I DO &middot; worked example<span class="diff">medium</span></div>
+      <div class="stem">A bakery sold only muffins and scones one morning. How many muffins did it sell?
+(1) The bakery sold 40 baked goods in total that morning.
+(2) The bakery sold three times as many muffins as scones.</div>
+      <ul class="choices"><li><span class="lab">A</span>Statement (1) ALONE is sufficient, but statement (2) alone is not sufficient.</li><li><span class="lab">B</span>Statement (2) ALONE is sufficient, but statement (1) alone is not sufficient.</li><li class="correct"><span class="lab">C</span>BOTH statements TOGETHER are sufficient, but NEITHER statement ALONE is sufficient.</li><li><span class="lab">D</span>EACH statement ALONE is sufficient.</li><li><span class="lab">E</span>Statements (1) and (2) TOGETHER are NOT sufficient.</li></ul>
+      <h3>Think-aloud</h3>
+      <ol><li>The question asks for a single number - how many muffins. In DS I judge sufficiency; I do not need the final count.</li><li>Statement (1): total = 40, so muffins + scones = 40. Many splits fit (30 and 10, or 20 and 20). Not sufficient.</li><li>Statement (2): muffins = 3 x scones. With no total, muffins could be 3, 30, or 300. Not sufficient.</li><li>Together: muffins + scones = 40 and muffins = 3 x scones give 4 x scones = 40, so scones = 10 and muffins = 30 - unique. Sufficient.</li><li>Neither alone works but both together do, so the answer is C.</li></ol>
+      <p class="expl"><b>Correct: C.</b> We need one number: the muffin count. (1) muffins + scones = 40 allows many splits (30 and 10, 20 and 20, ...), not sufficient. (2) muffins = 3 x scones has no total, so muffins could be 3, 30, 300, not sufficient. Together: muffins + scones = 40 and muffins = 3 x scones give 4 x scones = 40, so scones = 10 and muffins = 30 - a unique value. Neither alone works but both together do, so the answer is C.</p>
+      <p class="note"><b>Takeaway.</b> Data Sufficiency asks whether the information pins down a single answer. Test each statement alone first, then together, and pick the matching choice - without ever needing the final number.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>We do &mdash; guided practice</h2>
+    <p class="sub">Scaffolds and immediate feedback are one click away. Fade them as you gain confidence.</p>
+    
+    <div class="q">
+      <div class="qid">we_1 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">A rectangular garden has a length of 12 meters. What is the area of the garden, in square meters?
+(1) The width of the garden is 5 meters.
+(2) The perimeter of the garden is greater than 30 meters.</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>Statement (1) ALONE is sufficient, but statement (2) alone is not sufficient.</li><li><span class="lab">B</span>Statement (2) ALONE is sufficient, but statement (1) alone is not sufficient.</li><li><span class="lab">C</span>BOTH statements TOGETHER are sufficient, but NEITHER statement ALONE is sufficient.</li><li><span class="lab">D</span>EACH statement ALONE is sufficient.</li><li><span class="lab">E</span>Statements (1) and (2) TOGETHER are NOT sufficient.</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>The length (12 m) is already given, so you only need the width to get the area.</li><li>Statement (1) gives the width outright - is the area then fixed?</li><li>Statement (2) only bounds the width (perimeter &gt; 30). Does a range of widths give one area?</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Right - (1) fixes the width and thus the area; (2) gives only a range, so it cannot.<br>
+        <span class="no">If incorrect:</span> Remember the length is given. (1) alone nails the area; (2) leaves many possible widths.</p>
+        <p class="expl"><b>Answer: A.</b> Length = 12 is given, so only the width is missing. (1) width = 5 gives area = 12 x 5 = 60 - sufficient. (2) perimeter &gt; 30 means 2(12 + w) &gt; 30, so w &gt; 3; width and thus area are not fixed - not sufficient. Statement (1) alone is sufficient; (2) alone is not, so the answer is A.</p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">we_2 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">Is the positive integer n even?
+(1) n is a multiple of 3.
+(2) n is a multiple of 4.</div>
+      <ul class="choices"><li><span class="lab">A</span>Statement (1) ALONE is sufficient, but statement (2) alone is not sufficient.</li><li class="correct"><span class="lab">B</span>Statement (2) ALONE is sufficient, but statement (1) alone is not sufficient.</li><li><span class="lab">C</span>BOTH statements TOGETHER are sufficient, but NEITHER statement ALONE is sufficient.</li><li><span class="lab">D</span>EACH statement ALONE is sufficient.</li><li><span class="lab">E</span>Statements (1) and (2) TOGETHER are NOT sufficient.</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>Rephrase the goal: you need a yes/no answer that is always the same.</li><li>Statement (1): multiples of 3 include 6 (even) and 9 (odd). Does that settle it?</li><li>Statement (2): every multiple of 4 is 4 x (integer). Is that always even?</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Exactly - every multiple of 4 is even, so (2) settles it; (1) allows both even and odd.<br>
+        <span class="no">If incorrect:</span> Test small cases: 3, 6, 9 for (1); 4, 8, 12 for (2). One statement always answers, the other does not.</p>
+        <p class="expl"><b>Answer: B.</b> This is a yes/no question. (1) a multiple of 3 could be 6 (even) or 9 (odd) - not a definite answer, not sufficient. (2) a multiple of 4 equals 4k, which is always even - a definite &#x27;yes&#x27;, sufficient. Statement (2) alone is sufficient, so the answer is B.</p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>You do &mdash; independent application</h2>
+    <p class="sub">Application-first (SPOV2): commit to an answer, then reveal the explanation. Log every miss.</p>
+    
+    <div class="q">
+      <div class="qid">you_1 &middot; you do (independent)<span class="diff">easy</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">What is the value of x?
+(1) 3x - 5 = 16.
+(2) x^2 = 49 and x &gt; 0.</div>
+      <ul class="choices"><li><span class="lab">A</span>Statement (1) ALONE is sufficient, but statement (2) alone is not sufficient.</li><li><span class="lab">B</span>Statement (2) ALONE is sufficient, but statement (1) alone is not sufficient.</li><li><span class="lab">C</span>BOTH statements TOGETHER are sufficient, but NEITHER statement ALONE is sufficient.</li><li class="correct"><span class="lab">D</span>EACH statement ALONE is sufficient.</li><li><span class="lab">E</span>Statements (1) and (2) TOGETHER are NOT sufficient.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: D.</b> (1) 3x - 5 = 16 gives 3x = 21, so x = 7 - a unique value, sufficient. (2) x^2 = 49 with x &gt; 0 gives x = 7 (the negative root is excluded) - sufficient. Each statement alone determines x, so the answer is D.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_2 &middot; you do (independent)<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A jar contains only red, blue, and green marbles. How many green marbles are in the jar?
+(1) The jar contains 12 red marbles.
+(2) The jar contains twice as many blue marbles as red marbles.</div>
+      <ul class="choices"><li><span class="lab">A</span>Statement (1) ALONE is sufficient, but statement (2) alone is not sufficient.</li><li><span class="lab">B</span>Statement (2) ALONE is sufficient, but statement (1) alone is not sufficient.</li><li><span class="lab">C</span>BOTH statements TOGETHER are sufficient, but NEITHER statement ALONE is sufficient.</li><li><span class="lab">D</span>EACH statement ALONE is sufficient.</li><li class="correct"><span class="lab">E</span>Statements (1) and (2) TOGETHER are NOT sufficient.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: E.</b> We need the green count. (1) red = 12 says nothing about green - not sufficient. (2) blue = 2 x red gives no green count (and no numbers on its own) - not sufficient. Together we know red = 12 and blue = 24, but with no total for the jar, green is still unknown - not sufficient. So the answer is E.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_3 &middot; you do (independent)<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Is quadrilateral Q a square?
+(1) Q has four sides of equal length.
+(2) Q has four right angles.</div>
+      <ul class="choices"><li><span class="lab">A</span>Statement (1) ALONE is sufficient, but statement (2) alone is not sufficient.</li><li><span class="lab">B</span>Statement (2) ALONE is sufficient, but statement (1) alone is not sufficient.</li><li class="correct"><span class="lab">C</span>BOTH statements TOGETHER are sufficient, but NEITHER statement ALONE is sufficient.</li><li><span class="lab">D</span>EACH statement ALONE is sufficient.</li><li><span class="lab">E</span>Statements (1) and (2) TOGETHER are NOT sufficient.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: C.</b> (1) four equal sides makes a rhombus, which may or may not be a square - not sufficient. (2) four right angles makes a rectangle, which may or may not be a square - not sufficient. Together, four equal sides and four right angles force a square - sufficient. So the answer is C.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+  </section>
+
+  
+    <section>
+      <h2><span class="num">5</span>Mastery check</h2>
+      <div class="mastery">
+        <p>A topic is mastered at &gt;=85% correct on new/held-out-style questions across &gt;=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.</p>
+        <p class="note"><b>Threshold</b> 0.85 &middot; <b>spaced sessions</b> &ge; 2</p>
+        <ul><li>&gt;=85% correct on new/held-out-style items (not flashcard recall) per session</li><li>sustained across &gt;=2 spaced sessions with a delay between them</li><li>per-topic memory surfaced only after &gt;=20 graded reviews (PRD give-up rule)</li><li>per-topic performance surfaced only after &gt;=8 application attempts (PRD give-up rule)</li></ul>
+        <p class="note"><b>If not yet mastered:</b> Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -&gt; you-do loop before re-testing.</p>
+      </div>
+      
+    </section>
+
+  <div class="src">
+    <div class="tag">Primary source</div>
+    <p><a href="https://www.mba.com/exams/gmat-focus-edition">GMAC - GMAT Focus Edition (official exam overview)</a> &mdash; Official exam structure and Data Insights section scope.</p>
+    <p class='note'>Further reading:</p><ul><li><a href="https://www.khanacademy.org/math/statistics-probability">Khan Academy - Statistics &amp; Probability (free)</a> &mdash; Free lessons on reading tables and graphs and reasoning from data.</li></ul>
+  </div>
+
+  <div class="ask">Stuck on any step? Ask your GMATWiz coach for a worked walkthrough &mdash; that's what it's here for.</div>
+
+  <footer>
+    <p>GMATWiz lesson &middot; <code>di-data-sufficiency.json</code> &middot; schema v1.0 &middot; authored content (OfficialFlag=false), reserved official items used only for late checkpoints.</p>
+  </footer>
+</div></div></body></html>

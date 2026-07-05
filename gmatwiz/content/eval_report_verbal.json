@@ -1,0 +1,576 @@
+{
+  "generated_at": "2026-07-05T20:44:47+00:00",
+  "gold_count": 39,
+  "section": "verbal",
+  "cutoff": 0.6,
+  "ai_client": "unavailable",
+  "ai_available": false,
+  "taggers": {
+    "keyword": {
+      "n": 39,
+      "accuracy": 0.9231,
+      "domain_accuracy": 0.9487,
+      "coverage": 0.9744,
+      "accepted_accuracy": 0.9474,
+      "confidently_wrong_rate": 0.0513
+    },
+    "vector": {
+      "n": 39,
+      "accuracy": 0.2308,
+      "domain_accuracy": 1.0,
+      "coverage": 0.0,
+      "accepted_accuracy": null,
+      "confidently_wrong_rate": 0.0
+    }
+  },
+  "ai_beats_baselines": null,
+  "per_item": [
+    {
+      "id": "vseed-19862e005385",
+      "gold": "gmat::verbal::cr::assumption",
+      "keyword": {
+        "pred": "gmat::verbal::cr::assumption",
+        "conf": 0.9,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::flaw",
+        "conf": 0.1583,
+        "ok": false
+      }
+    },
+    {
+      "id": "vseed-71d1cc3cf15c",
+      "gold": "gmat::verbal::cr::assumption",
+      "keyword": {
+        "pred": "gmat::verbal::cr::assumption",
+        "conf": 0.65,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::explain_paradox",
+        "conf": 0.2138,
+        "ok": false
+      }
+    },
+    {
+      "id": "vseed-8d71898ba19e",
+      "gold": "gmat::verbal::cr::assumption",
+      "keyword": {
+        "pred": "gmat::verbal::cr::assumption",
+        "conf": 0.95,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::complete_argument",
+        "conf": 0.2922,
+        "ok": false
+      }
+    },
+    {
+      "id": "vseed-95610811881a",
+      "gold": "gmat::verbal::cr::boldface",
+      "keyword": {
+        "pred": "gmat::verbal::cr::boldface",
+        "conf": 0.95,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::boldface",
+        "conf": 0.5003,
+        "ok": true
+      }
+    },
+    {
+      "id": "vseed-ac4a1603d4df",
+      "gold": "gmat::verbal::cr::boldface",
+      "keyword": {
+        "pred": "gmat::verbal::cr::boldface",
+        "conf": 0.95,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::boldface",
+        "conf": 0.5003,
+        "ok": true
+      }
+    },
+    {
+      "id": "vseed-cbc1244d7323",
+      "gold": "gmat::verbal::cr::boldface",
+      "keyword": {
+        "pred": "gmat::verbal::cr::boldface",
+        "conf": 0.95,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::boldface",
+        "conf": 0.4757,
+        "ok": true
+      }
+    },
+    {
+      "id": "vseed-82b1f8aedb85",
+      "gold": "gmat::verbal::cr::complete_argument",
+      "keyword": {
+        "pred": "gmat::verbal::cr::complete_argument",
+        "conf": 0.95,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::flaw",
+        "conf": 0.1835,
+        "ok": false
+      }
+    },
+    {
+      "id": "vseed-c1f8a0db1008",
+      "gold": "gmat::verbal::cr::complete_argument",
+      "keyword": {
+        "pred": "gmat::verbal::cr::complete_argument",
+        "conf": 0.95,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::flaw",
+        "conf": 0.2039,
+        "ok": false
+      }
+    },
+    {
+      "id": "vseed-fdda4a0c8577",
+      "gold": "gmat::verbal::cr::complete_argument",
+      "keyword": {
+        "pred": "gmat::verbal::cr::complete_argument",
+        "conf": 0.95,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::assumption",
+        "conf": 0.2922,
+        "ok": false
+      }
+    },
+    {
+      "id": "vseed-1ebc01b3ed81",
+      "gold": "gmat::verbal::cr::evaluate",
+      "keyword": {
+        "pred": "gmat::verbal::cr::evaluate",
+        "conf": 0.7,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::evaluate",
+        "conf": 0.1823,
+        "ok": true
+      }
+    },
+    {
+      "id": "vseed-34ffde32cf43",
+      "gold": "gmat::verbal::cr::evaluate",
+      "keyword": {
+        "pred": "gmat::verbal::cr::evaluate",
+        "conf": 0.7,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::evaluate",
+        "conf": 0.2028,
+        "ok": true
+      }
+    },
+    {
+      "id": "vseed-c8c113a1b909",
+      "gold": "gmat::verbal::cr::evaluate",
+      "keyword": {
+        "pred": "gmat::verbal::cr::evaluate",
+        "conf": 0.7,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::evaluate",
+        "conf": 0.2028,
+        "ok": true
+      }
+    },
+    {
+      "id": "vseed-222ba745e477",
+      "gold": "gmat::verbal::cr::explain_paradox",
+      "keyword": {
+        "pred": "gmat::verbal::cr::explain_paradox",
+        "conf": 0.9,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::weaken",
+        "conf": 0.2362,
+        "ok": false
+      }
+    },
+    {
+      "id": "vseed-5bed146c4b71",
+      "gold": "gmat::verbal::cr::explain_paradox",
+      "keyword": {
+        "pred": "gmat::verbal::cr::explain_paradox",
+        "conf": 0.75,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::assumption",
+        "conf": 0.2138,
+        "ok": false
+      }
+    },
+    {
+      "id": "vseed-b95ae9ae5e1b",
+      "gold": "gmat::verbal::cr::explain_paradox",
+      "keyword": {
+        "pred": "gmat::verbal::cr::explain_paradox",
+        "conf": 0.9,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::strengthen",
+        "conf": 0.162,
+        "ok": false
+      }
+    },
+    {
+      "id": "vseed-0fd6bd64c6b8",
+      "gold": "gmat::verbal::cr::flaw",
+      "keyword": {
+        "pred": "gmat::verbal::cr::flaw",
+        "conf": 0.95,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::flaw",
+        "conf": 0.1902,
+        "ok": true
+      }
+    },
+    {
+      "id": "vseed-14678c5f8137",
+      "gold": "gmat::verbal::cr::flaw",
+      "keyword": {
+        "pred": "gmat::verbal::cr::assumption",
+        "conf": 0.8,
+        "ok": false
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::flaw",
+        "conf": 0.24,
+        "ok": true
+      }
+    },
+    {
+      "id": "vseed-227750247063",
+      "gold": "gmat::verbal::cr::flaw",
+      "keyword": {
+        "pred": "gmat::verbal::cr::flaw",
+        "conf": 0.75,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::flaw",
+        "conf": 0.24,
+        "ok": true
+      }
+    },
+    {
+      "id": "vseed-16bc2ca325d6",
+      "gold": "gmat::verbal::cr::inference",
+      "keyword": {
+        "pred": "gmat::verbal::cr::inference",
+        "conf": 0.95,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::assumption",
+        "conf": 0.129,
+        "ok": false
+      }
+    },
+    {
+      "id": "vseed-506974bdd412",
+      "gold": "gmat::verbal::cr::inference",
+      "keyword": {
+        "pred": "gmat::verbal::cr::inference",
+        "conf": 0.6,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::strengthen",
+        "conf": 0.1693,
+        "ok": false
+      }
+    },
+    {
+      "id": "vseed-641c955e3009",
+      "gold": "gmat::verbal::cr::inference",
+      "keyword": {
+        "pred": "gmat::verbal::cr::inference",
+        "conf": 0.75,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::boldface",
+        "conf": 0.1504,
+        "ok": false
+      }
+    },
+    {
+      "id": "vseed-5faabdc8c218",
+      "gold": "gmat::verbal::cr::strengthen",
+      "keyword": {
+        "pred": "gmat::verbal::cr::strengthen",
+        "conf": 0.95,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::weaken",
+        "conf": 0.3196,
+        "ok": false
+      }
+    },
+    {
+      "id": "vseed-6eee3f8bb6c6",
+      "gold": "gmat::verbal::cr::strengthen",
+      "keyword": {
+        "pred": "gmat::verbal::cr::strengthen",
+        "conf": 0.95,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::inference",
+        "conf": 0.1693,
+        "ok": false
+      }
+    },
+    {
+      "id": "vseed-b4f9e5a8e467",
+      "gold": "gmat::verbal::cr::strengthen",
+      "keyword": {
+        "pred": "gmat::verbal::cr::strengthen",
+        "conf": 0.75,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::complete_argument",
+        "conf": 0.0953,
+        "ok": false
+      }
+    },
+    {
+      "id": "vseed-7a9555c1732c",
+      "gold": "gmat::verbal::cr::weaken",
+      "keyword": {
+        "pred": "gmat::verbal::cr::weaken",
+        "conf": 0.95,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::strengthen",
+        "conf": 0.3196,
+        "ok": false
+      }
+    },
+    {
+      "id": "vseed-b8eab256e256",
+      "gold": "gmat::verbal::cr::weaken",
+      "keyword": {
+        "pred": "gmat::verbal::cr::weaken",
+        "conf": 0.95,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::explain_paradox",
+        "conf": 0.16,
+        "ok": false
+      }
+    },
+    {
+      "id": "vseed-cebe9b7f15fd",
+      "gold": "gmat::verbal::cr::weaken",
+      "keyword": {
+        "pred": "gmat::verbal::cr::weaken",
+        "conf": 0.95,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::cr::explain_paradox",
+        "conf": 0.2362,
+        "ok": false
+      }
+    },
+    {
+      "id": "vrc-082a34e6f6b9",
+      "gold": "gmat::verbal::rc::main_idea",
+      "keyword": {
+        "pred": "gmat::verbal::rc::main_idea",
+        "conf": 0.75,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::rc::inference",
+        "conf": 0.2831,
+        "ok": false
+      }
+    },
+    {
+      "id": "vrc-92c2af4be1c6",
+      "gold": "gmat::verbal::rc::detail",
+      "keyword": {
+        "pred": "gmat::verbal::rc::detail",
+        "conf": 0.75,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::rc::function",
+        "conf": 0.256,
+        "ok": false
+      }
+    },
+    {
+      "id": "vrc-5f61c173a613",
+      "gold": "gmat::verbal::rc::inference",
+      "keyword": {
+        "pred": "gmat::verbal::cr::assumption",
+        "conf": 0.75,
+        "ok": false
+      },
+      "vector": {
+        "pred": "gmat::verbal::rc::main_idea",
+        "conf": 0.2831,
+        "ok": false
+      }
+    },
+    {
+      "id": "vrc-eb37f08cb01c",
+      "gold": "gmat::verbal::rc::function",
+      "keyword": {
+        "pred": "gmat::verbal::rc::function",
+        "conf": 0.75,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::rc::detail",
+        "conf": 0.256,
+        "ok": false
+      }
+    },
+    {
+      "id": "vrc-a6a8a659929f",
+      "gold": "gmat::verbal::rc::main_idea",
+      "keyword": {
+        "pred": "gmat::verbal::rc::main_idea",
+        "conf": 0.9,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::rc::inference",
+        "conf": 0.1518,
+        "ok": false
+      }
+    },
+    {
+      "id": "vrc-c9e07f274193",
+      "gold": "gmat::verbal::rc::inference",
+      "keyword": {
+        "pred": "gmat::verbal::rc::inference",
+        "conf": 0.75,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::rc::main_idea",
+        "conf": 0.1518,
+        "ok": false
+      }
+    },
+    {
+      "id": "vrc-698b215a5032",
+      "gold": "gmat::verbal::rc::tone",
+      "keyword": {
+        "pred": "gmat::verbal::rc::tone",
+        "conf": 0.95,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::rc::main_idea",
+        "conf": 0.1453,
+        "ok": false
+      }
+    },
+    {
+      "id": "vrc-e49713375230",
+      "gold": "gmat::verbal::rc::structure",
+      "keyword": {
+        "pred": "gmat::verbal::rc::structure",
+        "conf": 0.75,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::rc::application",
+        "conf": 0.1691,
+        "ok": false
+      }
+    },
+    {
+      "id": "vrc-9ecbb6767b34",
+      "gold": "gmat::verbal::rc::main_idea",
+      "keyword": {
+        "pred": "gmat::verbal::rc::main_idea",
+        "conf": 0.75,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::rc::function",
+        "conf": 0.3269,
+        "ok": false
+      }
+    },
+    {
+      "id": "vrc-227f2abaf913",
+      "gold": "gmat::verbal::rc::detail",
+      "keyword": {
+        "pred": "gmat::verbal::rc::detail",
+        "conf": 0.75,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::rc::main_idea",
+        "conf": 0.2758,
+        "ok": false
+      }
+    },
+    {
+      "id": "vrc-dc93188da3f6",
+      "gold": "gmat::verbal::rc::function",
+      "keyword": {
+        "pred": "gmat::verbal::rc::function",
+        "conf": 0.75,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::verbal::rc::main_idea",
+        "conf": 0.3269,
+        "ok": false
+      }
+    },
+    {
+      "id": "vrc-08b85211c306",
+      "gold": "gmat::verbal::rc::application",
+      "keyword": {
+        "pred": "gmat::verbal::cr::inference",
+        "conf": 0.35,
+        "ok": false
+      },
+      "vector": {
+        "pred": "gmat::verbal::rc::main_idea",
+        "conf": 0.2051,
+        "ok": false
+      }
+    }
+  ],
+  "gold_file": "/Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork/gmatwiz/content/verbal_gold.json"
+}

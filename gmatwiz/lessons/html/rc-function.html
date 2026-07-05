@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reading Comprehension: Function &middot; GMATWiz Verbal Reasoning</title>
+<style>
+:root{
+  --ink:#1a1813; --muted:#6b6358; --rule:#d9d2c5; --bg:#fbf9f4; --card:#fffdf8;
+  --accent:#7a3b2e; --accent2:#3a5a40; --link:#7a3b2e; --code:#2b2b2b;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:3rem 2rem 6rem;}
+.content{max-width:720px;}
+header.masthead{border-bottom:1px solid var(--rule); padding-bottom:1.2rem; margin-bottom:2rem;}
+.kicker{font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:0 0 .4rem;}
+h1{font-size:2.3rem; line-height:1.1; margin:.1rem 0 .6rem; font-weight:600; letter-spacing:-.01em;}
+.meta{color:var(--muted); font-size:.9rem; margin:0;}
+.meta b{color:var(--ink); font-weight:600;}
+h2{font-size:1.45rem; margin:2.8rem 0 .3rem; font-weight:600; letter-spacing:-.01em;}
+h2 .num{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:.5rem;}
+h3{font-size:1.06rem; margin:1.6rem 0 .4rem; font-weight:600;}
+.sub{color:var(--muted); font-style:italic; margin:.1rem 0 1rem; font-size:.95rem;}
+p{margin:.6rem 0;} ul,ol{margin:.5rem 0 .9rem; padding-left:1.3rem;} li{margin:.25rem 0;}
+a{color:var(--link); text-decoration:none; border-bottom:1px solid rgba(122,59,46,.35);}
+a:hover{border-bottom-color:var(--link);}
+.lead{font-size:1.08rem;}
+section{position:relative;}
+.note{font-size:.8rem; color:var(--muted); line-height:1.4;}
+.objectives{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1rem 1.2rem;}
+.objectives ul{margin:.3rem 0 0;}
+.intent{border-left:3px solid var(--accent2); padding:.4rem 0 .4rem 1rem; margin:1rem 0; font-size:1.05rem;}
+.donow{background:#2b2620; color:#f3ecde; border-radius:8px; padding:1.1rem 1.3rem; margin:1rem 0;}
+.donow .tag{font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:#d8b48a;}
+.donow ol{padding-left:1.2rem;} .donow li{margin:.4rem 0;}
+.donow .ans{color:#b9c6a9; font-style:italic; font-size:.86rem; display:block; margin-top:.15rem;}
+table{border-collapse:collapse; width:100%; font-size:.92rem; margin:.6rem 0 1rem;}
+th,td{text-align:left; padding:.45rem .6rem; border-bottom:1px solid var(--rule); vertical-align:top;}
+th{font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+td.t{white-space:nowrap; color:var(--accent); font-variant-numeric:tabular-nums; width:6.5rem;}
+.q{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1.1rem 1.3rem; margin:1.1rem 0;}
+.q .qid{font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+.q .qid .diff{float:right; color:var(--accent2);}
+.q .stem{font-size:1.03rem; margin:.35rem 0 .6rem;}
+.choices{list-style:none; padding:0; margin:.2rem 0 .4rem; counter-reset:c;}
+.choices li{padding:.32rem .6rem; border:1px solid var(--rule); border-radius:6px; margin:.3rem 0; background:#fff;}
+.choices li .lab{display:inline-block; width:1.5rem; font-weight:600; color:var(--accent);}
+.choices li.correct{border-color:var(--accent2); background:#eef3ec;}
+.choices li.correct .lab{color:var(--accent2);}
+details{margin:.5rem 0 .2rem; border-top:1px dashed var(--rule); padding-top:.5rem;}
+details>summary{cursor:pointer; font-size:.86rem; color:var(--accent); font-weight:600; list-style:none;}
+details>summary::-webkit-details-marker{display:none;}
+details>summary::before{content:"\25B8  "; color:var(--accent);}
+details[open]>summary::before{content:"\25BE  ";}
+.expl{font-size:.95rem; margin-top:.5rem;}
+.hints{font-size:.92rem;} .hints li{margin:.2rem 0;}
+.feedback{font-size:.9rem;} .feedback .ok{color:var(--accent2);} .feedback .no{color:var(--accent);}
+.appfirst{font-size:.78rem; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin:.2rem 0;}
+.mastery{background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--accent2); border-radius:8px; padding:1rem 1.2rem;}
+.pill{display:inline-block; font-size:.72rem; padding:.12rem .5rem; border:1px solid var(--rule); border-radius:999px; color:var(--muted); margin:.1rem .2rem .1rem 0;}
+footer{margin-top:3.5rem; border-top:1px solid var(--rule); padding-top:1rem; color:var(--muted); font-size:.82rem;}
+.src{background:#eef3ec; border:1px solid #cfe0cf; border-radius:8px; padding:.9rem 1.1rem; margin:1.2rem 0;}
+.src .tag{font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent2); font-weight:600;}
+.crumbs{font-size:.85rem; margin-bottom:1.2rem;}
+.ask{font-size:.9rem; background:#fff8ec; border:1px dashed #e0c590; border-radius:8px; padding:.7rem 1rem; margin:1.4rem 0;}
+@media print{ body{background:#fff} .wrap{padding:0} a{border:none} .donow{-webkit-print-color-adjust:exact; print-color-adjust:exact} }
+</style></head>
+<body><div class="wrap"><div class="content">
+  <div class="crumbs"><a href="index.html">&larr; All topics</a> &middot; Verbal Reasoning &middot; Reading Comprehension</div>
+  <header class="masthead">
+    <p class="kicker">GMATWiz &middot; GMAT Focus Edition &middot; Verbal Reasoning (Reading Comprehension)</p>
+    <h1>Reading Comprehension: Function</h1>
+    <p class="meta"><b>Topic id</b> <code>gmat::verbal::rc::function</code> &middot; <b>Domain</b> Reading Comprehension
+      &middot; <b>Prereqs</b> identify a passage&#x27;s main point, see how a sentence relates to that point &middot; <b>~18 min</b></p>
+  </header>
+
+  <div class="objectives">
+    <p class="note"><b>Learning objectives</b></p>
+    <ul><li>Explain WHY the author includes a specific detail (its role), not just what it says.</li><li>Common roles: give an example, support a claim, raise an objection, provide contrast.</li><li>Reject options that merely restate the detail or misstate its role.</li></ul>
+    <p class="note">Model: I do -&gt; we do -&gt; you do &middot; application-first (explanations revealed after an attempt) &middot; Rosenshine (daily review), Archer (I-do/we-do/you-do), SPOV2 application-first.</p>
+  </div>
+
+  
+    <section>
+      <h2><span class="num">1</span>Opening &mdash; retrieval &amp; bridge</h2>
+      <p class="sub">Builds on: Seeing how a sentence supports or complicates a main point.</p>
+      <div class="donow">
+        <div class="tag">Do Now &middot; from memory, no notes</div>
+        <p>No notes. 4 minutes.</p>
+        <ol><li>A function question asks what about a detail?<span class="ans">Why the author included it - its role in the passage.</span></li><li>Name two common roles a detail can play.<span class="ans">Give an example; support (or object to) a claim.</span></li><li>Is restating the detail a correct function answer?<span class="ans">No - you must say what job it does.</span></li></ol>
+      </div>
+      <p class="note"><b>Retrieval starter (5 min).</b> Recalls that function = the author&#x27;s reason for including a detail.
+      <br><b>If students struggle:</b> Ask &#x27;what would be lost if this sentence were deleted?&#x27; to reveal its role.</p>
+      <h3>Prior-knowledge bridge</h3>
+      <p>You can see how a sentence relates to the main point. A function question makes that explicit: name the JOB a detail does - example, support, objection, contrast - rather than repeating what it says.</p>
+      <h3>Learning intention</h3>
+      <p class="intent">By the end you can state the role a specific detail plays in a passage and match it to the right option.</p>
+      <p class="note"><b>You'll know you've got it when:</b></p>
+      <ul><li>I can say why the author included a detail, not just what it says.</li><li>I can name the role (example, support, objection, contrast).</li><li>I can reject options that restate the detail or misname its role.</li></ul>
+      <details><summary>Complete timed opening script</summary>
+        <table><thead><tr><th>Time</th><th>Move</th></tr></thead><tbody><tr><td class="t">0:00-4:00</td><td>Do Now on screen; learners answer from memory, no notes.</td></tr><tr><td class="t">4:00-6:00</td><td>Cold-call answers; name the argument&#x27;s conclusion vs premises.</td></tr><tr><td class="t">6:00-8:00</td><td>Bridge to today&#x27;s question type; state what the stem is really asking.</td></tr><tr><td class="t">8:00-10:00</td><td>Move to I do: model the reasoning on one worked item.</td></tr></tbody></table>
+      </details>
+    </section>
+
+  <section>
+    <h2><span class="num">2</span>I do &mdash; worked example</h2>
+    <p class="sub">Watch the reasoning modeled end to end before you try.</p>
+    
+    <div class="q">
+      <div class="qid">I DO &middot; worked example<span class="diff">medium</span></div>
+      <div class="stem">Passage: Some claim that working from home lowers productivity. Yet at one large firm, output per employee rose after a shift to remote work - evidence that the claim is not universally true.
+
+Question: The author mentions the large firm&#x27;s rising output primarily in order to</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>provide evidence against the claim that remote work lowers productivity</li><li><span class="lab">B</span>prove that all firms should adopt remote work</li><li><span class="lab">C</span>describe how the firm measures output</li><li><span class="lab">D</span>introduce a new claim about employee morale</li><li><span class="lab">E</span>explain why some people work from home</li></ul>
+      <h3>Think-aloud</h3>
+      <ol><li>Main point: the &#x27;remote lowers productivity&#x27; claim isn&#x27;t universally true.</li><li>The firm&#x27;s rising output is the evidence for that point.</li><li>So its role is to counter the claim - choice A.</li></ol>
+      <p class="expl"><b>Correct: A.</b> The firm&#x27;s rising output is offered right after the claim, as counter-evidence (&#x27;evidence that the claim is not universally true&#x27;). Its role is to rebut the claim. A names that role.</p>
+      <p class="note"><b>Takeaway.</b> Name the JOB a detail does for the argument, not what it literally says.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>We do &mdash; guided practice</h2>
+    <p class="sub">Scaffolds and immediate feedback are one click away. Fade them as you gain confidence.</p>
+    
+    <div class="q">
+      <div class="qid">we_1 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">Passage: Vitamin supplements are widely believed to prevent colds. In a large trial, however, people taking the supplement caught colds just as often as those taking a placebo.
+
+Question: The author mentions the trial primarily in order to</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>challenge the belief that supplements prevent colds</li><li><span class="lab">B</span>recommend a specific brand of supplement</li><li><span class="lab">C</span>explain how placebos are manufactured</li><li><span class="lab">D</span>prove that colds are impossible to prevent</li><li><span class="lab">E</span>describe the symptoms of the common cold</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>What belief is stated first?</li><li>The trial is introduced with &#x27;however&#x27; - a contrast signal.</li><li>So the trial&#x27;s job is to counter the belief.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Right - the trial challenges the belief.<br>
+        <span class="no">If incorrect:</span> D is too strong; the trial challenges ONE belief, not all prevention.</p>
+        <p class="expl"><b>Answer: A.</b> The trial&#x27;s result (no difference from placebo) is introduced with &#x27;however&#x27; to push back on the belief. Its role is to challenge that belief. A matches.</p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">we_2 &middot; we do (guided)<span class="diff">easy</span></div>
+      <div class="stem">Passage: The new policy has clear benefits. It will, for instance, cut commute times for thousands of workers who currently drive across town each day.
+
+Question: The reference to cutting commute times functions primarily to</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>give a specific example of the policy&#x27;s benefits</li><li><span class="lab">B</span>raise an objection to the policy</li><li><span class="lab">C</span>prove the policy has no drawbacks</li><li><span class="lab">D</span>define what a commute is</li><li><span class="lab">E</span>compare the policy to an older one</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>The signal &#x27;for instance&#x27; tells you the role.</li><li>It illustrates the &#x27;clear benefits&#x27; claim.</li><li>That&#x27;s an example, not an objection.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Yes - it&#x27;s an illustrative example.<br>
+        <span class="no">If incorrect:</span> &#x27;For instance&#x27; signals an example, not an objection or proof of no drawbacks.</p>
+        <p class="expl"><b>Answer: A.</b> &#x27;For instance&#x27; marks the commute detail as an example illustrating the stated benefits. A names that role; the others misstate it.</p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>You do &mdash; independent application</h2>
+    <p class="sub">Application-first (SPOV2): commit to an answer, then reveal the explanation. Log every miss.</p>
+    
+    <div class="q">
+      <div class="qid">you_1 &middot; you do (independent)<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Passage: Critics say the museum&#x27;s new wing clashes with the old building. Supporters counter that the contrast draws visitors in - attendance has risen 30 percent since the wing opened.
+
+Question: The author mentions the 30 percent rise in attendance primarily in order to</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>support the supporters&#x27; response to the critics</li><li><span class="lab">B</span>concede that the critics are correct</li><li><span class="lab">C</span>explain how attendance is counted</li><li><span class="lab">D</span>argue that the old building should be demolished</li><li><span class="lab">E</span>describe the design of the new wing</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> The attendance rise backs the supporters&#x27; counter to the critics. Its role is to support that response. A matches; the others misname it.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_2 &middot; you do (independent)<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Passage: The device is marketed as waterproof. In testing, however, it failed after ten minutes in shallow water, casting doubt on that description.
+
+Question: The author refers to the testing result primarily in order to</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>cast doubt on the device&#x27;s waterproof marketing</li><li><span class="lab">B</span>explain how the device is manufactured</li><li><span class="lab">C</span>recommend the device to consumers</li><li><span class="lab">D</span>prove that no device can be waterproof</li><li><span class="lab">E</span>describe the price of the device</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> The failed test is introduced with &#x27;however&#x27; to undercut the waterproof claim. Its role is to cast doubt on that marketing. A matches.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_3 &middot; you do (independent)<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Passage: Many cities have tried to reduce littering with fines, but enforcement is costly. One city instead added colorful, conveniently placed bins and saw litter drop sharply, suggesting that design can sometimes succeed where penalties struggle.
+
+Question: The author mentions the city that added bins primarily in order to</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>offer an example of an alternative to fines that worked</li><li><span class="lab">B</span>argue that fines should be increased</li><li><span class="lab">C</span>explain how litter is measured</li><li><span class="lab">D</span>prove that fines never reduce littering</li><li><span class="lab">E</span>describe the color of the new bins</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> The bin city illustrates an alternative to fines that succeeded, supporting the point that design can work where penalties struggle. A names that role; the others misstate or overstate.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+  </section>
+
+  
+    <section>
+      <h2><span class="num">5</span>Mastery check</h2>
+      <div class="mastery">
+        <p>A topic is mastered at &gt;=85% correct on new/held-out-style questions across &gt;=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.</p>
+        <p class="note"><b>Threshold</b> 0.85 &middot; <b>spaced sessions</b> &ge; 2</p>
+        <ul><li>&gt;=85% correct on new/held-out-style items (not flashcard recall) per session</li><li>sustained across &gt;=2 spaced sessions with a delay between them</li><li>per-topic memory surfaced only after &gt;=20 graded reviews (PRD give-up rule)</li><li>per-topic performance surfaced only after &gt;=8 application attempts (PRD give-up rule)</li></ul>
+        <p class="note"><b>If not yet mastered:</b> Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -&gt; you-do loop before re-testing.</p>
+      </div>
+      
+    </section>
+
+  <div class="src">
+    <div class="tag">Primary source</div>
+    <p><a href="https://www.mba.com/exams/gmat-focus-edition">GMAC - GMAT Focus Edition (official exam overview)</a> &mdash; Official exam structure and Verbal Reasoning scope.</p>
+    <p class='note'>Further reading:</p><ul><li><a href="https://www.khanacademy.org/prep/lsat">Khan Academy - LSAT Logical Reasoning (free)</a> &mdash; Free lessons on argument structure, assumptions, strengthen/weaken, and flaws.</li></ul>
+  </div>
+
+  <div class="ask">Stuck on any step? Ask your GMATWiz coach for a worked walkthrough &mdash; that's what it's here for.</div>
+
+  <footer>
+    <p>GMATWiz lesson &middot; <code>rc-function.json</code> &middot; schema v1.0 &middot; authored content (OfficialFlag=false), reserved official items used only for late checkpoints.</p>
+  </footer>
+</div></div></body></html>

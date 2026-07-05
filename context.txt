@@ -379,6 +379,9 @@ RECOMMENDED STACK (reuse the existing Anki stack — that's the whole point of t
   Content model (content is data, not code) ............... ANKI NOTETYPES
     - GMAT item types as notetypes: Problem Solving, Data Sufficiency, Reading
       Comprehension, Critical Reasoning, Sentence Correction.
+      (AS BUILT — see section 8: 3 notetypes — GMAT PS, GMAT Verbal (CR+RC), and
+      GMAT DI (DS / Two-Part / Multi-Source). Sentence Correction is OUT of scope;
+      Data Sufficiency is a Data-Insights leaf, not its own notetype.)
     - Authored as fields + card templates; ships as data, versionable & importable.
 
   Orchestration + desktop shell .......................... PYTHON (pylib + qt/aqt)
@@ -422,4 +425,184 @@ SUGGESTED BUILD ORDER (de-risked, principle-aligned):
 Net: content is the cheap part (Firebase/notetypes); the moat is the learning
 STRUCTURE we build into Anki's Rust scheduler, surfaced through an
 application-first Svelte UI — directly serving both founding principles.
+===============================================================================
+
+===============================================================================
+BUILD RECORD — GMATWiz AS SHIPPED  (sections 8-10 update the plan in 0-7)
+===============================================================================
+The plan in sections 4/7 has largely landed. GMATWiz is now a full THREE-SECTION
+guided app (Quant + Verbal + Data Insights) living inside this Anki tree, with a
+shared cross-platform scoring engine and a gated onboarding. Sections 0-7 describe
+the ARCHITECTURE; sections 8-10 describe WHAT EXISTS, HOW it was built, and the
+new invariants to respect.
+
+-------------------------------------------------------------------------------
+8. GMATWiz AS BUILT — IMPLEMENTATION MAP
+-------------------------------------------------------------------------------
+8a. THE FILES THAT NOW EXIST (the GMAT seam, concretely)
+    pylib/anki/gmatwiz.py .............. domain layer: the 3 notetypes + importers
+                                         (GMAT PS / Verbal / DI). Each has an
+                                         idempotent add_*_notetype, a build_*_add_
+                                         requests, and an import_* (stem-hash dedup).
+    qt/aqt/gmat.py .................... desktop screen + Tools-menu/toolbar wiring
+                                         + versioned bundled-content import.
+    qt/aqt/mediasrv.py (gmat_* fns) ... the /_anki/gmat* endpoint family (overview,
+                                         next/answer card, pretest, submit-pretest,
+                                         save-profile, today, calendar, error log,
+                                         ensure-content, ...). Reads/writes col
+                                         config + calls the Rust engine for scores.
+    rslib/src/gmatwiz.rs .............. the SHARED scoring/plan engine (Memory /
+                                         Performance / Readiness) + iOS endpoint
+                                         parity. Single source of truth for scores.
+    ts/routes/gmat/ .................. the SvelteKit app: GmatApp.svelte (whole UI
+                                         + onboarding), api.ts (RPC + score types),
+                                         colsync.ts (whole-collection sync via
+                                         Firebase Storage), sync.ts/auth.ts
+                                         (Firestore config sync + Firebase auth).
+    gmatwiz/content/ ................. banks + pipeline: taxonomy.py, scraper.py,
+                                         seed/questions JSON (Quant), verbal_*.json,
+                                         di_*.json.
+    gmatwiz/lessons/ ................. authored micro-lessons per topic
+                                         (topics_*.py, incl. topics_data_di.py).
+
+8b. SECTION-AWARE TOPIC IDS (the key that ties everything together)
+    Every card / lesson / plan / score keys off a leaf topic id of the form
+        gmat::<section>::<category>::<leaf>
+    e.g. gmat::quant::algebra::quadratics, gmat::verbal::cr::weaken,
+         gmat::verbal::rc::main_idea, gmat::di::reasoning::data_sufficiency.
+    The SECTION is the 2nd "::" segment; recover it with section_of() (taxonomy.py),
+    _gmat_section_of_topic() (mediasrv.py), and gmat_section_of_topic() (rslib) —
+    these three MUST agree. Taxonomy is defined once in gmatwiz/content/taxonomy.py:
+      Quant  = 18 leaves (arithmetic 10 + algebra 8; PS only — NO geometry, NO DS)
+      Verbal = 16 leaves (CR 9 + RC 7; NO Sentence Correction)
+      DI     =  3 leaves (data_sufficiency, two_part_analysis, multi_source_reasoning)
+      => 37 leaf topics total (ALL_TOPICS). Coverage % = distinct topics WITH cards
+         over 37. A weighted keyword tagger (per-section rule sets) auto-classifies
+         scraped/authored items to a leaf.
+
+8c. NOTETYPES, DECKS, CONFIG KEYS (the data model)
+    Notetypes (pylib/anki/gmatwiz.py):
+      GMAT PS ...... Stem, OptionA-E, Correct, Explanation, Topic, Difficulty, Source.
+      GMAT Verbal .. PS fields + Passage + PassageId (RC shares one Passage across
+                     its cards via PassageId; the template renders the passage only
+                     when present, so CR looks like PS).
+      GMAT DI ...... identical fields to Verbal (Passage = a Multi-Source stimulus).
+    Decks: GMAT::Quant, GMAT::Verbal, GMAT::DI (own preset, 9999/day limits).
+    Per-section col.config keys (Quant keeps the ORIGINAL names):
+      diagnosis: gmatDiagnosis / gmatDiagnosisVerbal / gmatDiagnosisDI
+      plan:      gmatPlan      / gmatPlanVerbal      / gmatPlanDI
+      profile:   gmatProfile (exam_date, days_per_week, target_score)
+      content:   gmatContentVersion (bundled-import high-water mark)
+      + the living-plan keys (gmatLearned, gmatQuizzes, gmatErrorLog, ...).
+    Memory/Performance/Readiness are NOT config — they come from the Rust engine.
+
+-------------------------------------------------------------------------------
+9. BUILD LOG — THREE ROUNDS SINCE THIS DOC WAS LAST UPDATED
+-------------------------------------------------------------------------------
+9a. ROUND 1 — GMAT VERBAL (Critical Reasoning + Reading Comprehension)
+    - Introduced the section-aware topic-id scheme (8b) so Verbal slots in beside
+      Quant without disturbing it.
+    - New "GMAT Verbal" notetype with Passage/PassageId (RC shares one passage
+      across its question cards; CR renders like PS). Deck GMAT::Verbal.
+    - Verbal taxonomy + keyword tagger (taxonomy.py VERBAL_TAXONOMY /
+      _VERBAL_TAGGER_RULES); content in gmatwiz/content/verbal_*.json (passage
+      groups flattened by flatten_verbal_items so each card carries its passage).
+    - ADDITIVE diagnostic + plan: gmatDiagnosisVerbal / gmatPlanVerbal run as a
+      PARALLEL track (mediasrv _gmat_section_today_blocks; the pretest/plan builders
+      take a `section`), so Quant's gmatDiagnosis / gmatPlan are never touched.
+
+9b. ROUND 2 — UNIFIED SCORING + DATA INSIGHTS + GATED ONBOARDING + DAILY LOCK
+  UNIFIED SCORING  (rslib/src/gmatwiz.rs <-> mediasrv.py, kept in LOCKSTEP)
+    - ONE Memory, ONE Performance, ONE Readiness, each carrying a by_section
+      breakdown {quant, verbal, di}. The Rust engine (gmat_scores_json) is the
+      single source of truth; mediasrv _gmat_scores just calls it; api.ts carries
+      the types (GmatMemory / GmatPerformance / GmatReadiness, with by_section).
+    - Readiness headline is a GMAT Focus Total (205-805) via the documented
+      heuristic gmat_sections_to_total(q,v,di): normalize each 60-90 section score
+      to (s-60)/30, average the three, map to 205 + avg*600 (round to 10, clamp).
+      It ABSTAINS until all three sections have evidence — gmat_total_readiness is
+      "shown" only when q,v,di are all shown, else it names the missing sections.
+      Added gmat_accuracy_to_di (60-90, same anchors as Quant/Verbal).
+    - REMOVED the old readinessVerbal / performanceVerbal keys (superseded by the
+      unified metric + by_section). Progress UI = one card per metric with an
+      expandable per-section breakdown.
+  DATA INSIGHTS  (pragmatic MCQ scope)
+    - Taxonomy leaves gmat::di::reasoning::{data_sufficiency, two_part_analysis,
+      multi_source_reasoning}. Graphics Interpretation + Table Analysis are
+      DEFERRED (they need an interactive, non-MCQ UI).
+    - New "GMAT DI" notetype (reuses the Verbal fields; Passage = a Multi-Source
+      stimulus); deck GMAT::DI; import_di_questions / build_di_add_requests.
+    - 24 authored original DI questions (gmatwiz/content/di_seed.json +
+      di_questions.json, 12 each) + 3 DI lessons (gmatwiz/lessons/topics_data_di.py).
+  GATED ONBOARDING  (a new account is LOCKED until it's calibrated)
+    - locked = !(plan && planVerbal && planDI)  (GmatApp.svelte). While locked,
+      only Today / the onboarding gate is reachable.
+    - The client runs a SEQUENTIAL Quant -> Verbal -> DI diagnostic gate
+      (startDiagnostic builds the queue from pendingDiagSections), ~12 questions
+      each (DIAG_COUNT=12; gmat_pretest_questions takes a per-section `count`,
+      clamped [6,30]).
+    - The exam-date + days/week profile step comes AFTER the third diagnostic
+      (finishPretest -> onboarding when no profile yet; the wizard RECOMMENDS
+      days/week). Saving it (gmat_save_profile) REBUILDS every section plan that
+      has a diagnosis via _gmat_build_section_plan (Rust parity:
+      gmat_rebuild_section_plans), so pacing reflects the exam date across all
+      three tracks — then the app UNLOCKS.
+  UNIFIED PLAN + DAILY LOCK
+    - Today + the calendar MERGE all three tracks: _gmat_section_today_blocks(col,
+      now, section) appends the Verbal/DI blocks (returns [] until that section's
+      diagnostic exists); the calendar projects each section. The final ~10-day
+      window stays practice-tests only (the hard boundary in _gmat_pacing).
+    - Study + Drill are LOCKED until Today's list is done (dailyLocked): a big lock
+      icon (the lockedGate snippet) + a wizard pop-up (maybeWizardStudy). There is
+      a TEMPORARY password bypass "1234" (STUDY_BYPASS_PASSWORD in GmatApp.svelte)
+      marked "REMOVE BEFORE DEPLOY" (see section 10).
+
+9c. ROUND 3 — FULL TOPIC COVERAGE (auto-import all sections + deepen Quant)
+    - WHY: coverage counts distinct taxonomy topics WITH cards over the total of 37
+      (18 Quant + 16 Verbal + 3 DI). It read low (~49% = 18/37) because only Quant
+      had ever been imported.
+    - IDEMPOTENT IMPORT: the importers (pylib/anki/gmatwiz.py) now dedup by a
+      normalized Stem hash (_stem_hash + _existing_stem_hashes), so re-import never
+      duplicates — it only adds genuinely-new questions.
+    - AUTO-IMPORT: qt/aqt/gmat.py GMAT_BUNDLED_CONTENT_VERSION (=2) +
+      ensure_bundled_content_sync(col) — version-gated (via the gmatContentVersion
+      config), idempotent, and SYNCHRONOUS — exposed as the mediasrv gmatEnsureContent
+      endpoint (also whitelisted in _check_dynamic_request_permissions). Bumping the
+      version re-imports once.
+    - CRITICAL ORDERING (the colReplace clobber): the whole-collection cloud sync
+      (ts/routes/gmat/colsync.ts pullCollectionOnLogin) DOWNLOADS + REPLACES the
+      local collection on login, so the import MUST run AFTER sync settles, then
+      upload — otherwise colReplace overwrites the freshly-imported bank with the
+      older cloud copy. The client (GmatApp.svelte ensureContentAfterSync) calls
+      gmatEnsureContent AFTER pullCollectionOnLogin and uploads when it changed.
+      iOS gets the content by DOWNLOADING the desktop-imported collection (the Rust
+      gmatEnsureContent arm is a deliberate no-op). render_gmat_screen does NOT
+      trigger the import for this reason.
+    - DEEPENED QUANT: gmatwiz/content/scraper.py gained --merge (add to + dedupe
+      AGAINST the existing questions.json; existing items win ties) and
+      --per-topic-cap (balance the bank; existing kept first). Scraped AQuA-RAT
+      (Apache-2.0, google-deepmind/AQuA train split) to grow Quant 231 -> 808
+      questions, capped ~60/topic, filling previously-thin leaves (fractions,
+      sequences, expressions, absolute_value, functions, decimals). All
+      license-clean; option-formatting artifacts cleaned.
+
+-------------------------------------------------------------------------------
+10. NEW INVARIANTS & GOTCHAS (respect these when touching GMATWiz)
+-------------------------------------------------------------------------------
+  - SCORING LOCKSTEP. rslib/src/gmatwiz.rs is the source of truth for Memory /
+    Performance / Readiness; mediasrv.py mirrors its shape and api.ts mirrors its
+    types. Change one -> change all three, or desktop / iOS / UI drift.
+  - SECTION FROM TOPIC ID. Derive section from the 2nd "::" segment (8b), never
+    guess from a deck/notetype alone; the three implementations must stay in sync.
+  - IMPORT AFTER SYNC, THEN UPLOAD. Bundled-content import runs only AFTER the
+    whole-collection sync settles (else colReplace clobbers it). Drive it from the
+    client post-sync (gmatEnsureContent), NOT from render_gmat_screen.
+  - CONTENT VERSION IS A HIGH-WATER MARK. Ship new bundled questions by bumping
+    GMAT_BUNDLED_CONTENT_VERSION (qt/aqt/gmat.py); the import is idempotent, so it
+    re-runs once and adds only new stems.
+  - NEW GMAT ENDPOINTS need BOTH registration in post_handler_list AND (for POST) a
+    whitelist entry in _check_dynamic_request_permissions (mediasrv.py).
+  - REMOVE BEFORE DEPLOY: the daily-lock bypass password "1234"
+    (STUDY_BYPASS_PASSWORD in ts/routes/gmat/GmatApp.svelte, used by lockedGate) is
+    a dev-only affordance — strip it before any real release.
 ===============================================================================

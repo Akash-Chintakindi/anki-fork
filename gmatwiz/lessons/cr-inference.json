@@ -1,0 +1,281 @@
+{
+  "topic_id": "gmat::verbal::cr::inference",
+  "slug": "cr-inference",
+  "title": "Critical Reasoning: Inference",
+  "prerequisites": [
+    "read a set of statements precisely",
+    "distinguish 'must be true' from 'could be true'"
+  ],
+  "learning_objectives": [
+    "Choose the statement that MUST be true given the premises - nothing more.",
+    "Combine conditional statements and use the contrapositive.",
+    "Reject choices that go even slightly beyond what the text guarantees."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do -> we do -> you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Reading conditional ('if-then') statements and their contrapositives.",
+    "do_now": {
+      "instructions": "No notes. 4 minutes.",
+      "items": [
+        {
+          "prompt": "Contrapositive of 'If it rains, the game is canceled.'",
+          "answer": "If the game is not canceled, it did not rain.",
+          "targets": "contrapositive"
+        },
+        {
+          "prompt": "Does 'most A are B' let you conclude 'most B are A'?",
+          "answer": "No.",
+          "targets": "quantifier traps"
+        },
+        {
+          "prompt": "'Must be true' vs 'could be true' - which does inference require?",
+          "answer": "Must be true.",
+          "targets": "standard"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Recalls the contrapositive and the strict 'must be true' bar - the backbone of inference questions.",
+      "if_students_struggle": "Have them cross out any choice that adds a new idea not in the text.",
+      "questions": [
+        {
+          "prompt": "If 'All X are Y' and 'no Y are Z,' what must be true?",
+          "answer": "No X are Z.",
+          "targets": "chaining"
+        },
+        {
+          "prompt": "Why reject a choice that is merely plausible?",
+          "answer": "Inference requires it be guaranteed, not just likely.",
+          "targets": "standard"
+        }
+      ]
+    },
+    "prior_knowledge_bridge": "Unlike strengthen/weaken, inference gives you the premises as true and asks what they force. Your job isn't to judge an argument - it's to find the one choice the statements guarantee, using chaining and the contrapositive, and to reject anything that reaches beyond the text.",
+    "learning_intention": "By the end you can select the only choice that must be true given the statements, combining conditionals and rejecting overreach.",
+    "success_criteria": [
+      "I can take the premises as given and not add outside assumptions.",
+      "I can chain conditionals and apply the contrapositive.",
+      "I can eliminate 'could be true but not guaranteed' choices."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00-4:00",
+        "move": "Do Now on screen; learners answer from memory, no notes."
+      },
+      {
+        "time": "4:00-6:00",
+        "move": "Cold-call answers; name the argument's conclusion vs premises."
+      },
+      {
+        "time": "6:00-8:00",
+        "move": "Bridge to today's question type; state what the stem is really asking."
+      },
+      {
+        "time": "8:00-10:00",
+        "move": "Move to I do: model the reasoning on one worked item."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "Every product in the store's front display is on sale. Nothing that is on sale can be returned for a refund. If the statements above are true, which of the following must also be true?",
+    "options": {
+      "A": "No product in the front display can be returned for a refund.",
+      "B": "Every product that cannot be returned is in the front display.",
+      "C": "Products not on sale are all in the back of the store.",
+      "D": "Some products in the front display can be returned.",
+      "E": "The store rarely gives refunds."
+    },
+    "correct": "A",
+    "explanation": "Front-display items are all on sale, and on-sale items cannot be refunded; chaining these, no front-display item can be refunded. A is forced; the others reverse the logic or add new claims.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "Premise 1: front display -> on sale. Premise 2: on sale -> no refund.",
+      "Chain them: front display -> on sale -> no refund.",
+      "So every front-display product cannot be refunded - that's A.",
+      "B reverses the chain; C, D, E add facts the text never gives."
+    ],
+    "key_takeaway": "Inference = what the premises force. Chain conditionals forward; never reverse them or add outside information.",
+    "topic": "gmat::verbal::cr::inference",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Critical Reasoning"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "All of the interns attended the safety briefing. Anyone who attended the safety briefing received a badge. If the statements above are true, which of the following must be true?",
+      "options": {
+        "A": "Every intern received a badge.",
+        "B": "Only interns received badges.",
+        "C": "Everyone with a badge is an intern.",
+        "D": "Some interns did not attend the briefing.",
+        "E": "The briefing was required by law."
+      },
+      "correct": "A",
+      "explanation": "Interns -> attended -> received a badge, so every intern got a badge. The reversed and added-fact choices aren't guaranteed.",
+      "difficulty": "easy",
+      "scaffold_hints": [
+        "Write the two conditionals and chain them.",
+        "intern -> attended -> badge.",
+        "Beware choices that flip the arrow ('everyone with a badge is an intern')."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right - chaining gives intern -> badge.",
+        "if_incorrect": "B and C reverse the logic; the text only guarantees intern -> badge."
+      },
+      "topic": "gmat::verbal::cr::inference",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning"
+    },
+    {
+      "id": "we_2",
+      "stem": "No book in the reference room may be borrowed. Every atlas in this library is kept in the reference room. If the statements above are true, which of the following must be true?",
+      "options": {
+        "A": "No atlas in this library may be borrowed.",
+        "B": "Every book that may not be borrowed is an atlas.",
+        "C": "All borrowable books are outside the reference room.",
+        "D": "Some atlases may be borrowed.",
+        "E": "The reference room contains only atlases."
+      },
+      "correct": "A",
+      "explanation": "Atlases are in the reference room, and reference-room books cannot be borrowed; so no atlas can be borrowed. The rest reverse the logic or overreach.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "atlas -> in reference room -> cannot be borrowed.",
+        "Chain forward to the guaranteed result.",
+        "Reject choices that reverse or add claims."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Exactly - the chain forces 'no atlas may be borrowed.'",
+        "if_incorrect": "C reverses the relationship; only atlas -> not borrowable is guaranteed."
+      },
+      "topic": "gmat::verbal::cr::inference",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "The theater sells out every show that opens on a Saturday. Last week's show did not sell out. If the statements above are true, which of the following must be true?",
+      "options": {
+        "A": "Last week's show did not open on a Saturday.",
+        "B": "The theater never opens shows on Saturdays.",
+        "C": "Last week's show was poorly reviewed.",
+        "D": "The theater will sell out its next Saturday show.",
+        "E": "Most of the theater's shows open on Saturdays."
+      },
+      "correct": "A",
+      "explanation": "Opening on Saturday guarantees a sellout; since the show did not sell out, by the contrapositive it did not open on a Saturday.",
+      "difficulty": "medium",
+      "topic": "gmat::verbal::cr::inference",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "Every applicant who passed the exam was invited to an interview. Maria was not invited to an interview. If the statements above are true, which of the following must be true?",
+      "options": {
+        "A": "Maria did not pass the exam.",
+        "B": "Maria did not apply.",
+        "C": "Everyone who was invited passed the exam.",
+        "D": "Maria will be invited later.",
+        "E": "The exam was difficult."
+      },
+      "correct": "A",
+      "explanation": "Passing guarantees an invitation; Maria wasn't invited, so by the contrapositive she did not pass. The others aren't forced.",
+      "difficulty": "medium",
+      "topic": "gmat::verbal::cr::inference",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "All the vehicles in the company fleet run on electricity. No electric vehicle in the city is allowed in the old tunnel. If the statements above are true, which of the following must be true?",
+      "options": {
+        "A": "No vehicle in the company fleet is allowed in the old tunnel.",
+        "B": "Every vehicle barred from the tunnel is in the company fleet.",
+        "C": "The company fleet is the largest in the city.",
+        "D": "Some fleet vehicles are allowed in the tunnel.",
+        "E": "Electric vehicles are cheaper to operate."
+      },
+      "correct": "A",
+      "explanation": "Fleet vehicles are electric, and city electric vehicles are barred from the tunnel; so no fleet vehicle is allowed in the tunnel. The rest reverse or overreach.",
+      "difficulty": "hard",
+      "topic": "gmat::verbal::cr::inference",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "GMAC - GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Verbal Reasoning scope.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy - LSAT Logical Reasoning (free)",
+      "url": "https://www.khanacademy.org/prep/lsat",
+      "note": "Free lessons on argument structure, assumptions, strengthen/weaken, and flaws."
+    }
+  ],
+  "domain": "Critical Reasoning",
+  "section": "Verbal Reasoning",
+  "question_type": "Critical Reasoning",
+  "estimated_minutes": 18,
+  "schema_version": "1.0",
+  "exam": "GMAT Focus Edition"
+}

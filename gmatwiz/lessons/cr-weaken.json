@@ -1,0 +1,281 @@
+{
+  "topic_id": "gmat::verbal::cr::weaken",
+  "slug": "cr-weaken",
+  "title": "Critical Reasoning: Weaken",
+  "prerequisites": [
+    "identify an argument's conclusion",
+    "spot the assumption connecting evidence to conclusion"
+  ],
+  "learning_objectives": [
+    "Find the conclusion, then choose the fact that makes it less likely to be true.",
+    "Attack the assumption, or supply an alternative cause for the evidence.",
+    "Ignore choices that are irrelevant or that merely fail to help the argument."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do -> we do -> you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Finding an argument's assumption and how a strengthener supports it.",
+    "do_now": {
+      "instructions": "No notes. 4 minutes, from memory.",
+      "items": [
+        {
+          "prompt": "What is the most common way to weaken a causal claim?",
+          "answer": "Provide an alternative cause for the observed effect.",
+          "targets": "weaken moves"
+        },
+        {
+          "prompt": "Does a choice that is merely irrelevant weaken an argument?",
+          "answer": "No - it must make the conclusion less likely.",
+          "targets": "trap answers"
+        },
+        {
+          "prompt": "Weaken or not: the two groups compared differed in another important way.",
+          "answer": "Weakens (introduces a confounder).",
+          "targets": "confounders"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Recalls that weakening usually means attacking the assumption or offering a rival cause.",
+      "if_students_struggle": "Remind them the correct answer need not disprove the conclusion - just dent it.",
+      "questions": [
+        {
+          "prompt": "Name two ways to weaken a causal argument.",
+          "answer": "Break the assumption; give an alternative cause.",
+          "targets": "weaken strategy"
+        },
+        {
+          "prompt": "Why doesn't 'the plan is expensive' weaken 'the plan will cut congestion'?",
+          "answer": "Cost doesn't bear on whether congestion falls.",
+          "targets": "relevance"
+        }
+      ]
+    },
+    "prior_knowledge_bridge": "Strengthening reinforced the assumption; weakening does the opposite - it pries the assumption loose or hands you a different explanation for the evidence. Find the gap, then widen it.",
+    "learning_intention": "By the end you can pick the choice that most reduces the likelihood the conclusion is true, usually by attacking the assumption or providing an alternative cause.",
+    "success_criteria": [
+      "I can state the conclusion the choice must undercut.",
+      "I can tell a real weakener from an irrelevant choice.",
+      "I can spot 'here's another cause' as a weakening move."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00-4:00",
+        "move": "Do Now on screen; learners answer from memory, no notes."
+      },
+      {
+        "time": "4:00-6:00",
+        "move": "Cold-call answers; name the argument's conclusion vs premises."
+      },
+      {
+        "time": "6:00-8:00",
+        "move": "Bridge to today's question type; state what the stem is really asking."
+      },
+      {
+        "time": "8:00-10:00",
+        "move": "Move to I do: model the reasoning on one worked item."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "A bakery introduced a rewards card and its sales rose the next month, so the owner concluded the rewards card increased sales. Which of the following, if true, most seriously weakens the conclusion?",
+    "options": {
+      "A": "The bakery's only nearby competitor closed for renovations that same month.",
+      "B": "The rewards card was printed on recycled paper.",
+      "C": "Some customers forgot to bring their rewards card.",
+      "D": "The bakery had offered a rewards card once before.",
+      "E": "The bakery sells both bread and pastries."
+    },
+    "correct": "A",
+    "explanation": "A competitor closing for the month offers an alternative cause for the sales bump, undermining the claim that the rewards card was responsible.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "Conclusion: the rewards card caused higher sales (causal).",
+      "To weaken a cause, find another explanation for the effect.",
+      "A competitor closing that month explains the rise without the card.",
+      "The other choices are irrelevant to what caused the increase."
+    ],
+    "key_takeaway": "For causal conclusions, the strongest weakener usually supplies an alternative cause for the evidence.",
+    "topic": "gmat::verbal::cr::weaken",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Critical Reasoning"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "A manager concluded that a new training program improved her team's sales, since sales rose after the training. Which of the following, if true, most weakens the conclusion?",
+      "options": {
+        "A": "The company launched a large price promotion the same week as the training.",
+        "B": "The training program lasted two full days.",
+        "C": "Some team members had attended similar training before.",
+        "D": "The trainer was hired from outside the company.",
+        "E": "Sales are tracked by an automated system."
+      },
+      "correct": "A",
+      "explanation": "A simultaneous price promotion is an alternative cause for the sales rise, so the training may not deserve the credit.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "The claim is causal: training -> higher sales.",
+        "Look for something else that could have raised sales at the same time.",
+        "Which choice offers a competing explanation?"
+      ],
+      "immediate_feedback": {
+        "if_correct": "Yes - a concurrent promotion undercuts the causal claim.",
+        "if_incorrect": "Details about the trainer or tracking don't change what caused the rise."
+      },
+      "topic": "gmat::verbal::cr::weaken",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning"
+    },
+    {
+      "id": "we_2",
+      "stem": "A health official argued that a public-awareness campaign reduced smoking, because smoking rates fell after the campaign. Which of the following, if true, most weakens the argument?",
+      "options": {
+        "A": "A steep national tax on cigarettes took effect at the same time as the campaign.",
+        "B": "The campaign used billboards and radio ads.",
+        "C": "Some smokers said they never saw the campaign.",
+        "D": "The campaign was funded by a health charity.",
+        "E": "Smoking rates are measured through annual surveys."
+      },
+      "correct": "A",
+      "explanation": "A simultaneous cigarette tax is a well-known driver of reduced smoking, giving an alternative cause for the decline and weakening the campaign's claimed effect.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "What else, happening at the same time, is known to cut smoking?",
+        "That competing cause weakens the campaign's claim.",
+        "Ad formats and funding don't address causation."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right - the tax is a strong alternative cause.",
+        "if_incorrect": "'Some never saw it' is minor; a nationwide tax is a much bigger competing cause."
+      },
+      "topic": "gmat::verbal::cr::weaken",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "A store owner concluded that moving the checkout counter increased impulse purchases, since such purchases rose after the move. Which of the following, if true, most weakens the conclusion?",
+      "options": {
+        "A": "The store began stocking popular candy and magazines near the checkout at the same time.",
+        "B": "The new counter is made of a more durable material.",
+        "C": "The move took place over a single weekend.",
+        "D": "The store has two entrances.",
+        "E": "Impulse purchases are recorded at the register."
+      },
+      "correct": "A",
+      "explanation": "Adding tempting items by the checkout is an alternative cause for the rise in impulse buys, independent of the counter's location.",
+      "difficulty": "medium",
+      "topic": "gmat::verbal::cr::weaken",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "A blogger claims that switching to a standing desk increased her productivity, noting she got more done after the switch. Which of the following, if true, most weakens the claim?",
+      "options": {
+        "A": "She also started using a new task-planning app the week she got the standing desk.",
+        "B": "The standing desk was more expensive than her old desk.",
+        "C": "She sometimes lowers the desk to sit.",
+        "D": "Standing desks are increasingly common in offices.",
+        "E": "She measures productivity by tasks completed."
+      },
+      "correct": "A",
+      "explanation": "Adopting a new planning app at the same time provides an alternative cause for the productivity gain, undermining the desk's claimed effect.",
+      "difficulty": "medium",
+      "topic": "gmat::verbal::cr::weaken",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "A city concluded that a new after-school program reduced youth crime, because such crime fell after the program opened. Which of the following, if true, most weakens the conclusion?",
+      "options": {
+        "A": "During the same period, the city hired dozens of additional police officers to patrol youth areas.",
+        "B": "The program offers sports and tutoring.",
+        "C": "The program is open four days a week.",
+        "D": "Attendance at the program varies by season.",
+        "E": "Youth crime is reported by local schools."
+      },
+      "correct": "A",
+      "explanation": "A simultaneous surge in policing is an alternative cause for the drop in youth crime, weakening the claim that the program was responsible.",
+      "difficulty": "hard",
+      "topic": "gmat::verbal::cr::weaken",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "GMAC - GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Verbal Reasoning scope.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy - LSAT Logical Reasoning (free)",
+      "url": "https://www.khanacademy.org/prep/lsat",
+      "note": "Free lessons on argument structure, assumptions, strengthen/weaken, and flaws."
+    }
+  ],
+  "domain": "Critical Reasoning",
+  "section": "Verbal Reasoning",
+  "question_type": "Critical Reasoning",
+  "estimated_minutes": 18,
+  "schema_version": "1.0",
+  "exam": "GMAT Focus Edition"
+}

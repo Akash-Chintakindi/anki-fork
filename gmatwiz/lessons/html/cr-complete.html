@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Critical Reasoning: Complete the Argument &middot; GMATWiz Verbal Reasoning</title>
+<style>
+:root{
+  --ink:#1a1813; --muted:#6b6358; --rule:#d9d2c5; --bg:#fbf9f4; --card:#fffdf8;
+  --accent:#7a3b2e; --accent2:#3a5a40; --link:#7a3b2e; --code:#2b2b2b;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:3rem 2rem 6rem;}
+.content{max-width:720px;}
+header.masthead{border-bottom:1px solid var(--rule); padding-bottom:1.2rem; margin-bottom:2rem;}
+.kicker{font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:0 0 .4rem;}
+h1{font-size:2.3rem; line-height:1.1; margin:.1rem 0 .6rem; font-weight:600; letter-spacing:-.01em;}
+.meta{color:var(--muted); font-size:.9rem; margin:0;}
+.meta b{color:var(--ink); font-weight:600;}
+h2{font-size:1.45rem; margin:2.8rem 0 .3rem; font-weight:600; letter-spacing:-.01em;}
+h2 .num{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:.5rem;}
+h3{font-size:1.06rem; margin:1.6rem 0 .4rem; font-weight:600;}
+.sub{color:var(--muted); font-style:italic; margin:.1rem 0 1rem; font-size:.95rem;}
+p{margin:.6rem 0;} ul,ol{margin:.5rem 0 .9rem; padding-left:1.3rem;} li{margin:.25rem 0;}
+a{color:var(--link); text-decoration:none; border-bottom:1px solid rgba(122,59,46,.35);}
+a:hover{border-bottom-color:var(--link);}
+.lead{font-size:1.08rem;}
+section{position:relative;}
+.note{font-size:.8rem; color:var(--muted); line-height:1.4;}
+.objectives{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1rem 1.2rem;}
+.objectives ul{margin:.3rem 0 0;}
+.intent{border-left:3px solid var(--accent2); padding:.4rem 0 .4rem 1rem; margin:1rem 0; font-size:1.05rem;}
+.donow{background:#2b2620; color:#f3ecde; border-radius:8px; padding:1.1rem 1.3rem; margin:1rem 0;}
+.donow .tag{font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:#d8b48a;}
+.donow ol{padding-left:1.2rem;} .donow li{margin:.4rem 0;}
+.donow .ans{color:#b9c6a9; font-style:italic; font-size:.86rem; display:block; margin-top:.15rem;}
+table{border-collapse:collapse; width:100%; font-size:.92rem; margin:.6rem 0 1rem;}
+th,td{text-align:left; padding:.45rem .6rem; border-bottom:1px solid var(--rule); vertical-align:top;}
+th{font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+td.t{white-space:nowrap; color:var(--accent); font-variant-numeric:tabular-nums; width:6.5rem;}
+.q{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1.1rem 1.3rem; margin:1.1rem 0;}
+.q .qid{font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+.q .qid .diff{float:right; color:var(--accent2);}
+.q .stem{font-size:1.03rem; margin:.35rem 0 .6rem;}
+.choices{list-style:none; padding:0; margin:.2rem 0 .4rem; counter-reset:c;}
+.choices li{padding:.32rem .6rem; border:1px solid var(--rule); border-radius:6px; margin:.3rem 0; background:#fff;}
+.choices li .lab{display:inline-block; width:1.5rem; font-weight:600; color:var(--accent);}
+.choices li.correct{border-color:var(--accent2); background:#eef3ec;}
+.choices li.correct .lab{color:var(--accent2);}
+details{margin:.5rem 0 .2rem; border-top:1px dashed var(--rule); padding-top:.5rem;}
+details>summary{cursor:pointer; font-size:.86rem; color:var(--accent); font-weight:600; list-style:none;}
+details>summary::-webkit-details-marker{display:none;}
+details>summary::before{content:"\25B8  "; color:var(--accent);}
+details[open]>summary::before{content:"\25BE  ";}
+.expl{font-size:.95rem; margin-top:.5rem;}
+.hints{font-size:.92rem;} .hints li{margin:.2rem 0;}
+.feedback{font-size:.9rem;} .feedback .ok{color:var(--accent2);} .feedback .no{color:var(--accent);}
+.appfirst{font-size:.78rem; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin:.2rem 0;}
+.mastery{background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--accent2); border-radius:8px; padding:1rem 1.2rem;}
+.pill{display:inline-block; font-size:.72rem; padding:.12rem .5rem; border:1px solid var(--rule); border-radius:999px; color:var(--muted); margin:.1rem .2rem .1rem 0;}
+footer{margin-top:3.5rem; border-top:1px solid var(--rule); padding-top:1rem; color:var(--muted); font-size:.82rem;}
+.src{background:#eef3ec; border:1px solid #cfe0cf; border-radius:8px; padding:.9rem 1.1rem; margin:1.2rem 0;}
+.src .tag{font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent2); font-weight:600;}
+.crumbs{font-size:.85rem; margin-bottom:1.2rem;}
+.ask{font-size:.9rem; background:#fff8ec; border:1px dashed #e0c590; border-radius:8px; padding:.7rem 1rem; margin:1.4rem 0;}
+@media print{ body{background:#fff} .wrap{padding:0} a{border:none} .donow{-webkit-print-color-adjust:exact; print-color-adjust:exact} }
+</style></head>
+<body><div class="wrap"><div class="content">
+  <div class="crumbs"><a href="index.html">&larr; All topics</a> &middot; Verbal Reasoning &middot; Critical Reasoning</div>
+  <header class="masthead">
+    <p class="kicker">GMATWiz &middot; GMAT Focus Edition &middot; Verbal Reasoning (Critical Reasoning)</p>
+    <h1>Critical Reasoning: Complete the Argument</h1>
+    <p class="meta"><b>Topic id</b> <code>gmat::verbal::cr::complete_argument</code> &middot; <b>Domain</b> Critical Reasoning
+      &middot; <b>Prereqs</b> identify what an argument is trying to conclude, recognize a supporting vs. undermining statement &middot; <b>~18 min</b></p>
+  </header>
+
+  <div class="objectives">
+    <p class="note"><b>Learning objectives</b></p>
+    <ul><li>Read the sentence just before the blank to learn what the blank must do.</li><li>Follow the connector: &#x27;because/since&#x27; needs support; &#x27;but/however&#x27; needs a contrast.</li><li>Choose the option that logically completes the intended direction of the argument.</li></ul>
+    <p class="note">Model: I do -&gt; we do -&gt; you do &middot; application-first (explanations revealed after an attempt) &middot; Rosenshine (daily review), Archer (I-do/we-do/you-do), SPOV2 application-first.</p>
+  </div>
+
+  
+    <section>
+      <h2><span class="num">1</span>Opening &mdash; retrieval &amp; bridge</h2>
+      <p class="sub">Builds on: Recognizing whether a statement supports or undermines a claim.</p>
+      <div class="donow">
+        <div class="tag">Do Now &middot; from memory, no notes</div>
+        <p>No notes. 4 minutes.</p>
+        <ol><li>After &#x27;because ___,&#x27; what must the blank provide?<span class="ans">A reason that supports the preceding claim.</span></li><li>After &#x27;the plan will fail, since ___,&#x27; what must the blank do?<span class="ans">Give a reason the plan will fail.</span></li><li>Does the connector before the blank set the direction?<span class="ans">Yes - &#x27;because/since&#x27; = support; &#x27;but/yet&#x27; = contrast.</span></li></ol>
+      </div>
+      <p class="note"><b>Retrieval starter (5 min).</b> Recalls that the word before the blank fixes what the completion must accomplish.
+      <br><b>If students struggle:</b> Have them read only the clause containing the blank and predict its job before scanning choices.</p>
+      <h3>Prior-knowledge bridge</h3>
+      <p>Complete-the-argument items are strengthen/weaken in disguise: the connector before the blank (&#x27;because,&#x27; &#x27;since,&#x27; &#x27;but&#x27;) tells you whether the missing piece must support or push back, and you pick the option that does exactly that.</p>
+      <h3>Learning intention</h3>
+      <p class="intent">By the end you can use the connector before a blank to choose the option that logically completes the argument in the intended direction.</p>
+      <p class="note"><b>You'll know you've got it when:</b></p>
+      <ul><li>I can identify the claim the blank must support or oppose.</li><li>I can use &#x27;because/since&#x27; vs &#x27;but/however&#x27; to set the direction.</li><li>I can pick the option that fills the blank in that direction.</li></ul>
+      <details><summary>Complete timed opening script</summary>
+        <table><thead><tr><th>Time</th><th>Move</th></tr></thead><tbody><tr><td class="t">0:00-4:00</td><td>Do Now on screen; learners answer from memory, no notes.</td></tr><tr><td class="t">4:00-6:00</td><td>Cold-call answers; name the argument&#x27;s conclusion vs premises.</td></tr><tr><td class="t">6:00-8:00</td><td>Bridge to today&#x27;s question type; state what the stem is really asking.</td></tr><tr><td class="t">8:00-10:00</td><td>Move to I do: model the reasoning on one worked item.</td></tr></tbody></table>
+      </details>
+    </section>
+
+  <section>
+    <h2><span class="num">2</span>I do &mdash; worked example</h2>
+    <p class="sub">Watch the reasoning modeled end to end before you try.</p>
+    
+    <div class="q">
+      <div class="qid">I DO &middot; worked example<span class="diff">medium</span></div>
+      <div class="stem">The town plans to reduce car accidents at a dangerous intersection by adding a traffic light. The plan is likely to succeed, because ___. Which of the following most logically completes the argument?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>most accidents at that intersection are caused by drivers who are unsure when it is their turn to proceed</li><li><span class="lab">B</span>the intersection is one of the busiest in the town</li><li><span class="lab">C</span>traffic lights are expensive to install and maintain</li><li><span class="lab">D</span>the town has added traffic lights at other intersections before</li><li><span class="lab">E</span>many drivers in the town exceed the speed limit</li></ul>
+      <h3>Think-aloud</h3>
+      <ol><li>Conclusion: the traffic-light plan is likely to succeed.</li><li>The connector is &#x27;because,&#x27; so the blank must SUPPORT that.</li><li>A light resolves right-of-way confusion; if that&#x27;s the cause, the light works.</li><li>A supports the plan; the others are neutral or don&#x27;t explain success.</li></ol>
+      <p class="expl"><b>Correct: A.</b> &#x27;Because&#x27; means the blank must give a reason the light will succeed. If accidents stem from confusion over the right of way, a light - which assigns turns - directly fixes that cause. A completes the support.</p>
+      <p class="note"><b>Takeaway.</b> Let the connector before the blank set the direction: &#x27;because/since&#x27; needs support, &#x27;but/however&#x27; needs a contrast.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>We do &mdash; guided practice</h2>
+    <p class="sub">Scaffolds and immediate feedback are one click away. Fade them as you gain confidence.</p>
+    
+    <div class="q">
+      <div class="qid">we_1 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">A company believes that offering free coffee will make employees more productive. This belief may be mistaken, however, because ___. Which of the following most logically completes the argument?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>the main thing slowing employees down is unclear project priorities, which free coffee does nothing to address</li><li><span class="lab">B</span>coffee is inexpensive to provide in bulk</li><li><span class="lab">C</span>many employees already drink coffee at home</li><li><span class="lab">D</span>the office has space for a coffee machine</li><li><span class="lab">E</span>some employees prefer tea to coffee</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>The connector &#x27;however&#x27; plus &#x27;because&#x27; means: give a reason the plan won&#x27;t work.</li><li>What would make free coffee fail to raise productivity?</li><li>Pick the choice that names the real obstacle.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Right - if priorities are the bottleneck, coffee is beside the point.<br>
+        <span class="no">If incorrect:</span> Cost and preferences don&#x27;t explain why productivity wouldn&#x27;t rise.</p>
+        <p class="expl"><b>Answer: A.</b> &#x27;However ... because&#x27; signals the blank must give a reason the belief is mistaken. If the real drag is unclear priorities, free coffee won&#x27;t help - completing the doubt.</p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">we_2 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">A bookstore expects that hosting weekly author events will increase book sales. This expectation is probably well founded, because ___. Which of the following most logically completes the argument?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>at bookstores that host such events, attendees frequently buy the featured author&#x27;s books on the spot</li><li><span class="lab">B</span>author events require setting up chairs and a microphone</li><li><span class="lab">C</span>the bookstore has hosted a few events in the past</li><li><span class="lab">D</span>the bookstore is open seven days a week</li><li><span class="lab">E</span>some authors are better public speakers than others</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>The connector is &#x27;because&#x27; - the blank must support the expectation.</li><li>What fact would show events actually drive sales?</li><li>Choose the supporting evidence, not logistics.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Yes - on-the-spot buying supports the sales expectation.<br>
+        <span class="no">If incorrect:</span> Setup logistics and hours don&#x27;t show sales will rise.</p>
+        <p class="expl"><b>Answer: A.</b> &#x27;Because&#x27; requires support for the expectation. Evidence that attendees buy books at such events directly supports that the events raise sales.</p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>You do &mdash; independent application</h2>
+    <p class="sub">Application-first (SPOV2): commit to an answer, then reveal the explanation. Log every miss.</p>
+    
+    <div class="q">
+      <div class="qid">you_1 &middot; you do (independent)<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A gym plans to attract more members by opening a swimming pool. The plan is unlikely to work, however, because ___. Which of the following most logically completes the argument?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>very few people in the area have expressed any interest in swimming, and a large public pool already operates nearby</li><li><span class="lab">B</span>swimming is good low-impact exercise</li><li><span class="lab">C</span>the pool will require regular cleaning</li><li><span class="lab">D</span>the gym already has a large parking lot</li><li><span class="lab">E</span>the gym is busiest in the evenings</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> &#x27;However ... because&#x27; needs a reason the plan will fail. Low local interest plus an existing nearby pool means the new pool won&#x27;t draw members - completing the doubt.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_2 &middot; you do (independent)<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A city expects that building a new stadium downtown will revive local businesses. This expectation is probably justified, because ___. Which of the following most logically completes the argument?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>stadium events are projected to bring large crowds who spend money at nearby restaurants and shops before and after games</li><li><span class="lab">B</span>the stadium will have a retractable roof</li><li><span class="lab">C</span>the city has built stadiums in other neighborhoods</li><li><span class="lab">D</span>construction will take about two years</li><li><span class="lab">E</span>the stadium will seat tens of thousands of people</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> &#x27;Because&#x27; requires support. Crowds spending at nearby businesses is a direct reason local businesses would be revived, completing the argument.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_3 &middot; you do (independent)<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A manufacturer believes that switching to a cheaper supplier will increase its profit margin. This belief may be unwarranted, however, because ___. Which of the following most logically completes the argument?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>the cheaper supplier&#x27;s parts fail more often, and the resulting warranty repairs could cost more than the savings</li><li><span class="lab">B</span>the cheaper supplier is located in another country</li><li><span class="lab">C</span>the manufacturer has used several suppliers over the years</li><li><span class="lab">D</span>the current supplier delivers parts weekly</li><li><span class="lab">E</span>the manufacturer sells its products online</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> &#x27;However ... because&#x27; needs a reason the belief may fail. If higher failure rates drive up warranty costs beyond the savings, the margin may not improve - completing the doubt.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+  </section>
+
+  
+    <section>
+      <h2><span class="num">5</span>Mastery check</h2>
+      <div class="mastery">
+        <p>A topic is mastered at &gt;=85% correct on new/held-out-style questions across &gt;=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.</p>
+        <p class="note"><b>Threshold</b> 0.85 &middot; <b>spaced sessions</b> &ge; 2</p>
+        <ul><li>&gt;=85% correct on new/held-out-style items (not flashcard recall) per session</li><li>sustained across &gt;=2 spaced sessions with a delay between them</li><li>per-topic memory surfaced only after &gt;=20 graded reviews (PRD give-up rule)</li><li>per-topic performance surfaced only after &gt;=8 application attempts (PRD give-up rule)</li></ul>
+        <p class="note"><b>If not yet mastered:</b> Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -&gt; you-do loop before re-testing.</p>
+      </div>
+      
+    </section>
+
+  <div class="src">
+    <div class="tag">Primary source</div>
+    <p><a href="https://www.mba.com/exams/gmat-focus-edition">GMAC - GMAT Focus Edition (official exam overview)</a> &mdash; Official exam structure and Verbal Reasoning scope.</p>
+    <p class='note'>Further reading:</p><ul><li><a href="https://www.khanacademy.org/prep/lsat">Khan Academy - LSAT Logical Reasoning (free)</a> &mdash; Free lessons on argument structure, assumptions, strengthen/weaken, and flaws.</li></ul>
+  </div>
+
+  <div class="ask">Stuck on any step? Ask your GMATWiz coach for a worked walkthrough &mdash; that's what it's here for.</div>
+
+  <footer>
+    <p>GMATWiz lesson &middot; <code>cr-complete.json</code> &middot; schema v1.0 &middot; authored content (OfficialFlag=false), reserved official items used only for late checkpoints.</p>
+  </footer>
+</div></div></body></html>

@@ -1,0 +1,282 @@
+{
+  "topic_id": "gmat::di::reasoning::data_sufficiency",
+  "slug": "di-data-sufficiency",
+  "title": "Data Insights: Data Sufficiency",
+  "question_type": "Data Sufficiency",
+  "prerequisites": [
+    "solve a simple linear equation for one unknown",
+    "recognize when given facts pin down a single value"
+  ],
+  "learning_objectives": [
+    "Evaluate each statement independently, then together, without computing the final answer.",
+    "Judge sufficiency by whether the value or yes/no answer is uniquely determined.",
+    "Map the result onto the correct one of the five standard Data Sufficiency choices."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do -> we do -> you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Solving a linear equation and telling when facts fix a single value.",
+    "do_now": {
+      "instructions": "No notes. Answer from memory in 4 minutes.",
+      "items": [
+        {
+          "prompt": "Solve for x: 2x + 6 = 20.",
+          "answer": "x = 7.",
+          "targets": "solving a linear equation"
+        },
+        {
+          "prompt": "From only a + b = 10, can you find a unique value for a?",
+          "answer": "No - many pairs work (3 and 7, 4 and 6, ...).",
+          "targets": "one equation is often not enough"
+        },
+        {
+          "prompt": "If a + b = 10 and a - b = 2, is the pair (a, b) determined?",
+          "answer": "Yes - a = 6, b = 4.",
+          "targets": "two equations pin two unknowns"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Recalls that a unique answer needs enough independent constraints - the core idea Data Sufficiency tests.",
+      "if_students_struggle": "Have them list two different number pairs that fit one equation to feel why a single fact is often not enough.",
+      "questions": [
+        {
+          "prompt": "In general, how many independent equations do you need to solve for two unknowns?",
+          "answer": "Two.",
+          "targets": "sufficiency of information"
+        },
+        {
+          "prompt": "Does 'the value is between 3 and 9' fix a single value?",
+          "answer": "No - a range is not a unique value.",
+          "targets": "unique value vs range"
+        }
+      ]
+    },
+    "prior_knowledge_bridge": "You already sense when facts pin down one answer and when they leave many options. Data Sufficiency makes that the whole task: you never compute the final answer - you decide whether the information is enough to determine it. The discipline is to test statement (1) alone, then statement (2) alone (forgetting (1)), then both together.",
+    "learning_intention": "By the end you can decide, for a two-statement Data Sufficiency question, whether statement (1) alone, statement (2) alone, both together, or neither is sufficient - and choose the matching answer.",
+    "success_criteria": [
+      "I evaluate each statement on its own before combining them.",
+      "I decide sufficiency by whether the answer is uniquely determined, not by computing it.",
+      "I map my finding onto the correct one of the five standard Data Sufficiency choices."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00-4:00",
+        "move": "Do Now on screen; learners answer from memory, no notes."
+      },
+      {
+        "time": "4:00-6:00",
+        "move": "Cold-call answers; name the argument's conclusion vs premises."
+      },
+      {
+        "time": "6:00-8:00",
+        "move": "Bridge to today's question type; state what the stem is really asking."
+      },
+      {
+        "time": "8:00-10:00",
+        "move": "Move to I do: model the reasoning on one worked item."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "A bakery sold only muffins and scones one morning. How many muffins did it sell?\n(1) The bakery sold 40 baked goods in total that morning.\n(2) The bakery sold three times as many muffins as scones.",
+    "options": {
+      "A": "Statement (1) ALONE is sufficient, but statement (2) alone is not sufficient.",
+      "B": "Statement (2) ALONE is sufficient, but statement (1) alone is not sufficient.",
+      "C": "BOTH statements TOGETHER are sufficient, but NEITHER statement ALONE is sufficient.",
+      "D": "EACH statement ALONE is sufficient.",
+      "E": "Statements (1) and (2) TOGETHER are NOT sufficient."
+    },
+    "correct": "C",
+    "explanation": "We need one number: the muffin count. (1) muffins + scones = 40 allows many splits (30 and 10, 20 and 20, ...), not sufficient. (2) muffins = 3 x scones has no total, so muffins could be 3, 30, 300, not sufficient. Together: muffins + scones = 40 and muffins = 3 x scones give 4 x scones = 40, so scones = 10 and muffins = 30 - a unique value. Neither alone works but both together do, so the answer is C.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "The question asks for a single number - how many muffins. In DS I judge sufficiency; I do not need the final count.",
+      "Statement (1): total = 40, so muffins + scones = 40. Many splits fit (30 and 10, or 20 and 20). Not sufficient.",
+      "Statement (2): muffins = 3 x scones. With no total, muffins could be 3, 30, or 300. Not sufficient.",
+      "Together: muffins + scones = 40 and muffins = 3 x scones give 4 x scones = 40, so scones = 10 and muffins = 30 - unique. Sufficient.",
+      "Neither alone works but both together do, so the answer is C."
+    ],
+    "key_takeaway": "Data Sufficiency asks whether the information pins down a single answer. Test each statement alone first, then together, and pick the matching choice - without ever needing the final number.",
+    "topic": "gmat::di::reasoning::data_sufficiency",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Data Sufficiency"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "A rectangular garden has a length of 12 meters. What is the area of the garden, in square meters?\n(1) The width of the garden is 5 meters.\n(2) The perimeter of the garden is greater than 30 meters.",
+      "options": {
+        "A": "Statement (1) ALONE is sufficient, but statement (2) alone is not sufficient.",
+        "B": "Statement (2) ALONE is sufficient, but statement (1) alone is not sufficient.",
+        "C": "BOTH statements TOGETHER are sufficient, but NEITHER statement ALONE is sufficient.",
+        "D": "EACH statement ALONE is sufficient.",
+        "E": "Statements (1) and (2) TOGETHER are NOT sufficient."
+      },
+      "correct": "A",
+      "explanation": "Length = 12 is given, so only the width is missing. (1) width = 5 gives area = 12 x 5 = 60 - sufficient. (2) perimeter > 30 means 2(12 + w) > 30, so w > 3; width and thus area are not fixed - not sufficient. Statement (1) alone is sufficient; (2) alone is not, so the answer is A.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "The length (12 m) is already given, so you only need the width to get the area.",
+        "Statement (1) gives the width outright - is the area then fixed?",
+        "Statement (2) only bounds the width (perimeter > 30). Does a range of widths give one area?"
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right - (1) fixes the width and thus the area; (2) gives only a range, so it cannot.",
+        "if_incorrect": "Remember the length is given. (1) alone nails the area; (2) leaves many possible widths."
+      },
+      "topic": "gmat::di::reasoning::data_sufficiency",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Data Sufficiency"
+    },
+    {
+      "id": "we_2",
+      "stem": "Is the positive integer n even?\n(1) n is a multiple of 3.\n(2) n is a multiple of 4.",
+      "options": {
+        "A": "Statement (1) ALONE is sufficient, but statement (2) alone is not sufficient.",
+        "B": "Statement (2) ALONE is sufficient, but statement (1) alone is not sufficient.",
+        "C": "BOTH statements TOGETHER are sufficient, but NEITHER statement ALONE is sufficient.",
+        "D": "EACH statement ALONE is sufficient.",
+        "E": "Statements (1) and (2) TOGETHER are NOT sufficient."
+      },
+      "correct": "B",
+      "explanation": "This is a yes/no question. (1) a multiple of 3 could be 6 (even) or 9 (odd) - not a definite answer, not sufficient. (2) a multiple of 4 equals 4k, which is always even - a definite 'yes', sufficient. Statement (2) alone is sufficient, so the answer is B.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "Rephrase the goal: you need a yes/no answer that is always the same.",
+        "Statement (1): multiples of 3 include 6 (even) and 9 (odd). Does that settle it?",
+        "Statement (2): every multiple of 4 is 4 x (integer). Is that always even?"
+      ],
+      "immediate_feedback": {
+        "if_correct": "Exactly - every multiple of 4 is even, so (2) settles it; (1) allows both even and odd.",
+        "if_incorrect": "Test small cases: 3, 6, 9 for (1); 4, 8, 12 for (2). One statement always answers, the other does not."
+      },
+      "topic": "gmat::di::reasoning::data_sufficiency",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Data Sufficiency"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "What is the value of x?\n(1) 3x - 5 = 16.\n(2) x^2 = 49 and x > 0.",
+      "options": {
+        "A": "Statement (1) ALONE is sufficient, but statement (2) alone is not sufficient.",
+        "B": "Statement (2) ALONE is sufficient, but statement (1) alone is not sufficient.",
+        "C": "BOTH statements TOGETHER are sufficient, but NEITHER statement ALONE is sufficient.",
+        "D": "EACH statement ALONE is sufficient.",
+        "E": "Statements (1) and (2) TOGETHER are NOT sufficient."
+      },
+      "correct": "D",
+      "explanation": "(1) 3x - 5 = 16 gives 3x = 21, so x = 7 - a unique value, sufficient. (2) x^2 = 49 with x > 0 gives x = 7 (the negative root is excluded) - sufficient. Each statement alone determines x, so the answer is D.",
+      "difficulty": "easy",
+      "topic": "gmat::di::reasoning::data_sufficiency",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Data Sufficiency",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "A jar contains only red, blue, and green marbles. How many green marbles are in the jar?\n(1) The jar contains 12 red marbles.\n(2) The jar contains twice as many blue marbles as red marbles.",
+      "options": {
+        "A": "Statement (1) ALONE is sufficient, but statement (2) alone is not sufficient.",
+        "B": "Statement (2) ALONE is sufficient, but statement (1) alone is not sufficient.",
+        "C": "BOTH statements TOGETHER are sufficient, but NEITHER statement ALONE is sufficient.",
+        "D": "EACH statement ALONE is sufficient.",
+        "E": "Statements (1) and (2) TOGETHER are NOT sufficient."
+      },
+      "correct": "E",
+      "explanation": "We need the green count. (1) red = 12 says nothing about green - not sufficient. (2) blue = 2 x red gives no green count (and no numbers on its own) - not sufficient. Together we know red = 12 and blue = 24, but with no total for the jar, green is still unknown - not sufficient. So the answer is E.",
+      "difficulty": "hard",
+      "topic": "gmat::di::reasoning::data_sufficiency",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Data Sufficiency",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "Is quadrilateral Q a square?\n(1) Q has four sides of equal length.\n(2) Q has four right angles.",
+      "options": {
+        "A": "Statement (1) ALONE is sufficient, but statement (2) alone is not sufficient.",
+        "B": "Statement (2) ALONE is sufficient, but statement (1) alone is not sufficient.",
+        "C": "BOTH statements TOGETHER are sufficient, but NEITHER statement ALONE is sufficient.",
+        "D": "EACH statement ALONE is sufficient.",
+        "E": "Statements (1) and (2) TOGETHER are NOT sufficient."
+      },
+      "correct": "C",
+      "explanation": "(1) four equal sides makes a rhombus, which may or may not be a square - not sufficient. (2) four right angles makes a rectangle, which may or may not be a square - not sufficient. Together, four equal sides and four right angles force a square - sufficient. So the answer is C.",
+      "difficulty": "medium",
+      "topic": "gmat::di::reasoning::data_sufficiency",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Data Sufficiency",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "GMAC - GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Data Insights section scope.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy - Statistics & Probability (free)",
+      "url": "https://www.khanacademy.org/math/statistics-probability",
+      "note": "Free lessons on reading tables and graphs and reasoning from data."
+    }
+  ],
+  "domain": "Data Insights",
+  "section": "Data Insights",
+  "estimated_minutes": 18,
+  "schema_version": "1.0",
+  "exam": "GMAT Focus Edition"
+}

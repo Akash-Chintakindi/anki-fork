@@ -11,6 +11,10 @@ export interface GmatQuestion {
     explanation: string;
     topic: string;
     difficulty: string;
+    // Reading Comprehension passage (shared across the questions on one passage);
+    // empty/absent for Quant and Critical Reasoning.
+    passage?: string;
+    passage_id?: string;
 }
 
 export interface CalibrationBin {
@@ -85,6 +89,8 @@ export interface GmatPerformance {
     eval?: PerfEval | null;
     timing?: TimingInfo | null;
     updated_ts?: number;
+    // One overall Performance carries the per-section breakdown (quant/verbal/di).
+    by_section?: Record<string, GmatPerformance>;
 }
 
 export interface MockEntry {
@@ -122,8 +128,11 @@ export interface GmatReadiness {
     scale?: string;
     confidence?: string;
     method?: string;
-    total_status?: string;
-    total_reason?: string;
+    // The unified headline: GMAT Focus Total (205-805) once all three sections
+    // qualify. `by_section` holds the per-section 60-90 readiness objects for the
+    // Progress breakdown; each per-section object reuses this same interface.
+    total?: number;
+    by_section?: Record<string, GmatReadiness>;
     unmet?: string[];
     reason?: string;
     mocks?: MockEntry[];
@@ -146,6 +155,11 @@ export interface GmatOverview {
     readiness: GmatReadiness;
     profile: GmatProfile | null;
     plan: GmatPlan | null;
+    // Verbal + Data Insights are additive parallel tracks. Each is null until the
+    // student takes that section's diagnostic; the unified Readiness/Performance
+    // carry the per-section breakdown via `by_section`.
+    planVerbal?: GmatPlan | null;
+    planDI?: GmatPlan | null;
     // Synced AI on/off preference (null when never set on any device). The app
     // reconciles this with the localStorage override on load (synced wins).
     gmatAiEnabled?: boolean | null;
@@ -173,6 +187,8 @@ export interface TodayBlock {
     detail: string;
     count?: number;
     topic?: string | null;
+    // "quant" (default), "verbal", or "di" - routes review/answer to the right deck.
+    section?: string;
     // a "mock" block sourced from the practice-test library carries the form to run
     form_id?: string;
     label?: string;
@@ -193,6 +209,8 @@ export interface PretestQuestion {
     correct: string;
     topic: string;
     difficulty: string;
+    passage?: string;
+    passage_id?: string;
 }
 
 /** Why a question was missed - the one-prompt error-log classification. */
@@ -227,6 +245,8 @@ export interface ScheduledCard {
     explanation: string;
     topic: string;
     difficulty: string;
+    passage?: string;
+    passage_id?: string;
 }
 
 export interface Counts {
@@ -313,19 +333,24 @@ export async function saveErrorTakeaway(ts: number, takeaway: CoachTakeaway): Pr
     await postJson("gmatSetErrorTakeaway", null, { ts, takeaway });
 }
 
-export async function fetchNextCard(): Promise<NextCardResult> {
-    return postJson<NextCardResult>("gmatNextCard", {
-        card: null,
-        counts: { new: 0, learning: 0, review: 0 },
-    });
+export async function fetchNextCard(section = "quant"): Promise<NextCardResult> {
+    return postJson<NextCardResult>(
+        "gmatNextCard",
+        {
+            card: null,
+            counts: { new: 0, learning: 0, review: 0 },
+        },
+        { section },
+    );
 }
 
 export async function answerCard(
     cardId: number,
     correct: boolean,
     ms: number,
+    section = "quant",
 ): Promise<void> {
-    await postJson("gmatAnswerCard", null, { card_id: cardId, correct, ms });
+    await postJson("gmatAnswerCard", null, { card_id: cardId, correct, ms, section });
 }
 
 export async function saveProfile(profile: GmatProfile): Promise<void> {
@@ -357,6 +382,8 @@ export interface CalendarItem {
         | "rest";
     topic: string | null;
     title: string;
+    // "quant" (default), "verbal", or "di" - for styling/labels on the calendar.
+    section?: string;
     est_minutes: number;
 }
 
@@ -498,6 +525,21 @@ export async function setAiEnabledRemote(enabled: boolean): Promise<void> {
 }
 
 /**
+ * Import the bundled GMAT content (Quant + Verbal + Data Insights) into the
+ * collection if it's behind the current content version. Idempotent. MUST be
+ * called AFTER the cloud collection sync settles (so colReplace can't clobber the
+ * import); the caller uploads the collection when `changed` so the content
+ * propagates to other devices. Returns {imported, changed}. Desktop does the real
+ * work; iOS is a no-op (it downloads the desktop-imported collection via colsync).
+ */
+export async function ensureBundledContent(): Promise<{ imported: number; changed: boolean }> {
+    return postJson<{ imported: number; changed: boolean }>("gmatEnsureContent", {
+        imported: 0,
+        changed: false,
+    });
+}
+
+/**
  * Admit AI-generated (and checkItem-passed) questions into the fixed bank.
  * Desktop persists them as real "GMAT PS" notes so FSRS schedules them and
  * returns the count added; mobile is a documented no-op returning {added:0},
@@ -541,20 +583,28 @@ export async function saveOfficialScore(entry: {
     return postJson("gmatSaveOfficialScore", { ok: false }, entry);
 }
 
-export async function fetchPretest(): Promise<{
+export async function fetchPretest(
+    section = "quant",
+    count = 12,
+): Promise<{
     questions: PretestQuestion[];
     seconds: number;
 }> {
-    return postJson("gmatPretestQuestions", { questions: [], seconds: 2700 });
+    return postJson(
+        "gmatPretestQuestions",
+        { questions: [], seconds: 2700 },
+        { section, count },
+    );
 }
 
 export async function submitPretest(
     results: { topic: string; correct: boolean }[],
+    section = "quant",
 ): Promise<{ diagnosis: Record<string, number>; plan: GmatPlan | null }> {
     return postJson(
         "gmatSubmitPretest",
         { diagnosis: {}, plan: null },
-        { results },
+        { results, section },
     );
 }
 
@@ -631,6 +681,10 @@ export interface MockQuestion {
     topic: string;
     difficulty: string;
     seen: boolean;
+    // Reading Comprehension passage shared across the questions on one passage
+    // (empty/absent for Quant + Critical Reasoning).
+    passage?: string;
+    passage_id?: string;
     // Present only for AI-generated items practiced ephemerally (mobile / when
     // the scheduler can't yet serve them); the fixed bank omits it.
     explanation?: string;

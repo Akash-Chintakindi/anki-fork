@@ -1,15 +1,20 @@
-"""Shared GMAT Quant taxonomy, JSON schema helpers, and a keyword topic tagger.
+"""Shared GMAT taxonomy, JSON schema helpers, and a keyword topic tagger.
 
 Used by both ``scraper.py`` (scraped -> normalized) and ``make_seed.py``
 (authored). The taxonomy follows PRD Section 5:
 
-    GMAT Focus Edition, Quantitative Reasoning = Problem Solving ONLY.
-    Scope = arithmetic + algebra.  NO geometry, NO Data Sufficiency.
+    Quantitative Reasoning = Problem Solving (arithmetic + algebra; NO geometry,
+    NO Data Sufficiency).
+    Verbal Reasoning       = Critical Reasoning + Reading Comprehension (NO
+    Sentence Correction). Critical Reasoning ships first; Reading Comprehension
+    leaves are added in Phase B.
 
 Every normalized question is tagged to exactly one leaf topic of the form
-``gmat::quant::<category>::<leaf>`` (e.g. ``gmat::quant::algebra::quadratics``)
-so that coverage %, mastery, and topic-aware scheduling all key off the same
-taxonomy.
+``gmat::<section>::<category>::<leaf>`` (e.g. ``gmat::quant::algebra::quadratics``
+or ``gmat::verbal::cr::weaken``) so that coverage %, mastery, and topic-aware
+scheduling all key off the same taxonomy. ``section_of()`` recovers the section
+from any leaf id; the keyword tagger takes a ``section`` argument to pick the
+right rule set.
 
 This module has zero third-party dependencies.
 """
@@ -50,14 +55,108 @@ TAXONOMY: Dict[str, List[str]] = {
     ],
 }
 
-ALL_TOPICS: List[str] = [
+QUANT_TOPICS: List[str] = [
     f"{PREFIX}::{category}::{leaf}"
     for category, leaves in TAXONOMY.items()
     for leaf in leaves
 ]
 
+# ---------------------------------------------------------------------------
+# Verbal taxonomy (PRD Section 5). GMAT Focus Verbal = Critical Reasoning +
+# Reading Comprehension ONLY (no Sentence Correction). Reading Comprehension
+# leaves are added in Phase B; Critical Reasoning ships first.
+# ---------------------------------------------------------------------------
+VERBAL_PREFIX = "gmat::verbal"
+
+VERBAL_TAXONOMY: Dict[str, List[str]] = {
+    "cr": [
+        "assumption",         # find the unstated premise the argument needs
+        "strengthen",         # which fact, if true, best supports the argument
+        "weaken",             # which fact, if true, most undermines the argument
+        "evaluate",           # what would be most useful to know to assess it
+        "inference",          # what must be true / is most supported by the text
+        "explain_paradox",    # resolve an apparent discrepancy/contradiction
+        "flaw",               # describe the reasoning error
+        "boldface",           # role two boldfaced portions play in the argument
+        "complete_argument",  # logically complete the argument (fill in blank)
+    ],
+    "rc": [
+        "main_idea",      # primary purpose / main point of the passage
+        "detail",         # what the passage explicitly states (supporting idea)
+        "inference",      # what the passage implies / can be inferred
+        "function",       # why the author mentions X / purpose of a paragraph
+        "structure",      # how the passage is organized
+        "tone",           # the author's attitude / tone
+        "application",    # extend the passage's reasoning to a new case
+    ],
+}
+
+VERBAL_TOPICS: List[str] = [
+    f"{VERBAL_PREFIX}::{category}::{leaf}"
+    for category, leaves in VERBAL_TAXONOMY.items()
+    for leaf in leaves
+]
+
+# ---------------------------------------------------------------------------
+# Data Insights taxonomy (GMAT Focus third section). Pragmatic MCQ-compatible
+# scope first: Data Sufficiency (standard 5 options), Two-Part Analysis (authored
+# MCQ-compatible), Multi-Source Reasoning (source stimulus in the passage field).
+# Graphics Interpretation + Table Analysis are deferred (need interactive UI).
+# ---------------------------------------------------------------------------
+DI_PREFIX = "gmat::di"
+
+DI_TAXONOMY: Dict[str, List[str]] = {
+    "reasoning": [
+        "data_sufficiency",       # is the given data sufficient to answer?
+        "two_part_analysis",      # pick the pair that satisfies two conditions
+        "multi_source_reasoning", # reason across a short set of sources
+    ],
+}
+
+DI_TOPICS: List[str] = [
+    f"{DI_PREFIX}::{category}::{leaf}"
+    for category, leaves in DI_TAXONOMY.items()
+    for leaf in leaves
+]
+
+# Union used for schema validation and the AI classification universe.
+ALL_TOPICS: List[str] = QUANT_TOPICS + VERBAL_TOPICS + DI_TOPICS
+
 # Fallback when the tagger cannot confidently classify an item.
 DEFAULT_TOPIC = f"{PREFIX}::arithmetic::number_properties"
+VERBAL_DEFAULT_TOPIC = f"{VERBAL_PREFIX}::cr::inference"
+DI_DEFAULT_TOPIC = f"{DI_PREFIX}::reasoning::data_sufficiency"
+
+
+def section_of(topic: str) -> str:
+    """Return the GMAT section for a leaf topic id: ``quant`` or ``verbal``.
+
+    Keys off the second ``::`` segment (``gmat::<section>::...``); defaults to
+    ``quant`` for anything unrecognized so existing quant callers are unaffected.
+    """
+    parts = (topic or "").split("::")
+    if len(parts) >= 2 and parts[0] == "gmat":
+        return parts[1]
+    return "quant"
+
+
+def topics_for_section(section: str) -> List[str]:
+    """Leaf topics scoped to a section (``quant`` | ``verbal`` | ``di``); all otherwise."""
+    if section == "verbal":
+        return VERBAL_TOPICS
+    if section == "di":
+        return DI_TOPICS
+    if section == "quant":
+        return QUANT_TOPICS
+    return ALL_TOPICS
+
+
+def default_topic_for_section(section: str) -> str:
+    if section == "verbal":
+        return VERBAL_DEFAULT_TOPIC
+    if section == "di":
+        return DI_DEFAULT_TOPIC
+    return DEFAULT_TOPIC
 
 VALID_DIFFICULTIES = ("easy", "medium", "hard")
 OPTION_KEYS = ("A", "B", "C", "D", "E")
@@ -103,12 +202,35 @@ DATA_SUFFICIENCY_PATTERNS = [
 _GEOMETRY_RE = re.compile("|".join(GEOMETRY_PATTERNS), re.IGNORECASE)
 _DATA_SUFFICIENCY_RE = re.compile("|".join(DATA_SUFFICIENCY_PATTERNS), re.IGNORECASE)
 
+# Sentence-Correction markers: out of scope for GMAT Focus Verbal (CR + RC only).
+SENTENCE_CORRECTION_PATTERNS = [
+    r"\bunderlined\b",
+    r"\bunderlined portion\b",
+    r"\bsentence correction\b",
+    r"\bno error\b",
+]
+_SENTENCE_CORRECTION_RE = re.compile("|".join(SENTENCE_CORRECTION_PATTERNS), re.IGNORECASE)
 
-def out_of_scope_reason(text: str) -> str | None:
-    """Return a reason string if the text is out of scope, else None."""
-    if _DATA_SUFFICIENCY_RE.search(text or ""):
+
+def out_of_scope_reason(text: str, section: str = "quant") -> str | None:
+    """Return a reason string if the text is out of scope for ``section``.
+
+    quant  -> geometry / data sufficiency are out of scope.
+    verbal -> Sentence Correction is out of scope (Focus Verbal = CR + RC).
+    di     -> no scope filter (Data Sufficiency IS valid Data Insights content).
+    """
+    body = text or ""
+    if section == "verbal":
+        if _SENTENCE_CORRECTION_RE.search(body):
+            return "sentence_correction"
+        return None
+    if section == "di":
+        # Data Insights admits Data Sufficiency + integrated-reasoning formats;
+        # the pragmatic MCQ scope has no out-of-scope filter.
+        return None
+    if _DATA_SUFFICIENCY_RE.search(body):
         return "data_sufficiency"
-    if _GEOMETRY_RE.search(text or ""):
+    if _GEOMETRY_RE.search(body):
         return "geometry"
     return None
 
@@ -293,12 +415,189 @@ _PRIORITY_INDEX = {t: i for i, t in enumerate(_PRIORITY)}
 _COMPILED_RULES = [(topic, re.compile(pat, re.IGNORECASE), w) for topic, pat, w in _TAGGER_RULES]
 
 
-def tag_topic(text: str, default: str = DEFAULT_TOPIC) -> str:
+# ---------------------------------------------------------------------------
+# Verbal (Critical Reasoning) keyword tagger
+# ---------------------------------------------------------------------------
+# Same weighted-scoring model as the Quant tagger, applied only when the caller
+# passes section="verbal". CR question type is inferred from the question stem's
+# telltale command phrasing ("which of the following, if true, most weakens...").
+_VERBAL_TAGGER_RULES: List[Tuple[str, str, int]] = [
+    # --- boldface / describe-the-role ---
+    (f"{VERBAL_PREFIX}::cr::boldface", r"\bboldface", 6),
+    (f"{VERBAL_PREFIX}::cr::boldface", r"\bin bold\b", 5),
+    (f"{VERBAL_PREFIX}::cr::boldface", r"\bportions?\b.{0,20}\bbold", 5),
+    (f"{VERBAL_PREFIX}::cr::boldface", r"\bplays? which of the following roles\b", 5),
+    (f"{VERBAL_PREFIX}::cr::boldface", r"\brole (?:in|played in) the argument\b", 3),
+    # --- explain / resolve the paradox ---
+    (f"{VERBAL_PREFIX}::cr::explain_paradox", r"\bparadox\b", 6),
+    (f"{VERBAL_PREFIX}::cr::explain_paradox", r"\bdiscrepancy\b", 6),
+    (f"{VERBAL_PREFIX}::cr::explain_paradox", r"\breconcile\b", 4),
+    (f"{VERBAL_PREFIX}::cr::explain_paradox", r"\bmost helps? to explain\b", 5),
+    (f"{VERBAL_PREFIX}::cr::explain_paradox", r"\bapparent(?:ly)? (?:contradict|conflict|discrepan)", 4),
+    (f"{VERBAL_PREFIX}::cr::explain_paradox", r"\bexplains?\b.{0,30}\b(?:paradox|discrepancy|contradiction|surprising)\b", 4),
+    # --- complete the argument / fill in the blank ---
+    (f"{VERBAL_PREFIX}::cr::complete_argument", r"\bcomplete the (?:argument|passage)\b", 6),
+    (f"{VERBAL_PREFIX}::cr::complete_argument", r"\b(?:most )?logically completes\b", 6),
+    (f"{VERBAL_PREFIX}::cr::complete_argument", r"\bfill in the blank\b", 5),
+    (f"{VERBAL_PREFIX}::cr::complete_argument", r"_{3,}", 5),
+    # --- evaluate the argument ---
+    (f"{VERBAL_PREFIX}::cr::evaluate", r"\bevaluate the argument\b", 6),
+    (f"{VERBAL_PREFIX}::cr::evaluate", r"\bmost (?:useful|helpful|important) to (?:know|determine|evaluate|assess)\b", 5),
+    (f"{VERBAL_PREFIX}::cr::evaluate", r"\bwould be most useful (?:in|to) (?:evaluat|assess)", 5),
+    # --- flaw / vulnerable to criticism ---
+    (f"{VERBAL_PREFIX}::cr::flaw", r"\bflaw", 6),
+    (f"{VERBAL_PREFIX}::cr::flaw", r"\bvulnerable to (?:the )?criticism\b", 6),
+    (f"{VERBAL_PREFIX}::cr::flaw", r"\breasoning is (?:most )?(?:flawed|questionable|vulnerable)\b", 5),
+    (f"{VERBAL_PREFIX}::cr::flaw", r"\berror in reasoning\b", 5),
+    (f"{VERBAL_PREFIX}::cr::flaw", r"\bfails to (?:consider|account for|recognize)\b", 4),
+    # --- assumption ---
+    (f"{VERBAL_PREFIX}::cr::assumption", r"\bassumptions?\b", 6),
+    (f"{VERBAL_PREFIX}::cr::assumption", r"\bassumes?\b", 4),
+    (f"{VERBAL_PREFIX}::cr::assumption", r"\bdepends on\b", 3),
+    (f"{VERBAL_PREFIX}::cr::assumption", r"\brelies on (?:the )?assumption", 5),
+    (f"{VERBAL_PREFIX}::cr::assumption", r"\bpresupposes?\b", 4),
+    (f"{VERBAL_PREFIX}::cr::assumption", r"\bwhich of the following.{0,40}\bassumptions?\b", 4),
+    # --- weaken ---
+    (f"{VERBAL_PREFIX}::cr::weaken", r"\bweaken", 6),
+    (f"{VERBAL_PREFIX}::cr::weaken", r"\bundermine", 5),
+    (f"{VERBAL_PREFIX}::cr::weaken", r"\bcasts? doubt\b", 5),
+    (f"{VERBAL_PREFIX}::cr::weaken", r"\bcalls? into question\b", 5),
+    (f"{VERBAL_PREFIX}::cr::weaken", r"\bmost seriously (?:weakens?|undermines?)\b", 6),
+    (f"{VERBAL_PREFIX}::cr::weaken", r"\bif true,?\s+most (?:weakens?|undermines?)\b", 6),
+    # --- strengthen ---
+    (f"{VERBAL_PREFIX}::cr::strengthen", r"\bstrengthen", 6),
+    (f"{VERBAL_PREFIX}::cr::strengthen", r"\bmost (?:strongly )?support(?:s|ed)? the (?:argument|conclusion|claim|prediction|plan)\b", 5),
+    (f"{VERBAL_PREFIX}::cr::strengthen", r"\bif true,?\s+most (?:strengthens?|supports?)\b", 6),
+    (f"{VERBAL_PREFIX}::cr::strengthen", r"\bprovides? the most support\b", 5),
+    # --- inference / must be true ---
+    (f"{VERBAL_PREFIX}::cr::inference", r"\bmust be true\b", 6),
+    (f"{VERBAL_PREFIX}::cr::inference", r"\bproperly (?:inferred|concluded)\b", 5),
+    (f"{VERBAL_PREFIX}::cr::inference", r"\bcan be (?:logically |properly )?(?:inferred|concluded)\b", 5),
+    (f"{VERBAL_PREFIX}::cr::inference", r"\bmost strongly supported\b", 5),
+    (f"{VERBAL_PREFIX}::cr::inference", r"\bif the (?:statements|information) above are true\b", 3),
+    # ===================== Reading Comprehension (Phase B) =====================
+    # RC rules key on passage-specific phrasing ("the passage", "the author",
+    # "paragraph") that CR stems lack, so they don't cross-match CR items.
+    # --- RC: main idea / primary purpose ---
+    (f"{VERBAL_PREFIX}::rc::main_idea", r"\bprimary purpose\b", 6),
+    (f"{VERBAL_PREFIX}::rc::main_idea", r"\bmain (?:idea|point)\b", 6),
+    (f"{VERBAL_PREFIX}::rc::main_idea", r"\bprimarily concerned with\b", 5),
+    (f"{VERBAL_PREFIX}::rc::main_idea", r"\bpassage (?:as a whole|is primarily)\b", 4),
+    (f"{VERBAL_PREFIX}::rc::main_idea", r"\bbest (?:title|summar)", 4),
+    # --- RC: detail / supporting idea ---
+    (f"{VERBAL_PREFIX}::rc::detail", r"\baccording to the passage\b", 6),
+    (f"{VERBAL_PREFIX}::rc::detail", r"\bthe passage states\b", 5),
+    (f"{VERBAL_PREFIX}::rc::detail", r"\bthe passage (?:indicates|mentions)\b", 5),
+    (f"{VERBAL_PREFIX}::rc::detail", r"\bthe author (?:mentions|notes|states|indicates)\b", 4),
+    # --- RC: inference ---
+    (f"{VERBAL_PREFIX}::rc::inference", r"\bthe passage (?:suggests|implies)\b", 6),
+    (f"{VERBAL_PREFIX}::rc::inference", r"\bit can be inferred from the passage\b", 6),
+    (f"{VERBAL_PREFIX}::rc::inference", r"\bthe author (?:implies|would most likely agree)\b", 5),
+    (f"{VERBAL_PREFIX}::rc::inference", r"\bmost likely to agree\b", 4),
+    # --- RC: function / purpose of a part ---
+    (f"{VERBAL_PREFIX}::rc::function", r"\bprimarily in order to\b", 6),
+    (f"{VERBAL_PREFIX}::rc::function", r"\bfunction of the (?:first|second|third|fourth|final|last) paragraph\b", 6),
+    (f"{VERBAL_PREFIX}::rc::function", r"\bwhy does the author (?:mention|refer|discuss)\b", 5),
+    (f"{VERBAL_PREFIX}::rc::function", r"\b(?:mentions|refers to|discusses)\b.{0,40}\bin order to\b", 5),
+    (f"{VERBAL_PREFIX}::rc::function", r"\bserves? (?:primarily )?to\b", 4),
+    # --- RC: structure / organization ---
+    (f"{VERBAL_PREFIX}::rc::structure", r"\borganization of the passage\b", 6),
+    (f"{VERBAL_PREFIX}::rc::structure", r"\bthe passage (?:is organized|proceeds by|is structured)\b", 6),
+    (f"{VERBAL_PREFIX}::rc::structure", r"\bhow the passage is organized\b", 5),
+    (f"{VERBAL_PREFIX}::rc::structure", r"\bstructure of the passage\b", 5),
+    # --- RC: tone / attitude ---
+    (f"{VERBAL_PREFIX}::rc::tone", r"\bauthor's attitude\b", 6),
+    (f"{VERBAL_PREFIX}::rc::tone", r"\btone of the passage\b", 6),
+    (f"{VERBAL_PREFIX}::rc::tone", r"\battitude (?:toward|towards)\b", 5),
+    (f"{VERBAL_PREFIX}::rc::tone", r"\bthe author (?:regards|views|would characterize)\b", 4),
+    # --- RC: application / extrapolation ---
+    (f"{VERBAL_PREFIX}::rc::application", r"\bmost analogous\b", 6),
+    (f"{VERBAL_PREFIX}::rc::application", r"\bwould most likely apply\b", 5),
+    (f"{VERBAL_PREFIX}::rc::application", r"\bin another (?:context|situation)\b", 4),
+]
+
+# Tie-break priority: earlier = more specific / preferred when scores tie.
+_VERBAL_PRIORITY = [
+    f"{VERBAL_PREFIX}::cr::boldface",
+    f"{VERBAL_PREFIX}::cr::explain_paradox",
+    f"{VERBAL_PREFIX}::cr::complete_argument",
+    f"{VERBAL_PREFIX}::cr::evaluate",
+    f"{VERBAL_PREFIX}::cr::flaw",
+    f"{VERBAL_PREFIX}::cr::assumption",
+    f"{VERBAL_PREFIX}::cr::weaken",
+    f"{VERBAL_PREFIX}::cr::strengthen",
+    f"{VERBAL_PREFIX}::cr::inference",
+    # Reading Comprehension (more specific / passage-anchored first)
+    f"{VERBAL_PREFIX}::rc::structure",
+    f"{VERBAL_PREFIX}::rc::function",
+    f"{VERBAL_PREFIX}::rc::tone",
+    f"{VERBAL_PREFIX}::rc::application",
+    f"{VERBAL_PREFIX}::rc::main_idea",
+    f"{VERBAL_PREFIX}::rc::inference",
+    f"{VERBAL_PREFIX}::rc::detail",
+]
+_VERBAL_PRIORITY_INDEX = {t: i for i, t in enumerate(_VERBAL_PRIORITY)}
+
+_COMPILED_VERBAL_RULES = [
+    (topic, re.compile(pat, re.IGNORECASE), w) for topic, pat, w in _VERBAL_TAGGER_RULES
+]
+
+# ---------------------------------------------------------------------------
+# Data Insights keyword tagger (pragmatic 3 question types)
+# ---------------------------------------------------------------------------
+_DI_TAGGER_RULES: List[Tuple[str, str, int]] = [
+    # --- Data Sufficiency (the standard DS stem + option phrasing) ---
+    (f"{DI_PREFIX}::reasoning::data_sufficiency", r"\bdata sufficiency\b", 6),
+    (f"{DI_PREFIX}::reasoning::data_sufficiency", r"\bstatement\s*\(?1\)?\b", 4),
+    (f"{DI_PREFIX}::reasoning::data_sufficiency", r"\bstatement\s*\(?2\)?\b", 4),
+    (f"{DI_PREFIX}::reasoning::data_sufficiency", r"\beach statement alone\b", 5),
+    (f"{DI_PREFIX}::reasoning::data_sufficiency", r"\balone is sufficient\b", 5),
+    (f"{DI_PREFIX}::reasoning::data_sufficiency", r"\bsufficient to answer\b", 4),
+    (f"{DI_PREFIX}::reasoning::data_sufficiency", r"\btogether are sufficient\b", 4),
+    # --- Two-Part Analysis ---
+    (f"{DI_PREFIX}::reasoning::two_part_analysis", r"\btwo-part analysis\b", 6),
+    (f"{DI_PREFIX}::reasoning::two_part_analysis", r"\bselect (?:one|exactly one) (?:option|answer) in each column\b", 6),
+    (f"{DI_PREFIX}::reasoning::two_part_analysis", r"\bselect one .{0,20}\band one\b", 4),
+    (f"{DI_PREFIX}::reasoning::two_part_analysis", r"\btwo (?:quantities|values|responses)\b.{0,30}\bconditions?\b", 4),
+    (f"{DI_PREFIX}::reasoning::two_part_analysis", r"\bmake (?:the|each) (?:column|selection)\b", 3),
+    # --- Multi-Source Reasoning ---
+    (f"{DI_PREFIX}::reasoning::multi_source_reasoning", r"\bmulti-source reasoning\b", 6),
+    (f"{DI_PREFIX}::reasoning::multi_source_reasoning", r"\bbased on the (?:sources|three sources|two sources|information in the sources)\b", 6),
+    (f"{DI_PREFIX}::reasoning::multi_source_reasoning", r"\bacross the (?:sources|tabs)\b", 5),
+    (f"{DI_PREFIX}::reasoning::multi_source_reasoning", r"\bfrom the sources? (?:above|provided|shown)\b", 4),
+    (f"{DI_PREFIX}::reasoning::multi_source_reasoning", r"\bthe (?:email|memo|table|report|chart) (?:and|,)\b.{0,40}\b(?:email|memo|table|report|chart)\b", 3),
+]
+
+_DI_PRIORITY = [
+    f"{DI_PREFIX}::reasoning::two_part_analysis",
+    f"{DI_PREFIX}::reasoning::multi_source_reasoning",
+    f"{DI_PREFIX}::reasoning::data_sufficiency",
+]
+_DI_PRIORITY_INDEX = {t: i for i, t in enumerate(_DI_PRIORITY)}
+
+_COMPILED_DI_RULES = [
+    (topic, re.compile(pat, re.IGNORECASE), w) for topic, pat, w in _DI_TAGGER_RULES
+]
+
+
+def _rules_for_section(section: str):
+    """Return (compiled_rules, priority_index) for the given section."""
+    if section == "verbal":
+        return _COMPILED_VERBAL_RULES, _VERBAL_PRIORITY_INDEX
+    if section == "di":
+        return _COMPILED_DI_RULES, _DI_PRIORITY_INDEX
+    return _COMPILED_RULES, _PRIORITY_INDEX
+
+
+def tag_topic(text: str, default: str | None = None, section: str = "quant") -> str:
     """Classify free text to a single leaf topic via weighted keyword scoring."""
+    if default is None:
+        default = default_topic_for_section(section)
     if not text:
         return default
+    rules, priority = _rules_for_section(section)
     scores: Dict[str, int] = {}
-    for topic, regex, weight in _COMPILED_RULES:
+    for topic, regex, weight in rules:
         if regex.search(text):
             scores[topic] = scores.get(topic, 0) + weight
     if not scores:
@@ -306,22 +605,27 @@ def tag_topic(text: str, default: str = DEFAULT_TOPIC) -> str:
     # Highest score wins; ties broken by specificity priority.
     best = max(
         scores.items(),
-        key=lambda kv: (kv[1], -_PRIORITY_INDEX.get(kv[0], 999)),
+        key=lambda kv: (kv[1], -priority.get(kv[0], 999)),
     )
     return best[0]
 
 
-def tag_topic_with_score(text: str, default: str = DEFAULT_TOPIC) -> Tuple[str, int]:
+def tag_topic_with_score(
+    text: str, default: str | None = None, section: str = "quant"
+) -> Tuple[str, int]:
     """Like ``tag_topic`` but also returns the winning score (0 = fell back)."""
+    if default is None:
+        default = default_topic_for_section(section)
     if not text:
         return default, 0
+    rules, priority = _rules_for_section(section)
     scores: Dict[str, int] = {}
-    for topic, regex, weight in _COMPILED_RULES:
+    for topic, regex, weight in rules:
         if regex.search(text):
             scores[topic] = scores.get(topic, 0) + weight
     if not scores:
         return default, 0
-    best = max(scores.items(), key=lambda kv: (kv[1], -_PRIORITY_INDEX.get(kv[0], 999)))
+    best = max(scores.items(), key=lambda kv: (kv[1], -priority.get(kv[0], 999)))
     return best[0], best[1]
 
 

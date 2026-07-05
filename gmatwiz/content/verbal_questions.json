@@ -1,0 +1,488 @@
+[
+  {
+    "id": "vbank-1fac6ff80d18",
+    "stem": "A gym owner plans to raise monthly membership fees, expecting total membership revenue to increase as a result. This plan assumes that",
+    "options": {
+      "A": "the higher fee will not drive away so many members that revenue falls.",
+      "B": "current members are satisfied with the gym's facilities.",
+      "C": "no competing gym will lower its fees in response.",
+      "D": "the gym is currently operating at full capacity.",
+      "E": "new equipment will be purchased with the added revenue."
+    },
+    "correct": "A",
+    "explanation": "Revenue is price times members. Raising the price increases revenue only if the drop in membership is small enough not to offset the higher fee.",
+    "topic": "gmat::verbal::cr::assumption",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-d8feba2110d3",
+    "stem": "The mayor argues that installing more streetlights will reduce nighttime crime in the park, citing studies that link brighter lighting to lower crime. The argument presupposes that",
+    "options": {
+      "A": "the crime examined in those studies is similar in kind to the crime occurring in the park.",
+      "B": "the park has more nighttime crime than any other location in the city.",
+      "C": "streetlights are the cheapest available way to reduce crime.",
+      "D": "residents have requested additional lighting for the park.",
+      "E": "the park is used mainly during the night."
+    },
+    "correct": "A",
+    "explanation": "Applying the studies' finding to the park assumes the park's crime resembles the crime those studies examined; otherwise the link may not transfer.",
+    "topic": "gmat::verbal::cr::assumption",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-eb99c566aad4",
+    "stem": "A publisher decided to release its bestselling novel as an audiobook, reasoning that doing so will increase the book's total sales. This reasoning assumes that",
+    "options": {
+      "A": "people who buy the audiobook would not otherwise have bought the print or e-book version.",
+      "B": "the novel is well suited to the audiobook format.",
+      "C": "the narrator hired is a well-known performer.",
+      "D": "audiobooks are more profitable per unit than print books.",
+      "E": "the novel's author approves of the audiobook edition."
+    },
+    "correct": "A",
+    "explanation": "Total sales rise only if audiobook buyers are additional customers, not people substituting the audiobook for a copy they would have bought anyway.",
+    "topic": "gmat::verbal::cr::assumption",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-85300102f1b9",
+    "stem": "Researcher: <b>The new drug does not work better than the old one.</b> Supporters point to a study in which patients on the new drug recovered faster, but <b>those patients were also younger and healthier than the patients taking the old drug.</b> In the researcher's argument, the two boldfaced portions play which of the following roles?",
+    "options": {
+      "A": "The first is the researcher's conclusion; the second is evidence the researcher uses to undermine a study cited against that conclusion.",
+      "B": "The first is evidence; the second is the researcher's conclusion.",
+      "C": "Both portions are conclusions the researcher draws.",
+      "D": "The first is an objection; the second is the researcher's conclusion.",
+      "E": "The first is the conclusion; the second is an assumption it depends on."
+    },
+    "correct": "A",
+    "explanation": "The first bold portion is the researcher's conclusion; the second points out a confounder (younger, healthier patients) that undercuts the supporting study.",
+    "topic": "gmat::verbal::cr::boldface",
+    "difficulty": "hard",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-d447750c7ed0",
+    "stem": "Official: <b>Building the new stadium will benefit the city's economy.</b> Opponents cite the high construction cost, yet <b>the stadium is expected to draw millions of visitors who will spend money at local businesses.</b> In the official's argument, the two boldfaced portions play which of the following roles?",
+    "options": {
+      "A": "The first is the conclusion the official defends; the second is evidence offered to support it against an objection.",
+      "B": "The first is an objection; the second is the official's conclusion.",
+      "C": "Both portions are objections that the official concedes.",
+      "D": "The first is evidence; the second is the conclusion.",
+      "E": "The first is the conclusion; the second is an assumption the argument requires."
+    },
+    "correct": "A",
+    "explanation": "The first bold portion is the official's conclusion; the second is supporting evidence (visitor spending) that answers the cost objection.",
+    "topic": "gmat::verbal::cr::boldface",
+    "difficulty": "hard",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-e42e5bb01e0b",
+    "stem": "Columnist: Many people claim that <b>working long hours leads to greater career success.</b> But <b>employees who take regular breaks and work moderate hours are often promoted faster than those who overwork.</b> The popular belief is therefore mistaken. In the columnist's argument, the two boldfaced portions play which of the following roles?",
+    "options": {
+      "A": "The first is the position the columnist argues against; the second is evidence the columnist uses to reject that position.",
+      "B": "The first is the columnist's conclusion; the second supports it.",
+      "C": "Both portions are evidence for the columnist's conclusion.",
+      "D": "The first is evidence against the conclusion; the second is the conclusion.",
+      "E": "The first is the columnist's conclusion; the second is an objection to it."
+    },
+    "correct": "A",
+    "explanation": "The first bold portion is the popular claim the columnist opposes; the second is the columnist's counter-evidence (moderate-hour workers promoted faster).",
+    "topic": "gmat::verbal::cr::boldface",
+    "difficulty": "hard",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-04232c10ffb4",
+    "stem": "A restaurant owner believes that adding more vegetarian dishes to the menu will attract enough new customers to raise profits. This belief is probably well founded, because ___. Which of the following most logically completes the argument?",
+    "options": {
+      "A": "a large and growing number of diners in the area avoid meat and currently have few local dining options",
+      "B": "vegetarian dishes are often cheaper to prepare",
+      "C": "the restaurant has been in business for many years",
+      "D": "the owner personally enjoys vegetarian food",
+      "E": "the restaurant is located near a shopping mall"
+    },
+    "correct": "A",
+    "explanation": "If many local diners avoid meat and lack options, adding vegetarian dishes would draw new customers, supporting the owner's belief.",
+    "topic": "gmat::verbal::cr::complete_argument",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-4a83cd20b1e4",
+    "stem": "A company requires all job applicants to pass a typing-speed test, believing that faster typists make better administrative assistants. This policy may be misguided, however, because ___. Which of the following most logically completes the argument?",
+    "options": {
+      "A": "the most important duties of the company's administrative assistants rarely involve typing",
+      "B": "typing tests are inexpensive to administer",
+      "C": "many applicants practice before taking the test",
+      "D": "the company has used the test for several years",
+      "E": "some administrative assistants can type very quickly"
+    },
+    "correct": "A",
+    "explanation": "If the role rarely involves typing, screening on typing speed would not select better assistants, showing the policy may be misguided.",
+    "topic": "gmat::verbal::cr::complete_argument",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-5677e2eaf8c9",
+    "stem": "To improve student performance, a school district plans to give every student a laptop. Some administrators doubt the plan will help, arguing that ___. Which of the following most logically completes their argument?",
+    "options": {
+      "A": "without training in how to use the laptops for learning, students are likely to use them mainly for entertainment",
+      "B": "laptops have become cheaper in recent years",
+      "C": "the district has a large annual budget",
+      "D": "many students already own smartphones",
+      "E": "some teachers are enthusiastic about new technology"
+    },
+    "correct": "A",
+    "explanation": "The doubt is supported if untrained students use the laptops for entertainment rather than learning, giving a reason the plan may not improve performance.",
+    "topic": "gmat::verbal::cr::complete_argument",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-7a10e1eb6df3",
+    "stem": "A farmer plans to increase his orchard's apple output by switching to a new pruning method. The answer to which of the following would be most useful in evaluating the plan?",
+    "options": {
+      "A": "Whether the new pruning method yields more apples per tree than the farmer's current method under similar conditions.",
+      "B": "Whether the new method takes less time to perform.",
+      "C": "Whether neighboring farmers have heard of the method.",
+      "D": "Whether the orchard's apples are sold locally or exported.",
+      "E": "Whether the method was developed recently."
+    },
+    "correct": "A",
+    "explanation": "The plan's success hinges on whether the new method actually produces more apples per tree than the current one; that comparison is what needs to be known.",
+    "topic": "gmat::verbal::cr::evaluate",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-98d091b191ba",
+    "stem": "A streaming service intends to raise its subscriber numbers by producing more original comedy shows. To evaluate this strategy, it would be most helpful to determine",
+    "options": {
+      "A": "whether the viewers the service hopes to attract choose streaming services based on the availability of original comedies.",
+      "B": "how much it costs to produce a single original comedy.",
+      "C": "whether the service's current shows are mostly dramas.",
+      "D": "how many comedies the service's competitors produce.",
+      "E": "whether comedies win more awards than dramas."
+    },
+    "correct": "A",
+    "explanation": "The strategy assumes original comedies attract subscribers; knowing whether target viewers actually choose services for comedies tests that link.",
+    "topic": "gmat::verbal::cr::evaluate",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-d922cccd223f",
+    "stem": "A university argues that requiring all students to take a public-speaking course will improve their career outcomes. To evaluate this argument, it would be most useful to determine",
+    "options": {
+      "A": "whether students who have taken public-speaking courses go on to have better career outcomes than comparable students who have not.",
+      "B": "how many faculty members are available to teach the course.",
+      "C": "whether students enjoy public-speaking courses.",
+      "D": "how many weeks the public-speaking course lasts.",
+      "E": "whether other universities require such a course."
+    },
+    "correct": "A",
+    "explanation": "The argument's core is that the course improves career outcomes; comparing outcomes of those who took it with comparable peers who did not tests exactly that.",
+    "topic": "gmat::verbal::cr::evaluate",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-6f001a93dac8",
+    "stem": "A publisher raised the price of a popular magazine, yet its total revenue from that magazine fell. Which of the following, if true, most helps to explain this outcome?",
+    "options": {
+      "A": "So many readers canceled their subscriptions after the price rose that the loss in subscribers outweighed the higher price.",
+      "B": "The magazine is published monthly.",
+      "C": "The price increase was relatively small.",
+      "D": "The magazine focuses on current events.",
+      "E": "Competing magazines also raised their prices."
+    },
+    "correct": "A",
+    "explanation": "Revenue is price times subscribers; if enough readers canceled, revenue could fall despite the higher price, explaining the result.",
+    "topic": "gmat::verbal::cr::explain_paradox",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-76764e6c27b1",
+    "stem": "A software firm let employees set their own hours, expecting productivity to rise. Overall productivity instead declined. Which of the following, if true, most helps to explain the decline?",
+    "options": {
+      "A": "Because employees now worked at widely different times, teams could rarely meet to coordinate projects that required close collaboration.",
+      "B": "Employees appreciated the new flexibility.",
+      "C": "The firm's software is used by customers worldwide.",
+      "D": "The policy applied to all departments equally.",
+      "E": "The firm kept its existing vacation policy."
+    },
+    "correct": "A",
+    "explanation": "If flexible hours reduced the overlap teams needed to collaborate, coordination-heavy work could suffer, lowering overall productivity.",
+    "topic": "gmat::verbal::cr::explain_paradox",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-c3b5140bd844",
+    "stem": "A gym added dozens of new treadmills to reduce crowding, but members now report that the treadmill area feels more crowded than before. Which of the following, if true, does most to explain the discrepancy?",
+    "options": {
+      "A": "To fit the new treadmills, the gym removed open floor space and packed the machines closer together.",
+      "B": "The new treadmills have larger screens than the old ones.",
+      "C": "Treadmills are the most popular equipment at the gym.",
+      "D": "The gym's total membership has stayed roughly constant.",
+      "E": "The gym is open twenty-four hours a day."
+    },
+    "correct": "A",
+    "explanation": "If adding treadmills meant cramming them into tighter space, the area could feel more crowded even with more machines, explaining the discrepancy.",
+    "topic": "gmat::verbal::cr::explain_paradox",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-42e4c4238b78",
+    "stem": "Scientist: Every swan I have observed in this country is white. Therefore all swans everywhere are white. The scientist's reasoning is most vulnerable to the criticism that it",
+    "options": {
+      "A": "draws a sweeping general conclusion from a limited set of observations.",
+      "B": "relies on a definition of 'swan' that is too narrow.",
+      "C": "mistakes correlation for causation.",
+      "D": "assumes the very point it is trying to establish.",
+      "E": "appeals to the authority of other scientists."
+    },
+    "correct": "A",
+    "explanation": "Generalizing from swans seen in one country to all swans everywhere is a hasty generalization; the sample cannot support the universal claim.",
+    "topic": "gmat::verbal::cr::flaw",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-5f4d4888d128",
+    "stem": "Debater: My opponent has not proven that the new bridge is unsafe. Therefore the bridge must be safe. The debater's reasoning is flawed because it",
+    "options": {
+      "A": "treats the lack of evidence against a claim as proof that the claim is true.",
+      "B": "relies on the opinions of unqualified people.",
+      "C": "draws a conclusion about all bridges from a single bridge.",
+      "D": "confuses the bridge's cost with its safety.",
+      "E": "assumes that the opponent is being dishonest."
+    },
+    "correct": "A",
+    "explanation": "Concluding the bridge is safe simply because its danger has not been proven is an appeal to ignorance; absence of disproof is not proof.",
+    "topic": "gmat::verbal::cr::flaw",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-6d7dc651edb6",
+    "stem": "Editorial: If we let the store stay open one hour later, employees will soon demand to work fewer days, and eventually the store will be unable to operate at all. We must therefore not extend the hours. The editorial's reasoning is flawed because it",
+    "options": {
+      "A": "assumes, without justification, that one modest change will inevitably set off a chain of increasingly serious consequences.",
+      "B": "relies on statistics drawn from an unrepresentative sample.",
+      "C": "attacks the character of the store's employees.",
+      "D": "confuses a necessary condition with a sufficient one.",
+      "E": "treats a product's popularity as evidence of its quality."
+    },
+    "correct": "A",
+    "explanation": "The argument is a slippery slope: it assumes without support that extending hours must trigger an escalating series of demands ending in collapse.",
+    "topic": "gmat::verbal::cr::flaw",
+    "difficulty": "hard",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-960762cda77e",
+    "stem": "No smartphone made by this manufacturer has a removable battery. Every phone in the store's clearance bin has a removable battery. Which of the following can be logically concluded?",
+    "options": {
+      "A": "None of the phones in the clearance bin were made by this manufacturer.",
+      "B": "All phones with removable batteries are in the clearance bin.",
+      "C": "The manufacturer's phones are not sold in this store.",
+      "D": "Phones with removable batteries are cheaper than others.",
+      "E": "The clearance bin contains only older phones."
+    },
+    "correct": "A",
+    "explanation": "The manufacturer's phones lack removable batteries; clearance-bin phones all have them; so no clearance-bin phone is from that manufacturer.",
+    "topic": "gmat::verbal::cr::inference",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-a27c94e53013",
+    "stem": "The bakery sells out of croissants every day that it opens before 7 a.m. Yesterday, the bakery did not sell out of croissants. Which of the following must be true?",
+    "options": {
+      "A": "Yesterday the bakery did not open before 7 a.m.",
+      "B": "The bakery never opens before 7 a.m.",
+      "C": "The bakery baked fewer croissants than usual yesterday.",
+      "D": "The bakery will open before 7 a.m. today.",
+      "E": "Croissants are the bakery's most popular item."
+    },
+    "correct": "A",
+    "explanation": "Opening before 7 a.m. guarantees selling out. Since it did not sell out, by the contrapositive it did not open before 7 a.m.",
+    "topic": "gmat::verbal::cr::inference",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-a81f331837cc",
+    "stem": "Whenever the river rises above the flood line, the riverside path is closed. Today the riverside path is open. Which of the following must be true?",
+    "options": {
+      "A": "The river is not above the flood line today.",
+      "B": "The river has never risen above the flood line.",
+      "C": "The path is open every day that the river is low.",
+      "D": "The path will be closed tomorrow.",
+      "E": "The flood line was recently lowered."
+    },
+    "correct": "A",
+    "explanation": "A river above the flood line forces the path to close. The path is open, so by the contrapositive the river is not above the flood line.",
+    "topic": "gmat::verbal::cr::inference",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-3d5384d4b558",
+    "stem": "An airline believes that adding legroom to economy seats will increase ticket sales enough to offset the loss of seats per plane. Which of the following, if true, most supports the airline's belief?",
+    "options": {
+      "A": "Surveys show that many travelers would pay more and switch airlines specifically for extra legroom.",
+      "B": "The airline's planes are near the end of their service life.",
+      "C": "Adding legroom requires removing two rows of seats per plane.",
+      "D": "Competing airlines have not changed their seat configurations.",
+      "E": "Fuel costs have declined recently."
+    },
+    "correct": "A",
+    "explanation": "Evidence that many travelers would switch and pay more for legroom directly supports that added sales will offset the fewer seats.",
+    "topic": "gmat::verbal::cr::strengthen",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-61161b21d65d",
+    "stem": "A school district introduced free breakfast, and test scores improved that year. Administrators conclude the breakfast program raised the scores. Which of the following, if true, most strengthens this conclusion?",
+    "options": {
+      "A": "Students who ate the free breakfast improved more than students at the same schools who did not eat it.",
+      "B": "The breakfast program was popular with parents.",
+      "C": "The district also hired several new teachers that year.",
+      "D": "The district lengthened the school day the same year.",
+      "E": "The breakfasts met federal nutrition guidelines."
+    },
+    "correct": "A",
+    "explanation": "Comparing eaters with non-eaters within the same schools ties the score gain specifically to the breakfast, ruling out school-wide factors.",
+    "topic": "gmat::verbal::cr::strengthen",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-e5c017f02c32",
+    "stem": "A charity claims that its job-training program is the reason its graduates find work quickly. Which of the following, if true, most strengthens the claim?",
+    "options": {
+      "A": "Applicants admitted to the program find jobs faster than equally qualified applicants who were turned away only for lack of space.",
+      "B": "The program has trained thousands of people since it began.",
+      "C": "Graduates frequently express gratitude for the program.",
+      "D": "The program is funded entirely by private donations.",
+      "E": "Most graduates find work in the same industry."
+    },
+    "correct": "A",
+    "explanation": "Comparing admitted applicants with equally qualified rejected ones controls for applicant quality, isolating the program's effect on job-finding speed.",
+    "topic": "gmat::verbal::cr::strengthen",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-36837fd2aaca",
+    "stem": "A manager claims that a new bonus scheme caused her sales team to sell more, since sales rose after the scheme began. Which of the following, if true, most weakens the claim?",
+    "options": {
+      "A": "The company launched a major advertising campaign the same week the bonus scheme began.",
+      "B": "The bonus scheme rewards the top three salespeople each month.",
+      "C": "Some team members preferred the old commission structure.",
+      "D": "Sales are recorded automatically by the point-of-sale system.",
+      "E": "The manager has led the team for two years."
+    },
+    "correct": "A",
+    "explanation": "A simultaneous advertising campaign is an alternative explanation for the sales increase, weakening the claim that the bonus scheme was the cause.",
+    "topic": "gmat::verbal::cr::weaken",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-46f40d7cbe44",
+    "stem": "A city claims its new recycling program cut landfill waste, noting that landfill waste fell after the program launched. Which of the following, if true, most weakens the claim?",
+    "options": {
+      "A": "A large factory that had sent most of the city's landfill waste shut down the same month the program launched.",
+      "B": "The recycling program accepts glass, paper, and plastic.",
+      "C": "Participation in the program was voluntary.",
+      "D": "The city advertised the program widely.",
+      "E": "Landfill fees were unchanged during the period."
+    },
+    "correct": "A",
+    "explanation": "The factory's closure independently removed most landfill waste, providing an alternative cause for the decline and weakening the program's claimed effect.",
+    "topic": "gmat::verbal::cr::weaken",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  },
+  {
+    "id": "vbank-89ade08cb6da",
+    "stem": "A blogger asserts that reading before bed improves sleep, citing a survey in which people who read before bed reported sleeping better than those who did not. Which of the following, if true, most seriously weakens the assertion?",
+    "options": {
+      "A": "People who read before bed also tend to avoid screens at night, which independently improves sleep.",
+      "B": "The survey included several thousand respondents.",
+      "C": "Some respondents read on paper and others on e-readers.",
+      "D": "The blogger reads before bed every night.",
+      "E": "The survey was conducted entirely online."
+    },
+    "correct": "A",
+    "explanation": "If readers also avoid screens, a known sleep aid, then screen avoidance rather than reading may explain the better sleep, weakening the claim.",
+    "topic": "gmat::verbal::cr::weaken",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T19:49:30+00:00"
+  }
+]

@@ -23,10 +23,22 @@
     "OfficialFlag": "item.official_flag"
   },
   "counts": {
-    "topics": 18,
+    "topics": 33,
     "arithmetic": 10,
     "algebra": 8,
-    "practice_items": 126
+    "by_domain": {
+      "Arithmetic": 10,
+      "Algebra": 8,
+      "Critical Reasoning": 9,
+      "Reading Comprehension": 3,
+      "Data Insights": 3
+    },
+    "by_section": {
+      "Quantitative Reasoning": 18,
+      "Verbal Reasoning": 12,
+      "Data Insights": 3
+    },
+    "practice_items": 216
   },
   "topics": [
     {
@@ -332,6 +344,261 @@
         "we_do": 2,
         "you_do": 4,
         "held_out_samples": 2
+      }
+    },
+    {
+      "topic_id": "gmat::verbal::cr::assumption",
+      "slug": "cr-assumption",
+      "title": "Critical Reasoning: Assumption",
+      "domain": "Critical Reasoning",
+      "json": "cr-assumption.json",
+      "html": "html/cr-assumption.html",
+      "prerequisites": [
+        "identify an argument's conclusion",
+        "separate premises from the conclusion"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 3,
+        "held_out_samples": 0
+      }
+    },
+    {
+      "topic_id": "gmat::verbal::cr::strengthen",
+      "slug": "cr-strengthen",
+      "title": "Critical Reasoning: Strengthen",
+      "domain": "Critical Reasoning",
+      "json": "cr-strengthen.json",
+      "html": "html/cr-strengthen.html",
+      "prerequisites": [
+        "identify an argument's conclusion",
+        "spot the assumption connecting evidence to conclusion"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 3,
+        "held_out_samples": 0
+      }
+    },
+    {
+      "topic_id": "gmat::verbal::cr::weaken",
+      "slug": "cr-weaken",
+      "title": "Critical Reasoning: Weaken",
+      "domain": "Critical Reasoning",
+      "json": "cr-weaken.json",
+      "html": "html/cr-weaken.html",
+      "prerequisites": [
+        "identify an argument's conclusion",
+        "spot the assumption connecting evidence to conclusion"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 3,
+        "held_out_samples": 0
+      }
+    },
+    {
+      "topic_id": "gmat::verbal::cr::evaluate",
+      "slug": "cr-evaluate",
+      "title": "Critical Reasoning: Evaluate the Argument",
+      "domain": "Critical Reasoning",
+      "json": "cr-evaluate.json",
+      "html": "html/cr-evaluate.html",
+      "prerequisites": [
+        "identify an argument's assumption",
+        "understand strengthen and weaken"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 3,
+        "held_out_samples": 0
+      }
+    },
+    {
+      "topic_id": "gmat::verbal::cr::inference",
+      "slug": "cr-inference",
+      "title": "Critical Reasoning: Inference",
+      "domain": "Critical Reasoning",
+      "json": "cr-inference.json",
+      "html": "html/cr-inference.html",
+      "prerequisites": [
+        "read a set of statements precisely",
+        "distinguish 'must be true' from 'could be true'"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 3,
+        "held_out_samples": 0
+      }
+    },
+    {
+      "topic_id": "gmat::verbal::cr::explain_paradox",
+      "slug": "cr-paradox",
+      "title": "Critical Reasoning: Explain the Paradox",
+      "domain": "Critical Reasoning",
+      "json": "cr-paradox.json",
+      "html": "html/cr-paradox.html",
+      "prerequisites": [
+        "state two facts that seem to conflict",
+        "distinguish an explanation from a mere comment"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 3,
+        "held_out_samples": 0
+      }
+    },
+    {
+      "topic_id": "gmat::verbal::cr::flaw",
+      "slug": "cr-flaw",
+      "title": "Critical Reasoning: Find the Flaw",
+      "domain": "Critical Reasoning",
+      "json": "cr-flaw.json",
+      "html": "html/cr-flaw.html",
+      "prerequisites": [
+        "identify an argument's conclusion and evidence",
+        "recognize common reasoning errors"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 3,
+        "held_out_samples": 0
+      }
+    },
+    {
+      "topic_id": "gmat::verbal::cr::boldface",
+      "slug": "cr-boldface",
+      "title": "Critical Reasoning: Boldface (Describe the Role)",
+      "domain": "Critical Reasoning",
+      "json": "cr-boldface.json",
+      "html": "html/cr-boldface.html",
+      "prerequisites": [
+        "identify the author's conclusion",
+        "distinguish evidence, opposing views, and conclusions"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 3,
+        "held_out_samples": 0
+      }
+    },
+    {
+      "topic_id": "gmat::verbal::cr::complete_argument",
+      "slug": "cr-complete",
+      "title": "Critical Reasoning: Complete the Argument",
+      "domain": "Critical Reasoning",
+      "json": "cr-complete.json",
+      "html": "html/cr-complete.html",
+      "prerequisites": [
+        "identify what an argument is trying to conclude",
+        "recognize a supporting vs. undermining statement"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 3,
+        "held_out_samples": 0
+      }
+    },
+    {
+      "topic_id": "gmat::verbal::rc::main_idea",
+      "slug": "rc-main-idea",
+      "title": "Reading Comprehension: Main Idea",
+      "domain": "Reading Comprehension",
+      "json": "rc-main-idea.json",
+      "html": "html/rc-main-idea.html",
+      "prerequisites": [
+        "read a short passage for its overall point",
+        "tell a main point from a supporting detail"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 3,
+        "held_out_samples": 0
+      }
+    },
+    {
+      "topic_id": "gmat::verbal::rc::inference",
+      "slug": "rc-inference",
+      "title": "Reading Comprehension: Inference",
+      "domain": "Reading Comprehension",
+      "json": "rc-inference.json",
+      "html": "html/rc-inference.html",
+      "prerequisites": [
+        "read a passage precisely",
+        "distinguish what is stated from what is implied"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 3,
+        "held_out_samples": 0
+      }
+    },
+    {
+      "topic_id": "gmat::verbal::rc::function",
+      "slug": "rc-function",
+      "title": "Reading Comprehension: Function",
+      "domain": "Reading Comprehension",
+      "json": "rc-function.json",
+      "html": "html/rc-function.html",
+      "prerequisites": [
+        "identify a passage's main point",
+        "see how a sentence relates to that point"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 3,
+        "held_out_samples": 0
+      }
+    },
+    {
+      "topic_id": "gmat::di::reasoning::data_sufficiency",
+      "slug": "di-data-sufficiency",
+      "title": "Data Insights: Data Sufficiency",
+      "domain": "Data Insights",
+      "json": "di-data-sufficiency.json",
+      "html": "html/di-data-sufficiency.html",
+      "prerequisites": [
+        "solve a simple linear equation for one unknown",
+        "recognize when given facts pin down a single value"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 3,
+        "held_out_samples": 0
+      }
+    },
+    {
+      "topic_id": "gmat::di::reasoning::two_part_analysis",
+      "slug": "di-two-part",
+      "title": "Data Insights: Two-Part Analysis",
+      "domain": "Data Insights",
+      "json": "di-two-part.json",
+      "html": "html/di-two-part.html",
+      "prerequisites": [
+        "solve a system of two linear equations in two unknowns",
+        "check a candidate solution against every condition"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 3,
+        "held_out_samples": 0
+      }
+    },
+    {
+      "topic_id": "gmat::di::reasoning::multi_source_reasoning",
+      "slug": "di-multi-source",
+      "title": "Data Insights: Multi-Source Reasoning",
+      "domain": "Data Insights",
+      "json": "di-multi-source.json",
+      "html": "html/di-multi-source.html",
+      "prerequisites": [
+        "read a short text or table for a specific fact",
+        "combine two given facts to reach a conclusion"
+      ],
+      "counts": {
+        "we_do": 2,
+        "you_do": 3,
+        "held_out_samples": 0
       }
     }
   ]

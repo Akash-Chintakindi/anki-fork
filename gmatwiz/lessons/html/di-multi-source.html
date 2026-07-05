@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data Insights: Multi-Source Reasoning &middot; GMATWiz Data Insights</title>
+<style>
+:root{
+  --ink:#1a1813; --muted:#6b6358; --rule:#d9d2c5; --bg:#fbf9f4; --card:#fffdf8;
+  --accent:#7a3b2e; --accent2:#3a5a40; --link:#7a3b2e; --code:#2b2b2b;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:3rem 2rem 6rem;}
+.content{max-width:720px;}
+header.masthead{border-bottom:1px solid var(--rule); padding-bottom:1.2rem; margin-bottom:2rem;}
+.kicker{font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:0 0 .4rem;}
+h1{font-size:2.3rem; line-height:1.1; margin:.1rem 0 .6rem; font-weight:600; letter-spacing:-.01em;}
+.meta{color:var(--muted); font-size:.9rem; margin:0;}
+.meta b{color:var(--ink); font-weight:600;}
+h2{font-size:1.45rem; margin:2.8rem 0 .3rem; font-weight:600; letter-spacing:-.01em;}
+h2 .num{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:.5rem;}
+h3{font-size:1.06rem; margin:1.6rem 0 .4rem; font-weight:600;}
+.sub{color:var(--muted); font-style:italic; margin:.1rem 0 1rem; font-size:.95rem;}
+p{margin:.6rem 0;} ul,ol{margin:.5rem 0 .9rem; padding-left:1.3rem;} li{margin:.25rem 0;}
+a{color:var(--link); text-decoration:none; border-bottom:1px solid rgba(122,59,46,.35);}
+a:hover{border-bottom-color:var(--link);}
+.lead{font-size:1.08rem;}
+section{position:relative;}
+.note{font-size:.8rem; color:var(--muted); line-height:1.4;}
+.objectives{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1rem 1.2rem;}
+.objectives ul{margin:.3rem 0 0;}
+.intent{border-left:3px solid var(--accent2); padding:.4rem 0 .4rem 1rem; margin:1rem 0; font-size:1.05rem;}
+.donow{background:#2b2620; color:#f3ecde; border-radius:8px; padding:1.1rem 1.3rem; margin:1rem 0;}
+.donow .tag{font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:#d8b48a;}
+.donow ol{padding-left:1.2rem;} .donow li{margin:.4rem 0;}
+.donow .ans{color:#b9c6a9; font-style:italic; font-size:.86rem; display:block; margin-top:.15rem;}
+table{border-collapse:collapse; width:100%; font-size:.92rem; margin:.6rem 0 1rem;}
+th,td{text-align:left; padding:.45rem .6rem; border-bottom:1px solid var(--rule); vertical-align:top;}
+th{font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+td.t{white-space:nowrap; color:var(--accent); font-variant-numeric:tabular-nums; width:6.5rem;}
+.q{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1.1rem 1.3rem; margin:1.1rem 0;}
+.q .qid{font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+.q .qid .diff{float:right; color:var(--accent2);}
+.q .stem{font-size:1.03rem; margin:.35rem 0 .6rem;}
+.choices{list-style:none; padding:0; margin:.2rem 0 .4rem; counter-reset:c;}
+.choices li{padding:.32rem .6rem; border:1px solid var(--rule); border-radius:6px; margin:.3rem 0; background:#fff;}
+.choices li .lab{display:inline-block; width:1.5rem; font-weight:600; color:var(--accent);}
+.choices li.correct{border-color:var(--accent2); background:#eef3ec;}
+.choices li.correct .lab{color:var(--accent2);}
+details{margin:.5rem 0 .2rem; border-top:1px dashed var(--rule); padding-top:.5rem;}
+details>summary{cursor:pointer; font-size:.86rem; color:var(--accent); font-weight:600; list-style:none;}
+details>summary::-webkit-details-marker{display:none;}
+details>summary::before{content:"\25B8  "; color:var(--accent);}
+details[open]>summary::before{content:"\25BE  ";}
+.expl{font-size:.95rem; margin-top:.5rem;}
+.hints{font-size:.92rem;} .hints li{margin:.2rem 0;}
+.feedback{font-size:.9rem;} .feedback .ok{color:var(--accent2);} .feedback .no{color:var(--accent);}
+.appfirst{font-size:.78rem; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin:.2rem 0;}
+.mastery{background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--accent2); border-radius:8px; padding:1rem 1.2rem;}
+.pill{display:inline-block; font-size:.72rem; padding:.12rem .5rem; border:1px solid var(--rule); border-radius:999px; color:var(--muted); margin:.1rem .2rem .1rem 0;}
+footer{margin-top:3.5rem; border-top:1px solid var(--rule); padding-top:1rem; color:var(--muted); font-size:.82rem;}
+.src{background:#eef3ec; border:1px solid #cfe0cf; border-radius:8px; padding:.9rem 1.1rem; margin:1.2rem 0;}
+.src .tag{font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent2); font-weight:600;}
+.crumbs{font-size:.85rem; margin-bottom:1.2rem;}
+.ask{font-size:.9rem; background:#fff8ec; border:1px dashed #e0c590; border-radius:8px; padding:.7rem 1rem; margin:1.4rem 0;}
+@media print{ body{background:#fff} .wrap{padding:0} a{border:none} .donow{-webkit-print-color-adjust:exact; print-color-adjust:exact} }
+</style></head>
+<body><div class="wrap"><div class="content">
+  <div class="crumbs"><a href="index.html">&larr; All topics</a> &middot; Data Insights &middot; Data Insights</div>
+  <header class="masthead">
+    <p class="kicker">GMATWiz &middot; GMAT Focus Edition &middot; Data Insights (Multi-Source Reasoning)</p>
+    <h1>Data Insights: Multi-Source Reasoning</h1>
+    <p class="meta"><b>Topic id</b> <code>gmat::di::reasoning::multi_source_reasoning</code> &middot; <b>Domain</b> Data Insights
+      &middot; <b>Prereqs</b> read a short text or table for a specific fact, combine two given facts to reach a conclusion &middot; <b>~18 min</b></p>
+  </header>
+
+  <div class="objectives">
+    <p class="note"><b>Learning objectives</b></p>
+    <ul><li>Identify which source holds each fact a question needs.</li><li>Combine facts across two or three sources to reach the answer.</li><li>Ignore sources that do not bear on the question.</li></ul>
+    <p class="note">Model: I do -&gt; we do -&gt; you do &middot; application-first (explanations revealed after an attempt) &middot; Rosenshine (daily review), Archer (I-do/we-do/you-do), SPOV2 application-first.</p>
+  </div>
+
+  
+    <section>
+      <h2><span class="num">1</span>Opening &mdash; retrieval &amp; bridge</h2>
+      <p class="sub">Builds on: Reading a text or table for a fact and combining two facts into a conclusion.</p>
+      <div class="donow">
+        <div class="tag">Do Now &middot; from memory, no notes</div>
+        <p>No notes. Answer from memory in 4 minutes.</p>
+        <ol><li>Text A: &#x27;the store opens at 9 a.m.&#x27; Text B: &#x27;deliveries arrive 2 hours after opening.&#x27; When do deliveries arrive?<span class="ans">11 a.m. (9 + 2).</span></li><li>A price list shows $15 and a coupon gives 10% off. What is the paid price?<span class="ans">$13.50.</span></li><li>A question asks only about cost. Must you use a source that lists only dates?<span class="ans">No - use only the sources carrying the facts you need.</span></li></ol>
+      </div>
+      <p class="note"><b>Retrieval starter (5 min).</b> Recalls cross-referencing two facts and using only the sources a question needs - the core moves of Multi-Source Reasoning.
+      <br><b>If students struggle:</b> Have them underline the one fact each source contributes before answering.</p>
+      <h3>Prior-knowledge bridge</h3>
+      <p>You can pull a fact from a text or table and combine two facts into a conclusion. Multi-Source Reasoning gives you two or three short sources (like tabs) and asks a question whose answer usually lives in the COMBINATION of them. Your job is to find which source holds each needed fact, ignore the rest, and put the pieces together.</p>
+      <h3>Learning intention</h3>
+      <p class="intent">By the end you can locate the relevant facts across two or three sources and combine them to answer a question, ignoring any source that does not bear on it.</p>
+      <p class="note"><b>You'll know you've got it when:</b></p>
+      <ul><li>I identify exactly what the question is asking for.</li><li>I find which source holds each fact I need.</li><li>I combine those facts (and skip irrelevant sources) to reach the answer.</li></ul>
+      <details><summary>Complete timed opening script</summary>
+        <table><thead><tr><th>Time</th><th>Move</th></tr></thead><tbody><tr><td class="t">0:00-4:00</td><td>Do Now on screen; learners answer from memory, no notes.</td></tr><tr><td class="t">4:00-6:00</td><td>Cold-call answers; name the argument&#x27;s conclusion vs premises.</td></tr><tr><td class="t">6:00-8:00</td><td>Bridge to today&#x27;s question type; state what the stem is really asking.</td></tr><tr><td class="t">8:00-10:00</td><td>Move to I do: model the reasoning on one worked item.</td></tr></tbody></table>
+      </details>
+    </section>
+
+  <section>
+    <h2><span class="num">2</span>I do &mdash; worked example</h2>
+    <p class="sub">Watch the reasoning modeled end to end before you try.</p>
+    
+    <div class="q">
+      <div class="qid">I DO &middot; worked example<span class="diff">medium</span></div>
+      <div class="stem">Source 1 - Notice: The Riverside Community Center offers Pottery, Painting, and Weaving classes. Each class session is listed at $15.
+Source 2 - Email: Members pay 20% less than the listed price for every session.
+
+Question: A member attends one Pottery session and one Painting session. What total does she pay?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>$24</li><li><span class="lab">B</span>$21</li><li><span class="lab">C</span>$27</li><li><span class="lab">D</span>$30</li><li><span class="lab">E</span>$12</li></ul>
+      <h3>Think-aloud</h3>
+      <ol><li>The question asks the total a member pays for two sessions - I need the price and the member rule.</li><li>Source 1 gives the listed price: $15 per session.</li><li>Source 2 gives the member rule: 20% less, so $15 - $3 = $12 per session.</li><li>Two sessions at the member price: 2 x $12 = $24.</li><li>That is option A; $30 ignores the discount and $27 discounts only one session.</li></ol>
+      <p class="expl"><b>Correct: A.</b> The question needs the price (Source 1) and the member rule (Source 2). Listed price is $15 per session; members pay 20% less, so $12 per session. Two sessions at the member price: 2 x $12 = $24, option A. $30 ignores the discount, and $27 discounts only one session.</p>
+      <p class="note"><b>Takeaway.</b> In Multi-Source Reasoning the answer usually comes from combining sources: find which source holds each needed fact, apply any rule, and integrate - do not answer from a single source when another one modifies it.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>We do &mdash; guided practice</h2>
+    <p class="sub">Scaffolds and immediate feedback are one click away. Fade them as you gain confidence.</p>
+    
+    <div class="q">
+      <div class="qid">we_1 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">Source 1 - Schedule: Shuttle A leaves the North Lot at 9:00 a.m.; Shuttle B leaves the South Lot at 9:20 a.m. Each shuttle takes 20 minutes to reach campus.
+Source 2 - Notice: The North Lot is closed all week for construction.
+Source 3 - Email: Dr. Lee must be on campus by 9:45 a.m.
+
+Question: Which shuttle can Dr. Lee take and still arrive on time?</div>
+      <ul class="choices"><li><span class="lab">A</span>Shuttle A from the North Lot.</li><li class="correct"><span class="lab">B</span>Shuttle B from the South Lot.</li><li><span class="lab">C</span>Either shuttle works.</li><li><span class="lab">D</span>Shuttle A from the South Lot.</li><li><span class="lab">E</span>Neither shuttle arrives by 9:45 a.m.</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>First, which lots are usable? Check the closure notice.</li><li>The North Lot is closed, so any shuttle from it is out.</li><li>For the remaining shuttle, add its 20-minute ride to its departure and compare with the 9:45 deadline.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Right - the North Lot is closed, and Shuttle B (9:20 + 20 min = 9:40) beats the 9:45 deadline.<br>
+        <span class="no">If incorrect:</span> Combine all three sources: the closure rules out the North Lot shuttle, then check the other shuttle&#x27;s arrival against 9:45.</p>
+        <p class="expl"><b>Answer: B.</b> Source 2 closes the North Lot, so Shuttle A is out. Shuttle B leaves the South Lot at 9:20 and takes 20 minutes, arriving 9:40 - before the 9:45 deadline in Source 3. So the answer is Shuttle B from the South Lot, option B.</p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">we_2 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">Source 1 - Room rates: Standard $90 per night; Deluxe $130 per night; Suite $180 per night.
+Source 2 - Policy: Any stay of 3 or more nights receives $20 off per night on any room.
+
+Question: A guest books a Deluxe room for 3 nights. What is the total room cost?</div>
+      <ul class="choices"><li><span class="lab">A</span>$270</li><li><span class="lab">B</span>$310</li><li class="correct"><span class="lab">C</span>$330</li><li><span class="lab">D</span>$370</li><li><span class="lab">E</span>$390</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>Find the Deluxe nightly rate in the price table.</li><li>Check the discount policy - does a 3-night stay qualify?</li><li>Apply the per-night discount, then multiply by the number of nights.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Exactly - $130 - $20 = $110 per night, times 3 nights = $330.<br>
+        <span class="no">If incorrect:</span> The 3-night stay earns the discount on EVERY night; apply it to all three, then total.</p>
+        <p class="expl"><b>Answer: C.</b> Source 1 lists Deluxe at $130 per night. Source 2 gives $20 off per night for stays of 3 or more nights, so $110 per night. Three nights: 3 x $110 = $330, option C. $390 forgets the discount; $370 applies it to only one night.</p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>You do &mdash; independent application</h2>
+    <p class="sub">Application-first (SPOV2): commit to an answer, then reveal the explanation. Log every miss.</p>
+    
+    <div class="q">
+      <div class="qid">you_1 &middot; you do (independent)<span class="diff">easy</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Source 1 - Email: Our book club has 5 members, and we want one copy of the new novel for each member.
+Source 2 - Store listing: The novel costs $18 in hardcover and $11 in paperback.
+Source 3 - Note: The treasury has $70, and everyone must receive the same format.
+
+Question: Which format can the club afford for all five members?</div>
+      <ul class="choices"><li><span class="lab">A</span>Hardcover only.</li><li><span class="lab">B</span>Either format.</li><li><span class="lab">C</span>Neither format.</li><li class="correct"><span class="lab">D</span>Paperback only.</li><li><span class="lab">E</span>Hardcover for three members and paperback for two.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: D.</b> Hardcover for all five: 5 x $18 = $90, which is more than the $70 budget - unaffordable. Paperback for all five: 5 x $11 = $55, within budget - affordable. Source 3 requires the same format for everyone, so the split option is out. The answer is paperback only, option D.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_2 &middot; you do (independent)<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Source 1 - Timetable: Train X arrives at Central Station at 2:10 p.m.
+Source 2 - Bus notice: The museum bus leaves Central Station every 30 minutes starting at 2:00 p.m. (2:00, 2:30, 3:00, and so on); the ride takes 25 minutes.
+Source 3 - Email: I need to reach the museum by 3:00 p.m.
+
+Question: If the traveler takes Train X, what is the earliest she can arrive at the museum?</div>
+      <ul class="choices"><li><span class="lab">A</span>2:35 p.m.</li><li><span class="lab">B</span>3:00 p.m.</li><li><span class="lab">C</span>2:30 p.m.</li><li><span class="lab">D</span>3:25 p.m.</li><li class="correct"><span class="lab">E</span>2:55 p.m.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: E.</b> Train X arrives at 2:10, so the first catchable bus is the 2:30 (the 2:00 has already left). 2:30 plus the 25-minute ride is 2:55 p.m., which meets the 3:00 deadline. The answer is 2:55 p.m., option E. 2:35 wrongly assumes a bus leaves the moment she arrives.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_3 &middot; you do (independent)<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Source 1 - Inventory: Warehouse A holds 120 units; Warehouse B holds 90 units of the product.
+Source 2 - Order: A customer orders 150 units, to ship from a single warehouse if possible, otherwise split between warehouses.
+Source 3 - Policy: A split shipment (two warehouses) adds a $25 fee; single-warehouse shipping is free.
+
+Question: Will the order incur the split-shipment fee, and why?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>Yes; neither warehouse alone holds 150 units, so the order must be split.</li><li><span class="lab">B</span>No; Warehouse A alone can fill the order.</li><li><span class="lab">C</span>No; Warehouse B alone can fill the order.</li><li><span class="lab">D</span>No; the order can be split with no fee.</li><li><span class="lab">E</span>Yes; the customer asked to split the shipment to save money.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> The order is 150 units. Warehouse A holds 120 and Warehouse B holds 90, so neither can fill 150 alone; the order must ship from both, which triggers the $25 split-shipment fee (Source 3). The answer is A.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+  </section>
+
+  
+    <section>
+      <h2><span class="num">5</span>Mastery check</h2>
+      <div class="mastery">
+        <p>A topic is mastered at &gt;=85% correct on new/held-out-style questions across &gt;=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.</p>
+        <p class="note"><b>Threshold</b> 0.85 &middot; <b>spaced sessions</b> &ge; 2</p>
+        <ul><li>&gt;=85% correct on new/held-out-style items (not flashcard recall) per session</li><li>sustained across &gt;=2 spaced sessions with a delay between them</li><li>per-topic memory surfaced only after &gt;=20 graded reviews (PRD give-up rule)</li><li>per-topic performance surfaced only after &gt;=8 application attempts (PRD give-up rule)</li></ul>
+        <p class="note"><b>If not yet mastered:</b> Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -&gt; you-do loop before re-testing.</p>
+      </div>
+      
+    </section>
+
+  <div class="src">
+    <div class="tag">Primary source</div>
+    <p><a href="https://www.mba.com/exams/gmat-focus-edition">GMAC - GMAT Focus Edition (official exam overview)</a> &mdash; Official exam structure and Data Insights section scope.</p>
+    <p class='note'>Further reading:</p><ul><li><a href="https://www.khanacademy.org/math/statistics-probability">Khan Academy - Statistics &amp; Probability (free)</a> &mdash; Free lessons on reading tables and graphs and reasoning from data.</li></ul>
+  </div>
+
+  <div class="ask">Stuck on any step? Ask your GMATWiz coach for a worked walkthrough &mdash; that's what it's here for.</div>
+
+  <footer>
+    <p>GMATWiz lesson &middot; <code>di-multi-source.json</code> &middot; schema v1.0 &middot; authored content (OfficialFlag=false), reserved official items used only for late checkpoints.</p>
+  </footer>
+</div></div></body></html>

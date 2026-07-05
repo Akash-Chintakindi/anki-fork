@@ -1,835 +1,266 @@
 {
-  "generated_at": "2026-07-04T00:57:14+00:00",
-  "gold_count": 42,
+  "generated_at": "2026-07-05T22:09:53+00:00",
+  "gold_count": 12,
+  "section": "di",
   "cutoff": 0.6,
   "ai_client": "openai",
   "ai_available": true,
   "taggers": {
     "keyword": {
-      "n": 42,
-      "accuracy": 0.6905,
-      "domain_accuracy": 0.881,
-      "coverage": 0.6667,
-      "accepted_accuracy": 0.9643,
-      "confidently_wrong_rate": 0.0238
+      "n": 12,
+      "accuracy": 1.0,
+      "domain_accuracy": 1.0,
+      "coverage": 1.0,
+      "accepted_accuracy": 1.0,
+      "confidently_wrong_rate": 0.0
     },
     "vector": {
-      "n": 42,
-      "accuracy": 0.3571,
-      "domain_accuracy": 0.7857,
-      "coverage": 0.0,
-      "accepted_accuracy": null,
+      "n": 12,
+      "accuracy": 0.9167,
+      "domain_accuracy": 1.0,
+      "coverage": 0.3333,
+      "accepted_accuracy": 1.0,
       "confidently_wrong_rate": 0.0
     },
     "ai": {
-      "n": 42,
-      "accuracy": 0.8095,
-      "domain_accuracy": 0.8333,
+      "n": 12,
+      "accuracy": 1.0,
+      "domain_accuracy": 1.0,
       "coverage": 1.0,
-      "accepted_accuracy": 0.8095,
-      "confidently_wrong_rate": 0.1905
+      "accepted_accuracy": 1.0,
+      "confidently_wrong_rate": 0.0
     }
   },
-  "ai_beats_baselines": true,
+  "ai_beats_baselines": false,
   "per_item": [
     {
-      "id": "seed-11f99356ce20",
-      "gold": "gmat::quant::algebra::absolute_value",
+      "id": "di-1f5b7c6e9e01",
+      "gold": "gmat::di::reasoning::data_sufficiency",
       "keyword": {
-        "pred": "gmat::quant::algebra::absolute_value",
-        "conf": 0.6,
+        "pred": "gmat::di::reasoning::data_sufficiency",
+        "conf": 0.95,
         "ok": true
       },
       "vector": {
-        "pred": "gmat::quant::algebra::absolute_value",
-        "conf": 0.5054,
+        "pred": "gmat::di::reasoning::data_sufficiency",
+        "conf": 0.7859,
         "ok": true
       },
       "ai": {
-        "pred": "gmat::quant::algebra::absolute_value",
-        "conf": 1.0,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-5e63d861065a",
-      "gold": "gmat::quant::algebra::absolute_value",
-      "keyword": {
-        "pred": "gmat::quant::algebra::absolute_value",
-        "conf": 0.6,
-        "ok": true
-      },
-      "vector": {
-        "pred": "gmat::quant::algebra::inequalities",
-        "conf": 0.5632,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::algebra::absolute_value",
+        "pred": "gmat::di::reasoning::data_sufficiency",
         "conf": 0.95,
         "ok": true
       }
     },
     {
-      "id": "seed-e2d281838c0d",
-      "gold": "gmat::quant::algebra::expressions",
+      "id": "di-4ca5ff51727b",
+      "gold": "gmat::di::reasoning::data_sufficiency",
       "keyword": {
-        "pred": "gmat::quant::algebra::quadratics",
-        "conf": 0.6,
-        "ok": false
-      },
-      "vector": {
-        "pred": "gmat::quant::algebra::inequalities",
-        "conf": 0.4671,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::exponents_roots",
-        "conf": 1.0,
-        "ok": false
-      }
-    },
-    {
-      "id": "seed-fda0b0af695b",
-      "gold": "gmat::quant::algebra::expressions",
-      "keyword": {
-        "pred": "gmat::quant::algebra::expressions",
-        "conf": 0.6,
+        "pred": "gmat::di::reasoning::data_sufficiency",
+        "conf": 0.95,
         "ok": true
       },
       "vector": {
-        "pred": "gmat::quant::algebra::quadratics",
-        "conf": 0.5212,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::exponents_roots",
-        "conf": 1.0,
-        "ok": false
-      }
-    },
-    {
-      "id": "seed-bb356190b9c7",
-      "gold": "gmat::quant::algebra::functions",
-      "keyword": {
-        "pred": "gmat::quant::algebra::functions",
-        "conf": 0.7,
+        "pred": "gmat::di::reasoning::data_sufficiency",
+        "conf": 0.8582,
         "ok": true
       },
-      "vector": {
-        "pred": "gmat::quant::algebra::linear_equations",
-        "conf": 0.3727,
-        "ok": false
-      },
       "ai": {
-        "pred": "gmat::quant::algebra::functions",
+        "pred": "gmat::di::reasoning::data_sufficiency",
         "conf": 0.95,
         "ok": true
       }
     },
     {
-      "id": "seed-f024d5bcf23d",
-      "gold": "gmat::quant::algebra::functions",
+      "id": "di-aa36c5562b46",
+      "gold": "gmat::di::reasoning::data_sufficiency",
       "keyword": {
-        "pred": "gmat::quant::algebra::functions",
-        "conf": 0.55,
+        "pred": "gmat::di::reasoning::data_sufficiency",
+        "conf": 0.95,
         "ok": true
       },
       "vector": {
-        "pred": "gmat::quant::algebra::linear_equations",
-        "conf": 0.2854,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::algebra::expressions",
-        "conf": 0.9,
-        "ok": false
-      }
-    },
-    {
-      "id": "seed-17146e3f7148",
-      "gold": "gmat::quant::algebra::inequalities",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::number_properties",
-        "conf": 0.35,
-        "ok": false
-      },
-      "vector": {
-        "pred": "gmat::quant::algebra::expressions",
-        "conf": 0.4671,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::algebra::inequalities",
-        "conf": 1.0,
+        "pred": "gmat::di::reasoning::data_sufficiency",
+        "conf": 0.8677,
         "ok": true
-      }
-    },
-    {
-      "id": "seed-3ac997e2f52a",
-      "gold": "gmat::quant::algebra::inequalities",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::number_properties",
-        "conf": 0.35,
-        "ok": false
-      },
-      "vector": {
-        "pred": "gmat::quant::algebra::absolute_value",
-        "conf": 0.5632,
-        "ok": false
       },
       "ai": {
-        "pred": "gmat::quant::arithmetic::number_properties",
-        "conf": 0.9,
-        "ok": false
-      }
-    },
-    {
-      "id": "seed-5b957eeef19d",
-      "gold": "gmat::quant::algebra::linear_equations",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::number_properties",
-        "conf": 0.35,
-        "ok": false
-      },
-      "vector": {
-        "pred": "gmat::quant::algebra::quadratics",
-        "conf": 0.5625,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::algebra::linear_equations",
-        "conf": 1.0,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-7ced0cc7dfd5",
-      "gold": "gmat::quant::algebra::linear_equations",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::number_properties",
-        "conf": 0.35,
-        "ok": false
-      },
-      "vector": {
-        "pred": "gmat::quant::algebra::functions",
-        "conf": 0.1776,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::algebra::linear_equations",
-        "conf": 1.0,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-d09eb04b7504",
-      "gold": "gmat::quant::algebra::linear_equations",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::number_properties",
-        "conf": 0.35,
-        "ok": false
-      },
-      "vector": {
-        "pred": "gmat::quant::arithmetic::exponents_roots",
-        "conf": 0.4014,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::algebra::linear_equations",
+        "pred": "gmat::di::reasoning::data_sufficiency",
         "conf": 0.95,
         "ok": true
       }
     },
     {
-      "id": "seed-12b5b57eb406",
-      "gold": "gmat::quant::algebra::quadratics",
+      "id": "di-d0c1e401e5a8",
+      "gold": "gmat::di::reasoning::data_sufficiency",
       "keyword": {
-        "pred": "gmat::quant::algebra::quadratics",
-        "conf": 0.6,
-        "ok": true
-      },
-      "vector": {
-        "pred": "gmat::quant::algebra::linear_equations",
-        "conf": 0.5625,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::algebra::quadratics",
-        "conf": 1.0,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-3f7202a864c3",
-      "gold": "gmat::quant::algebra::quadratics",
-      "keyword": {
-        "pred": "gmat::quant::algebra::quadratics",
-        "conf": 0.6,
-        "ok": true
-      },
-      "vector": {
-        "pred": "gmat::quant::algebra::expressions",
-        "conf": 0.5092,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::algebra::quadratics",
-        "conf": 1.0,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-5fc54fd1e845",
-      "gold": "gmat::quant::algebra::sequences",
-      "keyword": {
-        "pred": "gmat::quant::algebra::sequences",
+        "pred": "gmat::di::reasoning::data_sufficiency",
         "conf": 0.95,
         "ok": true
       },
       "vector": {
-        "pred": "gmat::quant::algebra::sequences",
-        "conf": 0.4744,
+        "pred": "gmat::di::reasoning::data_sufficiency",
+        "conf": 0.8677,
         "ok": true
       },
       "ai": {
-        "pred": "gmat::quant::algebra::sequences",
-        "conf": 1.0,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-a3771d5046f1",
-      "gold": "gmat::quant::algebra::sequences",
-      "keyword": {
-        "pred": "gmat::quant::algebra::sequences",
-        "conf": 0.95,
-        "ok": true
-      },
-      "vector": {
-        "pred": "gmat::quant::algebra::sequences",
-        "conf": 0.4744,
-        "ok": true
-      },
-      "ai": {
-        "pred": "gmat::quant::algebra::sequences",
-        "conf": 1.0,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-393f0ce7e4d0",
-      "gold": "gmat::quant::algebra::word_problems",
-      "keyword": {
-        "pred": "gmat::quant::algebra::word_problems",
-        "conf": 0.6,
-        "ok": true
-      },
-      "vector": {
-        "pred": "gmat::quant::algebra::word_problems",
-        "conf": 0.2901,
-        "ok": true
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::ratios_proportions",
-        "conf": 0.95,
-        "ok": false
-      }
-    },
-    {
-      "id": "seed-3e16fb1b9443",
-      "gold": "gmat::quant::algebra::word_problems",
-      "keyword": {
-        "pred": "gmat::quant::algebra::word_problems",
-        "conf": 0.85,
-        "ok": true
-      },
-      "vector": {
-        "pred": "gmat::quant::arithmetic::probability",
-        "conf": 0.1312,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::percents",
-        "conf": 1.0,
-        "ok": false
-      }
-    },
-    {
-      "id": "seed-b1196e45572c",
-      "gold": "gmat::quant::algebra::word_problems",
-      "keyword": {
-        "pred": "gmat::quant::algebra::word_problems",
-        "conf": 0.95,
-        "ok": true
-      },
-      "vector": {
-        "pred": "gmat::quant::algebra::word_problems",
-        "conf": 0.2901,
-        "ok": true
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::ratios_proportions",
-        "conf": 0.95,
-        "ok": false
-      }
-    },
-    {
-      "id": "seed-f574966209a4",
-      "gold": "gmat::quant::algebra::word_problems",
-      "keyword": {
-        "pred": "gmat::quant::algebra::word_problems",
-        "conf": 0.65,
-        "ok": true
-      },
-      "vector": {
-        "pred": "gmat::quant::arithmetic::sets",
-        "conf": 0.187,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::ratios_proportions",
-        "conf": 0.95,
-        "ok": false
-      }
-    },
-    {
-      "id": "seed-326e061388ca",
-      "gold": "gmat::quant::arithmetic::counting",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::number_properties",
-        "conf": 0.35,
-        "ok": false
-      },
-      "vector": {
-        "pred": "gmat::quant::arithmetic::counting",
-        "conf": 0.2156,
-        "ok": true
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::counting",
-        "conf": 1.0,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-aec665bd8182",
-      "gold": "gmat::quant::arithmetic::counting",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::number_properties",
-        "conf": 0.35,
-        "ok": false
-      },
-      "vector": {
-        "pred": "gmat::quant::arithmetic::counting",
-        "conf": 0.2156,
-        "ok": true
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::counting",
-        "conf": 1.0,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-4b20c838d5a1",
-      "gold": "gmat::quant::arithmetic::decimals",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::decimals",
-        "conf": 0.8,
-        "ok": true
-      },
-      "vector": {
-        "pred": "gmat::quant::algebra::absolute_value",
-        "conf": 0.2866,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::decimals",
-        "conf": 1.0,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-738f627ccd34",
-      "gold": "gmat::quant::arithmetic::decimals",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::number_properties",
-        "conf": 0.35,
-        "ok": false
-      },
-      "vector": {
-        "pred": "gmat::quant::algebra::quadratics",
-        "conf": 0.3654,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::decimals",
-        "conf": 1.0,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-07a974579515",
-      "gold": "gmat::quant::arithmetic::exponents_roots",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::number_properties",
-        "conf": 0.35,
-        "ok": false
-      },
-      "vector": {
-        "pred": "gmat::quant::arithmetic::percents",
-        "conf": 0.1685,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::exponents_roots",
-        "conf": 1.0,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-8debb897763b",
-      "gold": "gmat::quant::arithmetic::exponents_roots",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::number_properties",
-        "conf": 0.35,
-        "ok": false
-      },
-      "vector": {
-        "pred": "gmat::quant::algebra::quadratics",
-        "conf": 0.5443,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::exponents_roots",
-        "conf": 1.0,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-4ab15302dcb1",
-      "gold": "gmat::quant::arithmetic::fractions",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::number_properties",
-        "conf": 0.35,
-        "ok": false
-      },
-      "vector": {
-        "pred": "gmat::quant::arithmetic::probability",
-        "conf": 0.4579,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::fractions",
-        "conf": 1.0,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-65287ad8d33b",
-      "gold": "gmat::quant::arithmetic::fractions",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::fractions",
-        "conf": 0.65,
-        "ok": true
-      },
-      "vector": {
-        "pred": "gmat::quant::arithmetic::fractions",
-        "conf": 0.3926,
-        "ok": true
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::fractions",
+        "pred": "gmat::di::reasoning::data_sufficiency",
         "conf": 0.95,
         "ok": true
       }
     },
     {
-      "id": "seed-4cb2ea1c0338",
-      "gold": "gmat::quant::arithmetic::number_properties",
+      "id": "di-326e05b484b7",
+      "gold": "gmat::di::reasoning::multi_source_reasoning",
       "keyword": {
-        "pred": "gmat::quant::arithmetic::number_properties",
-        "conf": 0.6,
-        "ok": true
-      },
-      "vector": {
-        "pred": "gmat::quant::arithmetic::counting",
-        "conf": 0.175,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::number_properties",
-        "conf": 1.0,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-5fde7c39c9e4",
-      "gold": "gmat::quant::arithmetic::number_properties",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::number_properties",
-        "conf": 0.65,
-        "ok": true
-      },
-      "vector": {
-        "pred": "gmat::quant::arithmetic::statistics",
-        "conf": 0.3662,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::number_properties",
-        "conf": 0.95,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-e61bbd65c480",
-      "gold": "gmat::quant::arithmetic::number_properties",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::number_properties",
-        "conf": 0.65,
-        "ok": true
-      },
-      "vector": {
-        "pred": "gmat::quant::algebra::inequalities",
-        "conf": 0.278,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::number_properties",
-        "conf": 0.95,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-61fe9324df25",
-      "gold": "gmat::quant::arithmetic::percents",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::percents",
-        "conf": 0.95,
-        "ok": true
-      },
-      "vector": {
-        "pred": "gmat::quant::arithmetic::percents",
-        "conf": 0.2822,
-        "ok": true
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::percents",
-        "conf": 1.0,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-9de1ae83e7ef",
-      "gold": "gmat::quant::arithmetic::percents",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::percents",
-        "conf": 0.6,
-        "ok": true
-      },
-      "vector": {
-        "pred": "gmat::quant::arithmetic::statistics",
-        "conf": 0.2907,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::percents",
-        "conf": 1.0,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-dd085a546f36",
-      "gold": "gmat::quant::arithmetic::percents",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::percents",
+        "pred": "gmat::di::reasoning::multi_source_reasoning",
         "conf": 0.75,
         "ok": true
       },
       "vector": {
-        "pred": "gmat::quant::arithmetic::percents",
-        "conf": 0.2822,
+        "pred": "gmat::di::reasoning::multi_source_reasoning",
+        "conf": 0.206,
         "ok": true
       },
       "ai": {
-        "pred": "gmat::quant::arithmetic::percents",
-        "conf": 1.0,
+        "pred": "gmat::di::reasoning::multi_source_reasoning",
+        "conf": 0.75,
         "ok": true
       }
     },
     {
-      "id": "seed-00a0f5b27b4f",
-      "gold": "gmat::quant::arithmetic::probability",
+      "id": "di-ab30e0cd55de",
+      "gold": "gmat::di::reasoning::multi_source_reasoning",
       "keyword": {
-        "pred": "gmat::quant::arithmetic::probability",
-        "conf": 0.85,
+        "pred": "gmat::di::reasoning::multi_source_reasoning",
+        "conf": 0.75,
         "ok": true
       },
       "vector": {
-        "pred": "gmat::quant::arithmetic::fractions",
-        "conf": 0.4579,
+        "pred": "gmat::di::reasoning::multi_source_reasoning",
+        "conf": 0.1506,
+        "ok": true
+      },
+      "ai": {
+        "pred": "gmat::di::reasoning::multi_source_reasoning",
+        "conf": 0.75,
+        "ok": true
+      }
+    },
+    {
+      "id": "di-f932bb3a6098",
+      "gold": "gmat::di::reasoning::multi_source_reasoning",
+      "keyword": {
+        "pred": "gmat::di::reasoning::multi_source_reasoning",
+        "conf": 0.75,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::di::reasoning::multi_source_reasoning",
+        "conf": 0.1896,
+        "ok": true
+      },
+      "ai": {
+        "pred": "gmat::di::reasoning::multi_source_reasoning",
+        "conf": 0.75,
+        "ok": true
+      }
+    },
+    {
+      "id": "di-f9f609149052",
+      "gold": "gmat::di::reasoning::multi_source_reasoning",
+      "keyword": {
+        "pred": "gmat::di::reasoning::multi_source_reasoning",
+        "conf": 0.75,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::di::reasoning::multi_source_reasoning",
+        "conf": 0.206,
+        "ok": true
+      },
+      "ai": {
+        "pred": "gmat::di::reasoning::multi_source_reasoning",
+        "conf": 0.75,
+        "ok": true
+      }
+    },
+    {
+      "id": "di-35a671a4d982",
+      "gold": "gmat::di::reasoning::two_part_analysis",
+      "keyword": {
+        "pred": "gmat::di::reasoning::two_part_analysis",
+        "conf": 0.95,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::di::reasoning::data_sufficiency",
+        "conf": 0.118,
         "ok": false
       },
       "ai": {
-        "pred": "gmat::quant::arithmetic::probability",
-        "conf": 1.0,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-ce6e2cd6a1cb",
-      "gold": "gmat::quant::arithmetic::probability",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::probability",
-        "conf": 0.85,
-        "ok": true
-      },
-      "vector": {
-        "pred": "gmat::quant::arithmetic::probability",
-        "conf": 0.3627,
-        "ok": true
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::probability",
-        "conf": 1.0,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-78b04410239a",
-      "gold": "gmat::quant::arithmetic::ratios_proportions",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::number_properties",
-        "conf": 0.35,
-        "ok": false
-      },
-      "vector": {
-        "pred": "gmat::quant::algebra::word_problems",
-        "conf": 0.1975,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::ratios_proportions",
-        "conf": 1.0,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-8638d24dbab5",
-      "gold": "gmat::quant::arithmetic::ratios_proportions",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::ratios_proportions",
-        "conf": 0.7,
-        "ok": true
-      },
-      "vector": {
-        "pred": "gmat::quant::arithmetic::sets",
-        "conf": 0.208,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::ratios_proportions",
-        "conf": 1.0,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-19544be19b57",
-      "gold": "gmat::quant::arithmetic::sets",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::sets",
-        "conf": 0.7,
-        "ok": true
-      },
-      "vector": {
-        "pred": "gmat::quant::arithmetic::sets",
-        "conf": 0.2133,
-        "ok": true
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::sets",
+        "pred": "gmat::di::reasoning::two_part_analysis",
         "conf": 0.95,
         "ok": true
       }
     },
     {
-      "id": "seed-9f38f19d2e46",
-      "gold": "gmat::quant::arithmetic::sets",
+      "id": "di-81a4ccb3e10f",
+      "gold": "gmat::di::reasoning::two_part_analysis",
       "keyword": {
-        "pred": "gmat::quant::arithmetic::sets",
-        "conf": 0.55,
+        "pred": "gmat::di::reasoning::two_part_analysis",
+        "conf": 0.75,
         "ok": true
       },
       "vector": {
-        "pred": "gmat::quant::arithmetic::sets",
-        "conf": 0.2133,
+        "pred": "gmat::di::reasoning::two_part_analysis",
+        "conf": 0.1058,
         "ok": true
       },
       "ai": {
-        "pred": "gmat::quant::arithmetic::sets",
+        "pred": "gmat::di::reasoning::two_part_analysis",
+        "conf": 0.75,
+        "ok": true
+      }
+    },
+    {
+      "id": "di-d2d279c4b3b0",
+      "gold": "gmat::di::reasoning::two_part_analysis",
+      "keyword": {
+        "pred": "gmat::di::reasoning::two_part_analysis",
+        "conf": 0.75,
+        "ok": true
+      },
+      "vector": {
+        "pred": "gmat::di::reasoning::two_part_analysis",
+        "conf": 0.1376,
+        "ok": true
+      },
+      "ai": {
+        "pred": "gmat::di::reasoning::two_part_analysis",
+        "conf": 0.75,
+        "ok": true
+      }
+    },
+    {
+      "id": "di-e18631236b5e",
+      "gold": "gmat::di::reasoning::two_part_analysis",
+      "keyword": {
+        "pred": "gmat::di::reasoning::two_part_analysis",
         "conf": 0.95,
         "ok": true
-      }
-    },
-    {
-      "id": "seed-783b2d13529a",
-      "gold": "gmat::quant::arithmetic::statistics",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::statistics",
-        "conf": 0.8,
-        "ok": true
       },
       "vector": {
-        "pred": "gmat::quant::arithmetic::statistics",
-        "conf": 0.4029,
+        "pred": "gmat::di::reasoning::two_part_analysis",
+        "conf": 0.1376,
         "ok": true
       },
       "ai": {
-        "pred": "gmat::quant::arithmetic::statistics",
-        "conf": 1.0,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-9c0a92425ce4",
-      "gold": "gmat::quant::arithmetic::statistics",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::statistics",
-        "conf": 0.8,
-        "ok": true
-      },
-      "vector": {
-        "pred": "gmat::quant::arithmetic::statistics",
-        "conf": 0.4029,
-        "ok": true
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::statistics",
-        "conf": 1.0,
-        "ok": true
-      }
-    },
-    {
-      "id": "seed-bb7411380d6b",
-      "gold": "gmat::quant::arithmetic::statistics",
-      "keyword": {
-        "pred": "gmat::quant::arithmetic::statistics",
-        "conf": 0.7,
-        "ok": true
-      },
-      "vector": {
-        "pred": "gmat::quant::algebra::inequalities",
-        "conf": 0.4291,
-        "ok": false
-      },
-      "ai": {
-        "pred": "gmat::quant::arithmetic::statistics",
-        "conf": 1.0,
+        "pred": "gmat::di::reasoning::two_part_analysis",
+        "conf": 0.95,
         "ok": true
       }
     }
   ],
-  "gold_file": "/Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork/gmatwiz/content/seed.json"
+  "gold_file": "/Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork/gmatwiz/content/di_seed.json"
 }

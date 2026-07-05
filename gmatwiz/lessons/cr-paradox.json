@@ -1,0 +1,281 @@
+{
+  "topic_id": "gmat::verbal::cr::explain_paradox",
+  "slug": "cr-paradox",
+  "title": "Critical Reasoning: Explain the Paradox",
+  "prerequisites": [
+    "state two facts that seem to conflict",
+    "distinguish an explanation from a mere comment"
+  ],
+  "learning_objectives": [
+    "Pin down the two facts that seem to contradict each other.",
+    "Choose the option that lets BOTH facts be true at once.",
+    "Reject options that deepen the mystery or address only one fact."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do -> we do -> you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Reading two facts and noticing the tension between them.",
+    "do_now": {
+      "instructions": "No notes. 4 minutes.",
+      "items": [
+        {
+          "prompt": "What does a paradox/resolve question ask you to do?",
+          "answer": "Explain how two seemingly conflicting facts can both be true.",
+          "targets": "task"
+        },
+        {
+          "prompt": "Should the right answer make one fact false?",
+          "answer": "No - both facts stay true; the answer explains the gap.",
+          "targets": "method"
+        },
+        {
+          "prompt": "Resolve: prices rose but revenue fell.",
+          "answer": "So many customers left that the loss outweighed the higher price.",
+          "targets": "example"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Recalls that a resolution must let both surprising facts coexist.",
+      "if_students_struggle": "Have them write the two facts as 'X, yet Y' and look for the missing bridge.",
+      "questions": [
+        {
+          "prompt": "State the two facts to reconcile in your own words before answering.",
+          "answer": "Identify 'fact 1, yet surprising fact 2.'",
+          "targets": "framing"
+        },
+        {
+          "prompt": "Why reject a choice that explains only fact 1?",
+          "answer": "It must account for the surprising second fact too.",
+          "targets": "scope"
+        }
+      ]
+    },
+    "prior_knowledge_bridge": "A paradox question hands you two facts that seem to clash. You're not judging an argument - you're finding the missing piece of information that makes the clash disappear so both facts can be true together.",
+    "learning_intention": "By the end you can identify two conflicting facts and pick the option that reconciles them without denying either.",
+    "success_criteria": [
+      "I can restate the paradox as 'X, yet surprisingly Y.'",
+      "I can pick the option that lets both X and Y be true.",
+      "I can reject options that ignore one fact or make it worse."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00-4:00",
+        "move": "Do Now on screen; learners answer from memory, no notes."
+      },
+      {
+        "time": "4:00-6:00",
+        "move": "Cold-call answers; name the argument's conclusion vs premises."
+      },
+      {
+        "time": "6:00-8:00",
+        "move": "Bridge to today's question type; state what the stem is really asking."
+      },
+      {
+        "time": "8:00-10:00",
+        "move": "Move to I do: model the reasoning on one worked item."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "A coffee shop replaced its paper cups with more expensive reusable-style cups, yet its total cup costs for the year went down. Which of the following, if true, best explains this result?",
+    "options": {
+      "A": "Customers who brought the reusable-style cups back for refills sharply reduced the number of new cups the shop had to buy.",
+      "B": "The reusable-style cups come in several colors.",
+      "C": "The shop's coffee sales rose slightly during the year.",
+      "D": "Paper cups had been the shop's cheapest supply.",
+      "E": "The new cups are made by a local manufacturer."
+    },
+    "correct": "A",
+    "explanation": "Both facts stay true: the cups cost more each, yet total cup costs fell because far fewer cups were purchased overall. A supplies the bridge; the others don't reconcile the two facts.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "Fact 1: each new cup is more expensive. Fact 2: total cup costs fell (surprising).",
+      "I need a reason total cost could drop despite higher unit price.",
+      "A: reuse cut the NUMBER of cups bought - fewer cups times higher price can still be less.",
+      "Both facts remain true; the other choices don't explain the drop."
+    ],
+    "key_takeaway": "A good resolution keeps both surprising facts true and supplies the missing information that removes the conflict.",
+    "topic": "gmat::verbal::cr::explain_paradox",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Critical Reasoning"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "A factory installed faster machines expecting to produce more units per day, but its daily output actually fell. Which of the following, if true, best explains the drop?",
+      "options": {
+        "A": "The faster machines broke down often and sat idle awaiting repairs for long stretches.",
+        "B": "The faster machines use more electricity.",
+        "C": "The factory kept the same number of workers.",
+        "D": "The old machines had been in use for years.",
+        "E": "The new machines are larger than the old ones."
+      },
+      "correct": "A",
+      "explanation": "Frequent breakdowns and idle time can lower output even though the machines are faster when running - reconciling 'faster machines' with 'lower output.'",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "State it as 'faster machines, yet lower output.'",
+        "What could make faster machines produce less overall?",
+        "Look for downtime, not for irrelevant details."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right - idle time from breakdowns explains the paradox.",
+        "if_incorrect": "Electricity use and size don't explain why fewer units came out."
+      },
+      "topic": "gmat::verbal::cr::explain_paradox",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning"
+    },
+    {
+      "id": "we_2",
+      "stem": "A library extended its hours to increase the number of visitors, but the number of visitors decreased afterward. Which of the following, if true, best explains this outcome?",
+      "options": {
+        "A": "To fund the longer hours, the library cut its budget for new books, and many regulars stopped coming once new titles grew scarce.",
+        "B": "The library is located near a university.",
+        "C": "The extended hours were advertised on the library's website.",
+        "D": "The library employs several part-time staff.",
+        "E": "Library visits are counted by an electronic gate."
+      },
+      "correct": "A",
+      "explanation": "The longer hours came at the cost of fewer new books, driving regulars away; both facts hold, and A bridges them.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "Frame it: 'longer hours, yet fewer visitors.'",
+        "What trade-off could the longer hours have caused?",
+        "The bridge must explain why visitors fell."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Yes - a hidden trade-off (fewer new books) explains the decline.",
+        "if_incorrect": "Location and staffing don't account for the drop in visitors."
+      },
+      "topic": "gmat::verbal::cr::explain_paradox",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "A phone maker lowered the price of its flagship model, expecting to sell more units, but it sold fewer units than before. Which of the following, if true, best explains this result?",
+      "options": {
+        "A": "Buyers took the lower price as a sign the model was about to be discontinued and avoided it.",
+        "B": "The phone comes in three colors.",
+        "C": "The price cut was announced online.",
+        "D": "The company also makes tablets.",
+        "E": "The phone's battery lasts a full day."
+      },
+      "correct": "A",
+      "explanation": "If the lower price signaled impending discontinuation, buyers would shy away - explaining why a price cut reduced sales while both facts remain true.",
+      "difficulty": "medium",
+      "topic": "gmat::verbal::cr::explain_paradox",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "A city added dozens of new bus routes to reduce car traffic, yet car traffic increased in the following year. Which of the following, if true, best explains this?",
+      "options": {
+        "A": "The new routes made the city more attractive to newcomers, and the resulting population growth put more cars on the road than the buses removed.",
+        "B": "The buses run on a fixed schedule.",
+        "C": "The new routes were mapped by transit planners.",
+        "D": "Bus fares stayed the same.",
+        "E": "The buses are wheelchair-accessible."
+      },
+      "correct": "A",
+      "explanation": "Population growth spurred by better transit can add more cars than the buses take off the road, letting both facts be true.",
+      "difficulty": "hard",
+      "topic": "gmat::verbal::cr::explain_paradox",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "A software company started offering generous unlimited vacation, expecting employees to feel less burned out, but reported burnout rose. Which of the following, if true, best explains the increase?",
+      "options": {
+        "A": "Without a set number of days, employees felt unsure how much leave was acceptable and ended up taking less time off than before.",
+        "B": "The company has offices in several countries.",
+        "C": "The policy was announced in a company email.",
+        "D": "Employees can also work from home.",
+        "E": "The company's software is used worldwide."
+      },
+      "correct": "A",
+      "explanation": "Ambiguity about acceptable leave led employees to take less vacation, raising burnout - reconciling the generous policy with the worse outcome.",
+      "difficulty": "hard",
+      "topic": "gmat::verbal::cr::explain_paradox",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "GMAC - GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Verbal Reasoning scope.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy - LSAT Logical Reasoning (free)",
+      "url": "https://www.khanacademy.org/prep/lsat",
+      "note": "Free lessons on argument structure, assumptions, strengthen/weaken, and flaws."
+    }
+  ],
+  "domain": "Critical Reasoning",
+  "section": "Verbal Reasoning",
+  "question_type": "Critical Reasoning",
+  "estimated_minutes": 18,
+  "schema_version": "1.0",
+  "exam": "GMAT Focus Edition"
+}

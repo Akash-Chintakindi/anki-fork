@@ -1,0 +1,242 @@
+[
+  {
+    "id": "vrc-082a34e6f6b9",
+    "stem": "The primary purpose of the passage is to",
+    "options": {
+      "A": "describe a mechanism that accounts for an organism's unusual endurance and note a possible application of it",
+      "B": "argue that trehalose plays no role in the survival of any dormant organism",
+      "C": "compare tardigrades with other microscopic animals that enter dormancy",
+      "D": "trace the history of research on the vacuum of space",
+      "E": "explain why vaccines currently require refrigeration"
+    },
+    "correct": "A",
+    "explanation": "The passage explains how tardigrades survive drying (the protein matrix, correcting the earlier trehalose assumption) and closes with a possible application (preserving vaccines). A captures both.",
+    "topic": "gmat::verbal::rc::main_idea",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T20:38:39+00:00",
+    "passage_id": "rc-tardigrade",
+    "passage": "Tardigrades, microscopic animals often called water bears, are among the hardiest organisms known. When their watery habitats dry out, tardigrades expel most of the water from their bodies and enter a dormant state called the tun, in which metabolism slows to a virtual standstill. In this state they can survive extreme cold, intense radiation, and even the vacuum of space. Early researchers assumed that a sugar called trehalose, which some dormant organisms use to protect their cells, was the key to this endurance. More recent work, however, has shown that many tardigrade species produce little trehalose. Instead, these species rely on a set of proteins, unique to tardigrades, that form a glass-like matrix around delicate cellular structures as the animal dries. Because these proteins can be transferred to other cells in the laboratory, some scientists hope they might one day help preserve biological materials such as vaccines without refrigeration."
+  },
+  {
+    "id": "vrc-92c2af4be1c6",
+    "stem": "According to the passage, the tun state is characterized by",
+    "options": {
+      "A": "a metabolism that slows to a virtual standstill",
+      "B": "an increase in the animal's water content",
+      "C": "the production of large amounts of trehalose",
+      "D": "a permanent loss of the ability to revive",
+      "E": "the transfer of proteins to other organisms"
+    },
+    "correct": "A",
+    "explanation": "The passage states that in the tun state 'metabolism slows to a virtual standstill.' The other options contradict or overstate the text.",
+    "topic": "gmat::verbal::rc::detail",
+    "difficulty": "easy",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T20:38:39+00:00",
+    "passage_id": "rc-tardigrade",
+    "passage": "Tardigrades, microscopic animals often called water bears, are among the hardiest organisms known. When their watery habitats dry out, tardigrades expel most of the water from their bodies and enter a dormant state called the tun, in which metabolism slows to a virtual standstill. In this state they can survive extreme cold, intense radiation, and even the vacuum of space. Early researchers assumed that a sugar called trehalose, which some dormant organisms use to protect their cells, was the key to this endurance. More recent work, however, has shown that many tardigrade species produce little trehalose. Instead, these species rely on a set of proteins, unique to tardigrades, that form a glass-like matrix around delicate cellular structures as the animal dries. Because these proteins can be transferred to other cells in the laboratory, some scientists hope they might one day help preserve biological materials such as vaccines without refrigeration."
+  },
+  {
+    "id": "vrc-5f61c173a613",
+    "stem": "The passage suggests that the earlier assumption about trehalose was",
+    "options": {
+      "A": "incorrect as a general explanation for tardigrade endurance, because many species produce little of it",
+      "B": "never tested by any researcher",
+      "C": "correct for every tardigrade species studied",
+      "D": "based on observations of the vacuum of space",
+      "E": "unrelated to the survival of any organism"
+    },
+    "correct": "A",
+    "explanation": "Since 'many tardigrade species produce little trehalose,' the earlier assumption cannot be the general explanation. A follows; B, C, D, E overreach or contradict.",
+    "topic": "gmat::verbal::rc::inference",
+    "difficulty": "hard",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T20:38:39+00:00",
+    "passage_id": "rc-tardigrade",
+    "passage": "Tardigrades, microscopic animals often called water bears, are among the hardiest organisms known. When their watery habitats dry out, tardigrades expel most of the water from their bodies and enter a dormant state called the tun, in which metabolism slows to a virtual standstill. In this state they can survive extreme cold, intense radiation, and even the vacuum of space. Early researchers assumed that a sugar called trehalose, which some dormant organisms use to protect their cells, was the key to this endurance. More recent work, however, has shown that many tardigrade species produce little trehalose. Instead, these species rely on a set of proteins, unique to tardigrades, that form a glass-like matrix around delicate cellular structures as the animal dries. Because these proteins can be transferred to other cells in the laboratory, some scientists hope they might one day help preserve biological materials such as vaccines without refrigeration."
+  },
+  {
+    "id": "vrc-eb37f08cb01c",
+    "stem": "The author mentions that the protective proteins can be transferred to other cells primarily in order to",
+    "options": {
+      "A": "support the suggestion that the proteins might have practical uses",
+      "B": "prove that trehalose is unnecessary for any organism",
+      "C": "explain why tardigrades expel water when their habitats dry out",
+      "D": "question whether tardigrades can survive radiation",
+      "E": "describe the structure of the tun state"
+    },
+    "correct": "A",
+    "explanation": "The transfer-to-other-cells detail sets up the closing point that the proteins 'might one day help preserve biological materials.' Its function is to support that application.",
+    "topic": "gmat::verbal::rc::function",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T20:38:39+00:00",
+    "passage_id": "rc-tardigrade",
+    "passage": "Tardigrades, microscopic animals often called water bears, are among the hardiest organisms known. When their watery habitats dry out, tardigrades expel most of the water from their bodies and enter a dormant state called the tun, in which metabolism slows to a virtual standstill. In this state they can survive extreme cold, intense radiation, and even the vacuum of space. Early researchers assumed that a sugar called trehalose, which some dormant organisms use to protect their cells, was the key to this endurance. More recent work, however, has shown that many tardigrade species produce little trehalose. Instead, these species rely on a set of proteins, unique to tardigrades, that form a glass-like matrix around delicate cellular structures as the animal dries. Because these proteins can be transferred to other cells in the laboratory, some scientists hope they might one day help preserve biological materials such as vaccines without refrigeration."
+  },
+  {
+    "id": "vrc-a6a8a659929f",
+    "stem": "The passage is primarily concerned with",
+    "options": {
+      "A": "presenting a more complex view of guilds than the common portrayal allows",
+      "B": "proving that guilds were purely harmful to medieval commerce",
+      "C": "describing the examination a guild cooper had to pass",
+      "D": "arguing that guilds were identical to modern trade unions",
+      "E": "explaining how barrels were manufactured in medieval towns"
+    },
+    "correct": "A",
+    "explanation": "The passage opens by noting guilds are 'often portrayed simply' one way, then broadens that view (quality assurance, lowered risk). A captures this corrective purpose.",
+    "topic": "gmat::verbal::rc::main_idea",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T20:38:39+00:00",
+    "passage_id": "rc-guilds",
+    "passage": "Medieval craft guilds are often portrayed simply as early trade unions that protected workers. Their role, however, was considerably broader. A guild regulated the quality of goods produced in its trade, set standards for training, and controlled who could practice the craft within a town. To many historians, these functions look restrictive, and it is true that guilds limited competition. Yet the same rules that limited entry also guaranteed buyers a predictable level of quality at a time when there were few other ways to verify a craftsman's skill. A customer purchasing a barrel from a guild cooper could reasonably assume it would not leak, because the cooper had passed the guild's examination. Some economic historians therefore argue that guilds, whatever their costs to would-be competitors, lowered the risk of commerce and so helped trade to expand. The debate over whether guilds were on balance helpful or harmful remains unresolved."
+  },
+  {
+    "id": "vrc-c9e07f274193",
+    "stem": "It can be inferred from the passage that, in the period discussed, buyers",
+    "options": {
+      "A": "had limited means of judging a craftsman's skill apart from guild membership",
+      "B": "always preferred goods made outside the guild system",
+      "C": "were legally required to buy from guild members",
+      "D": "could easily test every product before purchase",
+      "E": "distrusted goods that carried a guild's approval"
+    },
+    "correct": "A",
+    "explanation": "The passage says there 'were few other ways to verify a craftsman's skill,' implying buyers relied on guild membership as a signal. A follows.",
+    "topic": "gmat::verbal::rc::inference",
+    "difficulty": "hard",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T20:38:39+00:00",
+    "passage_id": "rc-guilds",
+    "passage": "Medieval craft guilds are often portrayed simply as early trade unions that protected workers. Their role, however, was considerably broader. A guild regulated the quality of goods produced in its trade, set standards for training, and controlled who could practice the craft within a town. To many historians, these functions look restrictive, and it is true that guilds limited competition. Yet the same rules that limited entry also guaranteed buyers a predictable level of quality at a time when there were few other ways to verify a craftsman's skill. A customer purchasing a barrel from a guild cooper could reasonably assume it would not leak, because the cooper had passed the guild's examination. Some economic historians therefore argue that guilds, whatever their costs to would-be competitors, lowered the risk of commerce and so helped trade to expand. The debate over whether guilds were on balance helpful or harmful remains unresolved."
+  },
+  {
+    "id": "vrc-698b215a5032",
+    "stem": "The author's attitude toward the claim that guilds were merely restrictive can best be described as",
+    "options": {
+      "A": "qualified disagreement",
+      "B": "complete acceptance",
+      "C": "scornful dismissal",
+      "D": "indifference",
+      "E": "enthusiastic endorsement"
+    },
+    "correct": "A",
+    "explanation": "The author concedes guilds limited competition ('it is true') but argues they also lowered commercial risk, disagreeing in a measured way. A ('qualified disagreement') fits.",
+    "topic": "gmat::verbal::rc::tone",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T20:38:39+00:00",
+    "passage_id": "rc-guilds",
+    "passage": "Medieval craft guilds are often portrayed simply as early trade unions that protected workers. Their role, however, was considerably broader. A guild regulated the quality of goods produced in its trade, set standards for training, and controlled who could practice the craft within a town. To many historians, these functions look restrictive, and it is true that guilds limited competition. Yet the same rules that limited entry also guaranteed buyers a predictable level of quality at a time when there were few other ways to verify a craftsman's skill. A customer purchasing a barrel from a guild cooper could reasonably assume it would not leak, because the cooper had passed the guild's examination. Some economic historians therefore argue that guilds, whatever their costs to would-be competitors, lowered the risk of commerce and so helped trade to expand. The debate over whether guilds were on balance helpful or harmful remains unresolved."
+  },
+  {
+    "id": "vrc-e49713375230",
+    "stem": "Which of the following best describes the organization of the passage?",
+    "options": {
+      "A": "A common view is stated, complicated by additional considerations, and left as an open debate.",
+      "B": "A thesis is stated and then supported by a single extended example.",
+      "C": "Two historians' theories are compared and one is shown to be false.",
+      "D": "A chronological history of guilds is presented from origin to decline.",
+      "E": "A problem is described and a definitive solution is proposed."
+    },
+    "correct": "A",
+    "explanation": "The passage gives the simple portrayal, adds broader functions and the risk-lowering argument, and ends noting the debate is 'unresolved.' A matches.",
+    "topic": "gmat::verbal::rc::structure",
+    "difficulty": "hard",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T20:38:39+00:00",
+    "passage_id": "rc-guilds",
+    "passage": "Medieval craft guilds are often portrayed simply as early trade unions that protected workers. Their role, however, was considerably broader. A guild regulated the quality of goods produced in its trade, set standards for training, and controlled who could practice the craft within a town. To many historians, these functions look restrictive, and it is true that guilds limited competition. Yet the same rules that limited entry also guaranteed buyers a predictable level of quality at a time when there were few other ways to verify a craftsman's skill. A customer purchasing a barrel from a guild cooper could reasonably assume it would not leak, because the cooper had passed the guild's examination. Some economic historians therefore argue that guilds, whatever their costs to would-be competitors, lowered the risk of commerce and so helped trade to expand. The debate over whether guilds were on balance helpful or harmful remains unresolved."
+  },
+  {
+    "id": "vrc-9ecbb6767b34",
+    "stem": "The main idea of the passage is that",
+    "options": {
+      "A": "excessive artificial light causes a range of problems that can be reduced through better lighting practices",
+      "B": "ground-based telescopes should be replaced with space-based ones",
+      "C": "outdoor lighting should be eliminated to protect wildlife",
+      "D": "sea turtles are the species most harmed by artificial light",
+      "E": "skyglow is a concern only for professional astronomers"
+    },
+    "correct": "A",
+    "explanation": "The passage catalogs harms from skyglow (astronomy, wildlife, sleep) and ends with thoughtful-lighting remedies. A captures both problem and solution; the others are too narrow or contradicted.",
+    "topic": "gmat::verbal::rc::main_idea",
+    "difficulty": "easy",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T20:38:39+00:00",
+    "passage_id": "rc-darkskies",
+    "passage": "For most of human history the night sky was a shared feature of experience, but artificial lighting has made truly dark skies rare near cities. The glow of streetlights and buildings scatters in the atmosphere and washes out all but the brightest stars, a phenomenon known as skyglow. Astronomers were the first to raise the alarm, since skyglow degrades observations from ground-based telescopes. In recent decades, however, the concern has widened. Researchers have documented that excessive nighttime light disrupts the behavior of nocturnal animals: migrating birds veer off course, and hatchling sea turtles, which navigate toward the brightest horizon, crawl inland toward roads instead of out to sea. Some studies also link chronic exposure to light at night with disrupted sleep in humans. Advocates for dark skies stress that the remedy is not to abandon outdoor lighting but to use it more thoughtfully—shielding fixtures so light points downward and switching to warmer tones—measures that reduce skyglow while still lighting the ground where people need it."
+  },
+  {
+    "id": "vrc-227f2abaf913",
+    "stem": "According to the passage, hatchling sea turtles are affected by artificial light because they",
+    "options": {
+      "A": "navigate toward the brightest horizon",
+      "B": "are attracted to warm-toned light specifically",
+      "C": "sleep less when exposed to light at night",
+      "D": "migrate along the same routes as birds",
+      "E": "cannot survive near ground-based telescopes"
+    },
+    "correct": "A",
+    "explanation": "The passage states the hatchlings 'navigate toward the brightest horizon' and so head inland toward roads. A restates this; the others misattribute the mechanism.",
+    "topic": "gmat::verbal::rc::detail",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T20:38:39+00:00",
+    "passage_id": "rc-darkskies",
+    "passage": "For most of human history the night sky was a shared feature of experience, but artificial lighting has made truly dark skies rare near cities. The glow of streetlights and buildings scatters in the atmosphere and washes out all but the brightest stars, a phenomenon known as skyglow. Astronomers were the first to raise the alarm, since skyglow degrades observations from ground-based telescopes. In recent decades, however, the concern has widened. Researchers have documented that excessive nighttime light disrupts the behavior of nocturnal animals: migrating birds veer off course, and hatchling sea turtles, which navigate toward the brightest horizon, crawl inland toward roads instead of out to sea. Some studies also link chronic exposure to light at night with disrupted sleep in humans. Advocates for dark skies stress that the remedy is not to abandon outdoor lighting but to use it more thoughtfully—shielding fixtures so light points downward and switching to warmer tones—measures that reduce skyglow while still lighting the ground where people need it."
+  },
+  {
+    "id": "vrc-dc93188da3f6",
+    "stem": "The author mentions migrating birds and sea turtles primarily in order to",
+    "options": {
+      "A": "illustrate that the harms of skyglow extend beyond astronomy",
+      "B": "argue that wildlife matters more than human sleep",
+      "C": "explain how ground-based telescopes work",
+      "D": "prove that outdoor lighting should be abandoned",
+      "E": "describe how warmer light tones are produced"
+    },
+    "correct": "A",
+    "explanation": "The birds and turtles are examples introduced after 'the concern has widened,' showing skyglow's reach beyond astronomy. A gives their function.",
+    "topic": "gmat::verbal::rc::function",
+    "difficulty": "medium",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T20:38:39+00:00",
+    "passage_id": "rc-darkskies",
+    "passage": "For most of human history the night sky was a shared feature of experience, but artificial lighting has made truly dark skies rare near cities. The glow of streetlights and buildings scatters in the atmosphere and washes out all but the brightest stars, a phenomenon known as skyglow. Astronomers were the first to raise the alarm, since skyglow degrades observations from ground-based telescopes. In recent decades, however, the concern has widened. Researchers have documented that excessive nighttime light disrupts the behavior of nocturnal animals: migrating birds veer off course, and hatchling sea turtles, which navigate toward the brightest horizon, crawl inland toward roads instead of out to sea. Some studies also link chronic exposure to light at night with disrupted sleep in humans. Advocates for dark skies stress that the remedy is not to abandon outdoor lighting but to use it more thoughtfully—shielding fixtures so light points downward and switching to warmer tones—measures that reduce skyglow while still lighting the ground where people need it."
+  },
+  {
+    "id": "vrc-08b85211c306",
+    "stem": "Which of the following outdoor-lighting choices is most consistent with the advocates' recommendations described in the passage?",
+    "options": {
+      "A": "A downward-shielded, warm-toned lamp that illuminates a walkway",
+      "B": "A bright, upward-facing floodlight aimed at the sky",
+      "C": "A cool blue-white light left on all night across an empty field",
+      "D": "The complete removal of all lighting from public streets",
+      "E": "A rotating beacon designed to be visible for many miles"
+    },
+    "correct": "A",
+    "explanation": "The advocates favor shielding fixtures to point light downward and using warmer tones while still lighting the ground. A matches; the others increase skyglow or abandon lighting entirely.",
+    "topic": "gmat::verbal::rc::application",
+    "difficulty": "hard",
+    "source": "GMATWiz original (authored)",
+    "license": "authored-gmatwiz",
+    "scraped_at": "2026-07-05T20:38:39+00:00",
+    "passage_id": "rc-darkskies",
+    "passage": "For most of human history the night sky was a shared feature of experience, but artificial lighting has made truly dark skies rare near cities. The glow of streetlights and buildings scatters in the atmosphere and washes out all but the brightest stars, a phenomenon known as skyglow. Astronomers were the first to raise the alarm, since skyglow degrades observations from ground-based telescopes. In recent decades, however, the concern has widened. Researchers have documented that excessive nighttime light disrupts the behavior of nocturnal animals: migrating birds veer off course, and hatchling sea turtles, which navigate toward the brightest horizon, crawl inland toward roads instead of out to sea. Some studies also link chronic exposure to light at night with disrupted sleep in humans. Advocates for dark skies stress that the remedy is not to abandon outdoor lighting but to use it more thoughtfully—shielding fixtures so light points downward and switching to warmer tones—measures that reduce skyglow while still lighting the ground where people need it."
+  }
+]

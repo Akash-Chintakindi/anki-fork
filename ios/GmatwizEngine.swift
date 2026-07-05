@@ -30,6 +30,8 @@ struct GmatCard: Decodable {
     let correct: String
     let explanation: String
     let topic: String
+    // Reading Comprehension passage (empty for Quant + Critical Reasoning).
+    let passage: String?
 }
 
 /// Review state returned by the shared scheduler.

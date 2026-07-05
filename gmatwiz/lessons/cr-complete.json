@@ -1,0 +1,281 @@
+{
+  "topic_id": "gmat::verbal::cr::complete_argument",
+  "slug": "cr-complete",
+  "title": "Critical Reasoning: Complete the Argument",
+  "prerequisites": [
+    "identify what an argument is trying to conclude",
+    "recognize a supporting vs. undermining statement"
+  ],
+  "learning_objectives": [
+    "Read the sentence just before the blank to learn what the blank must do.",
+    "Follow the connector: 'because/since' needs support; 'but/however' needs a contrast.",
+    "Choose the option that logically completes the intended direction of the argument."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do -> we do -> you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Recognizing whether a statement supports or undermines a claim.",
+    "do_now": {
+      "instructions": "No notes. 4 minutes.",
+      "items": [
+        {
+          "prompt": "After 'because ___,' what must the blank provide?",
+          "answer": "A reason that supports the preceding claim.",
+          "targets": "because"
+        },
+        {
+          "prompt": "After 'the plan will fail, since ___,' what must the blank do?",
+          "answer": "Give a reason the plan will fail.",
+          "targets": "direction"
+        },
+        {
+          "prompt": "Does the connector before the blank set the direction?",
+          "answer": "Yes - 'because/since' = support; 'but/yet' = contrast.",
+          "targets": "connectors"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Recalls that the word before the blank fixes what the completion must accomplish.",
+      "if_students_struggle": "Have them read only the clause containing the blank and predict its job before scanning choices.",
+      "questions": [
+        {
+          "prompt": "What job does a blank after 'however' do?",
+          "answer": "It contrasts with or limits the prior statement.",
+          "targets": "contrast"
+        },
+        {
+          "prompt": "Why read the clause right before the blank first?",
+          "answer": "It tells you exactly what the completion must supply.",
+          "targets": "method"
+        }
+      ]
+    },
+    "prior_knowledge_bridge": "Complete-the-argument items are strengthen/weaken in disguise: the connector before the blank ('because,' 'since,' 'but') tells you whether the missing piece must support or push back, and you pick the option that does exactly that.",
+    "learning_intention": "By the end you can use the connector before a blank to choose the option that logically completes the argument in the intended direction.",
+    "success_criteria": [
+      "I can identify the claim the blank must support or oppose.",
+      "I can use 'because/since' vs 'but/however' to set the direction.",
+      "I can pick the option that fills the blank in that direction."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00-4:00",
+        "move": "Do Now on screen; learners answer from memory, no notes."
+      },
+      {
+        "time": "4:00-6:00",
+        "move": "Cold-call answers; name the argument's conclusion vs premises."
+      },
+      {
+        "time": "6:00-8:00",
+        "move": "Bridge to today's question type; state what the stem is really asking."
+      },
+      {
+        "time": "8:00-10:00",
+        "move": "Move to I do: model the reasoning on one worked item."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "The town plans to reduce car accidents at a dangerous intersection by adding a traffic light. The plan is likely to succeed, because ___. Which of the following most logically completes the argument?",
+    "options": {
+      "A": "most accidents at that intersection are caused by drivers who are unsure when it is their turn to proceed",
+      "B": "the intersection is one of the busiest in the town",
+      "C": "traffic lights are expensive to install and maintain",
+      "D": "the town has added traffic lights at other intersections before",
+      "E": "many drivers in the town exceed the speed limit"
+    },
+    "correct": "A",
+    "explanation": "'Because' means the blank must give a reason the light will succeed. If accidents stem from confusion over the right of way, a light - which assigns turns - directly fixes that cause. A completes the support.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "Conclusion: the traffic-light plan is likely to succeed.",
+      "The connector is 'because,' so the blank must SUPPORT that.",
+      "A light resolves right-of-way confusion; if that's the cause, the light works.",
+      "A supports the plan; the others are neutral or don't explain success."
+    ],
+    "key_takeaway": "Let the connector before the blank set the direction: 'because/since' needs support, 'but/however' needs a contrast.",
+    "topic": "gmat::verbal::cr::complete_argument",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Critical Reasoning"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "A company believes that offering free coffee will make employees more productive. This belief may be mistaken, however, because ___. Which of the following most logically completes the argument?",
+      "options": {
+        "A": "the main thing slowing employees down is unclear project priorities, which free coffee does nothing to address",
+        "B": "coffee is inexpensive to provide in bulk",
+        "C": "many employees already drink coffee at home",
+        "D": "the office has space for a coffee machine",
+        "E": "some employees prefer tea to coffee"
+      },
+      "correct": "A",
+      "explanation": "'However ... because' signals the blank must give a reason the belief is mistaken. If the real drag is unclear priorities, free coffee won't help - completing the doubt.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "The connector 'however' plus 'because' means: give a reason the plan won't work.",
+        "What would make free coffee fail to raise productivity?",
+        "Pick the choice that names the real obstacle."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right - if priorities are the bottleneck, coffee is beside the point.",
+        "if_incorrect": "Cost and preferences don't explain why productivity wouldn't rise."
+      },
+      "topic": "gmat::verbal::cr::complete_argument",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning"
+    },
+    {
+      "id": "we_2",
+      "stem": "A bookstore expects that hosting weekly author events will increase book sales. This expectation is probably well founded, because ___. Which of the following most logically completes the argument?",
+      "options": {
+        "A": "at bookstores that host such events, attendees frequently buy the featured author's books on the spot",
+        "B": "author events require setting up chairs and a microphone",
+        "C": "the bookstore has hosted a few events in the past",
+        "D": "the bookstore is open seven days a week",
+        "E": "some authors are better public speakers than others"
+      },
+      "correct": "A",
+      "explanation": "'Because' requires support for the expectation. Evidence that attendees buy books at such events directly supports that the events raise sales.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "The connector is 'because' - the blank must support the expectation.",
+        "What fact would show events actually drive sales?",
+        "Choose the supporting evidence, not logistics."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Yes - on-the-spot buying supports the sales expectation.",
+        "if_incorrect": "Setup logistics and hours don't show sales will rise."
+      },
+      "topic": "gmat::verbal::cr::complete_argument",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "A gym plans to attract more members by opening a swimming pool. The plan is unlikely to work, however, because ___. Which of the following most logically completes the argument?",
+      "options": {
+        "A": "very few people in the area have expressed any interest in swimming, and a large public pool already operates nearby",
+        "B": "swimming is good low-impact exercise",
+        "C": "the pool will require regular cleaning",
+        "D": "the gym already has a large parking lot",
+        "E": "the gym is busiest in the evenings"
+      },
+      "correct": "A",
+      "explanation": "'However ... because' needs a reason the plan will fail. Low local interest plus an existing nearby pool means the new pool won't draw members - completing the doubt.",
+      "difficulty": "medium",
+      "topic": "gmat::verbal::cr::complete_argument",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "A city expects that building a new stadium downtown will revive local businesses. This expectation is probably justified, because ___. Which of the following most logically completes the argument?",
+      "options": {
+        "A": "stadium events are projected to bring large crowds who spend money at nearby restaurants and shops before and after games",
+        "B": "the stadium will have a retractable roof",
+        "C": "the city has built stadiums in other neighborhoods",
+        "D": "construction will take about two years",
+        "E": "the stadium will seat tens of thousands of people"
+      },
+      "correct": "A",
+      "explanation": "'Because' requires support. Crowds spending at nearby businesses is a direct reason local businesses would be revived, completing the argument.",
+      "difficulty": "medium",
+      "topic": "gmat::verbal::cr::complete_argument",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "A manufacturer believes that switching to a cheaper supplier will increase its profit margin. This belief may be unwarranted, however, because ___. Which of the following most logically completes the argument?",
+      "options": {
+        "A": "the cheaper supplier's parts fail more often, and the resulting warranty repairs could cost more than the savings",
+        "B": "the cheaper supplier is located in another country",
+        "C": "the manufacturer has used several suppliers over the years",
+        "D": "the current supplier delivers parts weekly",
+        "E": "the manufacturer sells its products online"
+      },
+      "correct": "A",
+      "explanation": "'However ... because' needs a reason the belief may fail. If higher failure rates drive up warranty costs beyond the savings, the margin may not improve - completing the doubt.",
+      "difficulty": "hard",
+      "topic": "gmat::verbal::cr::complete_argument",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "GMAC - GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Verbal Reasoning scope.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy - LSAT Logical Reasoning (free)",
+      "url": "https://www.khanacademy.org/prep/lsat",
+      "note": "Free lessons on argument structure, assumptions, strengthen/weaken, and flaws."
+    }
+  ],
+  "domain": "Critical Reasoning",
+  "section": "Verbal Reasoning",
+  "question_type": "Critical Reasoning",
+  "estimated_minutes": 18,
+  "schema_version": "1.0",
+  "exam": "GMAT Focus Edition"
+}

@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data Insights: Two-Part Analysis &middot; GMATWiz Data Insights</title>
+<style>
+:root{
+  --ink:#1a1813; --muted:#6b6358; --rule:#d9d2c5; --bg:#fbf9f4; --card:#fffdf8;
+  --accent:#7a3b2e; --accent2:#3a5a40; --link:#7a3b2e; --code:#2b2b2b;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:3rem 2rem 6rem;}
+.content{max-width:720px;}
+header.masthead{border-bottom:1px solid var(--rule); padding-bottom:1.2rem; margin-bottom:2rem;}
+.kicker{font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:0 0 .4rem;}
+h1{font-size:2.3rem; line-height:1.1; margin:.1rem 0 .6rem; font-weight:600; letter-spacing:-.01em;}
+.meta{color:var(--muted); font-size:.9rem; margin:0;}
+.meta b{color:var(--ink); font-weight:600;}
+h2{font-size:1.45rem; margin:2.8rem 0 .3rem; font-weight:600; letter-spacing:-.01em;}
+h2 .num{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:.5rem;}
+h3{font-size:1.06rem; margin:1.6rem 0 .4rem; font-weight:600;}
+.sub{color:var(--muted); font-style:italic; margin:.1rem 0 1rem; font-size:.95rem;}
+p{margin:.6rem 0;} ul,ol{margin:.5rem 0 .9rem; padding-left:1.3rem;} li{margin:.25rem 0;}
+a{color:var(--link); text-decoration:none; border-bottom:1px solid rgba(122,59,46,.35);}
+a:hover{border-bottom-color:var(--link);}
+.lead{font-size:1.08rem;}
+section{position:relative;}
+.note{font-size:.8rem; color:var(--muted); line-height:1.4;}
+.objectives{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1rem 1.2rem;}
+.objectives ul{margin:.3rem 0 0;}
+.intent{border-left:3px solid var(--accent2); padding:.4rem 0 .4rem 1rem; margin:1rem 0; font-size:1.05rem;}
+.donow{background:#2b2620; color:#f3ecde; border-radius:8px; padding:1.1rem 1.3rem; margin:1rem 0;}
+.donow .tag{font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:#d8b48a;}
+.donow ol{padding-left:1.2rem;} .donow li{margin:.4rem 0;}
+.donow .ans{color:#b9c6a9; font-style:italic; font-size:.86rem; display:block; margin-top:.15rem;}
+table{border-collapse:collapse; width:100%; font-size:.92rem; margin:.6rem 0 1rem;}
+th,td{text-align:left; padding:.45rem .6rem; border-bottom:1px solid var(--rule); vertical-align:top;}
+th{font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+td.t{white-space:nowrap; color:var(--accent); font-variant-numeric:tabular-nums; width:6.5rem;}
+.q{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1.1rem 1.3rem; margin:1.1rem 0;}
+.q .qid{font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+.q .qid .diff{float:right; color:var(--accent2);}
+.q .stem{font-size:1.03rem; margin:.35rem 0 .6rem;}
+.choices{list-style:none; padding:0; margin:.2rem 0 .4rem; counter-reset:c;}
+.choices li{padding:.32rem .6rem; border:1px solid var(--rule); border-radius:6px; margin:.3rem 0; background:#fff;}
+.choices li .lab{display:inline-block; width:1.5rem; font-weight:600; color:var(--accent);}
+.choices li.correct{border-color:var(--accent2); background:#eef3ec;}
+.choices li.correct .lab{color:var(--accent2);}
+details{margin:.5rem 0 .2rem; border-top:1px dashed var(--rule); padding-top:.5rem;}
+details>summary{cursor:pointer; font-size:.86rem; color:var(--accent); font-weight:600; list-style:none;}
+details>summary::-webkit-details-marker{display:none;}
+details>summary::before{content:"\25B8  "; color:var(--accent);}
+details[open]>summary::before{content:"\25BE  ";}
+.expl{font-size:.95rem; margin-top:.5rem;}
+.hints{font-size:.92rem;} .hints li{margin:.2rem 0;}
+.feedback{font-size:.9rem;} .feedback .ok{color:var(--accent2);} .feedback .no{color:var(--accent);}
+.appfirst{font-size:.78rem; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin:.2rem 0;}
+.mastery{background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--accent2); border-radius:8px; padding:1rem 1.2rem;}
+.pill{display:inline-block; font-size:.72rem; padding:.12rem .5rem; border:1px solid var(--rule); border-radius:999px; color:var(--muted); margin:.1rem .2rem .1rem 0;}
+footer{margin-top:3.5rem; border-top:1px solid var(--rule); padding-top:1rem; color:var(--muted); font-size:.82rem;}
+.src{background:#eef3ec; border:1px solid #cfe0cf; border-radius:8px; padding:.9rem 1.1rem; margin:1.2rem 0;}
+.src .tag{font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent2); font-weight:600;}
+.crumbs{font-size:.85rem; margin-bottom:1.2rem;}
+.ask{font-size:.9rem; background:#fff8ec; border:1px dashed #e0c590; border-radius:8px; padding:.7rem 1rem; margin:1.4rem 0;}
+@media print{ body{background:#fff} .wrap{padding:0} a{border:none} .donow{-webkit-print-color-adjust:exact; print-color-adjust:exact} }
+</style></head>
+<body><div class="wrap"><div class="content">
+  <div class="crumbs"><a href="index.html">&larr; All topics</a> &middot; Data Insights &middot; Data Insights</div>
+  <header class="masthead">
+    <p class="kicker">GMATWiz &middot; GMAT Focus Edition &middot; Data Insights (Two-Part Analysis)</p>
+    <h1>Data Insights: Two-Part Analysis</h1>
+    <p class="meta"><b>Topic id</b> <code>gmat::di::reasoning::two_part_analysis</code> &middot; <b>Domain</b> Data Insights
+      &middot; <b>Prereqs</b> solve a system of two linear equations in two unknowns, check a candidate solution against every condition &middot; <b>~18 min</b></p>
+  </header>
+
+  <div class="objectives">
+    <p class="note"><b>Learning objectives</b></p>
+    <ul><li>Translate a two-condition scenario into two equations.</li><li>Solve the two equations together for both unknown quantities.</li><li>Select the single answer pair that satisfies both conditions at once.</li></ul>
+    <p class="note">Model: I do -&gt; we do -&gt; you do &middot; application-first (explanations revealed after an attempt) &middot; Rosenshine (daily review), Archer (I-do/we-do/you-do), SPOV2 application-first.</p>
+  </div>
+
+  
+    <section>
+      <h2><span class="num">1</span>Opening &mdash; retrieval &amp; bridge</h2>
+      <p class="sub">Builds on: Setting up and solving two linear equations in two unknowns.</p>
+      <div class="donow">
+        <div class="tag">Do Now &middot; from memory, no notes</div>
+        <p>No notes. Answer from memory in 4 minutes.</p>
+        <ol><li>Solve: x + y = 10 and 2x + y = 16.<span class="ans">x = 6, y = 4.</span></li><li>Buying 3 items for $9, with pens at $2 and notebooks at $5, write two equations.<span class="ans">p + n = 3 and 2p + 5n = 9.</span></li><li>Does (x, y) = (2, 3) satisfy both x + y = 5 and 2x + y = 8?<span class="ans">First yes (5); second no (7 != 8) - so it is not a solution.</span></li></ol>
+      </div>
+      <p class="note"><b>Retrieval starter (5 min).</b> Recalls solving two equations at once and the habit of testing a candidate against every condition - the heart of Two-Part Analysis.
+      <br><b>If students struggle:</b> Have them plug a wrong pair into both equations to watch it pass one condition and fail the other.</p>
+      <h3>Prior-knowledge bridge</h3>
+      <p>You can solve two equations in two unknowns and check a pair against both. Two-Part Analysis is exactly that in table form: the two &#x27;parts&#x27; are two related quantities, and the correct choice is the single pair that makes BOTH given conditions true at once. Translate each fact into an equation, solve, then verify the pair against both facts.</p>
+      <h3>Learning intention</h3>
+      <p class="intent">By the end you can translate a two-condition scenario into two equations and select the one answer pair that satisfies both conditions simultaneously.</p>
+      <p class="note"><b>You'll know you've got it when:</b></p>
+      <ul><li>I turn each stated fact into its own equation.</li><li>I solve the two equations together for both quantities.</li><li>I confirm the chosen pair satisfies both conditions before selecting it.</li></ul>
+      <details><summary>Complete timed opening script</summary>
+        <table><thead><tr><th>Time</th><th>Move</th></tr></thead><tbody><tr><td class="t">0:00-4:00</td><td>Do Now on screen; learners answer from memory, no notes.</td></tr><tr><td class="t">4:00-6:00</td><td>Cold-call answers; name the argument&#x27;s conclusion vs premises.</td></tr><tr><td class="t">6:00-8:00</td><td>Bridge to today&#x27;s question type; state what the stem is really asking.</td></tr><tr><td class="t">8:00-10:00</td><td>Move to I do: model the reasoning on one worked item.</td></tr></tbody></table>
+      </details>
+    </section>
+
+  <section>
+    <h2><span class="num">2</span>I do &mdash; worked example</h2>
+    <p class="sub">Watch the reasoning modeled end to end before you try.</p>
+    
+    <div class="q">
+      <div class="qid">I DO &middot; worked example<span class="diff">medium</span></div>
+      <div class="stem">A customer paid a vending machine exactly $17 using exactly 12 coins, all of them either one-dollar coins or two-dollar coins. Select the pair that gives the number of one-dollar coins and the number of two-dollar coins used. Each option lists the count of one-dollar coins and the count of two-dollar coins.</div>
+      <ul class="choices"><li><span class="lab">A</span>5 one-dollar coins and 7 two-dollar coins</li><li class="correct"><span class="lab">B</span>7 one-dollar coins and 5 two-dollar coins</li><li><span class="lab">C</span>8 one-dollar coins and 4 two-dollar coins</li><li><span class="lab">D</span>6 one-dollar coins and 6 two-dollar coins</li><li><span class="lab">E</span>9 one-dollar coins and 3 two-dollar coins</li></ul>
+      <h3>Think-aloud</h3>
+      <ol><li>Two unknowns: the count of one-dollar coins (x) and two-dollar coins (y). I need one pair that fits both facts.</li><li>Fact 1 (12 coins): x + y = 12. Fact 2 ($17 paid): x + 2y = 17.</li><li>Subtract the first from the second: y = 5, so x = 12 - 5 = 7.</li><li>Verify the pair (7, 5): 7 + 5 = 12 coins and 7 + 2(5) = $17 - both conditions hold.</li><li>The pair &#x27;7 one-dollar coins and 5 two-dollar coins&#x27; is option B.</li></ol>
+      <p class="expl"><b>Correct: B.</b> Let x = one-dollar coins and y = two-dollar coins. The count gives x + y = 12; the value gives x + 2y = 17. Subtracting, y = 5, so x = 7. Check: 7 + 5 = 12 coins and 7 + 10 = $17 - both hold. The pair is 7 one-dollar and 5 two-dollar coins, option B.</p>
+      <p class="note"><b>Takeaway.</b> In Two-Part Analysis, write one equation per condition, solve them together, and pick the single pair that satisfies BOTH - then verify before committing.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>We do &mdash; guided practice</h2>
+    <p class="sub">Scaffolds and immediate feedback are one click away. Fade them as you gain confidence.</p>
+    
+    <div class="q">
+      <div class="qid">we_1 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">A theater sold adult tickets for $12 each and child tickets for $8 each. One evening it sold 20 tickets for a total of $216. Select the pair giving the number of adult tickets and the number of child tickets sold. Each option lists the adult count and the child count.</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>14 adult and 6 child</li><li><span class="lab">B</span>6 adult and 14 child</li><li><span class="lab">C</span>12 adult and 8 child</li><li><span class="lab">D</span>10 adult and 10 child</li><li><span class="lab">E</span>16 adult and 4 child</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>Let a = adult tickets and c = child tickets; write the count equation and the money equation.</li><li>a + c = 20 and 12a + 8c = 216. Substitute to eliminate one variable.</li><li>Solve for a, then c, and check both totals before choosing.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Right - 14 adult and 6 child give 20 tickets and $216.<br>
+        <span class="no">If incorrect:</span> A correct pair must hit BOTH the 20-ticket count and the $216 total; test your pair against each.</p>
+        <p class="expl"><b>Answer: A.</b> Let a = adult tickets, c = child tickets. Count: a + c = 20; money: 12a + 8c = 216. Substituting c = 20 - a gives 12a + 8(20 - a) = 216, so 4a + 160 = 216 and a = 14, c = 6. Check: 14 + 6 = 20 and 12(14) + 8(6) = 168 + 48 = 216. The pair is 14 adult and 6 child, option A.</p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">we_2 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">A gardener plants 15 plants in total, using 46 liters of water, with each rose bush needing 4 liters and each lavender plant needing 2 liters. Select the pair giving the number of rose bushes and the number of lavender plants. Each option lists the rose-bush count and the lavender count.</div>
+      <ul class="choices"><li><span class="lab">A</span>6 rose bushes and 9 lavender plants</li><li><span class="lab">B</span>7 rose bushes and 8 lavender plants</li><li class="correct"><span class="lab">C</span>8 rose bushes and 7 lavender plants</li><li><span class="lab">D</span>9 rose bushes and 6 lavender plants</li><li><span class="lab">E</span>10 rose bushes and 5 lavender plants</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>Let r = rose bushes and l = lavender plants; write one equation for the plant count and one for the water.</li><li>r + l = 15 and 4r + 2l = 46.</li><li>Solve the two together, then verify both totals.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Exactly - 8 rose bushes and 7 lavender plants give 15 plants and 46 liters.<br>
+        <span class="no">If incorrect:</span> Check your pair against BOTH the 15-plant count and the 46-liter total.</p>
+        <p class="expl"><b>Answer: C.</b> Let r = rose bushes, l = lavender plants. Count: r + l = 15; water: 4r + 2l = 46. Substituting l = 15 - r gives 4r + 2(15 - r) = 46, so 2r + 30 = 46 and r = 8, l = 7. Check: 8 + 7 = 15 and 4(8) + 2(7) = 32 + 14 = 46. The pair is 8 rose bushes and 7 lavender plants, option C.</p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>You do &mdash; independent application</h2>
+    <p class="sub">Application-first (SPOV2): commit to an answer, then reveal the explanation. Log every miss.</p>
+    
+    <div class="q">
+      <div class="qid">you_1 &middot; you do (independent)<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A print shop charges a fixed setup fee plus a per-page fee. A 100-page order costs $45 and a 250-page order costs $90. Select the pair giving the setup fee and the per-page fee. Each option lists the setup fee and the per-page fee.</div>
+      <ul class="choices"><li><span class="lab">A</span>$10 setup and $0.35 per page</li><li class="correct"><span class="lab">B</span>$15 setup and $0.30 per page</li><li><span class="lab">C</span>$20 setup and $0.25 per page</li><li><span class="lab">D</span>$5 setup and $0.40 per page</li><li><span class="lab">E</span>$15 setup and $0.35 per page</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: B.</b> Let s = setup fee and p = per-page fee. Then s + 100p = 45 and s + 250p = 90. Subtracting, 150p = 45, so p = 0.30 and s = 45 - 100(0.30) = 15. Check: 15 + 250(0.30) = 15 + 75 = 90. The pair is $15 setup and $0.30 per page, option B. Choices that fit only the 100-page order (like $10 and $0.35) fail the 250-page order.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_2 &middot; you do (independent)<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A quiz has 30 questions worth 96 points in total, all answered correctly, where each Section 1 question is worth 2 points and each Section 2 question is worth 5 points. Select the pair giving the number of Section 1 questions and the number of Section 2 questions. Each option lists the Section 1 count and the Section 2 count.</div>
+      <ul class="choices"><li><span class="lab">A</span>12 two-point and 18 five-point</li><li><span class="lab">B</span>15 two-point and 15 five-point</li><li><span class="lab">C</span>20 two-point and 10 five-point</li><li class="correct"><span class="lab">D</span>18 two-point and 12 five-point</li><li><span class="lab">E</span>22 two-point and 8 five-point</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: D.</b> Let a = 2-point questions and b = 5-point questions. Count: a + b = 30; points: 2a + 5b = 96. Substituting a = 30 - b gives 2(30 - b) + 5b = 96, so 60 + 3b = 96 and b = 12, a = 18. Check: 18 + 12 = 30 and 2(18) + 5(12) = 36 + 60 = 96. The pair is 18 two-point and 12 five-point, option D.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_3 &middot; you do (independent)<span class="diff">easy</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A charity sold small candles at $6 each and large candles at $10 each, selling 24 candles for a total of $200. Select the pair giving the number of small candles and the number of large candles sold. Each option lists the small-candle count and the large-candle count.</div>
+      <ul class="choices"><li><span class="lab">A</span>16 small and 8 large</li><li><span class="lab">B</span>14 small and 10 large</li><li><span class="lab">C</span>12 small and 12 large</li><li><span class="lab">D</span>8 small and 16 large</li><li class="correct"><span class="lab">E</span>10 small and 14 large</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: E.</b> Let s = small candles and l = large candles. Count: s + l = 24; money: 6s + 10l = 200. Substituting s = 24 - l gives 6(24 - l) + 10l = 200, so 144 + 4l = 200 and l = 14, s = 10. Check: 10 + 14 = 24 and 6(10) + 10(14) = 60 + 140 = 200. The pair is 10 small and 14 large, option E.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+  </section>
+
+  
+    <section>
+      <h2><span class="num">5</span>Mastery check</h2>
+      <div class="mastery">
+        <p>A topic is mastered at &gt;=85% correct on new/held-out-style questions across &gt;=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.</p>
+        <p class="note"><b>Threshold</b> 0.85 &middot; <b>spaced sessions</b> &ge; 2</p>
+        <ul><li>&gt;=85% correct on new/held-out-style items (not flashcard recall) per session</li><li>sustained across &gt;=2 spaced sessions with a delay between them</li><li>per-topic memory surfaced only after &gt;=20 graded reviews (PRD give-up rule)</li><li>per-topic performance surfaced only after &gt;=8 application attempts (PRD give-up rule)</li></ul>
+        <p class="note"><b>If not yet mastered:</b> Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -&gt; you-do loop before re-testing.</p>
+      </div>
+      
+    </section>
+
+  <div class="src">
+    <div class="tag">Primary source</div>
+    <p><a href="https://www.mba.com/exams/gmat-focus-edition">GMAC - GMAT Focus Edition (official exam overview)</a> &mdash; Official exam structure and Data Insights section scope.</p>
+    <p class='note'>Further reading:</p><ul><li><a href="https://www.khanacademy.org/math/statistics-probability">Khan Academy - Statistics &amp; Probability (free)</a> &mdash; Free lessons on reading tables and graphs and reasoning from data.</li></ul>
+  </div>
+
+  <div class="ask">Stuck on any step? Ask your GMATWiz coach for a worked walkthrough &mdash; that's what it's here for.</div>
+
+  <footer>
+    <p>GMATWiz lesson &middot; <code>di-two-part.json</code> &middot; schema v1.0 &middot; authored content (OfficialFlag=false), reserved official items used only for late checkpoints.</p>
+  </footer>
+</div></div></body></html>

@@ -25,10 +25,24 @@ from aqt.qt import QAction, QFileDialog, qconnect
 from aqt.utils import showInfo, tooltip
 
 GMAT_DECK_NAME = "GMAT::Quant"
+GMAT_VERBAL_DECK_NAME = "GMAT::Verbal"
+GMAT_DI_DECK_NAME = "GMAT::DI"
+
+# Bump when the bundled content changes (new sections, scraped questions, etc.)
+# so ``ensure_bundled_content_sync`` re-imports it on the next login (after the
+# cloud sync settles). Import is idempotent (stem-hash dedup), so a re-run only
+# adds genuinely new questions.
+#   1 = initial all-three-section import (Quant + Verbal + Data Insights)
+#   2 = + deepened Quant bank (AQuA-RAT scrape, ~60/topic)
+GMAT_BUNDLED_CONTENT_VERSION = 2
 
 
 def render_gmat_screen(mw: aqt.main.AnkiQt) -> None:
     """Render the GMATWiz app shell into the main window's central webview."""
+    # NOTE: bundled-content import is NOT triggered here. It must run AFTER the
+    # cloud collection sync settles on login (otherwise colReplace would clobber a
+    # locally-imported bank with the older cloud copy), so the client drives it via
+    # the gmatEnsureContent endpoint (see ensure_bundled_content_sync).
     mw.web.load_sveltekit_page("gmat")
     mw.web.setFocus()
     # GMATWiz is a full screen; hide Anki's per-state bottom bar.
@@ -59,11 +73,35 @@ def _load_question_dicts() -> list[dict]:
     return questions
 
 
-def _ensure_generous_limits(col) -> None:
-    """Give the GMAT deck its own preset with high daily limits so the guided
+def _load_verbal_question_dicts() -> list[dict]:
+    """Bundled Verbal (Critical Reasoning + Reading Comprehension)."""
+    questions: list[dict] = []
+    for name in ("verbal_seed.json", "verbal_questions.json", "verbal_rc_questions.json"):
+        path = _content_dir() / name
+        if not path.exists():
+            continue
+        data = json.loads(path.read_text(encoding="utf-8"))
+        questions.extend(anki.gmatwiz.flatten_verbal_items(data))
+    return questions
+
+
+def _load_di_question_dicts() -> list[dict]:
+    """Bundled Data Insights (Data Sufficiency + Two-Part + Multi-Source)."""
+    questions: list[dict] = []
+    for name in ("di_seed.json", "di_questions.json"):
+        path = _content_dir() / name
+        if not path.exists():
+            continue
+        data = json.loads(path.read_text(encoding="utf-8"))
+        questions.extend(anki.gmatwiz.flatten_verbal_items(data))
+    return questions
+
+
+def _ensure_generous_limits(col, deck_name: str = GMAT_DECK_NAME) -> None:
+    """Give a GMAT deck its own preset with high daily limits so the guided
     app isn't capped at Anki's default 20 new/day. Leaves the Default preset
     untouched. Idempotent."""
-    deck_id = col.decks.id(GMAT_DECK_NAME)
+    deck_id = col.decks.id(deck_name)
     conf = col.decks.config_dict_for_deck_id(deck_id)
     if conf.get("name") == "Default":
         conf = col.decks.add_config("GMATWiz")
@@ -77,9 +115,11 @@ def _ensure_generous_limits(col) -> None:
 
 
 def import_gmat_content(mw: aqt.main.AnkiQt) -> None:
-    """Import the bundled GMAT Quant questions into the current collection."""
+    """Import the bundled GMAT Quant + Verbal questions into the collection."""
     questions = _load_question_dicts()
-    if not questions:
+    verbal = _load_verbal_question_dicts()
+    di = _load_di_question_dicts()
+    if not questions and not verbal and not di:
         showInfo(
             f"No GMAT content found under {_content_dir()}.",
             parent=mw,
@@ -89,19 +129,67 @@ def import_gmat_content(mw: aqt.main.AnkiQt) -> None:
 
     def op(col) -> OpChanges:
         requests = anki.gmatwiz.build_add_requests(col, questions, GMAT_DECK_NAME)
+        if verbal:
+            requests += anki.gmatwiz.build_verbal_add_requests(
+                col, verbal, GMAT_VERBAL_DECK_NAME
+            )
+        if di:
+            requests += anki.gmatwiz.build_di_add_requests(col, di, GMAT_DI_DECK_NAME)
         changes = col.add_notes(requests)
-        _ensure_generous_limits(col)
+        _ensure_generous_limits(col, GMAT_DECK_NAME)
+        if verbal:
+            _ensure_generous_limits(col, GMAT_VERBAL_DECK_NAME)
+        if di:
+            _ensure_generous_limits(col, GMAT_DI_DECK_NAME)
         return changes
 
     def on_success(_out) -> None:
         tooltip(
-            f"Imported {len(questions)} GMAT questions into {GMAT_DECK_NAME}.",
+            f"Imported {len(questions)} Quant + {len(verbal)} Verbal + {len(di)} "
+            "Data Insights GMAT questions.",
             parent=mw,
         )
         if mw.state == "gmat":
             render_gmat_screen(mw)
 
     CollectionOp(parent=mw, op=op).success(on_success).run_in_background()
+
+
+def ensure_bundled_content_sync(col) -> int:
+    """Version-gated, SYNCHRONOUS import of the bundled GMAT content (all three
+    sections) into `col`, so the collection has cards for the whole syllabus and
+    coverage reflects Quant + Verbal + Data Insights. Returns the number of notes
+    added (0 when already at the current version). Idempotent - stem-hash dedup
+    skips anything already imported (e.g. an existing Quant bank).
+
+    Runs INLINE (called from the gmatEnsureContent endpoint) rather than as a
+    background op so the client can sequence it AFTER the cloud collection sync
+    settles, then upload the result. Bumping GMAT_BUNDLED_CONTENT_VERSION makes it
+    re-run once (pulling in only genuinely new questions)."""
+    if col is None:
+        return 0
+    try:
+        current = int(col.get_config("gmatContentVersion", 0) or 0)
+    except Exception:
+        current = 0
+    if current >= GMAT_BUNDLED_CONTENT_VERSION:
+        return 0
+
+    questions = _load_question_dicts()
+    verbal = _load_verbal_question_dicts()
+    di = _load_di_question_dicts()
+    if not (questions or verbal or di):
+        return 0
+
+    added = anki.gmatwiz.import_questions(col, questions, GMAT_DECK_NAME)
+    added += anki.gmatwiz.import_verbal_questions(col, verbal, GMAT_VERBAL_DECK_NAME)
+    added += anki.gmatwiz.import_di_questions(col, di, GMAT_DI_DECK_NAME)
+    _ensure_generous_limits(col, GMAT_DECK_NAME)
+    _ensure_generous_limits(col, GMAT_VERBAL_DECK_NAME)
+    _ensure_generous_limits(col, GMAT_DI_DECK_NAME)
+    # Record the version last so a mid-import failure retries next time.
+    col.set_config("gmatContentVersion", GMAT_BUNDLED_CONTENT_VERSION)
+    return added
 
 
 _OPTION_KEYS = ["A", "B", "C", "D", "E"]
@@ -270,7 +358,7 @@ def setup_gmat_menu(mw: aqt.main.AnkiQt) -> None:
     qconnect(open_action.triggered, lambda: open_gmat(mw))
     menu.addAction(open_action)
 
-    import_action = QAction("Import GMAT Quant", mw)
+    import_action = QAction("Import GMAT content", mw)
     qconnect(import_action.triggered, lambda: import_gmat_content(mw))
     menu.addAction(import_action)
 

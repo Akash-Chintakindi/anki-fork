@@ -74,8 +74,9 @@ class TfidfVectorTagger:
 
     name = "vector"
 
-    def __init__(self, items: List[Dict]):
+    def __init__(self, items: List[Dict], section: str = "quant"):
         self._items = items
+        self._section = section
         self._docs = [self._tokens(ai_ingest.item_blob(it)) for it in items]
         self._topics = [it.get("topic") for it in items]
         # idf over the gold corpus.
@@ -112,7 +113,7 @@ class TfidfVectorTagger:
 
     def classify_index(self, i: int) -> Tuple[str, float]:
         qv = self._vecs[i]
-        best_topic = taxonomy.DEFAULT_TOPIC
+        best_topic = taxonomy.default_topic_for_section(self._section)
         best_sim = 0.0
         for j, jv in enumerate(self._vecs):
             if j == i:
@@ -129,16 +130,16 @@ class TfidfVectorTagger:
 # ---------------------------------------------------------------------------
 
 
-def pick_ai_client(mock: bool):
+def pick_ai_client(mock: bool, section: str = "quant"):
     """Return (client, label). Prefer OpenAI, then Gemini; None if unavailable."""
     if mock:
-        return ai_ingest.MockClient(), "mock"
+        return ai_ingest.MockClient(section=section), "mock"
     for attr in ("OpenAIClient", "GeminiClient"):
         cls = getattr(ai_ingest, attr, None)
         if cls is None:
             continue
         from_env = getattr(cls, "from_env", None)
-        client = from_env() if callable(from_env) else None
+        client = from_env(section=section) if callable(from_env) else None
         if client is not None:
             return client, client.name
     return None, "unavailable"
@@ -198,13 +199,13 @@ def load_gold(path: str) -> List[Dict]:
     return valid
 
 
-def run_eval(items: List[Dict], mock: bool, cutoff: float) -> Dict[str, object]:
+def run_eval(items: List[Dict], mock: bool, cutoff: float, section: str = "quant") -> Dict[str, object]:
     gold = [it.get("topic") for it in items]
     cache = ai_ingest.AiCache()
 
-    keyword = ai_ingest.HeuristicClient()
-    vector = TfidfVectorTagger(items)
-    ai_client, ai_label = pick_ai_client(mock)
+    keyword = ai_ingest.HeuristicClient(section=section)
+    vector = TfidfVectorTagger(items, section=section)
+    ai_client, ai_label = pick_ai_client(mock, section=section)
 
     kw_preds: List[Tuple[str, float]] = []
     vec_preds: List[Tuple[str, float]] = []
@@ -257,6 +258,7 @@ def run_eval(items: List[Dict], mock: bool, cutoff: float) -> Dict[str, object]:
         "generated_at": _dt.datetime.now(_dt.timezone.utc)
         .replace(microsecond=0).isoformat(),
         "gold_count": len(items),
+        "section": section,
         "cutoff": cutoff,
         "ai_client": ai_label,
         "ai_available": ai_client is not None,
@@ -317,6 +319,8 @@ def main(argv: Optional[List[str]] = None) -> int:
                         help=f"Ship cutoff (default {ai_ingest.CONFIDENCE_THRESHOLD}).")
     parser.add_argument("--mock", action="store_true",
                         help="Use the deterministic MockClient as the AI (offline).")
+    parser.add_argument("--section", choices=["quant", "verbal", "di"], default="quant",
+                        help="Which section's taxonomy/tagger to evaluate against.")
     args = parser.parse_args(argv)
 
     gold_path = os.path.abspath(args.gold)
@@ -329,7 +333,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         print(f"No labeled items (with a taxonomy topic) in {gold_path}", file=sys.stderr)
         return 1
 
-    report = run_eval(items, mock=args.mock, cutoff=args.cutoff)
+    report = run_eval(items, mock=args.mock, cutoff=args.cutoff, section=args.section)
     report["gold_file"] = gold_path
 
     with open(args.report, "w", encoding="utf-8") as fh:

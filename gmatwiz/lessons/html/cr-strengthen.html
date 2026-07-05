@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Critical Reasoning: Strengthen &middot; GMATWiz Verbal Reasoning</title>
+<style>
+:root{
+  --ink:#1a1813; --muted:#6b6358; --rule:#d9d2c5; --bg:#fbf9f4; --card:#fffdf8;
+  --accent:#7a3b2e; --accent2:#3a5a40; --link:#7a3b2e; --code:#2b2b2b;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:3rem 2rem 6rem;}
+.content{max-width:720px;}
+header.masthead{border-bottom:1px solid var(--rule); padding-bottom:1.2rem; margin-bottom:2rem;}
+.kicker{font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:0 0 .4rem;}
+h1{font-size:2.3rem; line-height:1.1; margin:.1rem 0 .6rem; font-weight:600; letter-spacing:-.01em;}
+.meta{color:var(--muted); font-size:.9rem; margin:0;}
+.meta b{color:var(--ink); font-weight:600;}
+h2{font-size:1.45rem; margin:2.8rem 0 .3rem; font-weight:600; letter-spacing:-.01em;}
+h2 .num{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:.5rem;}
+h3{font-size:1.06rem; margin:1.6rem 0 .4rem; font-weight:600;}
+.sub{color:var(--muted); font-style:italic; margin:.1rem 0 1rem; font-size:.95rem;}
+p{margin:.6rem 0;} ul,ol{margin:.5rem 0 .9rem; padding-left:1.3rem;} li{margin:.25rem 0;}
+a{color:var(--link); text-decoration:none; border-bottom:1px solid rgba(122,59,46,.35);}
+a:hover{border-bottom-color:var(--link);}
+.lead{font-size:1.08rem;}
+section{position:relative;}
+.note{font-size:.8rem; color:var(--muted); line-height:1.4;}
+.objectives{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1rem 1.2rem;}
+.objectives ul{margin:.3rem 0 0;}
+.intent{border-left:3px solid var(--accent2); padding:.4rem 0 .4rem 1rem; margin:1rem 0; font-size:1.05rem;}
+.donow{background:#2b2620; color:#f3ecde; border-radius:8px; padding:1.1rem 1.3rem; margin:1rem 0;}
+.donow .tag{font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:#d8b48a;}
+.donow ol{padding-left:1.2rem;} .donow li{margin:.4rem 0;}
+.donow .ans{color:#b9c6a9; font-style:italic; font-size:.86rem; display:block; margin-top:.15rem;}
+table{border-collapse:collapse; width:100%; font-size:.92rem; margin:.6rem 0 1rem;}
+th,td{text-align:left; padding:.45rem .6rem; border-bottom:1px solid var(--rule); vertical-align:top;}
+th{font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+td.t{white-space:nowrap; color:var(--accent); font-variant-numeric:tabular-nums; width:6.5rem;}
+.q{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1.1rem 1.3rem; margin:1.1rem 0;}
+.q .qid{font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+.q .qid .diff{float:right; color:var(--accent2);}
+.q .stem{font-size:1.03rem; margin:.35rem 0 .6rem;}
+.choices{list-style:none; padding:0; margin:.2rem 0 .4rem; counter-reset:c;}
+.choices li{padding:.32rem .6rem; border:1px solid var(--rule); border-radius:6px; margin:.3rem 0; background:#fff;}
+.choices li .lab{display:inline-block; width:1.5rem; font-weight:600; color:var(--accent);}
+.choices li.correct{border-color:var(--accent2); background:#eef3ec;}
+.choices li.correct .lab{color:var(--accent2);}
+details{margin:.5rem 0 .2rem; border-top:1px dashed var(--rule); padding-top:.5rem;}
+details>summary{cursor:pointer; font-size:.86rem; color:var(--accent); font-weight:600; list-style:none;}
+details>summary::-webkit-details-marker{display:none;}
+details>summary::before{content:"\25B8  "; color:var(--accent);}
+details[open]>summary::before{content:"\25BE  ";}
+.expl{font-size:.95rem; margin-top:.5rem;}
+.hints{font-size:.92rem;} .hints li{margin:.2rem 0;}
+.feedback{font-size:.9rem;} .feedback .ok{color:var(--accent2);} .feedback .no{color:var(--accent);}
+.appfirst{font-size:.78rem; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin:.2rem 0;}
+.mastery{background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--accent2); border-radius:8px; padding:1rem 1.2rem;}
+.pill{display:inline-block; font-size:.72rem; padding:.12rem .5rem; border:1px solid var(--rule); border-radius:999px; color:var(--muted); margin:.1rem .2rem .1rem 0;}
+footer{margin-top:3.5rem; border-top:1px solid var(--rule); padding-top:1rem; color:var(--muted); font-size:.82rem;}
+.src{background:#eef3ec; border:1px solid #cfe0cf; border-radius:8px; padding:.9rem 1.1rem; margin:1.2rem 0;}
+.src .tag{font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent2); font-weight:600;}
+.crumbs{font-size:.85rem; margin-bottom:1.2rem;}
+.ask{font-size:.9rem; background:#fff8ec; border:1px dashed #e0c590; border-radius:8px; padding:.7rem 1rem; margin:1.4rem 0;}
+@media print{ body{background:#fff} .wrap{padding:0} a{border:none} .donow{-webkit-print-color-adjust:exact; print-color-adjust:exact} }
+</style></head>
+<body><div class="wrap"><div class="content">
+  <div class="crumbs"><a href="index.html">&larr; All topics</a> &middot; Verbal Reasoning &middot; Critical Reasoning</div>
+  <header class="masthead">
+    <p class="kicker">GMATWiz &middot; GMAT Focus Edition &middot; Verbal Reasoning (Critical Reasoning)</p>
+    <h1>Critical Reasoning: Strengthen</h1>
+    <p class="meta"><b>Topic id</b> <code>gmat::verbal::cr::strengthen</code> &middot; <b>Domain</b> Critical Reasoning
+      &middot; <b>Prereqs</b> identify an argument&#x27;s conclusion, spot the assumption connecting evidence to conclusion &middot; <b>~18 min</b></p>
+  </header>
+
+  <div class="objectives">
+    <p class="note"><b>Learning objectives</b></p>
+    <ul><li>Find the conclusion, then choose the fact that makes it more likely to be true.</li><li>Prefer answers that confirm the argument&#x27;s assumption or rule out an alternative cause.</li><li>Reject choices that are merely on-topic but do not affect the conclusion.</li></ul>
+    <p class="note">Model: I do -&gt; we do -&gt; you do &middot; application-first (explanations revealed after an attempt) &middot; Rosenshine (daily review), Archer (I-do/we-do/you-do), SPOV2 application-first.</p>
+  </div>
+
+  
+    <section>
+      <h2><span class="num">1</span>Opening &mdash; retrieval &amp; bridge</h2>
+      <p class="sub">Builds on: Finding an argument&#x27;s assumption.</p>
+      <div class="donow">
+        <div class="tag">Do Now &middot; from memory, no notes</div>
+        <p>No notes. 4 minutes, from memory.</p>
+        <ol><li>To STRENGTHEN a causal claim, what is one powerful move?<span class="ans">Rule out an alternative cause, or show the cause-effect holds in a controlled comparison.</span></li><li>Does a choice that repeats the conclusion strengthen it?<span class="ans">No - restating is not new support.</span></li><li>Strengthen or not: evidence that a confounding factor was absent.<span class="ans">Strengthens (removes an alternative explanation).</span></li></ol>
+      </div>
+      <p class="note"><b>Retrieval starter (5 min).</b> Recalls that strengthening usually means confirming the assumption or eliminating a rival cause.
+      <br><b>If students struggle:</b> Remind them a strengthener need not prove the conclusion - just make it more likely.</p>
+      <h3>Prior-knowledge bridge</h3>
+      <p>You can find the assumption that props up an argument. A strengthen question rewards the choice that makes that assumption more secure - or slams the door on a competing explanation. Same gap, now you reinforce it instead of just naming it.</p>
+      <h3>Learning intention</h3>
+      <p class="intent">By the end you can pick the choice that most increases the likelihood the conclusion is true, usually by supporting the assumption or removing an alternative cause.</p>
+      <p class="note"><b>You'll know you've got it when:</b></p>
+      <ul><li>I can state the conclusion the choice must support.</li><li>I can tell a real strengthener from an on-topic distractor.</li><li>I can recognize &#x27;rule out another cause&#x27; as a strengthening move.</li></ul>
+      <details><summary>Complete timed opening script</summary>
+        <table><thead><tr><th>Time</th><th>Move</th></tr></thead><tbody><tr><td class="t">0:00-4:00</td><td>Do Now on screen; learners answer from memory, no notes.</td></tr><tr><td class="t">4:00-6:00</td><td>Cold-call answers; name the argument&#x27;s conclusion vs premises.</td></tr><tr><td class="t">6:00-8:00</td><td>Bridge to today&#x27;s question type; state what the stem is really asking.</td></tr><tr><td class="t">8:00-10:00</td><td>Move to I do: model the reasoning on one worked item.</td></tr></tbody></table>
+      </details>
+    </section>
+
+  <section>
+    <h2><span class="num">2</span>I do &mdash; worked example</h2>
+    <p class="sub">Watch the reasoning modeled end to end before you try.</p>
+    
+    <div class="q">
+      <div class="qid">I DO &middot; worked example<span class="diff">medium</span></div>
+      <div class="stem">A town noticed that crime fell in the year after it installed brighter streetlights, and concluded the lights caused the drop. Which of the following, if true, most strengthens the conclusion?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>In a neighboring town that installed no new lights that year, crime stayed the same.</li><li><span class="lab">B</span>The brighter streetlights were more energy-efficient than the old ones.</li><li><span class="lab">C</span>Residents said they felt safer after the lights were installed.</li><li><span class="lab">D</span>The town had wanted brighter lighting for several years.</li><li><span class="lab">E</span>Crime is generally higher in areas with more foot traffic.</li></ul>
+      <h3>Think-aloud</h3>
+      <ol><li>Conclusion: the lights caused the crime drop (a causal claim).</li><li>To strengthen a cause, rule out that something else caused the drop.</li><li>A shows a comparable town without new lights had no drop - so the drop wasn&#x27;t a general trend.</li><li>That isolates the lights as the cause; the others don&#x27;t touch causation.</li></ol>
+      <p class="expl"><b>Correct: A.</b> A controlled comparison - a similar town with no new lights and no crime drop - rules out a region-wide trend, isolating the lights as the cause and strengthening the conclusion.</p>
+      <p class="note"><b>Takeaway.</b> For causal conclusions, the strongest strengthener usually eliminates an alternative cause via a controlled comparison.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>We do &mdash; guided practice</h2>
+    <p class="sub">Scaffolds and immediate feedback are one click away. Fade them as you gain confidence.</p>
+    
+    <div class="q">
+      <div class="qid">we_1 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">A company found that employees who use its new project-management software finish projects faster, and concluded the software makes teams more efficient. Which of the following, if true, most strengthens this conclusion?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>When a team that had been slow was switched to the software, its completion times improved.</li><li><span class="lab">B</span>The software was developed by an award-winning design firm.</li><li><span class="lab">C</span>Employees say the software is easy to learn.</li><li><span class="lab">D</span>The software is used by many large companies.</li><li><span class="lab">E</span>Faster teams tend to have higher morale.</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>The claim is causal: software -&gt; efficiency.</li><li>Watch for reverse causation: maybe efficient teams adopt the software.</li><li>Which choice shows the software CHANGING a team&#x27;s speed?</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Yes - a before/after on the same team addresses reverse causation.<br>
+        <span class="no">If incorrect:</span> Popularity and design awards don&#x27;t show the software caused the speed-up.</p>
+        <p class="expl"><b>Answer: A.</b> Showing the same previously-slow team sped up after adopting the software supports causation rather than the possibility that fast teams simply chose the software.</p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">we_2 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">A nutrition writer argues that a new breakfast cereal improves focus, citing that children who eat it score higher on morning attention tests. Which of the following, if true, most strengthens the argument?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>Before eating the cereal, those same children had scored no higher than other children on the tests.</li><li><span class="lab">B</span>The cereal is fortified with several vitamins.</li><li><span class="lab">C</span>The cereal is popular among parents.</li><li><span class="lab">D</span>Attention tests are administered by trained staff.</li><li><span class="lab">E</span>Children generally focus better after eating something.</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>Beware the alternative: maybe naturally focused kids eat this cereal.</li><li>A before/after within the same children rules that out.</li><li>Vitamins and popularity don&#x27;t establish the focus effect.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Right - ruling out prior ability strengthens the causal link.<br>
+        <span class="no">If incorrect:</span> Choice E actually weakens by giving an alternative cause (any breakfast helps).</p>
+        <p class="expl"><b>Answer: A.</b> If the high scorers were ordinary before the cereal, the cereal - not pre-existing ability - is the likely cause of the improvement, strengthening the claim.</p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>You do &mdash; independent application</h2>
+    <p class="sub">Application-first (SPOV2): commit to an answer, then reveal the explanation. Log every miss.</p>
+    
+    <div class="q">
+      <div class="qid">you_1 &middot; you do (independent)<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A retailer concluded that its new loyalty program increased customer spending, because members spend more than non-members. Which of the following, if true, most strengthens the conclusion?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>Customers&#x27; spending rose after they joined the program, compared with their spending before joining.</li><li><span class="lab">B</span>The loyalty program was advertised on social media.</li><li><span class="lab">C</span>Members receive a discount on their birthdays.</li><li><span class="lab">D</span>The retailer has stores in many cities.</li><li><span class="lab">E</span>High spenders enjoy collecting reward points.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> A within-customer before/after comparison shows the program changed behavior, rather than merely that big spenders join programs.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_2 &middot; you do (independent)<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A city argues that its new bike-share program reduced car traffic, noting traffic fell after the program launched. Which of the following, if true, most strengthens the argument?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>During the same period, a comparable city with no bike-share saw no decline in car traffic.</li><li><span class="lab">B</span>The bike-share stations are conveniently located.</li><li><span class="lab">C</span>Many residents praised the program.</li><li><span class="lab">D</span>The bikes are maintained by a private contractor.</li><li><span class="lab">E</span>Car traffic is usually lighter in warm weather.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> A comparison city without bike-share and without a traffic drop rules out a general trend, isolating the program as the cause.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_3 &middot; you do (independent)<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">Researchers claim a meditation app lowers stress, citing that users report less stress than non-users. Which of the following, if true, most strengthens the claim?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>Users who were randomly assigned to the app reported lower stress than those assigned no app.</li><li><span class="lab">B</span>The app includes guided sessions of varying lengths.</li><li><span class="lab">C</span>The app has millions of downloads.</li><li><span class="lab">D</span>Stress was measured with a standard questionnaire.</li><li><span class="lab">E</span>People who meditate often also exercise.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> Random assignment rules out that already-calm people simply chose the app, giving strong support that the app itself lowers stress.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+  </section>
+
+  
+    <section>
+      <h2><span class="num">5</span>Mastery check</h2>
+      <div class="mastery">
+        <p>A topic is mastered at &gt;=85% correct on new/held-out-style questions across &gt;=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.</p>
+        <p class="note"><b>Threshold</b> 0.85 &middot; <b>spaced sessions</b> &ge; 2</p>
+        <ul><li>&gt;=85% correct on new/held-out-style items (not flashcard recall) per session</li><li>sustained across &gt;=2 spaced sessions with a delay between them</li><li>per-topic memory surfaced only after &gt;=20 graded reviews (PRD give-up rule)</li><li>per-topic performance surfaced only after &gt;=8 application attempts (PRD give-up rule)</li></ul>
+        <p class="note"><b>If not yet mastered:</b> Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -&gt; you-do loop before re-testing.</p>
+      </div>
+      
+    </section>
+
+  <div class="src">
+    <div class="tag">Primary source</div>
+    <p><a href="https://www.mba.com/exams/gmat-focus-edition">GMAC - GMAT Focus Edition (official exam overview)</a> &mdash; Official exam structure and Verbal Reasoning scope.</p>
+    <p class='note'>Further reading:</p><ul><li><a href="https://www.khanacademy.org/prep/lsat">Khan Academy - LSAT Logical Reasoning (free)</a> &mdash; Free lessons on argument structure, assumptions, strengthen/weaken, and flaws.</li></ul>
+  </div>
+
+  <div class="ask">Stuck on any step? Ask your GMATWiz coach for a worked walkthrough &mdash; that's what it's here for.</div>
+
+  <footer>
+    <p>GMATWiz lesson &middot; <code>cr-strengthen.json</code> &middot; schema v1.0 &middot; authored content (OfficialFlag=false), reserved official items used only for late checkpoints.</p>
+  </footer>
+</div></div></body></html>

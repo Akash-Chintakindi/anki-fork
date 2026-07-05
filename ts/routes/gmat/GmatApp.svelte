@@ -64,6 +64,7 @@ chrome77/es2020 webview.
         openDecks,
         renderMath,
         setAiEnabledRemote,
+        ensureBundledContent,
         addGeneratedQuestions,
     } from "./api";
     import { authEnabled, onUser, signIn, signUp, signOutUser, type AuthUser } from "./auth";
@@ -282,7 +283,7 @@ chrome77/es2020 webview.
                     kind: "welcome",
                     title: "Welcome \u2014 I'm your GMAT Wiz",
                     body:
-                        "Start with the diagnostic: 21 timed questions that map your weak spots, so I can build a plan aimed exactly at what will raise your score. Everything else builds on it.",
+                        "Start with three short diagnostics \u2014 Quant, Verbal, and Data Insights \u2014 that map your weak spots across the whole exam, so I can build one plan aimed exactly at what will raise your score. Everything else unlocks once they're done.",
                 };
             }
             return;
@@ -303,14 +304,15 @@ chrome77/es2020 webview.
     function showErrorInfoWizard(): void {
         wizardCue = { kind: "errorInfo", title: "How each label steers your plan" };
     }
-    /** Non-blocking nudge when Study is opened before Today's list is finished. */
+    /** Wizard pop-up shown when Study / Drill is opened while they're locked
+        (Today's list not yet finished). The locked view also shows a lock icon. */
     function maybeWizardStudy(): void {
-        if (locked || !today || allTodayDone || !firstPendingBlock) return;
+        if (!dailyLocked) return;
         wizardCue = {
             kind: "study",
-            title: "Today first?",
+            title: "Locked until Today's done",
             body:
-                "Eager to study \u2014 I like it. But your Today list is tuned to what moves your score most right now, so finishing it first is the optimal path.",
+                "Study and Drill are locked until you finish Today's list \u2014 it's tuned to what moves your score most right now. Clear Today first, then these open up automatically.",
             actions: [
                 {
                     label: "Go to Today",
@@ -320,7 +322,7 @@ chrome77/es2020 webview.
                         void go("home");
                     },
                 },
-                { label: "Keep studying", run: dismissWizard },
+                { label: "Stay here", run: dismissWizard },
             ],
         };
     }
@@ -401,9 +403,20 @@ chrome77/es2020 webview.
         return words[it.kind] ?? it.title;
     }
 
-    // A new account (no plan yet) must take the diagnostic before the rest of
-    // the app unlocks: sign up -> diagnostic -> dashboard + everything else.
-    $: locked = !overview.plan;
+    // A new account must take ALL THREE diagnostics (Quant, Verbal, Data
+    // Insights) before the rest of the app unlocks: sign up -> 3 diagnostics ->
+    // exam-date/days-per-week -> dashboard + everything else.
+    $: hasQuantPlan = !!overview.plan;
+    $: hasDIPlan = !!overview.planDI;
+    $: locked = !(hasQuantPlan && hasVerbalPlan && hasDIPlan);
+    // Sections still needing a diagnostic, in fixed presentation order.
+    $: pendingDiagSections = ["quant", "verbal", "di"].filter(
+        (s) =>
+            !(s === "quant" ? hasQuantPlan : s === "verbal" ? hasVerbalPlan : hasDIPlan),
+    );
+    function sectionLabel(s: string): string {
+        return s === "verbal" ? "Verbal" : s === "di" ? "Data Insights" : "Quant";
+    }
 
     // ---- teaching / lesson state ----
     let lessonTopics: LessonTopic[] = [];
@@ -425,6 +438,11 @@ chrome77/es2020 webview.
     let pretestSecondsLeft = 0;
     let pretestTimer = 0;
     let submitting = false;
+    // Sequential diagnostic gate: the sections to run this pass + our position.
+    let diagQueue: string[] = [];
+    let diagIdx = 0;
+    // ~12 questions per section diagnostic (short, per the plan).
+    const DIAG_COUNT = 12;
 
     // ---- practice state (backed by the REAL scheduler) ----
     let card: ScheduledCard | null = null;
@@ -507,6 +525,9 @@ chrome77/es2020 webview.
         topic: string;
         difficulty: string;
         ai?: boolean;
+        // Reading Comprehension passage (empty for Quant + Critical Reasoning);
+        // rendered in a scrollable panel beside the question.
+        passage?: string;
     }
     $: activeQuestion =
         practiceMode === "topic"
@@ -519,6 +540,7 @@ chrome77/es2020 webview.
                       topic: topicPool[topicIdx].topic,
                       difficulty: topicPool[topicIdx].difficulty,
                       ai: topicPool[topicIdx].ai ?? false,
+                      passage: topicPool[topicIdx].passage ?? "",
                   } as ActiveQuestion)
                 : null
             : aiFront.length > 0
@@ -530,6 +552,7 @@ chrome77/es2020 webview.
                     topic: aiFront[0].topic,
                     difficulty: aiFront[0].difficulty,
                     ai: true,
+                    passage: "",
                 } as ActiveQuestion)
               : card
                 ? ({
@@ -540,6 +563,7 @@ chrome77/es2020 webview.
                       topic: card.topic,
                       difficulty: card.difficulty,
                       ai: false,
+                      passage: card.passage ?? "",
                   } as ActiveQuestion)
                 : null;
     $: queueRemaining =
@@ -568,13 +592,58 @@ chrome77/es2020 webview.
     $: firstPendingBlock = today
         ? today.blocks.find((b) => !todayDone.has(blockKey(b))) ?? null
         : null;
+    // Today-focused header chips (replace vanity bank/coverage/reviews stats).
+    $: tasksLeft = today
+        ? today.blocks.filter((b) => !todayDone.has(blockKey(b))).length
+        : 0;
+    $: minToday = today?.daily_minutes ?? 0;
+    $: daysToExam = today?.pacing?.days_to_exam ?? overview.plan?.days_to_exam ?? null;
 
-    // Study is section-split; only Quant exists in Phase 2, so every authored
-    // lesson topic is a Quant topic. A later section would filter on domain here.
-    $: quantTopics = lessonTopics;
-    // Each Study section is a collapsible accordion (default open). Verbal/DI will
-    // add their own flags here later.
+    // Study is section-split by topic-id prefix: Quant, Verbal (CR + RC), and
+    // Data Insights each get a collapsible accordion.
+    $: quantTopics = lessonTopics.filter((t) => t.topic_id.startsWith("gmat::quant"));
+    $: verbalTopics = lessonTopics.filter((t) => t.topic_id.startsWith("gmat::verbal"));
+    $: diTopics = lessonTopics.filter((t) => t.topic_id.startsWith("gmat::di"));
+    // Each Study section is a collapsible accordion (default open).
     let quantOpen = true;
+    let verbalOpen = true;
+    let diOpen = true;
+    // Progress breakdown expanders (Readiness / Performance -> per-section).
+    let readinessOpen = false;
+    let performanceOpen = false;
+    // Section ("quant" | "verbal" | "di") of the currently-running inline task and
+    // of the diagnostic in progress, so review/answer route to the right deck/pool.
+    let activeSection = "quant";
+    let diagSection = "quant";
+    // Whether the student has taken each section's diagnostic (unlocks its track).
+    $: hasVerbalPlan = !!overview.planVerbal;
+    // The Quant per-section readiness carries the mock/calibration detail (only
+    // Quant has mocks/official scores today).
+    $: quantReady = overview.readiness.by_section?.quant;
+
+    // ---- daily lock: Study + Drill stay locked until Today's list is done ----
+    // TEMPORARY dev affordance: this password bypasses the lock for testing.
+    const STUDY_BYPASS_PASSWORD = "1234"; // TODO: REMOVE BEFORE DEPLOY
+    let studyBypass = false;
+    let studyBypassInput = "";
+    let studyBypassError = false;
+    function tryStudyBypass(): void {
+        if (studyBypassInput === STUDY_BYPASS_PASSWORD) {
+            studyBypass = true;
+            studyBypassError = false;
+            studyBypassInput = "";
+        } else {
+            studyBypassError = true;
+        }
+    }
+    // Locked once ONBOARDED (locked=false) but Today's list isn't finished. Only
+    // Study + Drill are gated; Today / Progress / Error Log stay open.
+    $: dailyLocked =
+        !locked &&
+        !!today &&
+        (today?.blocks.length ?? 0) > 0 &&
+        !allTodayDone &&
+        !studyBypass;
 
     // ---- mock exam state (timed, exam conditions, no mid-test feedback) ----
     // Exam-accurate: adaptive selection, bookmark/flag, a pre-submit review
@@ -652,16 +721,17 @@ chrome77/es2020 webview.
         }, 1000);
     }
 
-    async function loadNextCard(): Promise<void> {
+    async function loadNextCard(section = "quant"): Promise<void> {
         // any scheduler-backed load returns us to scheduler mode (e.g. Drill nav
         // after a topic session)
+        activeSection = section;
         practiceMode = "scheduler";
         loading = true;
         selected = null;
         revealed = false;
         pendingWhy = false;
         guessLogged = false;
-        const result = await fetchNextCard();
+        const result = await fetchNextCard(section);
         card = result.card;
         counts = result.counts;
         started = Date.now();
@@ -736,7 +806,11 @@ chrome77/es2020 webview.
             next = "home";
         }
         view = next;
-        if (next === "drill") await startDrill();
+        if (next === "drill") {
+            // Locked until Today's list is done -> show the lock (no card load).
+            if (dailyLocked) maybeWizardStudy();
+            else await startDrill();
+        }
         if (next === "tests") tests = await fetchTests();
         if (next === "errors") {
             errors = await fetchErrorLog();
@@ -811,13 +885,17 @@ chrome77/es2020 webview.
         if ((block.kind === "learn" || block.kind === "repair") && block.topic) {
             await loadLesson(block.topic);
         } else {
-            // review / practice -> the scheduler-backed drill card, inline
+            // review / practice -> the scheduler-backed drill card, inline, from
+            // the block's section deck (GMAT::Quant / GMAT::Verbal / GMAT::DI)
             practiceMode = "scheduler";
             practiceTopicId = "";
             answered = 0;
             correctCount = 0;
             resetSession();
-            await loadNextCard();
+            const sec = block.section === "verbal" || block.section === "di"
+                ? block.section
+                : "quant";
+            await loadNextCard(sec);
         }
     }
 
@@ -968,7 +1046,29 @@ chrome77/es2020 webview.
         return { id: t.topic, label: topicLabel(t.topic), difficulty: topicDifficulty(t.topic) };
     }
 
-    function genPrompt(label: string, difficulty: string, n: number): string {
+    function genPrompt(
+        label: string,
+        difficulty: string,
+        n: number,
+        section = "quant",
+    ): string {
+        if (section === "verbal") {
+            return [
+                `Create ${n} ORIGINAL GMAT Focus Verbal Critical Reasoning questions of type "${label}".`,
+                "Each item is a short (2-4 sentence) argument or set of statements, followed by a",
+                "question stem appropriate to that CR type.",
+                "Each question must:",
+                "- present an original argument on a neutral topic (business, science, everyday life);",
+                "- have exactly five options keyed A, B, C, D, E with exactly one best answer;",
+                `- match ${difficulty} difficulty;`,
+                "- include a concise explanation of why the correct choice is right;",
+                "- be original — do not reproduce copyrighted, book, or official GMAT items;",
+                "- NOT be a Sentence Correction or Reading Comprehension item.",
+                `Set each item's "topic" to "${label}" and "difficulty" to "${difficulty}".`,
+                "Return a JSON array of objects with fields: stem, options {A,B,C,D,E}, correct,",
+                "explanation, topic, difficulty.",
+            ].join("\n");
+        }
         return [
             `Create ${n} ORIGINAL GMAT Focus Quant Problem Solving questions on the topic "${label}".`,
             "Scope is strict: arithmetic and algebra only. NO geometry, NO coordinate geometry,",
@@ -1022,8 +1122,9 @@ chrome77/es2020 webview.
         difficulty: string,
         n: number,
     ): Promise<GmatQuestion[]> {
+        const section = topicId.startsWith("gmat::verbal") ? "verbal" : "quant";
         const res = await generateJson<GmatQuestion[]>(
-            genPrompt(label, difficulty, n),
+            genPrompt(label, difficulty, n, section),
             AI_GEN_SCHEMA,
         );
         if (!res.ok || !Array.isArray(res.value)) return [];
@@ -1208,11 +1309,11 @@ chrome77/es2020 webview.
             // the bank (desktop, card_id set); mobile ephemeral items have no id.
             const fid = aiFront[0].card_id;
             if (fid != null) {
-                await answerCard(fid, isCorrect, answerMs);
+                await answerCard(fid, isCorrect, answerMs, activeSection);
                 pushIfAuthed();
             }
         } else if (practiceMode === "scheduler" && card) {
-            await answerCard(card.card_id, isCorrect, answerMs);
+            await answerCard(card.card_id, isCorrect, answerMs, activeSection);
             pushIfAuthed();
         }
     }
@@ -1274,22 +1375,27 @@ chrome77/es2020 webview.
         }
     }
 
-    function startDiagnostic(): void {
+    function startDiagnostic(section?: string): void {
+        // A single named section (an existing user filling one gap) or the full
+        // pending gate (a new account: Quant -> Verbal -> Data Insights).
+        diagQueue =
+            section && section.length
+                ? [section]
+                : pendingDiagSections.length
+                  ? [...pendingDiagSections]
+                  : ["quant"];
+        diagIdx = 0;
         if (overview.profile) {
             examDate = overview.profile.exam_date || "";
             daysPerWeek = overview.profile.days_per_week || 5;
             targetScore = overview.profile.target_score || 645;
         }
-        view = "onboarding";
+        void beginPretestFor(diagQueue[0]);
     }
 
-    async function beginPretest(): Promise<void> {
-        await saveProfile({
-            exam_date: examDate,
-            days_per_week: daysPerWeek,
-            target_score: targetScore,
-        });
-        const result = await fetchPretest();
+    async function beginPretestFor(section: string): Promise<void> {
+        diagSection = section;
+        const result = await fetchPretest(section, DIAG_COUNT);
         pretestQs = result.questions;
         pretestIdx = 0;
         pretestResults = [];
@@ -1329,13 +1435,70 @@ chrome77/es2020 webview.
         if (submitting) return;
         submitting = true;
         stopTimer();
-        await submitPretest(pretestResults);
+        await submitPretest(pretestResults, diagSection);
+        submitting = false;
+        // More sections queued -> straight into the next diagnostic.
+        if (diagIdx < diagQueue.length - 1) {
+            diagIdx += 1;
+            await beginPretestFor(diagQueue[diagIdx]);
+            return;
+        }
+        // Queue finished. Refresh, then either collect the exam date + days/week
+        // (a new account with no profile yet) or land back in the app.
         const fresh = await refreshOverview();
         if (fresh) overview = fresh;
         pushIfAuthed();
-        submitting = false;
-        view = "plan";
+        if (!overview.profile) {
+            view = "onboarding"; // exam-date + days/week step; saving unlocks
+            return;
+        }
+        today = await fetchToday();
+        calendar = await fetchCalendar();
+        view = "home";
     }
+
+    /** The final onboarding step (AFTER the diagnostics): save the exam date +
+        weekly availability, which rebuilds every section's pacing and unlocks. */
+    async function finishOnboarding(): Promise<void> {
+        await saveProfile({
+            exam_date: examDate,
+            days_per_week: daysPerWeek,
+            target_score: targetScore,
+        });
+        const fresh = await refreshOverview();
+        if (fresh) overview = fresh;
+        pushIfAuthed();
+        today = await fetchToday();
+        calendar = await fetchCalendar();
+        view = "home";
+    }
+
+    // Wizard's days/week recommendation from days-to-exam + remaining topics: the
+    // more topics per remaining week, the more study days it suggests.
+    $: examDaysLeft = (() => {
+        if (!examDate) return null;
+        const [y, m, d] = examDate.split("-").map((x) => parseInt(x, 10));
+        if (!y || !m || !d) return null;
+        const ms = new Date(y, m - 1, d).getTime() - Date.now();
+        return Math.max(0, Math.round(ms / 86400000));
+    })();
+    $: recommendedDaysPerWeek = (() => {
+        const left = examDaysLeft;
+        // total topics across the three tracks still to master (fallback: a full
+        // fresh load of ~37 leaves) drives how hard the week must be.
+        const remaining =
+            (overview.plan?.topics.length ?? 18) +
+            (overview.planVerbal?.topics.length ?? 16) +
+            (overview.planDI?.topics.length ?? 3);
+        if (left === null) return 5;
+        const weeks = Math.max(1, left / 7);
+        const perWeek = remaining / weeks; // topics to learn each week
+        if (left <= 21) return 6; // crunch: study most days
+        if (perWeek >= 10) return 6;
+        if (perWeek >= 6) return 5;
+        if (perWeek >= 3) return 4;
+        return 3;
+    })();
 
     $: pretestCurrent = pretestQs[pretestIdx];
     $: pretestOptions = pretestCurrent ? Object.entries(pretestCurrent.options) : [];
@@ -1713,8 +1876,30 @@ chrome77/es2020 webview.
         }
     }
 
+    /** Ensure the bundled content (Quant + Verbal + Data Insights) is imported so
+     * coverage reflects the whole syllabus. MUST run AFTER the cloud collection
+     * sync has settled - otherwise a colReplace download would clobber the import.
+     * When it changes the collection, upload so the content propagates to other
+     * devices (mobile then gets it by downloading this collection). Best-effort. */
+    async function ensureContentAfterSync(): Promise<void> {
+        try {
+            const res = await ensureBundledContent();
+            if (res.changed) {
+                if (authUser) await uploadCollection(authUser.uid);
+                await applyRemoteState();
+            }
+        } catch (e) {
+            console.error("GMATWiz: ensure bundled content failed", e);
+        }
+    }
+
     onMount(() => {
         reconcileAiFlag();
+        // No auth = no cloud collection sync to race with, so it's safe to import
+        // the bundled content right away (the login path handles the synced case).
+        if (!authEnabled) {
+            void ensureContentAfterSync();
+        }
         const unsub = onUser(async (u) => {
             authUser = u;
             authReady = true;
@@ -1772,6 +1957,10 @@ chrome77/es2020 webview.
             } catch (e) {
                 console.error("GMATWiz account load failed", e);
             }
+            // Now that the cloud collection has settled, import any bundled
+            // content this collection is missing (and upload it) - safe here
+            // because sync is done, so it can't be clobbered by a colReplace.
+            await ensureContentAfterSync();
             // Always re-derive the on-screen state from local (recomputes `locked`
             // from overview.plan) and land on Today, so the correct screen shows
             // live - no app restart needed after an account switch.
@@ -1925,9 +2114,16 @@ chrome77/es2020 webview.
             {#if !locked}
                 <button
                     class:active={view === "study" || view === "lesson"}
-                    on:click={() => go("study")}>Study</button
+                    class:nav-locked={dailyLocked}
+                    on:click={() => go("study")}
+                    >Study{#if dailyLocked}<span class="nav-lock" aria-hidden="true"> &#128274;</span>{/if}</button
                 >
-                <button class:active={view === "drill"} on:click={() => go("drill")}>Drill</button>
+                <button
+                    class:active={view === "drill"}
+                    class:nav-locked={dailyLocked}
+                    on:click={() => go("drill")}
+                    >Drill{#if dailyLocked}<span class="nav-lock" aria-hidden="true"> &#128274;</span>{/if}</button
+                >
                 <button
                     class:active={view === "dashboard"}
                     on:click={() => go("dashboard")}>Progress</button
@@ -1947,6 +2143,40 @@ chrome77/es2020 webview.
             {/if}
         </nav>
     </header>
+
+    <!-- Locked gate for Study / Drill until Today's list is finished: a big lock
+         icon, the wizard's reason, and a TEMPORARY 1234 bypass for testing. -->
+    {#snippet lockedGate(label: string)}
+        <section class="lock-gate">
+            <div class="lock-glyph" aria-hidden="true">&#128274;</div>
+            <h1 class="display">{label} is locked</h1>
+            <p class="lede">
+                Finish <button class="link-inline" on:click={() => go("home")}>Today's list</button>
+                first &mdash; it's tuned to what moves your score most right now. {label} unlocks
+                automatically once Today is done.
+            </p>
+            {#if today}
+                <p class="muted">
+                    {today.blocks.filter((b) => todayDone.has(blockKey(b))).length} of
+                    {today.blocks.length} tasks done today.
+                </p>
+            {/if}
+            <button class="primary" on:click={() => go("home")}>Go to Today</button>
+            <!-- TODO: REMOVE BEFORE DEPLOY - temporary testing bypass -->
+            <div class="lock-bypass">
+                <input
+                    type="password"
+                    placeholder="Bypass code (testing)"
+                    bind:value={studyBypassInput}
+                    on:keydown={(e) => e.key === "Enter" && tryStudyBypass()}
+                />
+                <button class="ghost" on:click={tryStudyBypass}>Unlock</button>
+                {#if studyBypassError}
+                    <span class="warn-text">Wrong code.</span>
+                {/if}
+            </div>
+        </section>
+    {/snippet}
 
     <!-- Reusable practice card: rendered standalone (Drill view) AND inline
          (Today's review/practice blocks, Study -> Practice). Reads the shared
@@ -2041,6 +2271,9 @@ chrome77/es2020 webview.
                         >AI-generated &middot; checked</span>
                     {/if}
                 </div>
+                {#if activeQuestion.passage}
+                    <div class="passage-panel">{@html renderMath(activeQuestion.passage)}</div>
+                {/if}
                 <h1 class="stem">{@html renderMath(activeQuestion.stem)}</h1>
 
                 <ul class="opts">
@@ -2310,8 +2543,8 @@ chrome77/es2020 webview.
                 <p class="eyebrow">Today</p>
                 <h1 class="display">The work that builds competence.</h1>
                 <p class="lede">
-                    Lessons create confidence. Application creates competence. Your next move is a
-                    problem to solve, not a page to read.
+                    Today's list is tuned to what moves your score most right now. Clear it to
+                    stay on pace for exam day.
                 </p>
 
                 <section class="action-card">
@@ -2324,16 +2557,24 @@ chrome77/es2020 webview.
                         <p class="muted">
                             Use Tools &rarr; Import GMAT Quant, then take your diagnostic.
                         </p>
-                    {:else if !overview.plan}
+                    {:else if locked}
                         <div class="action-head">
                             <span class="eyebrow">Next action</span>
+                            <span class="pill">{3 - pendingDiagSections.length} / 3 done</span>
                         </div>
-                        <h2 class="action-title">Take your diagnostic</h2>
+                        <h2 class="action-title">Take your 3 diagnostics</h2>
                         <p class="muted">
-                            A 21-question timed diagnostic builds your personalized plan and targets
-                            your weak topics.
+                            Three short timed diagnostics (~{DIAG_COUNT} questions each) &mdash;
+                            Quant, Verbal, and Data Insights &mdash; map every topic so I can build
+                            one plan aimed at your real weak spots. Remaining: {pendingDiagSections
+                                .map(sectionLabel)
+                                .join(", ")}.
                         </p>
-                        <button class="primary" on:click={startDiagnostic}>Start diagnostic</button>
+                        <button class="primary" on:click={() => startDiagnostic()}>
+                            {pendingDiagSections.length === 3
+                                ? "Start diagnostics"
+                                : "Continue diagnostics"}
+                        </button>
                     {:else if today && today.blocks.length > 0}
                         {#if allTodayDone}
                             <div class="action-head">
@@ -2451,27 +2692,35 @@ chrome77/es2020 webview.
                     </section>
                 {/if}
 
-                <div class="mini-grid">
-                    <div class="mini">
-                        <span class="mini-n">{overview.total}</span>
-                        <span class="mini-l">in bank</span>
+                {#if today && today.blocks.length > 0}
+                    <div class="mini-grid">
+                        <div class="mini">
+                            <span class="mini-n">{tasksLeft}</span>
+                            <span class="mini-l">{tasksLeft === 1 ? "task left" : "tasks left"}</span>
+                        </div>
+                        <div class="mini">
+                            <span class="mini-n">~{minToday}m</span>
+                            <span class="mini-l">today</span>
+                        </div>
+                        {#if daysToExam !== null}
+                            <div class="mini">
+                                <span class="mini-n">{daysToExam}</span>
+                                <span class="mini-l">days to exam</span>
+                            </div>
+                        {/if}
                     </div>
-                    <div class="mini">
-                        <span class="mini-n">{coveragePct}%</span>
-                        <span class="mini-l">coverage</span>
-                    </div>
-                    <div class="mini">
-                        <span class="mini-n">{overview.reviews}</span>
-                        <span class="mini-l">reviews</span>
-                    </div>
-                </div>
+                {/if}
             {/if}
         </main>
     {:else if view === "drill"}
         <main class="col">
-            <!-- The infinite, scheduler-backed drill: the same card the Today tab
-                 and Study -> Practice render, here with no "back" (it never ends). -->
-            {@render practiceCard(null)}
+            {#if dailyLocked}
+                {@render lockedGate("Drill")}
+            {:else}
+                <!-- The infinite, scheduler-backed drill: the same card the Today tab
+                     and Study -> Practice render, here with no "back" (it never ends). -->
+                {@render practiceCard(null)}
+            {/if}
         </main>
     {:else if view === "dashboard"}
         <main class="col-wide">
@@ -2584,67 +2833,62 @@ chrome77/es2020 webview.
                             <p class="next">Best next step: build a streak of timed practice.</p>
                         </div>
                     {/if}
+
+                    <!-- one metric, three sections: expandable Quant/Verbal/DI breakdown -->
+                    {#if overview.performance.by_section}
+                        <button
+                            type="button"
+                            class="breakdown-toggle"
+                            aria-expanded={performanceOpen}
+                            on:click={() => (performanceOpen = !performanceOpen)}
+                        >
+                            <span
+                                class="section-chevron"
+                                class:open={performanceOpen}
+                                aria-hidden="true">&#9656;</span
+                            >
+                            Section breakdown
+                        </button>
+                        {#if performanceOpen}
+                            <ul class="breakdown">
+                                {#each ["quant", "verbal", "di"] as s (s)}
+                                    {@const p = overview.performance.by_section[s]}
+                                    {#if p}
+                                        <li>
+                                            <span class="bd-label">{sectionLabel(s)}</span>
+                                            {#if p.status === "shown"}
+                                                <span class="bd-val">{p.point}<small>%</small></span>
+                                                <span class="bd-band"
+                                                    >{p.attempts} attempts</span
+                                                >
+                                            {:else}
+                                                <span class="bd-val muted">building</span>
+                                            {/if}
+                                        </li>
+                                    {/if}
+                                {/each}
+                            </ul>
+                        {/if}
+                    {/if}
                 </section>
 
                 <!-- Readiness -->
                 <section class="measure">
                     <span class="eyebrow">Readiness</span>
-                    <p class="measure-q">What score would you get today?</p>
+                    <p class="measure-q">What total would you score today?</p>
                     {#if overview.readiness.status === "shown"}
-                        {@const cal = overview.readiness.calibration}
-                        {#if cal}
-                            <div class="needle-wrap">
-                                <span class="readout-lg">Q{cal.point}</span>
-                                <span class="pill cal-ok">calibrated</span>
-                                <span class="band">
-                                    range Q{cal.low}&ndash;Q{cal.high} &middot;
-                                    {overview.readiness.confidence} confidence
-                                </span>
-                            </div>
-                            <p class="muted">
-                                Raw model said Q{overview.readiness.point}; shifted
-                                {cal.bias >= 0 ? "+" : ""}{cal.bias} from your {cal.n} official
-                                score{cal.n > 1 ? "s" : ""} (avg error {cal.residual}).
-                            </p>
-                        {:else}
-                            <div class="needle-wrap">
-                                <span class="readout-lg">Q{overview.readiness.point}</span>
-                                <span class="band">
-                                    range Q{overview.readiness.low}&ndash;Q{overview.readiness.high} &middot;
-                                    {overview.readiness.confidence} confidence
-                                </span>
-                            </div>
-                        {/if}
-                        <p class="muted">{overview.readiness.scale}. {overview.readiness.method}</p>
-                        {#if overview.readiness.mocks?.length}
-                            {@const lastMock =
-                                overview.readiness.mocks[overview.readiness.mocks.length - 1]}
-                            <p class="muted">
-                                Mocks: {overview.readiness.mocks
-                                    .slice(-3)
-                                    .map((m) => `Q${m.q}`)
-                                    .join(" → ")}
-                                (last: {Math.round(lastMock.accuracy * 100)}% of {lastMock.n})
-                                {#if overview.readiness.mock_gap != null && Math.abs(overview.readiness.mock_gap) > 4}
-                                    &middot; <span class="warn-text">
-                                        projection is {Math.abs(overview.readiness.mock_gap)} points
-                                        {overview.readiness.mock_gap > 0 ? "above" : "below"} your last
-                                        mock &mdash; trust the range, not the point
-                                    </span>
-                                {/if}
-                            </p>
-                        {:else}
-                            <p class="muted">
-                                No timed mocks yet &mdash; a mock section is the only way to check
-                                this projection against exam conditions.
-                            </p>
-                            <button class="ghost" on:click={() => startMock()}>Take a timed mock</button>
-                        {/if}
-                        <p class="next">Total (205-805): {overview.readiness.total_reason}</p>
+                        <div class="needle-wrap">
+                            <span class="readout-lg">{overview.readiness.total}</span>
+                            <span class="band">
+                                range {overview.readiness.low}&ndash;{overview.readiness.high}
+                                &middot; scale 205&ndash;805
+                            </span>
+                        </div>
+                        <p class="muted">{overview.readiness.method}</p>
                     {:else}
                         <div class="abstain">
                             <span class="abstain-mark">— · —</span>
-                            <p class="abstain-title">Not enough data</p>
+                            <p class="abstain-title">No Total yet</p>
                             {#if overview.readiness.unmet?.length}
                                 <ul class="unmet">
                                     {#each overview.readiness.unmet as u}
@@ -2653,15 +2897,63 @@ chrome77/es2020 webview.
                                 </ul>
                             {/if}
                             <p class="next">{overview.readiness.reason}</p>
-                            {#if overview.readiness.mocks?.length}
-                                <p class="muted">
-                                    Mock history: {overview.readiness.mocks
-                                        .slice(-3)
-                                        .map((m) => `Q${m.q}`)
-                                        .join(" → ")}
-                                </p>
-                            {/if}
                         </div>
+                    {/if}
+
+                    <!-- one metric, three sections: expandable Quant/Verbal/DI breakdown -->
+                    {#if overview.readiness.by_section}
+                        <button
+                            type="button"
+                            class="breakdown-toggle"
+                            aria-expanded={readinessOpen}
+                            on:click={() => (readinessOpen = !readinessOpen)}
+                        >
+                            <span class="section-chevron" class:open={readinessOpen} aria-hidden="true"
+                                >&#9656;</span
+                            >
+                            Section breakdown
+                        </button>
+                        {#if readinessOpen}
+                            <ul class="breakdown">
+                                {#each ["quant", "verbal", "di"] as s (s)}
+                                    {@const r = overview.readiness.by_section[s]}
+                                    {#if r}
+                                        <li>
+                                            <span class="bd-label">{sectionLabel(s)}</span>
+                                            {#if r.status === "shown"}
+                                                <span class="bd-val">{r.point}<small>/90</small></span>
+                                                <span class="bd-band">range {r.low}&ndash;{r.high}</span>
+                                            {:else}
+                                                <span class="bd-val muted">building</span>
+                                            {/if}
+                                        </li>
+                                    {/if}
+                                {/each}
+                            </ul>
+                        {/if}
+                    {/if}
+
+                    <!-- Quant mock calibration + CTA (mocks/official are Quant-only today) -->
+                    {#if quantReady}
+                        {#if quantReady.calibration}
+                            <p class="muted">
+                                Quant calibrated to {quantReady.calibration.n} official score{quantReady
+                                    .calibration.n > 1
+                                    ? "s"
+                                    : ""} (shift {quantReady.calibration.bias >= 0 ? "+" : ""}{quantReady
+                                    .calibration.bias}).
+                            </p>
+                        {/if}
+                        {#if quantReady.mocks?.length}
+                            <p class="muted">
+                                Quant mocks: {quantReady.mocks
+                                    .slice(-3)
+                                    .map((m) => `Q${m.q}`)
+                                    .join(" → ")}
+                            </p>
+                        {:else}
+                            <button class="ghost" on:click={() => startMock()}>Take a timed mock</button>
+                        {/if}
                     {/if}
                 </section>
             </div>
@@ -2935,11 +3227,12 @@ chrome77/es2020 webview.
         </main>
     {:else if view === "onboarding"}
         <main class="col">
-            <p class="eyebrow">Diagnostic</p>
-            <h1 class="display">Let's find your starting point.</h1>
+            <p class="eyebrow">Almost there</p>
+            <h1 class="display">When's the exam?</h1>
             <p class="lede">
-                A short, timed Quant diagnostic (21 questions, 45 minutes) calibrates every
-                topic so your plan targets your real weak spots. Set aside a quiet block of time.
+                Your three diagnostics are in. Tell me your test date and how many days a
+                week you can study, and I'll build one plan across Quant, Verbal, and Data
+                Insights &mdash; with the final stretch reserved for full practice tests.
             </p>
             <section class="action-card">
                 <label class="field">
@@ -2950,18 +3243,34 @@ chrome77/es2020 webview.
                     <span class="field-label">Study days per week</span>
                     <input type="number" min="1" max="7" bind:value={daysPerWeek} />
                 </label>
+                {#if examDate}
+                    <p class="wiz-rec">
+                        <span class="wiz-rec-glyph" aria-hidden="true">&#10024;</span>
+                        Wiz suggests <strong>{recommendedDaysPerWeek} days/week</strong>{#if examDaysLeft !== null}
+                            &middot; {examDaysLeft} days to exam{/if}.
+                        <button
+                            type="button"
+                            class="wiz-rec-use"
+                            on:click={() => (daysPerWeek = recommendedDaysPerWeek)}
+                        >Use {recommendedDaysPerWeek}</button>
+                    </p>
+                {/if}
                 <label class="field">
                     <span class="field-label">Target GMAT score</span>
                     <input type="number" min="205" max="805" step="5" bind:value={targetScore} />
                 </label>
-                <button class="primary" on:click={beginPretest}>Begin diagnostic</button>
-                <p class="seal">No explanations during the diagnostic &mdash; it only measures.</p>
+                <button class="primary" on:click={finishOnboarding} disabled={!examDate}>
+                    Build my plan
+                </button>
+                <p class="seal">You can change these anytime from your profile.</p>
             </section>
         </main>
     {:else if view === "pretest"}
         <main class="col">
             <div class="session-meter">
-                <span class="readout">{pretestIdx + 1}</span> / {pretestQs.length}
+                <span class="pill">{sectionLabel(diagSection)}{#if diagQueue.length > 1}
+                        &middot; {diagIdx + 1} of {diagQueue.length}{/if}</span>
+                &middot; <span class="readout">{pretestIdx + 1}</span> / {pretestQs.length}
                 &middot; <span class="readout">{fmtTime(pretestSecondsLeft)}</span> left
             </div>
             {#if submitting}
@@ -2972,6 +3281,9 @@ chrome77/es2020 webview.
                         <span class="eyebrow">Diagnostic</span>
                         <span class="pill diff-{pretestCurrent.difficulty}">{pretestCurrent.difficulty}</span>
                     </div>
+                    {#if pretestCurrent.passage}
+                        <div class="passage-panel">{@html renderMath(pretestCurrent.passage)}</div>
+                    {/if}
                     <h1 class="stem">{@html renderMath(pretestCurrent.stem)}</h1>
                     <ul class="opts">
                         {#each pretestOptions as [key, value]}
@@ -2996,7 +3308,7 @@ chrome77/es2020 webview.
                 </section>
             {:else}
                 <section class="q-card empty">
-                    <p>No diagnostic questions available. Import GMAT Quant first.</p>
+                    <p>No {sectionLabel(diagSection)} diagnostic questions available yet.</p>
                 </section>
             {/if}
         </main>
@@ -3049,7 +3361,9 @@ chrome77/es2020 webview.
         </main>
     {:else if view === "study"}
         <main class="col">
-            {#if studyActive}
+            {#if dailyLocked}
+                {@render lockedGate("Study")}
+            {:else if studyActive}
                 <!-- Topic-scoped practice runs INLINE here; nav stays on "Study". -->
                 {@render practiceCard({ onExit: backToStudy, exitLabel: "Back to study" })}
             {:else}
@@ -3126,9 +3440,160 @@ chrome77/es2020 webview.
                         </ul>
                         {/if}
                     </section>
-                    <p class="muted">
-                        Verbal and Data Insights arrive later; Quant is the focus for now.
-                    </p>
+
+                    <!-- Verbal - Critical Reasoning (additive track) -->
+                    <section class="action-card">
+                        <button
+                            class="section-toggle"
+                            aria-expanded={verbalOpen}
+                            on:click={() => (verbalOpen = !verbalOpen)}
+                        >
+                            <span class="section-chevron" class:open={verbalOpen} aria-hidden="true"
+                                >&#9656;</span
+                            >
+                            <span class="eyebrow">Verbal &middot; Critical Reasoning + Reading Comprehension</span>
+                            <span class="pill">{verbalTopics.length} topics</span>
+                        </button>
+                        {#if verbalOpen}
+                            {#if !hasVerbalPlan}
+                                <p class="muted" style="padding: 0 2px 10px;">
+                                    Take the short Verbal diagnostic to unlock a Verbal plan
+                                    (Critical Reasoning + Reading Comprehension) tailored to you.
+                                </p>
+                                <button class="primary" on:click={() => startDiagnostic("verbal")}>
+                                    Take Verbal diagnostic
+                                </button>
+                            {:else if verbalTopics.length === 0}
+                                <p class="muted" style="padding: 2px;">
+                                    No Verbal lessons found &mdash; import GMAT content from the Tools menu.
+                                </p>
+                            {:else}
+                                <ul class="study-list">
+                                    {#each verbalTopics as t}
+                                        <li class="study-row" class:mastered={t.mastered}>
+                                            <div class="sr-body">
+                                                <span class="sr-name">
+                                                    {t.title}
+                                                    {#if t.mastered}
+                                                        <span class="pill mastered-pill">&check; mastered</span>
+                                                    {:else if t.learned}
+                                                        <span class="pill learned-pill">learned</span>
+                                                    {/if}
+                                                </span>
+                                                <span class="sr-meta">
+                                                    <span class="focus-bar">
+                                                        <span
+                                                            class="focus-fill"
+                                                            style="width:{Math.round((t.mastery ?? 0) * 100)}%"
+                                                        ></span>
+                                                    </span>
+                                                    {#if t.status}
+                                                        <span class="focus-status s-{t.status}">{t.status}</span>
+                                                    {/if}
+                                                </span>
+                                            </div>
+                                            <div class="sr-actions">
+                                                <button class="tb-go" on:click={() => openLesson(t.topic_id)}>
+                                                    {t.learned ? "Review" : "Learn"}
+                                                </button>
+                                                <button
+                                                    class="tb-go"
+                                                    on:click={() => startTopicPractice(t.topic_id, t.title)}
+                                                >
+                                                    Practice
+                                                </button>
+                                                <button
+                                                    class="tb-go"
+                                                    on:click={() => startQuiz(t.topic_id, t.title, "study")}
+                                                >
+                                                    Quiz
+                                                </button>
+                                            </div>
+                                        </li>
+                                    {/each}
+                                </ul>
+                            {/if}
+                        {/if}
+                    </section>
+
+                    <!-- Data Insights (additive track) -->
+                    <section class="action-card">
+                        <button
+                            class="section-toggle"
+                            aria-expanded={diOpen}
+                            on:click={() => (diOpen = !diOpen)}
+                        >
+                            <span class="section-chevron" class:open={diOpen} aria-hidden="true"
+                                >&#9656;</span
+                            >
+                            <span class="eyebrow"
+                                >Data Insights &middot; Data Sufficiency + Two-Part + Multi-Source</span
+                            >
+                            <span class="pill">{diTopics.length} topics</span>
+                        </button>
+                        {#if diOpen}
+                            {#if !hasDIPlan}
+                                <p class="muted" style="padding: 0 2px 10px;">
+                                    Take the short Data Insights diagnostic to unlock a DI plan
+                                    (Data Sufficiency, Two-Part Analysis, Multi-Source Reasoning)
+                                    tailored to you.
+                                </p>
+                                <button class="primary" on:click={() => startDiagnostic("di")}>
+                                    Take Data Insights diagnostic
+                                </button>
+                            {:else if diTopics.length === 0}
+                                <p class="muted" style="padding: 2px;">
+                                    No Data Insights lessons found &mdash; import GMAT content from the
+                                    Tools menu.
+                                </p>
+                            {:else}
+                                <ul class="study-list">
+                                    {#each diTopics as t}
+                                        <li class="study-row" class:mastered={t.mastered}>
+                                            <div class="sr-body">
+                                                <span class="sr-name">
+                                                    {t.title}
+                                                    {#if t.mastered}
+                                                        <span class="pill mastered-pill">&check; mastered</span>
+                                                    {:else if t.learned}
+                                                        <span class="pill learned-pill">learned</span>
+                                                    {/if}
+                                                </span>
+                                                <span class="sr-meta">
+                                                    <span class="focus-bar">
+                                                        <span
+                                                            class="focus-fill"
+                                                            style="width:{Math.round((t.mastery ?? 0) * 100)}%"
+                                                        ></span>
+                                                    </span>
+                                                    {#if t.status}
+                                                        <span class="focus-status s-{t.status}">{t.status}</span>
+                                                    {/if}
+                                                </span>
+                                            </div>
+                                            <div class="sr-actions">
+                                                <button class="tb-go" on:click={() => openLesson(t.topic_id)}>
+                                                    {t.learned ? "Review" : "Learn"}
+                                                </button>
+                                                <button
+                                                    class="tb-go"
+                                                    on:click={() => startTopicPractice(t.topic_id, t.title)}
+                                                >
+                                                    Practice
+                                                </button>
+                                                <button
+                                                    class="tb-go"
+                                                    on:click={() => startQuiz(t.topic_id, t.title, "study")}
+                                                >
+                                                    Quiz
+                                                </button>
+                                            </div>
+                                        </li>
+                                    {/each}
+                                </ul>
+                            {/if}
+                        {/if}
+                    </section>
                 {/if}
             {/if}
         </main>
@@ -3222,6 +3687,9 @@ chrome77/es2020 webview.
                                 </span>
                             </div>
                         </div>
+                        {#if mockCurrentItem.q.passage}
+                            <div class="passage-panel">{@html renderMath(mockCurrentItem.q.passage)}</div>
+                        {/if}
                         <h1 class="stem">{@html renderMath(mockCurrentItem.q.stem)}</h1>
                         <ul class="opts">
                             {#each Object.entries(mockCurrentItem.q.options) as [key, value]}
@@ -3997,6 +4465,116 @@ chrome77/es2020 webview.
         .section-chevron {
             transition: none;
         }
+    }
+    /* Progress: expandable per-section (Quant/Verbal/DI) breakdown */
+    .breakdown-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+        padding: 2px 0;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--ink-faint, #8a8aa0);
+        font-family: var(--mono, monospace);
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+    .breakdown {
+        list-style: none;
+        margin: 6px 0 0;
+        padding: 8px 0 0;
+        border-top: 1px solid rgba(128, 128, 160, 0.18);
+    }
+    .breakdown li {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        padding: 4px 0;
+    }
+    .bd-label {
+        min-width: 96px;
+        font-size: 13px;
+    }
+    .bd-val {
+        font-family: var(--mono, monospace);
+        font-size: 16px;
+        font-weight: 600;
+    }
+    .bd-val small {
+        font-size: 11px;
+        opacity: 0.6;
+    }
+    .bd-band {
+        font-family: var(--mono, monospace);
+        font-size: 11px;
+        color: var(--ink-faint, #8a8aa0);
+    }
+    /* Onboarding: the wizard's days/week recommendation chip */
+    .wiz-rec {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 2px 0 6px;
+        font-size: 13px;
+    }
+    .wiz-rec-glyph {
+        color: #b57edc;
+    }
+    .wiz-rec-use {
+        background: none;
+        border: 1px solid rgba(128, 128, 160, 0.35);
+        border-radius: 999px;
+        padding: 2px 10px;
+        cursor: pointer;
+        font-size: 12px;
+        color: inherit;
+    }
+    /* Daily lock (Study / Drill until Today's list is done) */
+    .lock-gate {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 12px;
+        padding: 48px 16px;
+    }
+    .lock-glyph {
+        font-size: 64px;
+        line-height: 1;
+        filter: grayscale(0.2);
+    }
+    .lock-bypass {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 16px;
+        opacity: 0.7;
+    }
+    .lock-bypass input {
+        padding: 6px 10px;
+        border: 1px solid rgba(128, 128, 160, 0.35);
+        border-radius: 8px;
+        font-size: 13px;
+    }
+    .link-inline {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        color: inherit;
+        text-decoration: underline;
+        font: inherit;
+    }
+    .nav-lock {
+        font-size: 10px;
+        opacity: 0.75;
+    }
+    .nav-locked {
+        opacity: 0.72;
     }
     .action-title {
         font-family: var(--voice);
@@ -4996,6 +5574,21 @@ chrome77/es2020 webview.
     }
     .q-card.empty {
         color: var(--ink-soft);
+    }
+    /* Reading Comprehension passage: a scrollable panel above the question so a
+       long passage never pushes the answer choices off-screen. */
+    .passage-panel {
+        max-height: 42vh;
+        overflow-y: auto;
+        margin: 4px 0 16px;
+        padding: 14px 16px;
+        background: var(--surface-2, rgba(127, 127, 127, 0.06));
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--gold);
+        border-radius: 10px;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        font-size: 0.97rem;
     }
     .q-head {
         display: flex;

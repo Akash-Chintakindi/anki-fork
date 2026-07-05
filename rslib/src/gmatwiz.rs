@@ -38,6 +38,10 @@ const READY_MIN_REVIEWS: i64 = 200;
 const READY_MIN_ATTEMPTS: usize = 50;
 const READY_MAX_ECE: f64 = 0.10;
 const QUANT_TOPIC_TOTAL: f64 = 18.0;
+// Verbal leaf topics: 9 Critical Reasoning + 7 Reading Comprehension = 16.
+const VERBAL_TOPIC_TOTAL: f64 = 16.0;
+// Data Insights leaf topics (pragmatic MCQ scope): DS + Two-Part + Multi-Source.
+const DI_TOPIC_TOTAL: f64 = 3.0;
 const TARGET_RETENTION: f64 = 0.9;
 // GMAT Focus Quant pacing: 21 questions in 45 minutes ~= 128s per question.
 const GMAT_TARGET_MS: i64 = 128_000;
@@ -54,6 +58,11 @@ const GMAT_STATE_KEYS: &[&str] = &[
     "gmatProfile",
     "gmatPlan",
     "gmatDiagnosis",
+    // Verbal + Data Insights parallel tracks (Quant keys stay untouched).
+    "gmatPlanVerbal",
+    "gmatDiagnosisVerbal",
+    "gmatPlanDI",
+    "gmatDiagnosisDI",
     "gmatMocks",
     "gmatOfficialScores",
     "gmatLearned",
@@ -112,6 +121,55 @@ fn gmat_accuracy_to_quant(acc: f64) -> i64 {
     (70.0 + (acc - 0.40) * (88.0 - 70.0) / (0.90 - 0.40))
         .clamp(60.0, 90.0)
         .round() as i64
+}
+
+/// Heuristic map for GMAT Focus Verbal (also a 60-90 section). Same anchors as
+/// Quant; refined once official Verbal scores exist to calibrate against.
+fn gmat_accuracy_to_verbal(acc: f64) -> i64 {
+    (70.0 + (acc - 0.40) * (88.0 - 70.0) / (0.90 - 0.40))
+        .clamp(60.0, 90.0)
+        .round() as i64
+}
+
+/// Heuristic map for GMAT Focus Data Insights (also a 60-90 section).
+fn gmat_accuracy_to_di(acc: f64) -> i64 {
+    (70.0 + (acc - 0.40) * (88.0 - 70.0) / (0.90 - 0.40))
+        .clamp(60.0, 90.0)
+        .round() as i64
+}
+
+/// Accuracy -> section score for any section.
+fn gmat_accuracy_to_section(acc: f64, section: &str) -> i64 {
+    match section {
+        "verbal" => gmat_accuracy_to_verbal(acc),
+        "di" => gmat_accuracy_to_di(acc),
+        _ => gmat_accuracy_to_quant(acc),
+    }
+}
+
+/// Transparent heuristic: combine the three 60-90 section scores into a GMAT
+/// Focus total (205-805, rounded to 10). Each section is normalized (s-60)/30 to
+/// 0..1, the three are averaged, and mapped to 205 + avg*600. Documented as a
+/// heuristic because GMAC's exact total formula is undisclosed.
+fn gmat_sections_to_total(q: i64, v: i64, di: i64) -> i64 {
+    let norm = |s: i64| ((s as f64 - 60.0) / 30.0).clamp(0.0, 1.0);
+    let avg = (norm(q) + norm(v) + norm(di)) / 3.0;
+    let raw = 205.0 + avg * 600.0;
+    (((raw / 10.0).round() * 10.0).clamp(205.0, 805.0)) as i64
+}
+
+/// Section ("quant" | "verbal" | "di") for a leaf topic id, 2nd `::` segment.
+fn gmat_section_of_topic(topic: &str) -> &str {
+    let mut parts = topic.split("::");
+    if parts.next() == Some("gmat") {
+        match parts.next() {
+            Some("verbal") => "verbal",
+            Some("di") => "di",
+            _ => "quant",
+        }
+    } else {
+        "quant"
+    }
 }
 
 impl Collection {
@@ -194,9 +252,15 @@ impl Collection {
         Ok(())
     }
 
-    /// Map GMAT card id -> topic (bounded by the GMAT deck size).
-    fn gmat_card_topics(&mut self) -> Result<HashMap<i64, String>> {
-        let cids = self.search_cards("note:\"GMAT PS\"", SortMode::NoOrder)?;
+    /// Map GMAT card id -> topic for a section ('quant' -> GMAT PS,
+    /// 'verbal' -> GMAT Verbal).
+    fn gmat_card_topics_for(&mut self, section: &str) -> Result<HashMap<i64, String>> {
+        let notetype = match section {
+            "verbal" => "GMAT Verbal",
+            "di" => "GMAT DI",
+            _ => "GMAT PS",
+        };
+        let cids = self.search_cards(&format!("note:\"{notetype}\""), SortMode::NoOrder)?;
         let mut note_topic: HashMap<i64, String> = HashMap::new();
         let mut map = HashMap::new();
         for cid in cids {
@@ -226,29 +290,64 @@ impl Collection {
         Ok(map)
     }
 
+    /// Map GMAT PS card id -> topic (Quant). Delegates to the section-aware map.
+    fn gmat_card_topics(&mut self) -> Result<HashMap<i64, String>> {
+        self.gmat_card_topics_for("quant")
+    }
+
     /// The three honest scores (Memory, Performance, Readiness) as JSON, mirroring
     /// the desktop mediasrv logic so the phone shows the same numbers + give-up
     /// abstentions. Computed from the review log + collection data.
     pub fn gmat_scores_json(&mut self) -> Result<String> {
         let now = TimestampMillis::now().0 / 1000;
-        let card_topics = self.gmat_card_topics()?;
-        let topics_covered: std::collections::HashSet<&String> = card_topics
-            .values()
-            .filter(|t| !t.is_empty())
-            .collect();
-        let coverage_pct = 100.0 * topics_covered.len() as f64 / QUANT_TOPIC_TOTAL;
-
         let target = self.gmat_target_retention();
+
+        // Per-section card->topic maps.
+        let q_topics = self.gmat_card_topics_for("quant")?;
+        let v_topics = self.gmat_card_topics_for("verbal")?;
+        let d_topics = self.gmat_card_topics_for("di")?;
+
+        let covered = |m: &HashMap<i64, String>| -> usize {
+            m.values().filter(|t| !t.is_empty()).collect::<HashSet<_>>().len()
+        };
+        let q_cov_n = covered(&q_topics);
+        let v_cov_n = covered(&v_topics);
+        let d_cov_n = covered(&d_topics);
+        let q_cov = 100.0 * q_cov_n as f64 / QUANT_TOPIC_TOTAL;
+        let v_cov = 100.0 * v_cov_n as f64 / VERBAL_TOPIC_TOTAL;
+        let d_cov = 100.0 * d_cov_n as f64 / DI_TOPIC_TOTAL;
+
+        // Memory is one SRS-retention signal across all GMAT cards (also the ece
+        // gate every section's readiness uses).
         let memory = self.gmat_memory_json(now, target)?;
-        let performance = self.gmat_performance_json(&card_topics, now)?;
-        let readiness = self.gmat_readiness_json(&memory, &performance, coverage_pct, now);
+
+        // Per-section performance + one overall performance across all sections.
+        let q_perf = self.gmat_performance_json(&q_topics, now, "quant")?;
+        let v_perf = self.gmat_performance_json(&v_topics, now, "verbal")?;
+        let d_perf = self.gmat_performance_json(&d_topics, now, "di")?;
+        let mut all_topics = q_topics.clone();
+        all_topics.extend(v_topics.clone());
+        all_topics.extend(d_topics.clone());
+        let mut performance = self.gmat_performance_json(&all_topics, now, "all")?;
+        if let Some(obj) = performance.as_object_mut() {
+            obj.insert(
+                "by_section".into(),
+                json!({"quant": q_perf, "verbal": v_perf, "di": d_perf}),
+            );
+        }
+
+        // Per-section readiness (60-90) -> one composite Total (205-805).
+        let q_ready = self.gmat_readiness_json(&memory, &q_perf, q_cov, now, "quant");
+        let v_ready = self.gmat_readiness_json(&memory, &v_perf, v_cov, now, "verbal");
+        let d_ready = self.gmat_readiness_json(&memory, &d_perf, d_cov, now, "di");
+        let readiness = gmat_total_readiness(&q_ready, &v_ready, &d_ready, now);
 
         Ok(json!({
             "memory": memory,
             "performance": performance,
             "readiness": readiness,
-            "topics_covered": topics_covered.len(),
-            "topics_total": QUANT_TOPIC_TOTAL as i64,
+            "topics_covered": q_cov_n + v_cov_n + d_cov_n,
+            "topics_total": (QUANT_TOPIC_TOTAL + VERBAL_TOPIC_TOTAL + DI_TOPIC_TOTAL) as i64,
         })
         .to_string())
     }
@@ -332,6 +431,7 @@ impl Collection {
         &self,
         card_topics: &HashMap<i64, String>,
         now: i64,
+        section: &str,
     ) -> Result<serde_json::Value> {
         if card_topics.is_empty() {
             return Ok(json!({
@@ -363,11 +463,18 @@ impl Collection {
             .get_config_optional::<Vec<Value>, _>("gmatApplication")
             .unwrap_or_default()
         {
+            let topic = a["topic"].as_str().unwrap_or("").to_string();
+            // Scope quiz/milestone answers to this section so one section's
+            // attempts never inflate another's Performance. section=="all" folds
+            // in every section for the overall headline.
+            if section != "all" && gmat_section_of_topic(&topic) != section {
+                continue;
+            }
             timed.push((
                 a["ts"].as_i64().unwrap_or(0),
                 u8::from(a["correct"].as_bool().unwrap_or(false)),
                 a["ms"].as_i64().unwrap_or(0),
-                a["topic"].as_str().unwrap_or("").to_string(),
+                topic,
             ));
         }
         let total = timed.len();
@@ -535,10 +642,18 @@ impl Collection {
         performance: &serde_json::Value,
         coverage_pct: f64,
         now: i64,
+        section: &str,
     ) -> serde_json::Value {
-        let mocks = self.gmat_mock_history();
-        let official = self.gmat_official_scores();
-        let calibration = self.gmat_calibration(&official);
+        // Mock history + official-score calibration exist only for Quant today;
+        // Verbal/DI readiness is the honest heuristic map until section mocks /
+        // official scores are logged.
+        let (mocks, official, calibration) = if section == "quant" {
+            let official = self.gmat_official_scores();
+            let calibration = self.gmat_calibration(&official);
+            (self.gmat_mock_history(), official, calibration)
+        } else {
+            (Vec::new(), Vec::new(), None)
+        };
         let reviews = memory.get("reviews").and_then(|v| v.as_i64()).unwrap_or(0);
         let attempts = performance
             .get("attempts")
@@ -577,9 +692,10 @@ impl Collection {
         let acc = performance["point"].as_f64().unwrap_or(0.0) / 100.0;
         let acc_low = performance["low"].as_f64().unwrap_or(0.0) / 100.0;
         let acc_high = performance["high"].as_f64().unwrap_or(0.0) / 100.0;
-        let point = gmat_accuracy_to_quant(acc);
-        let low = gmat_accuracy_to_quant(acc_low);
-        let high = gmat_accuracy_to_quant(acc_high);
+        let to_score = |a: f64| gmat_accuracy_to_section(a, section);
+        let point = to_score(acc);
+        let low = to_score(acc_low);
+        let high = to_score(acc_high);
         // Calibration signal: how far the projection sits from the latest
         // timed mock. A large gap is displayed, not hidden (honesty rule).
         let mock_gap = mocks
@@ -623,21 +739,71 @@ impl Collection {
                 if coverage_pct >= 80.0 && attempts >= 150 { "medium" } else { "low" },
             ),
         };
+        let (section_label, scale) = match section {
+            "verbal" => ("Verbal", "GMAT Focus Verbal section (60-90)"),
+            "di" => ("Data Insights", "GMAT Focus Data Insights section (60-90)"),
+            _ => ("Quant", "GMAT Focus Quant section (60-90)"),
+        };
         json!({
             "status": "shown",
-            "section": "Quant",
+            "section": section_label,
             "point": point,
             "low": low,
             "high": high,
-            "scale": "GMAT Focus Quant section (60-90)",
+            "scale": scale,
             "confidence": confidence,
             "method": method,
-            "total_status": "abstain",
-            "total_reason": "Total (205-805) needs Verbal + Data Insights data (not yet in scope).",
             "mocks": mocks,
             "mock_gap": mock_gap,
             "official": official,
             "calibration": calibration_json,
+            "updated_ts": now,
+        })
+    }
+}
+
+/// Combine the three per-section readiness objects (each 60-90 or abstaining)
+/// into the unified Readiness: a GMAT Focus Total (205-805) once all three are
+/// shown, else an abstention that names which sections still lack evidence. The
+/// per-section objects are always exposed as `by_section` for the UI breakdown.
+fn gmat_total_readiness(
+    q: &serde_json::Value,
+    v: &serde_json::Value,
+    d: &serde_json::Value,
+    now: i64,
+) -> serde_json::Value {
+    let shown = |r: &serde_json::Value| r["status"].as_str() == Some("shown");
+    let by_section = json!({ "quant": q, "verbal": v, "di": d });
+    let pt = |r: &serde_json::Value, k: &str| r[k].as_i64().unwrap_or(0);
+    if shown(q) && shown(v) && shown(d) {
+        let total = gmat_sections_to_total(pt(q, "point"), pt(v, "point"), pt(d, "point"));
+        let low = gmat_sections_to_total(pt(q, "low"), pt(v, "low"), pt(d, "low"));
+        let high = gmat_sections_to_total(pt(q, "high"), pt(v, "high"), pt(d, "high"));
+        json!({
+            "status": "shown",
+            "total": total,
+            "point": total,
+            "low": low,
+            "high": high,
+            "scale": "GMAT Focus Total (205-805)",
+            "method": "Heuristic composite of the three section scores; GMAC's exact total formula is undisclosed, so the per-section breakdown is always shown.",
+            "by_section": by_section,
+            "updated_ts": now,
+        })
+    } else {
+        let mut unmet: Vec<String> = Vec::new();
+        for (name, r) in [("Quant", q), ("Verbal", v), ("Data Insights", d)] {
+            if !shown(r) {
+                let why = r["reason"].as_str().unwrap_or("needs more evidence");
+                unmet.push(format!("{name}: {why}"));
+            }
+        }
+        json!({
+            "status": "abstain",
+            "scale": "GMAT Focus Total (205-805)",
+            "reason": "A Total (205-805) needs enough evidence in all three sections.",
+            "unmet": unmet,
+            "by_section": by_section,
             "updated_ts": now,
         })
     }
@@ -898,26 +1064,123 @@ fn gmat_read_seed_notes(resource_dir: &str) -> Vec<GmatNoteFields> {
             data["questions"].as_array().cloned().unwrap_or_default()
         };
         for q in items {
-            let opts = &q["options"];
-            out.push(GmatNoteFields {
-                nid: 0,
-                stem: q["stem"].as_str().unwrap_or("").to_string(),
-                option_a: opts["A"].as_str().unwrap_or("").to_string(),
-                option_b: opts["B"].as_str().unwrap_or("").to_string(),
-                option_c: opts["C"].as_str().unwrap_or("").to_string(),
-                option_d: opts["D"].as_str().unwrap_or("").to_string(),
-                option_e: opts["E"].as_str().unwrap_or("").to_string(),
-                correct: q["correct"].as_str().unwrap_or("").to_string(),
-                explanation: q["explanation"].as_str().unwrap_or("").to_string(),
-                topic: q["topic"].as_str().unwrap_or("").to_string(),
-                difficulty: q["difficulty"].as_str().unwrap_or("").to_string(),
-            });
+            out.push(gmat_note_from_value(&q, "", ""));
         }
     }
     out
 }
 
-/// A GMAT PS question's fields, sourced from a collection note or bundled seed.
+/// Build a `GmatNoteFields` from a bundled JSON question object. `fallback_topic`
+/// and `fallback_passage` are used when the question itself carries no topic /
+/// passage (e.g. a Reading Comprehension passage-group member that inherits the
+/// group's passage + topic).
+fn gmat_note_from_value(q: &Value, fallback_topic: &str, fallback_passage: &str) -> GmatNoteFields {
+    let opts = &q["options"];
+    let topic = q["topic"]
+        .as_str()
+        .filter(|s| !s.is_empty())
+        .unwrap_or(fallback_topic)
+        .to_string();
+    let passage = q["passage"]
+        .as_str()
+        .filter(|s| !s.is_empty())
+        .unwrap_or(fallback_passage)
+        .to_string();
+    GmatNoteFields {
+        nid: 0,
+        stem: q["stem"].as_str().unwrap_or("").to_string(),
+        option_a: opts["A"].as_str().unwrap_or("").to_string(),
+        option_b: opts["B"].as_str().unwrap_or("").to_string(),
+        option_c: opts["C"].as_str().unwrap_or("").to_string(),
+        option_d: opts["D"].as_str().unwrap_or("").to_string(),
+        option_e: opts["E"].as_str().unwrap_or("").to_string(),
+        correct: q["correct"].as_str().unwrap_or("").to_string(),
+        explanation: q["explanation"].as_str().unwrap_or("").to_string(),
+        topic,
+        difficulty: q["difficulty"].as_str().unwrap_or("").to_string(),
+        passage,
+    }
+}
+
+/// Bundled Verbal content (`verbal_seed.json`, `verbal_questions.json`, and the
+/// passage-grouped `verbal_rc_questions.json`), used as a fallback when the
+/// collection has no GMAT Verbal notes yet (fresh phone). Passage groups of the
+/// form `{passage_id, passage, topic, questions:[...]}` are flattened so each
+/// question inherits its group's topic (passage text is threaded in Phase B).
+fn gmat_read_verbal_seed_notes(resource_dir: &str) -> Vec<GmatNoteFields> {
+    let mut out = Vec::new();
+    for name in [
+        "verbal_seed.json",
+        "verbal_questions.json",
+        "verbal_rc_questions.json",
+    ] {
+        let path = std::path::Path::new(resource_dir).join("content").join(name);
+        let Ok(text) = std::fs::read_to_string(&path) else {
+            continue;
+        };
+        let Ok(data) = serde_json::from_str::<Value>(&text) else {
+            continue;
+        };
+        let items = if data.is_array() {
+            data.as_array().cloned().unwrap_or_default()
+        } else if data["questions"].is_array() {
+            data["questions"].as_array().cloned().unwrap_or_default()
+        } else {
+            data["passages"].as_array().cloned().unwrap_or_default()
+        };
+        for entry in items {
+            if entry["questions"].is_array() {
+                let group_topic = entry["topic"].as_str().unwrap_or("");
+                let group_passage = entry["passage"].as_str().unwrap_or("");
+                for q in entry["questions"].as_array().cloned().unwrap_or_default() {
+                    out.push(gmat_note_from_value(&q, group_topic, group_passage));
+                }
+            } else {
+                out.push(gmat_note_from_value(&entry, "", ""));
+            }
+        }
+    }
+    out
+}
+
+/// Bundled Data Insights content (`di_seed.json`, `di_questions.json`), used as a
+/// fallback when the collection has no GMAT DI notes yet (fresh phone). Multi-
+/// Source items carry their source stimulus in the `passage` field.
+fn gmat_read_di_seed_notes(resource_dir: &str) -> Vec<GmatNoteFields> {
+    let mut out = Vec::new();
+    for name in ["di_seed.json", "di_questions.json"] {
+        let path = std::path::Path::new(resource_dir).join("content").join(name);
+        let Ok(text) = std::fs::read_to_string(&path) else {
+            continue;
+        };
+        let Ok(data) = serde_json::from_str::<Value>(&text) else {
+            continue;
+        };
+        let items = if data.is_array() {
+            data.as_array().cloned().unwrap_or_default()
+        } else {
+            data["questions"].as_array().cloned().unwrap_or_default()
+        };
+        for q in items {
+            out.push(gmat_note_from_value(&q, "", ""));
+        }
+    }
+    out
+}
+
+/// The target section ('quant' | 'verbal' | 'di') from a request body; default quant.
+fn gmat_section_of_body(body: &str) -> String {
+    let v = parse_body(body);
+    match v["section"].as_str() {
+        Some("verbal") => "verbal".to_string(),
+        Some("di") => "di".to_string(),
+        _ => "quant".to_string(),
+    }
+}
+
+/// A GMAT question's fields, sourced from a collection note or bundled seed.
+/// `passage` is empty for Quant + Critical Reasoning; Reading Comprehension fills
+/// it (shared across the questions on one passage).
 struct GmatNoteFields {
     nid: i64,
     stem: String,
@@ -930,6 +1193,7 @@ struct GmatNoteFields {
     explanation: String,
     topic: String,
     difficulty: String,
+    passage: String,
 }
 
 impl GmatNoteFields {
@@ -952,6 +1216,7 @@ impl GmatNoteFields {
             "explanation": self.explanation,
             "topic": self.topic,
             "difficulty": self.difficulty,
+            "passage": self.passage,
         })
     }
 
@@ -963,6 +1228,7 @@ impl GmatNoteFields {
             "correct": self.correct,
             "topic": self.topic,
             "difficulty": self.difficulty,
+            "passage": self.passage,
         })
     }
 
@@ -981,6 +1247,7 @@ impl GmatNoteFields {
             "topic": self.topic,
             "difficulty": difficulty,
             "seen": seen,
+            "passage": self.passage,
         })
     }
 }
@@ -1021,6 +1288,7 @@ impl Collection {
                 explanation: field_value(&names, vals, "Explanation"),
                 topic: field_value(&names, vals, "Topic"),
                 difficulty: field_value(&names, vals, "Difficulty"),
+                passage: field_value(&names, vals, "Passage"),
             });
         }
         Ok(out)
@@ -1038,10 +1306,106 @@ impl Collection {
         }
     }
 
+    /// Every GMAT Verbal note in the collection, as question field structs.
+    fn gmat_verbal_notes_from_collection(&mut self) -> Result<Vec<GmatNoteFields>> {
+        let nids = self.search_notes("note:\"GMAT Verbal\"", SortMode::NoOrder)?;
+        let mut out = Vec::with_capacity(nids.len());
+        for nid in nids {
+            let Some(note) = self.storage.get_note(nid)? else {
+                continue;
+            };
+            let names = self.storage.get_field_names(note.notetype_id)?;
+            let vals = note.fields();
+            out.push(GmatNoteFields {
+                nid: nid.0,
+                stem: field_value(&names, vals, "Stem"),
+                option_a: field_value(&names, vals, "OptionA"),
+                option_b: field_value(&names, vals, "OptionB"),
+                option_c: field_value(&names, vals, "OptionC"),
+                option_d: field_value(&names, vals, "OptionD"),
+                option_e: field_value(&names, vals, "OptionE"),
+                correct: field_value(&names, vals, "Correct"),
+                explanation: field_value(&names, vals, "Explanation"),
+                topic: field_value(&names, vals, "Topic"),
+                difficulty: field_value(&names, vals, "Difficulty"),
+                passage: field_value(&names, vals, "Passage"),
+            });
+        }
+        Ok(out)
+    }
+
+    /// The Verbal question pool: the collection's GMAT Verbal notes, or - if the
+    /// collection has none yet - the bundled verbal content files.
+    fn gmat_verbal_question_pool(&mut self, resource_dir: &str) -> Result<Vec<GmatNoteFields>> {
+        let from_col = self.gmat_verbal_notes_from_collection()?;
+        if from_col.is_empty() {
+            Ok(gmat_read_verbal_seed_notes(resource_dir))
+        } else {
+            Ok(from_col)
+        }
+    }
+
     /// Distinct non-empty topics present in the pool, in first-seen order
     /// (mirrors `_gmat_notes_by_topic().keys()`).
-    fn gmat_pool_topics(&mut self, resource_dir: &str) -> Result<Vec<String>> {
-        let pool = self.gmat_question_pool(resource_dir)?;
+    /// The question pool for a section ('quant' | 'verbal' | 'di').
+    fn gmat_pool_for_section(
+        &mut self,
+        resource_dir: &str,
+        section: &str,
+    ) -> Result<Vec<GmatNoteFields>> {
+        match section {
+            "verbal" => self.gmat_verbal_question_pool(resource_dir),
+            "di" => self.gmat_di_question_pool(resource_dir),
+            _ => self.gmat_question_pool(resource_dir),
+        }
+    }
+
+    /// Every GMAT DI note in the collection, as question field structs.
+    fn gmat_di_notes_from_collection(&mut self) -> Result<Vec<GmatNoteFields>> {
+        let nids = self.search_notes("note:\"GMAT DI\"", SortMode::NoOrder)?;
+        let mut out = Vec::with_capacity(nids.len());
+        for nid in nids {
+            let Some(note) = self.storage.get_note(nid)? else {
+                continue;
+            };
+            let names = self.storage.get_field_names(note.notetype_id)?;
+            let vals = note.fields();
+            out.push(GmatNoteFields {
+                nid: nid.0,
+                stem: field_value(&names, vals, "Stem"),
+                option_a: field_value(&names, vals, "OptionA"),
+                option_b: field_value(&names, vals, "OptionB"),
+                option_c: field_value(&names, vals, "OptionC"),
+                option_d: field_value(&names, vals, "OptionD"),
+                option_e: field_value(&names, vals, "OptionE"),
+                correct: field_value(&names, vals, "Correct"),
+                explanation: field_value(&names, vals, "Explanation"),
+                topic: field_value(&names, vals, "Topic"),
+                difficulty: field_value(&names, vals, "Difficulty"),
+                passage: field_value(&names, vals, "Passage"),
+            });
+        }
+        Ok(out)
+    }
+
+    /// The DI question pool: the collection's GMAT DI notes, or - if the
+    /// collection has none yet - the bundled DI content files.
+    fn gmat_di_question_pool(&mut self, resource_dir: &str) -> Result<Vec<GmatNoteFields>> {
+        let from_col = self.gmat_di_notes_from_collection()?;
+        if from_col.is_empty() {
+            Ok(gmat_read_di_seed_notes(resource_dir))
+        } else {
+            Ok(from_col)
+        }
+    }
+
+    /// Distinct topics for a section, in first-seen order.
+    fn gmat_pool_topics_for_section(
+        &mut self,
+        resource_dir: &str,
+        section: &str,
+    ) -> Result<Vec<String>> {
+        let pool = self.gmat_pool_for_section(resource_dir, section)?;
         let mut seen = HashSet::new();
         let mut topics = Vec::new();
         for q in &pool {
@@ -1459,7 +1823,78 @@ impl Collection {
 
     /// Turn diagnostic results into per-topic mastery + a study plan (mirrors
     /// `gmat_submit_pretest`).
-    fn gmat_submit_pretest(&mut self, body: &Value, resource_dir: &str, now: i64) -> Result<String> {
+    /// Build a section plan Value from a weakest-first ranked (topic, mastery)
+    /// list + the CURRENT profile. Pure read of config (no writes), so it is
+    /// reused at diagnostic-submit time and on profile change (the gated
+    /// onboarding sets the profile AFTER the three diagnostics).
+    fn gmat_plan_from_ranked(&self, ranked: &[(String, f64)], section: &str, now: i64) -> Value {
+        let profile = self
+            .get_config_optional::<Value, _>("gmatProfile")
+            .filter(Value::is_object)
+            .unwrap_or_else(|| json!({}));
+        let days_to_exam = gmat_days_to_exam(profile["exam_date"].as_str().unwrap_or(""));
+        let target_score = {
+            let t = json_i64(&profile["target_score"], 645);
+            let t = if t == 0 { 645 } else { t };
+            t.clamp(205, 805)
+        };
+        let days_per_week = {
+            let d = json_i64(&profile["days_per_week"], 5);
+            if d == 0 { 5 } else { d }
+        };
+        let plan_topics: Vec<Value> = ranked
+            .iter()
+            .map(|(t, m)| json!({ "topic": t, "mastery": m, "status": gmat_status_str(*m) }))
+            .collect();
+        json!({
+            "topics": plan_topics,
+            "days_per_week": days_per_week,
+            "days_to_exam": days_to_exam,
+            "created_ts": now,
+            "target_score": target_score,
+            "mastery_bar": gmat_mastery_bar(target_score),
+            "section": section,
+        })
+    }
+
+    /// Rebuild every section plan that already has a stored diagnosis, so a new
+    /// exam date / weekly availability re-paces all three tracks (mirrors the
+    /// desktop `gmat_save_profile` rebuild loop).
+    fn gmat_rebuild_section_plans(&mut self, now: i64) -> Result<()> {
+        for (section, plan_key, diag_key) in [
+            ("quant", "gmatPlan", "gmatDiagnosis"),
+            ("verbal", "gmatPlanVerbal", "gmatDiagnosisVerbal"),
+            ("di", "gmatPlanDI", "gmatDiagnosisDI"),
+        ] {
+            let diag = match self.get_config_optional::<Value, _>(diag_key) {
+                Some(d) if d.is_object() => d,
+                _ => continue,
+            };
+            let mut ranked: Vec<(String, f64)> = diag
+                .as_object()
+                .unwrap()
+                .iter()
+                .map(|(t, v)| (t.clone(), v.as_f64().unwrap_or(0.5)))
+                .collect();
+            ranked.sort_by(|a, b| {
+                a.1
+                    .partial_cmp(&b.1)
+                    .unwrap_or(std::cmp::Ordering::Equal)
+                    .then_with(|| a.0.cmp(&b.0))
+            });
+            let plan = self.gmat_plan_from_ranked(&ranked, section, now);
+            self.gmat_put_config(plan_key, &plan)?;
+        }
+        Ok(())
+    }
+
+    fn gmat_submit_pretest(
+        &mut self,
+        body: &Value,
+        resource_dir: &str,
+        now: i64,
+        section: &str,
+    ) -> Result<String> {
         let results = body["results"].as_array().cloned().unwrap_or_default();
         let mut agg: HashMap<String, (i64, i64)> = HashMap::new();
         for r in &results {
@@ -1474,7 +1909,7 @@ impl Collection {
             }
         }
 
-        let topics = self.gmat_pool_topics(resource_dir)?;
+        let topics = self.gmat_pool_topics_for_section(resource_dir, section)?;
         let mut diagnosis = serde_json::Map::new();
         for topic in &topics {
             let (correct, total) = agg.get(topic).copied().unwrap_or((0, 0));
@@ -1492,25 +1927,6 @@ impl Collection {
         // now that mastery is populated, turn on topic-aware scheduling
         self.set_config_bool(BoolKey::TopicAwareScheduling, true, false)?;
 
-        let profile = self
-            .get_config_optional::<Value, _>("gmatProfile")
-            .filter(Value::is_object)
-            .unwrap_or_else(|| json!({}));
-        let days_to_exam = gmat_days_to_exam(profile["exam_date"].as_str().unwrap_or(""));
-        let target_score = {
-            let t = json_i64(&profile["target_score"], 645);
-            let t = if t == 0 { 645 } else { t };
-            t.clamp(205, 805)
-        };
-        let days_per_week = {
-            let d = json_i64(&profile["days_per_week"], 5);
-            if d == 0 {
-                5
-            } else {
-                d
-            }
-        };
-
         // rank weakest-first; ties keep collection topic order (stable sort)
         let mut ranked: Vec<(String, f64)> = topics
             .iter()
@@ -1520,28 +1936,17 @@ impl Collection {
             })
             .collect();
         ranked.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
-        let plan_topics: Vec<Value> = ranked
-            .iter()
-            .map(|(t, m)| {
-                json!({
-                    "topic": t,
-                    "mastery": m,
-                    "status": gmat_status_str(*m),
-                })
-            })
-            .collect();
-        let plan = json!({
-            "topics": plan_topics,
-            "days_per_week": days_per_week,
-            "days_to_exam": days_to_exam,
-            "created_ts": now,
-            "target_score": target_score,
-            "mastery_bar": gmat_mastery_bar(target_score),
-        });
+        let plan = self.gmat_plan_from_ranked(&ranked, section, now);
         let diagnosis_val = Value::Object(diagnosis);
-        self.gmat_put_config("gmatDiagnosis", &diagnosis_val)?;
-        self.gmat_put_config("gmatPlan", &plan)?;
-        Ok(json!({ "diagnosis": diagnosis_val, "plan": plan }).to_string())
+        // Quant keeps the original keys; Verbal + DI are parallel tracks.
+        let (diag_key, plan_key) = match section {
+            "verbal" => ("gmatDiagnosisVerbal", "gmatPlanVerbal"),
+            "di" => ("gmatDiagnosisDI", "gmatPlanDI"),
+            _ => ("gmatDiagnosis", "gmatPlan"),
+        };
+        self.gmat_put_config(diag_key, &diagnosis_val)?;
+        self.gmat_put_config(plan_key, &plan)?;
+        Ok(json!({ "diagnosis": diagnosis_val, "plan": plan, "section": section }).to_string())
     }
 
     /// The lesson catalog merged with the student's mastery + learned state
@@ -1966,6 +2371,16 @@ impl Collection {
             }
         }
 
+        // Tag the Quant blocks, then append the additive Verbal track.
+        for b in &mut blocks {
+            if let Some(obj) = b.as_object_mut() {
+                obj.entry("section").or_insert(json!("quant"));
+            }
+        }
+        for sec in ["verbal", "di"] {
+            blocks.extend(self.gmat_section_today_blocks(resource_dir, now_ts, &learned, sec)?);
+        }
+
         let total_est: i64 = blocks
             .iter()
             .map(|b| b["est_minutes"].as_i64().unwrap_or(0))
@@ -1976,6 +2391,149 @@ impl Collection {
             "blocks": blocks,
             "daily_minutes": total_est,
         }))
+    }
+
+    /// The additive Verbal / Data Insights portion of Today for one section:
+    /// spaced review, one lesson, one topic quiz, and targeted practice - each
+    /// tagged with `section` (mirrors `_gmat_section_today_blocks`). [] until the
+    /// student has taken that section's diagnostic.
+    fn gmat_section_today_blocks(
+        &mut self,
+        resource_dir: &str,
+        now_ts: i64,
+        learned: &Value,
+        section: &str,
+    ) -> Result<Vec<Value>> {
+        const REVIEW_MIN: f64 = 1.5;
+        const LESSON_MIN: f64 = 12.0;
+        const PRACTICE_MIN: f64 = 2.0;
+        const QUIZ_MIN: f64 = 8.0;
+        let plan_key = match section {
+            "verbal" => "gmatPlanVerbal",
+            "di" => "gmatPlanDI",
+            _ => return Ok(Vec::new()),
+        };
+        let plan = match self.get_config_optional::<Value, _>(plan_key) {
+            Some(p) if !p.is_null() => p,
+            _ => return Ok(Vec::new()),
+        };
+        let label = if section == "di" { "Data Insights" } else { "Verbal" };
+        let deck = if section == "di" { "GMAT::DI" } else { "GMAT::Verbal" };
+        let prefix = format!("gmat::{section}");
+        let empty: Vec<Value> = Vec::new();
+        let topics: Vec<Value> = plan["topics"].as_array().unwrap_or(&empty).clone();
+        let is_learned = |t: &str| learned.get(t).is_some();
+        let index = gmat_read_lessons_index(resource_dir);
+        let lesson_ids: HashSet<String> = index["topics"]
+            .as_array()
+            .map(|arr| {
+                arr.iter()
+                    .filter_map(|t| t["topic_id"].as_str())
+                    .filter(|id| id.starts_with(&prefix))
+                    .map(String::from)
+                    .collect()
+            })
+            .unwrap_or_default();
+        let mut blocks: Vec<Value> = Vec::new();
+
+        // spaced review (due from the section deck)
+        self.gmat_select_deck(deck)?;
+        let queued = self.get_queued_cards(1, false)?;
+        let due_total =
+            queued.new_count as i64 + queued.learning_count as i64 + queued.review_count as i64;
+        if due_total > 0 {
+            blocks.push(json!({
+                "kind": "review",
+                "section": section,
+                "title": format!("{label} spaced review"),
+                "detail": format!("{due_total} question(s) due today"),
+                "count": due_total,
+                "est_minutes": py_round(due_total as f64 * REVIEW_MIN),
+            }));
+        }
+
+        // learn the weakest unlearned topic with a lesson
+        if let Some(entry) = topics.iter().find(|t| {
+            let tid = t["topic"].as_str().unwrap_or("");
+            !tid.is_empty() && !is_learned(tid) && lesson_ids.contains(tid)
+        }) {
+            let m = entry["mastery"].as_f64().unwrap_or(0.5);
+            blocks.push(json!({
+                "kind": "learn",
+                "section": section,
+                "title": format!("Learn a {label} topic"),
+                "detail": format!("{} · {label}", gmat_status_str(m)),
+                "topic": entry["topic"].as_str().unwrap_or(""),
+                "est_minutes": py_round(LESSON_MIN),
+            }));
+        }
+
+        // one topic quiz for a lesson-done, not-yet-mastered topic
+        let quizzes_cfg = self
+            .get_config_optional::<Value, _>("gmatQuizzes")
+            .filter(Value::is_object)
+            .unwrap_or_else(|| json!({}));
+        for t in &topics {
+            let tid = t["topic"].as_str().unwrap_or("");
+            if tid.is_empty() || !is_learned(tid) || !lesson_ids.contains(tid) {
+                continue;
+            }
+            if self.gmat_topic_mastered(tid) {
+                continue;
+            }
+            let sessions = quizzes_cfg[tid].as_array().cloned().unwrap_or_default();
+            let passing: Vec<&Value> = sessions
+                .iter()
+                .filter(|s| s["accuracy"].as_f64().unwrap_or(0.0) >= GMAT_QUIZ_PASS_ACCURACY)
+                .collect();
+            let mut spaced = false;
+            if !passing.is_empty() {
+                let last_pass = passing
+                    .iter()
+                    .map(|s| json_i64(&s["ts"], 0))
+                    .max()
+                    .unwrap_or(0);
+                if now_ts - last_pass < GMAT_QUIZ_RESPACE_SECS {
+                    continue;
+                }
+                spaced = true;
+            }
+            let title = if spaced {
+                format!("{label} quiz (spaced)")
+            } else {
+                format!("{label} quiz")
+            };
+            blocks.push(json!({
+                "kind": "quiz",
+                "section": section,
+                "title": title,
+                "detail": format!("prove {} - {GMAT_QUIZ_N} questions, timed", topic_leaf(tid)),
+                "topic": tid,
+                "count": GMAT_QUIZ_N,
+                "est_minutes": py_round(QUIZ_MIN),
+            }));
+            break;
+        }
+
+        // targeted practice on the weakest learned topic
+        if let Some(weak) = topics.iter().find(|t| {
+            let tid = t["topic"].as_str().unwrap_or("");
+            !tid.is_empty() && is_learned(tid)
+        }) {
+            let tid = weak["topic"].as_str().unwrap_or("");
+            let n = 10;
+            blocks.push(json!({
+                "kind": "practice",
+                "section": section,
+                "title": format!("{label} targeted practice"),
+                "detail": format!("{n} on {}", topic_leaf(tid)),
+                "count": n,
+                "topic": tid,
+                "est_minutes": py_round(n as f64 * PRACTICE_MIN),
+            }));
+        }
+
+        Ok(blocks)
     }
 
     /// A tentative day-by-day study calendar from today through the exam
@@ -2138,7 +2696,62 @@ impl Collection {
             }
         }
 
-        let last_lesson_off = lessons_by.keys().copied().max().unwrap_or(-1);
+        let mut last_lesson_off = lessons_by.keys().copied().max().unwrap_or(-1);
+
+        // --- Verbal + Data Insights (additive): project each section's un-mastered
+        // topics across the SAME eligible study days, interleaved with Quant.
+        // Display-only, tagged with the section (mirrors the Python calendar).
+        type SecProj = (
+            &'static str,
+            HashMap<i64, Vec<String>>,
+            HashMap<i64, Vec<String>>,
+            HashMap<i64, Vec<String>>,
+        );
+        let mut sec_proj: Vec<SecProj> = Vec::new();
+        for sec in ["verbal", "di"] {
+            let plan_key = if sec == "di" { "gmatPlanDI" } else { "gmatPlanVerbal" };
+            let mut s_lessons: HashMap<i64, Vec<String>> = HashMap::new();
+            let mut s_quizzes: HashMap<i64, Vec<String>> = HashMap::new();
+            let mut s_requizzes: HashMap<i64, Vec<String>> = HashMap::new();
+            if let Some(plan_s) = self
+                .get_config_optional::<Value, _>(plan_key)
+                .filter(|p| !p.is_null())
+            {
+                let empty_s: Vec<Value> = Vec::new();
+                let topics_s = plan_s["topics"].as_array().unwrap_or(&empty_s).clone();
+                let remaining_s: Vec<String> = topics_s
+                    .iter()
+                    .filter_map(|t| t["topic"].as_str().map(String::from))
+                    .filter(|tid| !tid.is_empty() && !self.gmat_topic_mastered(tid))
+                    .collect();
+                let rs = remaining_s.len();
+                if rs > 0 && e > 0 {
+                    for k in 0..rs {
+                        let idx = ((k * e) / rs).min(e - 1);
+                        let o = eligible[idx];
+                        let topic = remaining_s[k].clone();
+                        if learned_ids.contains(&topic) {
+                            s_quizzes.entry(o).or_default().push(topic.clone());
+                            if let Some(rq) = study_at_least(o + respace_days) {
+                                s_requizzes.entry(rq).or_default().push(topic);
+                            }
+                        } else {
+                            s_lessons.entry(o).or_default().push(topic.clone());
+                            if let Some(q_off) = next_study(o) {
+                                s_quizzes.entry(q_off).or_default().push(topic.clone());
+                                if let Some(rq) = study_at_least(q_off + respace_days) {
+                                    s_requizzes.entry(rq).or_default().push(topic);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if let Some(m) = s_lessons.keys().copied().max() {
+                last_lesson_off = last_lesson_off.max(m);
+            }
+            sec_proj.push((sec, s_lessons, s_quizzes, s_requizzes));
+        }
 
         // cumulative topics learned by each offset (already lesson-done + lessons
         // placed up to and including that day) -> review scaling + milestone gate
@@ -2185,7 +2798,8 @@ impl Collection {
             let d = today + Duration::days(off);
             let is_exam = off == days_to_exam;
             let study = is_study(off) && !is_exam;
-            let has_lesson = lessons_by.contains_key(&off);
+            let has_lesson = lessons_by.contains_key(&off)
+                || sec_proj.iter().any(|(_, l, _, _)| l.contains_key(&off));
             let has_test = practice_tests.contains(&off);
             let has_ms = milestones.contains(&off);
             let mut items: Vec<Value> = Vec::new();
@@ -2228,6 +2842,43 @@ impl Collection {
                                 "title": format!("Re-quiz: {}", topic_leaf(tp)),
                                 "est_minutes": py_round(QUIZ_MIN),
                             }));
+                        }
+                    }
+                    // Verbal + Data Insights (additive) projection for this day.
+                    for (sec, s_lessons, s_quizzes, s_requizzes) in &sec_proj {
+                        let label = if *sec == "di" { "Data Insights" } else { "Verbal" };
+                        if let Some(tps) = s_lessons.get(&off) {
+                            for tp in tps {
+                                items.push(json!({
+                                    "kind": "lesson",
+                                    "section": sec,
+                                    "topic": tp,
+                                    "title": format!("Learn {label}: {}", topic_leaf(tp)),
+                                    "est_minutes": py_round(LESSON_MIN),
+                                }));
+                            }
+                        }
+                        if let Some(tps) = s_quizzes.get(&off) {
+                            for tp in tps {
+                                items.push(json!({
+                                    "kind": "quiz",
+                                    "section": sec,
+                                    "topic": tp,
+                                    "title": format!("{label} quiz: {}", topic_leaf(tp)),
+                                    "est_minutes": py_round(QUIZ_MIN),
+                                }));
+                            }
+                        }
+                        if let Some(tps) = s_requizzes.get(&off) {
+                            for tp in tps {
+                                items.push(json!({
+                                    "kind": "requiz",
+                                    "section": sec,
+                                    "topic": tp,
+                                    "title": format!("{label} re-quiz: {}", topic_leaf(tp)),
+                                    "est_minutes": py_round(QUIZ_MIN),
+                                }));
+                            }
                         }
                     }
                     if has_ms {
@@ -2671,6 +3322,12 @@ impl Collection {
                 let plan = self
                     .get_config_optional::<Value, _>("gmatPlan")
                     .unwrap_or(Value::Null);
+                let plan_verbal = self
+                    .get_config_optional::<Value, _>("gmatPlanVerbal")
+                    .unwrap_or(Value::Null);
+                let plan_di = self
+                    .get_config_optional::<Value, _>("gmatPlanDI")
+                    .unwrap_or(Value::Null);
                 // null when unset (so the app can prefer synced over local); a
                 // real bool once the user has toggled AI on any device.
                 let ai_enabled = match self.get_config_optional::<bool, _>("gmatAiEnabled") {
@@ -2690,6 +3347,8 @@ impl Collection {
                     "readiness": scores["readiness"],
                     "profile": profile,
                     "plan": plan,
+                    "planVerbal": plan_verbal,
+                    "planDI": plan_di,
                     "gmatAiEnabled": ai_enabled,
                 })
                 .to_string()
@@ -2703,7 +3362,12 @@ impl Collection {
                 json!({ "questions": questions }).to_string()
             }
             "gmatNextCard" => {
-                self.gmat_select_deck("GMAT::Quant")?;
+                let deck = match gmat_section_of_body(body).as_str() {
+                    "verbal" => "GMAT::Verbal",
+                    "di" => "GMAT::DI",
+                    _ => "GMAT::Quant",
+                };
+                self.gmat_select_deck(deck)?;
                 let queued = self.get_queued_cards(1, false)?;
                 let counts = json!({
                     "new": queued.new_count,
@@ -2731,6 +3395,7 @@ impl Collection {
                         "explanation": field_value(&names, vals, "Explanation"),
                         "topic": field_value(&names, vals, "Topic"),
                         "difficulty": field_value(&names, vals, "Difficulty"),
+                        "passage": field_value(&names, vals, "Passage"),
                     })
                 } else {
                     Value::Null
@@ -2742,7 +3407,12 @@ impl Collection {
                 let card_id = json_i64(&body["card_id"], 0);
                 let correct = body["correct"].as_bool().unwrap_or(false);
                 let ms = json_i64(&body["ms"], 0).clamp(0, u32::MAX as i64) as u32;
-                self.gmat_select_deck("GMAT::Quant")?;
+                let deck = match body["section"].as_str() {
+                    Some("verbal") => "GMAT::Verbal",
+                    Some("di") => "GMAT::DI",
+                    _ => "GMAT::Quant",
+                };
+                self.gmat_select_deck(deck)?;
                 // answer through the real scheduler; if the queue moved on, the
                 // helper errors and we skip silently (matches Python's b"" path),
                 // updating mastery only when a real answer landed.
@@ -2773,7 +3443,16 @@ impl Collection {
                     "target_score": target,
                 });
                 self.gmat_put_config("gmatProfile", &profile)?;
+                // Re-pace every section that already has a diagnosis (profile is
+                // set AFTER the three diagnostics in the gated onboarding).
+                self.gmat_rebuild_section_plans(now)?;
                 String::new()
+            }
+            "gmatEnsureContent" => {
+                // iOS has no import-to-collection path; it receives the full
+                // bundled content by downloading the desktop-imported collection
+                // via colsync. So this is a no-op here (the client won't upload).
+                json!({ "imported": 0, "changed": false }).to_string()
             }
             "gmatSetAiEnabled" => {
                 // Mirror the AI on/off choice to synced config (parity with the
@@ -2836,7 +3515,12 @@ impl Collection {
                 json!({ "ok": true, "entry": entry }).to_string()
             }
             "gmatPretestQuestions" => {
-                let pool = self.gmat_question_pool(resource_dir)?;
+                let section = gmat_section_of_body(body);
+                let count = {
+                    let v = parse_body(body);
+                    json_i64(&v["count"], 12).clamp(6, 30) as usize
+                };
+                let pool = self.gmat_pool_for_section(resource_dir, &section)?;
                 let mut by_topic: HashMap<String, Vec<usize>> = HashMap::new();
                 for (i, q) in pool.iter().enumerate() {
                     if !q.topic.is_empty() {
@@ -2855,19 +3539,22 @@ impl Collection {
                 let mut all: Vec<usize> = by_topic.values().flatten().copied().collect();
                 all.shuffle(&mut rng);
                 for idx in all {
-                    if picked.len() >= 21 {
+                    if picked.len() >= count {
                         break;
                     }
                     if seen.insert(idx) {
                         picked.push(idx);
                     }
                 }
-                picked.truncate(21);
+                picked.truncate(count);
                 picked.shuffle(&mut rng);
                 let questions: Vec<Value> = picked.iter().map(|&i| pool[i].pretest_json()).collect();
                 json!({ "questions": questions, "seconds": 45 * 60 }).to_string()
             }
-            "gmatSubmitPretest" => self.gmat_submit_pretest(&parse_body(body), resource_dir, now)?,
+            "gmatSubmitPretest" => {
+                let section = gmat_section_of_body(body);
+                self.gmat_submit_pretest(&parse_body(body), resource_dir, now, &section)?
+            }
             "gmatLessonsIndex" => self.gmat_lessons_index_json(resource_dir),
             "gmatLesson" => {
                 let body = parse_body(body);
@@ -3012,7 +3699,10 @@ impl Collection {
                 let body = parse_body(body);
                 let topic = body["topic"].as_str().unwrap_or("");
                 let n = json_i64(&body["n"], 10).clamp(1, 50) as usize;
-                let pool_notes = self.gmat_question_pool(resource_dir)?;
+                // The topic encodes its section, so a verbal practice/quiz pulls
+                // from the GMAT Verbal pool; quant is unchanged.
+                let section = gmat_section_of_topic(topic);
+                let pool_notes = self.gmat_pool_for_section(resource_dir, section)?;
                 let mut seen_nids: HashSet<i64> = HashSet::new();
                 {
                     let mut stmt = self

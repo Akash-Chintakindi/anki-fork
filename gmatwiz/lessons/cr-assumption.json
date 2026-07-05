@@ -1,0 +1,281 @@
+{
+  "topic_id": "gmat::verbal::cr::assumption",
+  "slug": "cr-assumption",
+  "title": "Critical Reasoning: Assumption",
+  "prerequisites": [
+    "identify an argument's conclusion",
+    "separate premises from the conclusion"
+  ],
+  "learning_objectives": [
+    "Locate the conclusion and the evidence, then find the gap between them.",
+    "State the unstated premise the argument needs in order to hold.",
+    "Use the negation test: if negating a choice breaks the argument, it is the assumption."
+  ],
+  "pedagogical_model": {
+    "frameworks": [
+      "Rosenshine (daily review)",
+      "Archer (I-do/we-do/you-do)",
+      "SPOV2 application-first"
+    ],
+    "sequence": "I do -> we do -> you do",
+    "application_first": true,
+    "explanation_policy": "revealed_after_attempt"
+  },
+  "opening": {
+    "builds_on": "Telling an argument's conclusion apart from its evidence.",
+    "do_now": {
+      "instructions": "No notes. Answer from memory in 4 minutes.",
+      "items": [
+        {
+          "prompt": "In 'Sales rose after we added music, so music boosts sales,' what is the conclusion?",
+          "answer": "Music boosts sales.",
+          "targets": "finding the conclusion"
+        },
+        {
+          "prompt": "What is an assumption?",
+          "answer": "An unstated premise the argument needs to be true.",
+          "targets": "definition"
+        },
+        {
+          "prompt": "Negate: 'The two groups were similar in all other respects.'",
+          "answer": "The two groups differed in some other relevant respect.",
+          "targets": "negation"
+        }
+      ]
+    },
+    "retrieval_starter": {
+      "duration_minutes": 5,
+      "purpose": "Recalls conclusion-vs-evidence and negation, the two tools an assumption question rests on.",
+      "if_students_struggle": "If they cannot find the conclusion, have them ask 'what is the author trying to convince me of?' first.",
+      "questions": [
+        {
+          "prompt": "Underline the conclusion: 'Profits will rise because costs fell.'",
+          "answer": "'Profits will rise' is the conclusion; 'costs fell' is the evidence.",
+          "targets": "conclusion vs premise"
+        },
+        {
+          "prompt": "Why does 'costs fell -> profits rise' need an assumption?",
+          "answer": "It assumes revenue will not fall by more than costs did.",
+          "targets": "the gap"
+        }
+      ]
+    },
+    "prior_knowledge_bridge": "You can already find a conclusion and its evidence. An assumption question asks for the missing link between them - the fact the author never states but silently relies on. Find the gap, and the assumption is what bridges it.",
+    "learning_intention": "By the end you can find the gap between evidence and conclusion and state the assumption that closes it, confirming it with the negation test.",
+    "success_criteria": [
+      "I can name the conclusion and the evidence in one sentence each.",
+      "I can describe the gap the argument leaps over.",
+      "I can use the negation test to confirm the required assumption."
+    ],
+    "opening_script": [
+      {
+        "time": "0:00-4:00",
+        "move": "Do Now on screen; learners answer from memory, no notes."
+      },
+      {
+        "time": "4:00-6:00",
+        "move": "Cold-call answers; name the argument's conclusion vs premises."
+      },
+      {
+        "time": "6:00-8:00",
+        "move": "Bridge to today's question type; state what the stem is really asking."
+      },
+      {
+        "time": "8:00-10:00",
+        "move": "Move to I do: model the reasoning on one worked item."
+      }
+    ]
+  },
+  "i_do": {
+    "id": "i_do",
+    "stem": "A company will cut its shipping costs by moving its warehouse closer to the highway, because trucks will then spend less time in city traffic. The argument depends on which of the following assumptions?",
+    "options": {
+      "A": "Time spent in city traffic is a meaningful part of the trucks' current shipping costs.",
+      "B": "The new warehouse location is larger than the current one.",
+      "C": "The company's competitors also ship by truck.",
+      "D": "Highway tolls are lower than city parking fees.",
+      "E": "The company ships more products in summer than in winter."
+    },
+    "correct": "A",
+    "explanation": "The conclusion (lower shipping costs) rests on cutting traffic time; that only helps if traffic time is actually a meaningful cost driver. Negate A - traffic time is negligible - and the savings vanish, so A is required.",
+    "difficulty": "medium",
+    "think_aloud_steps": [
+      "Conclusion: shipping costs will fall. Evidence: less time in city traffic.",
+      "Gap: does traffic time actually drive costs? The argument assumes it does.",
+      "Negation test: if traffic time is a negligible cost, moving saves nothing - argument collapses.",
+      "So A is the needed assumption; the others are irrelevant to the cost link."
+    ],
+    "key_takeaway": "An assumption bridges the evidence to the conclusion; negate it and the argument should fall apart.",
+    "topic": "gmat::verbal::cr::assumption",
+    "source": "GMATWiz authored",
+    "official_flag": false,
+    "question_type": "Critical Reasoning"
+  },
+  "we_do": [
+    {
+      "id": "we_1",
+      "stem": "A school will raise its graduation rate by giving every student a personal laptop, since students will be able to complete assignments more easily. This argument assumes that",
+      "options": {
+        "A": "difficulty completing assignments is a significant reason students currently fail to graduate.",
+        "B": "laptops are cheaper than textbooks.",
+        "C": "teachers prefer digital assignments to paper ones.",
+        "D": "students do not already own computers at home.",
+        "E": "the school's internet connection is reliable."
+      },
+      "correct": "A",
+      "explanation": "The plan only raises graduation if assignment difficulty is a real cause of non-graduation; otherwise easier assignments change nothing. Negating A breaks the link.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "What is the conclusion, and what is the single piece of evidence for it?",
+        "Ask: for easier assignments to raise graduation, what must be true about why students don't graduate?",
+        "Try the negation test on each choice."
+      ],
+      "immediate_feedback": {
+        "if_correct": "Right - the plan works only if assignment difficulty is actually holding students back.",
+        "if_incorrect": "The other choices may be nice to know, but negating them leaves the argument standing; negating A destroys it."
+      },
+      "topic": "gmat::verbal::cr::assumption",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning"
+    },
+    {
+      "id": "we_2",
+      "stem": "A city will reduce littering in its parks by adding more trash cans, because people litter when a trash can is not within easy reach. The argument relies on the assumption that",
+      "options": {
+        "A": "a shortage of nearby trash cans is a substantial cause of the current littering.",
+        "B": "the new trash cans will be emptied every day.",
+        "C": "littering is worse in parks than on city streets.",
+        "D": "residents have complained about the litter.",
+        "E": "the parks are busiest on weekends."
+      },
+      "correct": "A",
+      "explanation": "Adding cans reduces littering only if 'no can nearby' is really why people litter; if they litter for other reasons, more cans won't help. Negate A and the plan fails.",
+      "difficulty": "medium",
+      "scaffold_hints": [
+        "Separate the recommendation from its stated reason.",
+        "The reason names one cause of littering - the argument bets that cause is the main one.",
+        "Which choice, if false, sinks the plan?"
+      ],
+      "immediate_feedback": {
+        "if_correct": "Exactly - the fix assumes the diagnosed cause is a real, substantial one.",
+        "if_incorrect": "Focus on what MUST be true for 'more cans' to cut littering, not on details that merely sound relevant."
+      },
+      "topic": "gmat::verbal::cr::assumption",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning"
+    }
+  ],
+  "you_do": [
+    {
+      "id": "you_1",
+      "stem": "A publisher will increase magazine subscriptions by adding a weekly puzzle section, reasoning that readers enjoy puzzles. The argument assumes that",
+      "options": {
+        "A": "enough potential subscribers value a puzzle section enough to subscribe because of it.",
+        "B": "the puzzles will be written by a famous puzzle designer.",
+        "C": "the magazine currently has no games of any kind.",
+        "D": "puzzle sections are cheaper to produce than articles.",
+        "E": "readers spend more time on puzzles than on articles."
+      },
+      "correct": "A",
+      "explanation": "Subscriptions rise only if the puzzle section actually moves people to subscribe; general enjoyment of puzzles is not enough. Negating A removes the reason subscriptions would grow.",
+      "difficulty": "medium",
+      "topic": "gmat::verbal::cr::assumption",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_2",
+      "stem": "A restaurant will boost weekday lunch profits by offering a faster express menu, since many office workers skip lunch out because they lack time. This argument depends on the assumption that",
+      "options": {
+        "A": "a meaningful number of these workers would buy lunch if service were faster.",
+        "B": "the express menu will use the same ingredients as the regular menu.",
+        "C": "the restaurant is located near several offices.",
+        "D": "competing restaurants do not offer express menus.",
+        "E": "office workers prefer hot meals to cold ones."
+      },
+      "correct": "A",
+      "explanation": "The profit gain depends on time-pressed workers actually buying once service is faster; if they would still not buy, the express menu adds nothing. Negation of A breaks the plan.",
+      "difficulty": "medium",
+      "topic": "gmat::verbal::cr::assumption",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    },
+    {
+      "id": "you_3",
+      "stem": "A university claims it will improve student writing by requiring a first-year composition course, because practice improves writing. The argument assumes that",
+      "options": {
+        "A": "the composition course will give students the kind of practice that actually improves writing.",
+        "B": "most students dislike writing when they arrive.",
+        "C": "the course will be taught by tenured professors.",
+        "D": "students write more in college than in high school.",
+        "E": "writing ability affects starting salaries."
+      },
+      "correct": "A",
+      "explanation": "'Practice improves writing' supports the plan only if the required course supplies effective practice; a course that does not would not help. Negating A defeats the argument.",
+      "difficulty": "hard",
+      "topic": "gmat::verbal::cr::assumption",
+      "source": "GMATWiz authored",
+      "official_flag": false,
+      "question_type": "Critical Reasoning",
+      "reveal_explanation_after_attempt": true,
+      "error_log_error_types": [
+        "content gap",
+        "reasoning flaw",
+        "timing",
+        "careless",
+        "trap"
+      ]
+    }
+  ],
+  "mastery_check": {
+    "definition": "A topic is mastered at >=85% correct on new/held-out-style questions across >=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.",
+    "threshold": 0.85,
+    "min_spaced_sessions": 2,
+    "conditions": [
+      ">=85% correct on new/held-out-style items (not flashcard recall) per session",
+      "sustained across >=2 spaced sessions with a delay between them",
+      "per-topic memory surfaced only after >=20 graded reviews (PRD give-up rule)",
+      "per-topic performance surfaced only after >=8 application attempts (PRD give-up rule)"
+    ],
+    "on_fail": "Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -> you-do loop before re-testing."
+  },
+  "citations": [
+    {
+      "name": "GMAC - GMAT Focus Edition (official exam overview)",
+      "url": "https://www.mba.com/exams/gmat-focus-edition",
+      "note": "Official exam structure and Verbal Reasoning scope.",
+      "primary": true
+    },
+    {
+      "name": "Khan Academy - LSAT Logical Reasoning (free)",
+      "url": "https://www.khanacademy.org/prep/lsat",
+      "note": "Free lessons on argument structure, assumptions, strengthen/weaken, and flaws."
+    }
+  ],
+  "domain": "Critical Reasoning",
+  "section": "Verbal Reasoning",
+  "question_type": "Critical Reasoning",
+  "estimated_minutes": 18,
+  "schema_version": "1.0",
+  "exam": "GMAT Focus Edition"
+}

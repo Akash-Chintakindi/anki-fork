@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Critical Reasoning: Assumption &middot; GMATWiz Verbal Reasoning</title>
+<style>
+:root{
+  --ink:#1a1813; --muted:#6b6358; --rule:#d9d2c5; --bg:#fbf9f4; --card:#fffdf8;
+  --accent:#7a3b2e; --accent2:#3a5a40; --link:#7a3b2e; --code:#2b2b2b;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:3rem 2rem 6rem;}
+.content{max-width:720px;}
+header.masthead{border-bottom:1px solid var(--rule); padding-bottom:1.2rem; margin-bottom:2rem;}
+.kicker{font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:0 0 .4rem;}
+h1{font-size:2.3rem; line-height:1.1; margin:.1rem 0 .6rem; font-weight:600; letter-spacing:-.01em;}
+.meta{color:var(--muted); font-size:.9rem; margin:0;}
+.meta b{color:var(--ink); font-weight:600;}
+h2{font-size:1.45rem; margin:2.8rem 0 .3rem; font-weight:600; letter-spacing:-.01em;}
+h2 .num{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:.5rem;}
+h3{font-size:1.06rem; margin:1.6rem 0 .4rem; font-weight:600;}
+.sub{color:var(--muted); font-style:italic; margin:.1rem 0 1rem; font-size:.95rem;}
+p{margin:.6rem 0;} ul,ol{margin:.5rem 0 .9rem; padding-left:1.3rem;} li{margin:.25rem 0;}
+a{color:var(--link); text-decoration:none; border-bottom:1px solid rgba(122,59,46,.35);}
+a:hover{border-bottom-color:var(--link);}
+.lead{font-size:1.08rem;}
+section{position:relative;}
+.note{font-size:.8rem; color:var(--muted); line-height:1.4;}
+.objectives{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1rem 1.2rem;}
+.objectives ul{margin:.3rem 0 0;}
+.intent{border-left:3px solid var(--accent2); padding:.4rem 0 .4rem 1rem; margin:1rem 0; font-size:1.05rem;}
+.donow{background:#2b2620; color:#f3ecde; border-radius:8px; padding:1.1rem 1.3rem; margin:1rem 0;}
+.donow .tag{font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:#d8b48a;}
+.donow ol{padding-left:1.2rem;} .donow li{margin:.4rem 0;}
+.donow .ans{color:#b9c6a9; font-style:italic; font-size:.86rem; display:block; margin-top:.15rem;}
+table{border-collapse:collapse; width:100%; font-size:.92rem; margin:.6rem 0 1rem;}
+th,td{text-align:left; padding:.45rem .6rem; border-bottom:1px solid var(--rule); vertical-align:top;}
+th{font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+td.t{white-space:nowrap; color:var(--accent); font-variant-numeric:tabular-nums; width:6.5rem;}
+.q{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1.1rem 1.3rem; margin:1.1rem 0;}
+.q .qid{font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+.q .qid .diff{float:right; color:var(--accent2);}
+.q .stem{font-size:1.03rem; margin:.35rem 0 .6rem;}
+.choices{list-style:none; padding:0; margin:.2rem 0 .4rem; counter-reset:c;}
+.choices li{padding:.32rem .6rem; border:1px solid var(--rule); border-radius:6px; margin:.3rem 0; background:#fff;}
+.choices li .lab{display:inline-block; width:1.5rem; font-weight:600; color:var(--accent);}
+.choices li.correct{border-color:var(--accent2); background:#eef3ec;}
+.choices li.correct .lab{color:var(--accent2);}
+details{margin:.5rem 0 .2rem; border-top:1px dashed var(--rule); padding-top:.5rem;}
+details>summary{cursor:pointer; font-size:.86rem; color:var(--accent); font-weight:600; list-style:none;}
+details>summary::-webkit-details-marker{display:none;}
+details>summary::before{content:"\25B8  "; color:var(--accent);}
+details[open]>summary::before{content:"\25BE  ";}
+.expl{font-size:.95rem; margin-top:.5rem;}
+.hints{font-size:.92rem;} .hints li{margin:.2rem 0;}
+.feedback{font-size:.9rem;} .feedback .ok{color:var(--accent2);} .feedback .no{color:var(--accent);}
+.appfirst{font-size:.78rem; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin:.2rem 0;}
+.mastery{background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--accent2); border-radius:8px; padding:1rem 1.2rem;}
+.pill{display:inline-block; font-size:.72rem; padding:.12rem .5rem; border:1px solid var(--rule); border-radius:999px; color:var(--muted); margin:.1rem .2rem .1rem 0;}
+footer{margin-top:3.5rem; border-top:1px solid var(--rule); padding-top:1rem; color:var(--muted); font-size:.82rem;}
+.src{background:#eef3ec; border:1px solid #cfe0cf; border-radius:8px; padding:.9rem 1.1rem; margin:1.2rem 0;}
+.src .tag{font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent2); font-weight:600;}
+.crumbs{font-size:.85rem; margin-bottom:1.2rem;}
+.ask{font-size:.9rem; background:#fff8ec; border:1px dashed #e0c590; border-radius:8px; padding:.7rem 1rem; margin:1.4rem 0;}
+@media print{ body{background:#fff} .wrap{padding:0} a{border:none} .donow{-webkit-print-color-adjust:exact; print-color-adjust:exact} }
+</style></head>
+<body><div class="wrap"><div class="content">
+  <div class="crumbs"><a href="index.html">&larr; All topics</a> &middot; Verbal Reasoning &middot; Critical Reasoning</div>
+  <header class="masthead">
+    <p class="kicker">GMATWiz &middot; GMAT Focus Edition &middot; Verbal Reasoning (Critical Reasoning)</p>
+    <h1>Critical Reasoning: Assumption</h1>
+    <p class="meta"><b>Topic id</b> <code>gmat::verbal::cr::assumption</code> &middot; <b>Domain</b> Critical Reasoning
+      &middot; <b>Prereqs</b> identify an argument&#x27;s conclusion, separate premises from the conclusion &middot; <b>~18 min</b></p>
+  </header>
+
+  <div class="objectives">
+    <p class="note"><b>Learning objectives</b></p>
+    <ul><li>Locate the conclusion and the evidence, then find the gap between them.</li><li>State the unstated premise the argument needs in order to hold.</li><li>Use the negation test: if negating a choice breaks the argument, it is the assumption.</li></ul>
+    <p class="note">Model: I do -&gt; we do -&gt; you do &middot; application-first (explanations revealed after an attempt) &middot; Rosenshine (daily review), Archer (I-do/we-do/you-do), SPOV2 application-first.</p>
+  </div>
+
+  
+    <section>
+      <h2><span class="num">1</span>Opening &mdash; retrieval &amp; bridge</h2>
+      <p class="sub">Builds on: Telling an argument&#x27;s conclusion apart from its evidence.</p>
+      <div class="donow">
+        <div class="tag">Do Now &middot; from memory, no notes</div>
+        <p>No notes. Answer from memory in 4 minutes.</p>
+        <ol><li>In &#x27;Sales rose after we added music, so music boosts sales,&#x27; what is the conclusion?<span class="ans">Music boosts sales.</span></li><li>What is an assumption?<span class="ans">An unstated premise the argument needs to be true.</span></li><li>Negate: &#x27;The two groups were similar in all other respects.&#x27;<span class="ans">The two groups differed in some other relevant respect.</span></li></ol>
+      </div>
+      <p class="note"><b>Retrieval starter (5 min).</b> Recalls conclusion-vs-evidence and negation, the two tools an assumption question rests on.
+      <br><b>If students struggle:</b> If they cannot find the conclusion, have them ask &#x27;what is the author trying to convince me of?&#x27; first.</p>
+      <h3>Prior-knowledge bridge</h3>
+      <p>You can already find a conclusion and its evidence. An assumption question asks for the missing link between them - the fact the author never states but silently relies on. Find the gap, and the assumption is what bridges it.</p>
+      <h3>Learning intention</h3>
+      <p class="intent">By the end you can find the gap between evidence and conclusion and state the assumption that closes it, confirming it with the negation test.</p>
+      <p class="note"><b>You'll know you've got it when:</b></p>
+      <ul><li>I can name the conclusion and the evidence in one sentence each.</li><li>I can describe the gap the argument leaps over.</li><li>I can use the negation test to confirm the required assumption.</li></ul>
+      <details><summary>Complete timed opening script</summary>
+        <table><thead><tr><th>Time</th><th>Move</th></tr></thead><tbody><tr><td class="t">0:00-4:00</td><td>Do Now on screen; learners answer from memory, no notes.</td></tr><tr><td class="t">4:00-6:00</td><td>Cold-call answers; name the argument&#x27;s conclusion vs premises.</td></tr><tr><td class="t">6:00-8:00</td><td>Bridge to today&#x27;s question type; state what the stem is really asking.</td></tr><tr><td class="t">8:00-10:00</td><td>Move to I do: model the reasoning on one worked item.</td></tr></tbody></table>
+      </details>
+    </section>
+
+  <section>
+    <h2><span class="num">2</span>I do &mdash; worked example</h2>
+    <p class="sub">Watch the reasoning modeled end to end before you try.</p>
+    
+    <div class="q">
+      <div class="qid">I DO &middot; worked example<span class="diff">medium</span></div>
+      <div class="stem">A company will cut its shipping costs by moving its warehouse closer to the highway, because trucks will then spend less time in city traffic. The argument depends on which of the following assumptions?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>Time spent in city traffic is a meaningful part of the trucks&#x27; current shipping costs.</li><li><span class="lab">B</span>The new warehouse location is larger than the current one.</li><li><span class="lab">C</span>The company&#x27;s competitors also ship by truck.</li><li><span class="lab">D</span>Highway tolls are lower than city parking fees.</li><li><span class="lab">E</span>The company ships more products in summer than in winter.</li></ul>
+      <h3>Think-aloud</h3>
+      <ol><li>Conclusion: shipping costs will fall. Evidence: less time in city traffic.</li><li>Gap: does traffic time actually drive costs? The argument assumes it does.</li><li>Negation test: if traffic time is a negligible cost, moving saves nothing - argument collapses.</li><li>So A is the needed assumption; the others are irrelevant to the cost link.</li></ol>
+      <p class="expl"><b>Correct: A.</b> The conclusion (lower shipping costs) rests on cutting traffic time; that only helps if traffic time is actually a meaningful cost driver. Negate A - traffic time is negligible - and the savings vanish, so A is required.</p>
+      <p class="note"><b>Takeaway.</b> An assumption bridges the evidence to the conclusion; negate it and the argument should fall apart.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>We do &mdash; guided practice</h2>
+    <p class="sub">Scaffolds and immediate feedback are one click away. Fade them as you gain confidence.</p>
+    
+    <div class="q">
+      <div class="qid">we_1 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">A school will raise its graduation rate by giving every student a personal laptop, since students will be able to complete assignments more easily. This argument assumes that</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>difficulty completing assignments is a significant reason students currently fail to graduate.</li><li><span class="lab">B</span>laptops are cheaper than textbooks.</li><li><span class="lab">C</span>teachers prefer digital assignments to paper ones.</li><li><span class="lab">D</span>students do not already own computers at home.</li><li><span class="lab">E</span>the school&#x27;s internet connection is reliable.</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>What is the conclusion, and what is the single piece of evidence for it?</li><li>Ask: for easier assignments to raise graduation, what must be true about why students don&#x27;t graduate?</li><li>Try the negation test on each choice.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Right - the plan works only if assignment difficulty is actually holding students back.<br>
+        <span class="no">If incorrect:</span> The other choices may be nice to know, but negating them leaves the argument standing; negating A destroys it.</p>
+        <p class="expl"><b>Answer: A.</b> The plan only raises graduation if assignment difficulty is a real cause of non-graduation; otherwise easier assignments change nothing. Negating A breaks the link.</p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">we_2 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">A city will reduce littering in its parks by adding more trash cans, because people litter when a trash can is not within easy reach. The argument relies on the assumption that</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>a shortage of nearby trash cans is a substantial cause of the current littering.</li><li><span class="lab">B</span>the new trash cans will be emptied every day.</li><li><span class="lab">C</span>littering is worse in parks than on city streets.</li><li><span class="lab">D</span>residents have complained about the litter.</li><li><span class="lab">E</span>the parks are busiest on weekends.</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>Separate the recommendation from its stated reason.</li><li>The reason names one cause of littering - the argument bets that cause is the main one.</li><li>Which choice, if false, sinks the plan?</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Exactly - the fix assumes the diagnosed cause is a real, substantial one.<br>
+        <span class="no">If incorrect:</span> Focus on what MUST be true for &#x27;more cans&#x27; to cut littering, not on details that merely sound relevant.</p>
+        <p class="expl"><b>Answer: A.</b> Adding cans reduces littering only if &#x27;no can nearby&#x27; is really why people litter; if they litter for other reasons, more cans won&#x27;t help. Negate A and the plan fails.</p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>You do &mdash; independent application</h2>
+    <p class="sub">Application-first (SPOV2): commit to an answer, then reveal the explanation. Log every miss.</p>
+    
+    <div class="q">
+      <div class="qid">you_1 &middot; you do (independent)<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A publisher will increase magazine subscriptions by adding a weekly puzzle section, reasoning that readers enjoy puzzles. The argument assumes that</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>enough potential subscribers value a puzzle section enough to subscribe because of it.</li><li><span class="lab">B</span>the puzzles will be written by a famous puzzle designer.</li><li><span class="lab">C</span>the magazine currently has no games of any kind.</li><li><span class="lab">D</span>puzzle sections are cheaper to produce than articles.</li><li><span class="lab">E</span>readers spend more time on puzzles than on articles.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> Subscriptions rise only if the puzzle section actually moves people to subscribe; general enjoyment of puzzles is not enough. Negating A removes the reason subscriptions would grow.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_2 &middot; you do (independent)<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A restaurant will boost weekday lunch profits by offering a faster express menu, since many office workers skip lunch out because they lack time. This argument depends on the assumption that</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>a meaningful number of these workers would buy lunch if service were faster.</li><li><span class="lab">B</span>the express menu will use the same ingredients as the regular menu.</li><li><span class="lab">C</span>the restaurant is located near several offices.</li><li><span class="lab">D</span>competing restaurants do not offer express menus.</li><li><span class="lab">E</span>office workers prefer hot meals to cold ones.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> The profit gain depends on time-pressed workers actually buying once service is faster; if they would still not buy, the express menu adds nothing. Negation of A breaks the plan.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_3 &middot; you do (independent)<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A university claims it will improve student writing by requiring a first-year composition course, because practice improves writing. The argument assumes that</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>the composition course will give students the kind of practice that actually improves writing.</li><li><span class="lab">B</span>most students dislike writing when they arrive.</li><li><span class="lab">C</span>the course will be taught by tenured professors.</li><li><span class="lab">D</span>students write more in college than in high school.</li><li><span class="lab">E</span>writing ability affects starting salaries.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> &#x27;Practice improves writing&#x27; supports the plan only if the required course supplies effective practice; a course that does not would not help. Negating A defeats the argument.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+  </section>
+
+  
+    <section>
+      <h2><span class="num">5</span>Mastery check</h2>
+      <div class="mastery">
+        <p>A topic is mastered at &gt;=85% correct on new/held-out-style questions across &gt;=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.</p>
+        <p class="note"><b>Threshold</b> 0.85 &middot; <b>spaced sessions</b> &ge; 2</p>
+        <ul><li>&gt;=85% correct on new/held-out-style items (not flashcard recall) per session</li><li>sustained across &gt;=2 spaced sessions with a delay between them</li><li>per-topic memory surfaced only after &gt;=20 graded reviews (PRD give-up rule)</li><li>per-topic performance surfaced only after &gt;=8 application attempts (PRD give-up rule)</li></ul>
+        <p class="note"><b>If not yet mastered:</b> Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -&gt; you-do loop before re-testing.</p>
+      </div>
+      
+    </section>
+
+  <div class="src">
+    <div class="tag">Primary source</div>
+    <p><a href="https://www.mba.com/exams/gmat-focus-edition">GMAC - GMAT Focus Edition (official exam overview)</a> &mdash; Official exam structure and Verbal Reasoning scope.</p>
+    <p class='note'>Further reading:</p><ul><li><a href="https://www.khanacademy.org/prep/lsat">Khan Academy - LSAT Logical Reasoning (free)</a> &mdash; Free lessons on argument structure, assumptions, strengthen/weaken, and flaws.</li></ul>
+  </div>
+
+  <div class="ask">Stuck on any step? Ask your GMATWiz coach for a worked walkthrough &mdash; that's what it's here for.</div>
+
+  <footer>
+    <p>GMATWiz lesson &middot; <code>cr-assumption.json</code> &middot; schema v1.0 &middot; authored content (OfficialFlag=false), reserved official items used only for late checkpoints.</p>
+  </footer>
+</div></div></body></html>

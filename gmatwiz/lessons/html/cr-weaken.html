@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Critical Reasoning: Weaken &middot; GMATWiz Verbal Reasoning</title>
+<style>
+:root{
+  --ink:#1a1813; --muted:#6b6358; --rule:#d9d2c5; --bg:#fbf9f4; --card:#fffdf8;
+  --accent:#7a3b2e; --accent2:#3a5a40; --link:#7a3b2e; --code:#2b2b2b;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:3rem 2rem 6rem;}
+.content{max-width:720px;}
+header.masthead{border-bottom:1px solid var(--rule); padding-bottom:1.2rem; margin-bottom:2rem;}
+.kicker{font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:0 0 .4rem;}
+h1{font-size:2.3rem; line-height:1.1; margin:.1rem 0 .6rem; font-weight:600; letter-spacing:-.01em;}
+.meta{color:var(--muted); font-size:.9rem; margin:0;}
+.meta b{color:var(--ink); font-weight:600;}
+h2{font-size:1.45rem; margin:2.8rem 0 .3rem; font-weight:600; letter-spacing:-.01em;}
+h2 .num{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:.5rem;}
+h3{font-size:1.06rem; margin:1.6rem 0 .4rem; font-weight:600;}
+.sub{color:var(--muted); font-style:italic; margin:.1rem 0 1rem; font-size:.95rem;}
+p{margin:.6rem 0;} ul,ol{margin:.5rem 0 .9rem; padding-left:1.3rem;} li{margin:.25rem 0;}
+a{color:var(--link); text-decoration:none; border-bottom:1px solid rgba(122,59,46,.35);}
+a:hover{border-bottom-color:var(--link);}
+.lead{font-size:1.08rem;}
+section{position:relative;}
+.note{font-size:.8rem; color:var(--muted); line-height:1.4;}
+.objectives{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1rem 1.2rem;}
+.objectives ul{margin:.3rem 0 0;}
+.intent{border-left:3px solid var(--accent2); padding:.4rem 0 .4rem 1rem; margin:1rem 0; font-size:1.05rem;}
+.donow{background:#2b2620; color:#f3ecde; border-radius:8px; padding:1.1rem 1.3rem; margin:1rem 0;}
+.donow .tag{font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:#d8b48a;}
+.donow ol{padding-left:1.2rem;} .donow li{margin:.4rem 0;}
+.donow .ans{color:#b9c6a9; font-style:italic; font-size:.86rem; display:block; margin-top:.15rem;}
+table{border-collapse:collapse; width:100%; font-size:.92rem; margin:.6rem 0 1rem;}
+th,td{text-align:left; padding:.45rem .6rem; border-bottom:1px solid var(--rule); vertical-align:top;}
+th{font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+td.t{white-space:nowrap; color:var(--accent); font-variant-numeric:tabular-nums; width:6.5rem;}
+.q{background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:1.1rem 1.3rem; margin:1.1rem 0;}
+.q .qid{font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+.q .qid .diff{float:right; color:var(--accent2);}
+.q .stem{font-size:1.03rem; margin:.35rem 0 .6rem;}
+.choices{list-style:none; padding:0; margin:.2rem 0 .4rem; counter-reset:c;}
+.choices li{padding:.32rem .6rem; border:1px solid var(--rule); border-radius:6px; margin:.3rem 0; background:#fff;}
+.choices li .lab{display:inline-block; width:1.5rem; font-weight:600; color:var(--accent);}
+.choices li.correct{border-color:var(--accent2); background:#eef3ec;}
+.choices li.correct .lab{color:var(--accent2);}
+details{margin:.5rem 0 .2rem; border-top:1px dashed var(--rule); padding-top:.5rem;}
+details>summary{cursor:pointer; font-size:.86rem; color:var(--accent); font-weight:600; list-style:none;}
+details>summary::-webkit-details-marker{display:none;}
+details>summary::before{content:"\25B8  "; color:var(--accent);}
+details[open]>summary::before{content:"\25BE  ";}
+.expl{font-size:.95rem; margin-top:.5rem;}
+.hints{font-size:.92rem;} .hints li{margin:.2rem 0;}
+.feedback{font-size:.9rem;} .feedback .ok{color:var(--accent2);} .feedback .no{color:var(--accent);}
+.appfirst{font-size:.78rem; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin:.2rem 0;}
+.mastery{background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--accent2); border-radius:8px; padding:1rem 1.2rem;}
+.pill{display:inline-block; font-size:.72rem; padding:.12rem .5rem; border:1px solid var(--rule); border-radius:999px; color:var(--muted); margin:.1rem .2rem .1rem 0;}
+footer{margin-top:3.5rem; border-top:1px solid var(--rule); padding-top:1rem; color:var(--muted); font-size:.82rem;}
+.src{background:#eef3ec; border:1px solid #cfe0cf; border-radius:8px; padding:.9rem 1.1rem; margin:1.2rem 0;}
+.src .tag{font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent2); font-weight:600;}
+.crumbs{font-size:.85rem; margin-bottom:1.2rem;}
+.ask{font-size:.9rem; background:#fff8ec; border:1px dashed #e0c590; border-radius:8px; padding:.7rem 1rem; margin:1.4rem 0;}
+@media print{ body{background:#fff} .wrap{padding:0} a{border:none} .donow{-webkit-print-color-adjust:exact; print-color-adjust:exact} }
+</style></head>
+<body><div class="wrap"><div class="content">
+  <div class="crumbs"><a href="index.html">&larr; All topics</a> &middot; Verbal Reasoning &middot; Critical Reasoning</div>
+  <header class="masthead">
+    <p class="kicker">GMATWiz &middot; GMAT Focus Edition &middot; Verbal Reasoning (Critical Reasoning)</p>
+    <h1>Critical Reasoning: Weaken</h1>
+    <p class="meta"><b>Topic id</b> <code>gmat::verbal::cr::weaken</code> &middot; <b>Domain</b> Critical Reasoning
+      &middot; <b>Prereqs</b> identify an argument&#x27;s conclusion, spot the assumption connecting evidence to conclusion &middot; <b>~18 min</b></p>
+  </header>
+
+  <div class="objectives">
+    <p class="note"><b>Learning objectives</b></p>
+    <ul><li>Find the conclusion, then choose the fact that makes it less likely to be true.</li><li>Attack the assumption, or supply an alternative cause for the evidence.</li><li>Ignore choices that are irrelevant or that merely fail to help the argument.</li></ul>
+    <p class="note">Model: I do -&gt; we do -&gt; you do &middot; application-first (explanations revealed after an attempt) &middot; Rosenshine (daily review), Archer (I-do/we-do/you-do), SPOV2 application-first.</p>
+  </div>
+
+  
+    <section>
+      <h2><span class="num">1</span>Opening &mdash; retrieval &amp; bridge</h2>
+      <p class="sub">Builds on: Finding an argument&#x27;s assumption and how a strengthener supports it.</p>
+      <div class="donow">
+        <div class="tag">Do Now &middot; from memory, no notes</div>
+        <p>No notes. 4 minutes, from memory.</p>
+        <ol><li>What is the most common way to weaken a causal claim?<span class="ans">Provide an alternative cause for the observed effect.</span></li><li>Does a choice that is merely irrelevant weaken an argument?<span class="ans">No - it must make the conclusion less likely.</span></li><li>Weaken or not: the two groups compared differed in another important way.<span class="ans">Weakens (introduces a confounder).</span></li></ol>
+      </div>
+      <p class="note"><b>Retrieval starter (5 min).</b> Recalls that weakening usually means attacking the assumption or offering a rival cause.
+      <br><b>If students struggle:</b> Remind them the correct answer need not disprove the conclusion - just dent it.</p>
+      <h3>Prior-knowledge bridge</h3>
+      <p>Strengthening reinforced the assumption; weakening does the opposite - it pries the assumption loose or hands you a different explanation for the evidence. Find the gap, then widen it.</p>
+      <h3>Learning intention</h3>
+      <p class="intent">By the end you can pick the choice that most reduces the likelihood the conclusion is true, usually by attacking the assumption or providing an alternative cause.</p>
+      <p class="note"><b>You'll know you've got it when:</b></p>
+      <ul><li>I can state the conclusion the choice must undercut.</li><li>I can tell a real weakener from an irrelevant choice.</li><li>I can spot &#x27;here&#x27;s another cause&#x27; as a weakening move.</li></ul>
+      <details><summary>Complete timed opening script</summary>
+        <table><thead><tr><th>Time</th><th>Move</th></tr></thead><tbody><tr><td class="t">0:00-4:00</td><td>Do Now on screen; learners answer from memory, no notes.</td></tr><tr><td class="t">4:00-6:00</td><td>Cold-call answers; name the argument&#x27;s conclusion vs premises.</td></tr><tr><td class="t">6:00-8:00</td><td>Bridge to today&#x27;s question type; state what the stem is really asking.</td></tr><tr><td class="t">8:00-10:00</td><td>Move to I do: model the reasoning on one worked item.</td></tr></tbody></table>
+      </details>
+    </section>
+
+  <section>
+    <h2><span class="num">2</span>I do &mdash; worked example</h2>
+    <p class="sub">Watch the reasoning modeled end to end before you try.</p>
+    
+    <div class="q">
+      <div class="qid">I DO &middot; worked example<span class="diff">medium</span></div>
+      <div class="stem">A bakery introduced a rewards card and its sales rose the next month, so the owner concluded the rewards card increased sales. Which of the following, if true, most seriously weakens the conclusion?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>The bakery&#x27;s only nearby competitor closed for renovations that same month.</li><li><span class="lab">B</span>The rewards card was printed on recycled paper.</li><li><span class="lab">C</span>Some customers forgot to bring their rewards card.</li><li><span class="lab">D</span>The bakery had offered a rewards card once before.</li><li><span class="lab">E</span>The bakery sells both bread and pastries.</li></ul>
+      <h3>Think-aloud</h3>
+      <ol><li>Conclusion: the rewards card caused higher sales (causal).</li><li>To weaken a cause, find another explanation for the effect.</li><li>A competitor closing that month explains the rise without the card.</li><li>The other choices are irrelevant to what caused the increase.</li></ol>
+      <p class="expl"><b>Correct: A.</b> A competitor closing for the month offers an alternative cause for the sales bump, undermining the claim that the rewards card was responsible.</p>
+      <p class="note"><b>Takeaway.</b> For causal conclusions, the strongest weakener usually supplies an alternative cause for the evidence.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>We do &mdash; guided practice</h2>
+    <p class="sub">Scaffolds and immediate feedback are one click away. Fade them as you gain confidence.</p>
+    
+    <div class="q">
+      <div class="qid">we_1 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">A manager concluded that a new training program improved her team&#x27;s sales, since sales rose after the training. Which of the following, if true, most weakens the conclusion?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>The company launched a large price promotion the same week as the training.</li><li><span class="lab">B</span>The training program lasted two full days.</li><li><span class="lab">C</span>Some team members had attended similar training before.</li><li><span class="lab">D</span>The trainer was hired from outside the company.</li><li><span class="lab">E</span>Sales are tracked by an automated system.</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>The claim is causal: training -&gt; higher sales.</li><li>Look for something else that could have raised sales at the same time.</li><li>Which choice offers a competing explanation?</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Yes - a concurrent promotion undercuts the causal claim.<br>
+        <span class="no">If incorrect:</span> Details about the trainer or tracking don&#x27;t change what caused the rise.</p>
+        <p class="expl"><b>Answer: A.</b> A simultaneous price promotion is an alternative cause for the sales rise, so the training may not deserve the credit.</p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">we_2 &middot; we do (guided)<span class="diff">medium</span></div>
+      <div class="stem">A health official argued that a public-awareness campaign reduced smoking, because smoking rates fell after the campaign. Which of the following, if true, most weakens the argument?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>A steep national tax on cigarettes took effect at the same time as the campaign.</li><li><span class="lab">B</span>The campaign used billboards and radio ads.</li><li><span class="lab">C</span>Some smokers said they never saw the campaign.</li><li><span class="lab">D</span>The campaign was funded by a health charity.</li><li><span class="lab">E</span>Smoking rates are measured through annual surveys.</li></ul>
+      <details><summary>Scaffold hints (peek only if stuck)</summary>
+        <ol class="hints"><li>What else, happening at the same time, is known to cut smoking?</li><li>That competing cause weakens the campaign&#x27;s claim.</li><li>Ad formats and funding don&#x27;t address causation.</li></ol>
+      </details>
+      <details><summary>Immediate feedback &amp; explanation</summary>
+        <p class="feedback"><span class="ok">If correct:</span> Right - the tax is a strong alternative cause.<br>
+        <span class="no">If incorrect:</span> &#x27;Some never saw it&#x27; is minor; a nationwide tax is a much bigger competing cause.</p>
+        <p class="expl"><b>Answer: A.</b> A simultaneous cigarette tax is a well-known driver of reduced smoking, giving an alternative cause for the decline and weakening the campaign&#x27;s claimed effect.</p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>You do &mdash; independent application</h2>
+    <p class="sub">Application-first (SPOV2): commit to an answer, then reveal the explanation. Log every miss.</p>
+    
+    <div class="q">
+      <div class="qid">you_1 &middot; you do (independent)<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A store owner concluded that moving the checkout counter increased impulse purchases, since such purchases rose after the move. Which of the following, if true, most weakens the conclusion?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>The store began stocking popular candy and magazines near the checkout at the same time.</li><li><span class="lab">B</span>The new counter is made of a more durable material.</li><li><span class="lab">C</span>The move took place over a single weekend.</li><li><span class="lab">D</span>The store has two entrances.</li><li><span class="lab">E</span>Impulse purchases are recorded at the register.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> Adding tempting items by the checkout is an alternative cause for the rise in impulse buys, independent of the counter&#x27;s location.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_2 &middot; you do (independent)<span class="diff">medium</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A blogger claims that switching to a standing desk increased her productivity, noting she got more done after the switch. Which of the following, if true, most weakens the claim?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>She also started using a new task-planning app the week she got the standing desk.</li><li><span class="lab">B</span>The standing desk was more expensive than her old desk.</li><li><span class="lab">C</span>She sometimes lowers the desk to sit.</li><li><span class="lab">D</span>Standing desks are increasingly common in offices.</li><li><span class="lab">E</span>She measures productivity by tasks completed.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> Adopting a new planning app at the same time provides an alternative cause for the productivity gain, undermining the desk&#x27;s claimed effect.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+    <div class="q">
+      <div class="qid">you_3 &middot; you do (independent)<span class="diff">hard</span></div>
+      <p class="appfirst">Application-first &mdash; attempt before revealing</p>
+      <div class="stem">A city concluded that a new after-school program reduced youth crime, because such crime fell after the program opened. Which of the following, if true, most weakens the conclusion?</div>
+      <ul class="choices"><li class="correct"><span class="lab">A</span>During the same period, the city hired dozens of additional police officers to patrol youth areas.</li><li><span class="lab">B</span>The program offers sports and tutoring.</li><li><span class="lab">C</span>The program is open four days a week.</li><li><span class="lab">D</span>Attendance at the program varies by season.</li><li><span class="lab">E</span>Youth crime is reported by local schools.</li></ul>
+      <details><summary>Reveal explanation (after your attempt)</summary>
+        <p class="expl"><b>Answer: A.</b> A simultaneous surge in policing is an alternative cause for the drop in youth crime, weakening the claim that the program was responsible.</p>
+        <p class="note">If you missed it, log it: <span class="pill">content gap</span><span class="pill">reasoning flaw</span><span class="pill">timing</span><span class="pill">careless</span><span class="pill">trap</span></p>
+      </details>
+    </div>
+  </section>
+
+  
+    <section>
+      <h2><span class="num">5</span>Mastery check</h2>
+      <div class="mastery">
+        <p>A topic is mastered at &gt;=85% correct on new/held-out-style questions across &gt;=2 spaced sessions with delay (PRD Section 9.2). Flashcard recall alone is not mastery; application under mixed, delayed conditions is the bar.</p>
+        <p class="note"><b>Threshold</b> 0.85 &middot; <b>spaced sessions</b> &ge; 2</p>
+        <ul><li>&gt;=85% correct on new/held-out-style items (not flashcard recall) per session</li><li>sustained across &gt;=2 spaced sessions with a delay between them</li><li>per-topic memory surfaced only after &gt;=20 graded reviews (PRD give-up rule)</li><li>per-topic performance surfaced only after &gt;=8 application attempts (PRD give-up rule)</li></ul>
+        <p class="note"><b>If not yet mastered:</b> Not yet: route every miss to the required error log (tag why: content gap / reasoning flaw / timing / careless / trap), schedule spaced re-practice via topic-aware scheduling, then re-enter the we-do -&gt; you-do loop before re-testing.</p>
+      </div>
+      
+    </section>
+
+  <div class="src">
+    <div class="tag">Primary source</div>
+    <p><a href="https://www.mba.com/exams/gmat-focus-edition">GMAC - GMAT Focus Edition (official exam overview)</a> &mdash; Official exam structure and Verbal Reasoning scope.</p>
+    <p class='note'>Further reading:</p><ul><li><a href="https://www.khanacademy.org/prep/lsat">Khan Academy - LSAT Logical Reasoning (free)</a> &mdash; Free lessons on argument structure, assumptions, strengthen/weaken, and flaws.</li></ul>
+  </div>
+
+  <div class="ask">Stuck on any step? Ask your GMATWiz coach for a worked walkthrough &mdash; that's what it's here for.</div>
+
+  <footer>
+    <p>GMATWiz lesson &middot; <code>cr-weaken.json</code> &middot; schema v1.0 &middot; authored content (OfficialFlag=false), reserved official items used only for late checkpoints.</p>
+  </footer>
+</div></div></body></html>
