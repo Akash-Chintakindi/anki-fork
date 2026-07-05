@@ -85,6 +85,7 @@ chrome77/es2020 webview.
         scheduleCollectionUpload,
         uploadCollection,
     } from "./colsync";
+    import WizardGuide from "./WizardGuide.svelte";
 
     export let overview: GmatOverview;
 
@@ -102,7 +103,8 @@ chrome77/es2020 webview.
         | "plan"
         | "lesson"
         | "mock"
-        | "tests";
+        | "tests"
+        | "profile";
     let view: View = "home";
 
     // Context passed to the reusable lesson/practice snippets so the same markup
@@ -229,17 +231,97 @@ chrome77/es2020 webview.
     // "View calendar" button, so it isn't a massive inline block).
     let calendarOpen = false;
     const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    /** Svelte action: re-parent an overlay to the `.gw` root so its fixed position
-     * + z-index escape the `.col` stacking context (which sets z-index and would
-     * otherwise trap the modal beneath the app's top layers). Stays inside `.gw`,
-     * so the theme CSS variables still resolve. */
-    function portalToRoot(node: HTMLElement) {
-        const root = node.closest(".gw") ?? document.querySelector(".gw");
-        if (root) root.appendChild(node);
-        return {
-            destroy() {
-                node.remove();
-            },
+
+    // ---- GMAT Wiz: contextual guide (speech-bubble cues at key moments) --------
+    interface WizardAction {
+        label: string;
+        primary?: boolean;
+        run: () => void;
+    }
+    type WizardCueKind = "welcome" | "daily" | "errorInfo" | "study";
+    interface WizardCue {
+        kind: WizardCueKind;
+        title: string;
+        body?: string; // plain text; "errorInfo" renders rich markup in the slot
+        actions?: WizardAction[];
+    }
+    let wizardCue: WizardCue | null = null;
+    function dismissWizard(): void {
+        wizardCue = null;
+    }
+    // Once-ever / once-a-day gating, keyed by the signed-in uid (local per device).
+    function wizKey(suffix: string): string {
+        return `gmatwiz.wiz.${suffix}.${authUser?.uid ?? "anon"}`;
+    }
+    function wizGet(suffix: string): string | null {
+        try {
+            return typeof localStorage !== "undefined"
+                ? localStorage.getItem(wizKey(suffix))
+                : null;
+        } catch {
+            return null;
+        }
+    }
+    function wizSet(suffix: string, val: string): void {
+        try {
+            if (typeof localStorage !== "undefined") {
+                localStorage.setItem(wizKey(suffix), val);
+            }
+        } catch {
+            /* private mode: the cue may simply re-show later - harmless */
+        }
+    }
+    /** On landing (login / open): first-ever welcome on the diagnostic, otherwise a
+        once-a-day nudge to do Today's list. Never stacks over an existing cue. */
+    function maybeWizardOnLand(): void {
+        if (wizardCue) return;
+        if (locked) {
+            if (wizGet("welcomed") === null) {
+                wizSet("welcomed", "1");
+                wizardCue = {
+                    kind: "welcome",
+                    title: "Welcome \u2014 I'm your GMAT Wiz",
+                    body:
+                        "Start with the diagnostic: 21 timed questions that map your weak spots, so I can build a plan aimed exactly at what will raise your score. Everything else builds on it.",
+                };
+            }
+            return;
+        }
+        const todayIso = new Date().toISOString().slice(0, 10);
+        if (wizGet("daily") !== todayIso) {
+            wizSet("daily", todayIso);
+            wizardCue = {
+                kind: "daily",
+                title: "Welcome back",
+                body:
+                    "Your plan for today is ready \u2014 clear Today's list to stay on pace for exam day.",
+            };
+        }
+    }
+    /** Error Log info button -> the wizard explains how each miss steers the plan
+        (same content as the old inline panel, now spoken by the guide). */
+    function showErrorInfoWizard(): void {
+        wizardCue = { kind: "errorInfo", title: "How each label steers your plan" };
+    }
+    /** Non-blocking nudge when Study is opened before Today's list is finished. */
+    function maybeWizardStudy(): void {
+        if (locked || !today || allTodayDone || !firstPendingBlock) return;
+        wizardCue = {
+            kind: "study",
+            title: "Today first?",
+            body:
+                "Eager to study \u2014 I like it. But your Today list is tuned to what moves your score most right now, so finishing it first is the optimal path.",
+            actions: [
+                {
+                    label: "Go to Today",
+                    primary: true,
+                    run: () => {
+                        dismissWizard();
+                        void go("home");
+                    },
+                },
+                { label: "Keep studying", run: dismissWizard },
+            ],
         };
     }
     /** Day-of-week 0..6 (Sun..Sat) from a YYYY-MM-DD string, local, no TZ shift. */
@@ -662,7 +744,10 @@ chrome77/es2020 webview.
                 lessonTopics = (await fetchLessonsIndex()).topics;
             }
         }
-        if (next === "study") lessonTopics = (await fetchLessonsIndex()).topics;
+        if (next === "study") {
+            lessonTopics = (await fetchLessonsIndex()).topics;
+            maybeWizardStudy();
+        }
         if (next === "home" || next === "dashboard") {
             const fresh = await refreshOverview();
             if (fresh) overview = fresh;
@@ -1336,7 +1421,6 @@ chrome77/es2020 webview.
 
     // ---- error log: filters + repair-now + AI coach ----
     let errorFilter: "all" | ErrorWhy = "all";
-    let errInfoOpen = false; // toggles the "how error types work" explainer
     let coachLoadingTs: number | null = null;
     let coachUnavailableTs: Record<number, boolean> = {};
     $: filteredErrors =
@@ -1696,12 +1780,15 @@ chrome77/es2020 webview.
             // Cross-device sync runs automatically: pull newer remote state on a
             // short interval; local changes still push on mutation.
             startAutoSync(u.uid, () => void applyRemoteState());
+            maybeWizardOnLand();
         });
         if (overview.plan) {
             fetchLessonsIndex().then((r) => (lessonTopics = r.topics));
             fetchToday().then((t) => (today = t));
             fetchCalendar().then((c) => (calendar = c));
         }
+        // Standalone (no auth events): decide the landing cue here instead.
+        if (!authEnabled) maybeWizardOnLand();
         // Push the whole collection up when the page is hidden or unloaded
         // (tab switch, app backgrounded on mobile, window close). Debounced so
         // rapid events coalesce; a no-op when signed out.
@@ -1849,8 +1936,13 @@ chrome77/es2020 webview.
             {/if}
             <span class="nav-spacer" aria-hidden="true"></span>
             {#if authEnabled && authUser}
-                <button class="nav-util" on:click={doSignOut} title={authUser.email ?? "Sign out"}>
-                    Sign out
+                <button
+                    class="nav-util"
+                    class:active={view === "profile"}
+                    on:click={() => go("profile")}
+                    title={authUser.email ?? "Profile"}
+                >
+                    Profile
                 </button>
             {/if}
         </nav>
@@ -2593,9 +2685,71 @@ chrome77/es2020 webview.
                             Lessons are done &mdash; the run-up is consolidation and timed tests.
                         {/if}
                     </p>
-                    <button class="primary" on:click={() => (calendarOpen = true)}>
-                        View calendar
+                    <button class="primary" on:click={() => (calendarOpen = !calendarOpen)}>
+                        {calendarOpen ? "Hide calendar" : "View calendar"}
                     </button>
+                    {#if calendarOpen}
+                        <div class="cal-inline">
+                            <div class="cal-legend">
+                                <span class="cal-leg phase-learn">Learn</span>
+                                <span class="cal-leg phase-review">Review</span>
+                                <span class="cal-leg phase-final">Final 10 &middot; tests only</span>
+                            </div>
+                            <div class="cal-grid">
+                                <div class="cal-dow-head">
+                                    {#each WEEKDAYS as w}
+                                        <span class="cal-dow-h">{w}</span>
+                                    {/each}
+                                </div>
+                                {#each calendarGrid as week}
+                                    <div class="cal-grid-row">
+                                        {#each week as d}
+                                            {#if d}
+                                                <div
+                                                    class="cal-day phase-{d.phase}"
+                                                    class:today={d.is_today}
+                                                    class:exam={d.is_exam}
+                                                    class:rest={!d.is_study_day && !d.is_exam}
+                                                >
+                                                    <div class="cal-day-top">
+                                                        <span class="cal-date">{shortDate(d.date)}</span>
+                                                    </div>
+                                                    {#if d.is_today}
+                                                        <span class="cal-flag">Today</span>
+                                                    {/if}
+                                                    {#if d.is_exam}
+                                                        <div class="cal-exam">
+                                                            <span class="cal-exam-g">&#9733;</span>
+                                                            <span>Exam</span>
+                                                        </div>
+                                                    {:else if d.is_study_day}
+                                                        <ul class="cal-items">
+                                                            {#each d.items as it}
+                                                                <li
+                                                                    class="cal-chip chip-{it.kind}"
+                                                                    title="{it.title} &middot; ~{it.est_minutes} min"
+                                                                >
+                                                                    <span class="cal-chip-g">{CAL_ITEM_GLYPH[it.kind]}</span>
+                                                                    <span class="cal-chip-t">{calChipLabel(it)}</span>
+                                                                </li>
+                                                            {/each}
+                                                        </ul>
+                                                        {#if d.est_minutes > 0}
+                                                            <span class="cal-min">~{d.est_minutes}m</span>
+                                                        {/if}
+                                                    {:else}
+                                                        <div class="cal-rest">Rest</div>
+                                                    {/if}
+                                                </div>
+                                            {:else}
+                                                <div class="cal-day blank" aria-hidden="true"></div>
+                                            {/if}
+                                        {/each}
+                                    </div>
+                                {/each}
+                            </div>
+                        </div>
+                    {/if}
                 {:else}
                     <p class="muted">
                         Your day-by-day plan appears here once your exam date is set. It's built from
@@ -2603,86 +2757,6 @@ chrome77/es2020 webview.
                     </p>
                 {/if}
             </section>
-
-            {#if calendarOpen && calendar && calendar.days.length}
-                <div
-                    class="modal-wrap"
-                    role="dialog"
-                    aria-modal="true"
-                    aria-label="Study calendar"
-                    use:portalToRoot
-                >
-                    <button
-                        class="modal-backdrop"
-                        aria-label="Close calendar"
-                        on:click={() => (calendarOpen = false)}
-                    ></button>
-                    <div class="modal-panel cal-modal">
-                        <div class="modal-head">
-                            <span class="eyebrow">The run-up &mdash; your plan to exam day</span>
-                            <button class="nav-util" on:click={() => (calendarOpen = false)}>Close</button>
-                        </div>
-                        <div class="cal-legend">
-                            <span class="cal-leg phase-learn">Learn</span>
-                            <span class="cal-leg phase-review">Review</span>
-                            <span class="cal-leg phase-final">Final 10 &middot; tests only</span>
-                        </div>
-                        <div class="cal-grid">
-                            <div class="cal-dow-head">
-                                {#each WEEKDAYS as w}
-                                    <span class="cal-dow-h">{w}</span>
-                                {/each}
-                            </div>
-                            {#each calendarGrid as week}
-                                <div class="cal-grid-row">
-                                    {#each week as d}
-                                        {#if d}
-                                            <div
-                                                class="cal-day phase-{d.phase}"
-                                                class:today={d.is_today}
-                                                class:exam={d.is_exam}
-                                                class:rest={!d.is_study_day && !d.is_exam}
-                                            >
-                                                <div class="cal-day-top">
-                                                    <span class="cal-date">{shortDate(d.date)}</span>
-                                                </div>
-                                                {#if d.is_today}
-                                                    <span class="cal-flag">Today</span>
-                                                {/if}
-                                                {#if d.is_exam}
-                                                    <div class="cal-exam">
-                                                        <span class="cal-exam-g">&#9733;</span>
-                                                        <span>Exam</span>
-                                                    </div>
-                                                {:else if d.is_study_day}
-                                                    <ul class="cal-items">
-                                                        {#each d.items as it}
-                                                            <li
-                                                                class="cal-chip chip-{it.kind}"
-                                                                title="{it.title} &middot; ~{it.est_minutes} min"
-                                                            >
-                                                                <span class="cal-chip-g">{CAL_ITEM_GLYPH[it.kind]}</span>
-                                                                <span class="cal-chip-t">{calChipLabel(it)}</span>
-                                                            </li>
-                                                        {/each}
-                                                    </ul>
-                                                    {#if d.est_minutes > 0}
-                                                        <span class="cal-min">~{d.est_minutes}m</span>
-                                                    {/if}
-                                                {:else}
-                                                    <div class="cal-rest">Rest</div>
-                                                {/if}
-                                            </div>
-                                        {:else}
-                                            <div class="cal-day blank" aria-hidden="true"></div>
-                                        {/if}
-                                    {/each}
-                                </div>
-                            {/each}
-                        </div>
-                    </div>
-                </div>
-            {/if}
 
             <section class="action-card tests-cta">
                 <div class="action-head">
@@ -3379,6 +3453,29 @@ chrome77/es2020 webview.
                 {/each}
             {/if}
         </main>
+    {:else if view === "profile"}
+        <main class="col">
+            <p class="eyebrow">Account</p>
+            <h1 class="display">Your profile.</h1>
+            <p class="lede">Manage your account. More lives here soon.</p>
+            {#if authUser}
+                <section class="action-card">
+                    <div class="action-head">
+                        <span class="eyebrow">Signed in as</span>
+                    </div>
+                    <p class="action-title">{authUser.email ?? "Your account"}</p>
+                    <p class="muted">
+                        Coming soon: study targets, preferences, and the wizard's guidance
+                        settings. For now this is your sign-out.
+                    </p>
+                    <button class="primary" on:click={doSignOut}>Sign out</button>
+                </section>
+            {:else}
+                <section class="q-card empty">
+                    <p>You're using GMATWiz without an account, so there's nothing to manage here yet.</p>
+                </section>
+            {/if}
+        </main>
     {:else}
         <main class="col">
             <p class="eyebrow">Error log &mdash; required review</p>
@@ -3387,55 +3484,12 @@ chrome77/es2020 webview.
                 <button
                     class="info-btn"
                     aria-label="How error types work"
-                    aria-expanded={errInfoOpen}
-                    on:click={() => (errInfoOpen = !errInfoOpen)}
+                    on:click={showErrorInfoWizard}
                 >
                     i
                 </button>
             </div>
             <p class="lede">Understanding the pattern behind a miss is how you stop repeating it.</p>
-
-            {#if errInfoOpen}
-                <section class="err-explainer">
-                    <p class="eyebrow">How each label steers your plan</p>
-                    <p class="ex-base">
-                        <strong>Every wrong answer</strong>, before you pick a reason: the
-                        scheduler logs an <em>Again</em> so the card resurfaces soon, and that
-                        topic's mastery takes one step down (a small EMA nudge).
-                    </p>
-                    <ul class="ex-list">
-                        <li>
-                            <span class="pill why-careless">silly mistake</span>
-                            <span
-                                >Logged only &mdash; no extra penalty. Trust the automatic
-                                resurfacing to catch it.</span
-                            >
-                        </li>
-                        <li>
-                            <span class="pill why-concept_gap">conceptual</span>
-                            <span
-                                >An <strong>extra</strong> mastery penalty, your lesson for that
-                                topic is re-queued, and a high-priority
-                                <strong>Repair</strong> block is added to Today.</span
-                            >
-                        </li>
-                        <li>
-                            <span class="pill why-timing">time</span>
-                            <span
-                                >No mastery change; schedules a timed drill (~2:08 per question
-                                pace) in Today's practice.</span
-                            >
-                        </li>
-                        <li>
-                            <span class="pill why-guess">guessed</span>
-                            <span
-                                >The &ldquo;I guessed&rdquo; link on a correct answer cancels the
-                                lucky-correct mastery bump, so your score stays honest.</span
-                            >
-                        </li>
-                    </ul>
-                </section>
-            {/if}
 
             {#if errors.length === 0}
                 <section class="q-card empty">
@@ -3509,6 +3563,57 @@ chrome77/es2020 webview.
             {/if}
         </main>
     {/if}
+    {/if}
+
+    {#if wizardCue}
+        <WizardGuide
+            title={wizardCue.title}
+            actions={wizardCue.actions ?? []}
+            onDismiss={dismissWizard}
+        >
+            {#if wizardCue.kind === "errorInfo"}
+                <section class="err-explainer in-wiz">
+                    <p class="ex-base">
+                        <strong>Every wrong answer</strong>, before you pick a reason: the
+                        scheduler logs an <em>Again</em> so the card resurfaces soon, and that
+                        topic's mastery takes one step down (a small EMA nudge).
+                    </p>
+                    <ul class="ex-list">
+                        <li>
+                            <span class="pill why-careless">silly mistake</span>
+                            <span
+                                >Logged only &mdash; no extra penalty. Trust the automatic
+                                resurfacing to catch it.</span
+                            >
+                        </li>
+                        <li>
+                            <span class="pill why-concept_gap">conceptual</span>
+                            <span
+                                >An <strong>extra</strong> mastery penalty, your lesson for that
+                                topic is re-queued, and a high-priority
+                                <strong>Repair</strong> block is added to Today.</span
+                            >
+                        </li>
+                        <li>
+                            <span class="pill why-timing">time</span>
+                            <span
+                                >No mastery change; schedules a timed drill (~2:08 per question
+                                pace) in Today's practice.</span
+                            >
+                        </li>
+                        <li>
+                            <span class="pill why-guess">guessed</span>
+                            <span
+                                >The &ldquo;I guessed&rdquo; link on a correct answer cancels the
+                                lucky-correct mastery bump, so your score stays honest.</span
+                            >
+                        </li>
+                    </ul>
+                </section>
+            {:else}
+                {wizardCue.body}
+            {/if}
+        </WizardGuide>
     {/if}
 </div>
 
@@ -4164,8 +4269,7 @@ chrome77/es2020 webview.
         line-height: 1;
         cursor: pointer;
     }
-    .info-btn:hover,
-    .info-btn[aria-expanded="true"] {
+    .info-btn:hover {
         border-color: var(--gold-ink);
         color: var(--gold);
         box-shadow: var(--gold-glow);
@@ -4203,6 +4307,25 @@ chrome77/es2020 webview.
     .ex-list .pill {
         flex: none;
         margin-top: 1px;
+    }
+    /* The same explainer, slotted into the wizard's speech bubble: strip the card
+       chrome (the bubble already provides it) and tighten the type. */
+    .err-explainer.in-wiz {
+        margin: 0;
+        padding: 0;
+        border: none;
+        background: none;
+        box-shadow: none;
+    }
+    .in-wiz .ex-base {
+        font-size: 13px;
+        margin-bottom: 10px;
+    }
+    .in-wiz .ex-list {
+        gap: 8px;
+    }
+    .in-wiz .ex-list li {
+        font-size: 12.5px;
     }
 
     /* practice-test library */
@@ -4577,43 +4700,19 @@ chrome77/es2020 webview.
         background: var(--emerald-ink);
     }
 
-    /* "View calendar" modal + month-style weekday grid */
-    .modal-wrap {
-        position: fixed;
-        inset: 0;
-        z-index: 1000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-    }
-    .modal-backdrop {
-        position: absolute;
-        inset: 0;
-        margin: 0;
-        padding: 0;
-        border: none;
-        background: rgba(9, 6, 24, 0.72);
-        cursor: pointer;
-    }
-    .modal-panel {
-        position: relative;
-        z-index: 1;
-        width: min(560px, 94vw);
-        max-height: 78vh;
+    /* Inline "View calendar" panel: a compact, scrollable month-style grid that
+       expands in the Progress flow. Deliberately NOT a position:fixed overlay -
+       QtWebEngine fails to repaint a static full-screen fixed layer until a mouse
+       event (the "only shows when the mouse leaves" bug); an in-flow element paints
+       reliably, like the Error Log info bubble. */
+    .cal-inline {
+        margin-top: 14px;
+        max-height: 62vh;
         overflow: auto;
-        padding: 18px 20px 20px;
-        background: var(--paper-2);
-        border: 1px solid var(--line-strong);
-        border-radius: 16px;
-        box-shadow: var(--shadow);
-    }
-    .modal-head {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 14px;
+        padding: 14px;
+        background: var(--sunk);
+        border: 1px solid var(--line);
+        border-radius: 14px;
     }
     .cal-grid {
         display: flex;
@@ -4644,26 +4743,48 @@ chrome77/es2020 webview.
         border: none;
         min-height: 0;
     }
-    /* Compact cells inside the smaller "View calendar" popup: chips collapse to
-       their glyphs (the day's full detail is on hover via each chip's title). */
-    .cal-modal .cal-grid-row,
-    .cal-modal .cal-dow-head {
+    /* Compact cells inside the inline calendar: a neat month-style grid; day chips
+       collapse to their glyphs (hover a chip for the full task + time); today is
+       ringed like a calendar's current day. */
+    .cal-inline .cal-legend {
+        gap: 10px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+    }
+    .cal-inline .cal-grid-row,
+    .cal-inline .cal-dow-head {
         gap: 4px;
     }
-    .cal-modal .cal-day {
-        min-height: 52px;
-        padding: 5px 4px;
-        gap: 4px;
+    .cal-inline .cal-day {
+        min-height: 46px;
+        padding: 4px 3px;
+        gap: 3px;
+        border-radius: 8px;
+        border-top-width: 2px;
     }
-    .cal-modal .cal-date {
+    .cal-inline .cal-date {
         font-size: 10px;
     }
-    .cal-modal .cal-chip {
-        justify-content: center;
-        padding: 2px;
-    }
-    .cal-modal .cal-chip-t {
+    .cal-inline .cal-flag {
         display: none;
+    }
+    .cal-inline .cal-day.today {
+        background: var(--indicator-tint);
+        border-color: var(--indicator);
+        box-shadow: 0 0 0 1px var(--indicator) inset;
+    }
+    .cal-inline .cal-items {
+        gap: 2px;
+    }
+    .cal-inline .cal-chip {
+        justify-content: center;
+        padding: 1px 2px;
+    }
+    .cal-inline .cal-chip-t {
+        display: none;
+    }
+    .cal-inline .cal-rest {
+        font-size: 9px;
     }
     .cal-day {
         min-width: 0;
