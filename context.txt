@@ -564,7 +564,7 @@ new invariants to respect.
     - IDEMPOTENT IMPORT: the importers (pylib/anki/gmatwiz.py) now dedup by a
       normalized Stem hash (_stem_hash + _existing_stem_hashes), so re-import never
       duplicates — it only adds genuinely-new questions.
-    - AUTO-IMPORT: qt/aqt/gmat.py GMAT_BUNDLED_CONTENT_VERSION (=2) +
+    - AUTO-IMPORT: qt/aqt/gmat.py GMAT_BUNDLED_CONTENT_VERSION (now =3) +
       ensure_bundled_content_sync(col) — version-gated (via the gmatContentVersion
       config), idempotent, and SYNCHRONOUS — exposed as the mediasrv gmatEnsureContent
       endpoint (also whitelisted in _check_dynamic_request_permissions). Bumping the
@@ -586,9 +586,53 @@ new invariants to respect.
       sequences, expressions, absolute_value, functions, decimals). All
       license-clean; option-formatting artifacts cleaned.
 
+9d. ROUND 4 — full practice tests, sync fix, readability, and two bug fixes
+    - FULL 3-SECTION PRACTICE TESTS: gmatwiz/tests/build_full_tests.py assembles
+      full GMAT Focus forms (2026-full-01..03), each a "sections" array
+      [quant 21, verbal 23, di 20] (64 Q, 45 min/section). index.json keeps the 8
+      quant-only forms + adds full forms flagged full:true with per-section counts.
+      gmat_test_questions (mediasrv + Rust) returns {full, sections:[{pool,...}]}
+      for a full form (flat pool for legacy). Client (GmatApp.svelte) startFullTest
+      runs the sections sequentially on the shared timed-mock UI (fullTest state;
+      finishMock intercepts to advance/aggregate), then one combined report:
+      per-section 60-90 + a Total (accToSection/sectionsToTotal mirror the Rust
+      heuristic). api.ts adds TestSectionPool + full/sections. Verbal/DI thin, so
+      Quant is disjoint across forms while Verbal/DI reuse.
+    - EXAM-PACED DAILY LOAD (bug fix): importing the whole bank made every card
+      "due today" (new/day was 9999), giving absurd multi-hour Today estimates.
+      _ensure_generous_limits now sets a REASONABLE, exam-paced new/day via
+      _gmat_daily_new_target (spreads a deck's new cards across the learn-window
+      study days, clamped); recomputed on gmat_save_profile. Content version bumped
+      to 3 so existing collections re-apply. Reviews stay uncapped.
+    - VERBAL/DI CONFIG-SYNC (data-loss bug fix): the desktop GMAT_STATE_KEYS
+      (mediasrv.py) was MISSING gmatPlanVerbal/gmatDiagnosisVerbal/gmatPlanDI/
+      gmatDiagnosisDI, so a user who took all three diagnostics lost Verbal/DI on
+      logout/login (only Quant is config-synced; the Storage/collection layer was
+      also failing with storage/unauthorized). Added the four keys (now matches the
+      Rust list). Also: the account-switch "downloaded" branch (GmatApp.svelte) now
+      re-applies the Firestore config after a collection download so a stale
+      collection can't clobber config-synced plans.
+    - <b> RENDERING (bug fix): renderMath (api.ts) now restores a small allowlist
+      of authored inline tags (b/strong/i/em/u/sub/sup/br) after HTML-escaping, so
+      Critical Reasoning boldface (<b>...</b>) renders instead of showing literally.
+    - CALENDAR ON TODAY: the run-up calendar moved from Progress to the Today tab
+      (runupCalendar snippet, a boxed .calendar card). Each day now spells out its
+      task in readable text (calChipLabel: "Learn: Number Properties", "Verbal
+      quiz: Weaken", "Milestone test", ...) in bigger cells, not just glyphs.
+    - READABILITY PASS: brighter ink tokens (--ink/--ink-soft/--ink-faint), the
+      ambient "spellfall" glyphs dimmed (0.3 -> 0.12), a subtle text-shadow on
+      headings/ledes/muted, and slightly larger type - so the decorative background
+      never fights the text.
+
 -------------------------------------------------------------------------------
 10. NEW INVARIANTS & GOTCHAS (respect these when touching GMATWiz)
 -------------------------------------------------------------------------------
+  - CONFIG-SYNC KEY LOCKSTEP. GMAT_STATE_KEYS must be IDENTICAL in mediasrv.py
+    (Python/desktop) AND rslib/src/gmatwiz.rs (Rust/iOS). Any per-user config that
+    must survive logout/login (e.g. a new section's plan/diagnosis) MUST be added
+    to BOTH lists, or that device silently drops it on sync. (This caused the
+    Verbal/DI reset bug.) NOTE: gmatContentVersion is deliberately NOT in the list
+    - it's a per-collection high-water mark and travels with the collection only.
   - SCORING LOCKSTEP. rslib/src/gmatwiz.rs is the source of truth for Memory /
     Performance / Readiness; mediasrv.py mirrors its shape and api.ts mirrors its
     types. Change one -> change all three, or desktop / iOS / UI drift.

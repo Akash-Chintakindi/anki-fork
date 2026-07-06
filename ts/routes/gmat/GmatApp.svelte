@@ -5468,7 +5468,12 @@ chrome77/es2020 webview.
 
     /* --- forward study calendar (Progress) ------------------------------- */
     .calendar {
-        margin-bottom: 22px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 22px;
+        box-shadow: var(--shadow);
+        margin: 22px 0;
     }
     .cal-head {
         display: flex;
