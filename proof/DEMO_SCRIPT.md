@@ -71,8 +71,9 @@ Record desktop + simulator side by side if you can. Say the italicized lines.
 4. **The three honest scores (1:20–2:00).** Open **Progress**. Show **Memory / Performance / Readiness**, each with a **range + confidence + evidence + coverage %**, and at least one score **abstaining** with its give-up reason.
    *"Three separate scores, each with a range. When there isn't enough data, it refuses to show a number and tells you why — no guess in a nice font."*
 
-5. **Phone syncs with desktop (2:00–2:40).** On the phone, answer a few reviews → **Sync up**. On desktop, hit **Sync** → show the new reviews/counts appear.
-   *"Review on the phone, see it on the desktop. Reviews are append-only and union-merged — none lost, none double-counted."*
+5. **Sync proven — 7b (2:00–2:40).** In a terminal, run `./tools/gmat-sync-test.sh` and show it reach `OVERALL VERDICT: PASS` (or open `proof/sync-test.txt`). This is the re-runnable, no-setup proof.
+   *"Two devices, one shared engine: 10 reviews offline on each reconcile so all 20 land exactly once — none lost, none double-counted — and a same-card conflict resolves to a clear winner."*
+   (For a live GUI phone→desktop shot you'd need your own Firebase account signed in on both — see `RECORDING_GUIDE.md` Recording 4; the command above is what a grader can reproduce with zero setup.)
 
 6. **AI, checked and safe (2:40–3:20).** Show `proof/ai-eval.txt` (tagging beats keyword + vector) and `proof/ai-cardcheck.txt` (the 7f card check: correct / wrong / bad-teaching counts + cutoff). Toggle **AI off** in Progress and show the app still scores.
    *"Every AI output traces to a named source, is checked on a held-out set, beats a simpler method — and the app runs fully with AI switched off."*
@@ -94,7 +95,7 @@ Grade areas (weights) and exactly where each is shown/proved.
 - **Study feature on learning science (15%)** — the 3-arm ablation of topic-aware scheduling: `gmatwiz/eval/ablation.py` → `proof/ablation.txt` (pre-registered hypothesis + metric, full/ablation/plain, 95% CI, honest null handling).
 - **AI checking & safety (15%)** — `proof/ai-eval.txt` (held-out tagging beats keyword + vector), `proof/ai-cardcheck.txt` (7f: 50 gold + 50 generated, 3 counts, pre-set cutoff, blocked failures), AI provenance + fail-closed degrade (`ts/routes/gmat/ai.ts`, `aiChecker.ts`).
 - **Fair tests others can re-run (12%)** — everything under `gmatwiz/eval/` + `gmatwiz/content/*_check.py` + `tools/*.sh` is seeded; each `proof/*.txt` has a REPRODUCE block. Leakage clean: `proof/leakage-check.txt`.
-- **Desktop + phone one engine, sync (10%)** — `proof/sync-test.txt` (7b: 10+10 offline → 20 land once; same-card conflict winner) + the live sync shot (Part 2 #5).
+- **Desktop + phone one engine, sync (10%)** — `proof/sync-test.txt` via the one-command `./tools/gmat-sync-test.sh` (7b: 10+10 offline → 20 land once; same-card conflict winner), re-runnable with zero setup (Part 2 #5).
 - **Useful product & clean UX (8%)** — the in-app tour: Today / Study / Drill / Progress / Error Log; calm wizard theme; one clear next action.
 
 Hard limits to keep clean: no fabricated readiness number (abstention is shown), both apps run on a clean device with AI off, no leaked test data (`proof/leakage-check.txt`), every AI claim has a source.

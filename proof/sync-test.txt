@@ -13,6 +13,19 @@ REPRODUCE
   # or: ./tools/gmat-sync-test.sh
 
 -------------------------------------------------------------------------------
+SYNC SERVER
+-------------------------------------------------------------------------------
+  This test STARTS ITS OWN ephemeral sync server automatically (python -m
+  anki.syncserver on a free loopback port) and stops it at the end - so
+  reproducing 7b needs NO manual server step; one command does everything.
+
+  To run a STANDING server instead (e.g. a manual desktop demo):
+      ./tools/gmat-sync-server.sh
+  Defaults: user gmat:wiz, http://127.0.0.1:27811/, data in out/syncserver
+  (override via GMAT_SYNC_USER / GMAT_SYNC_PORT / GMAT_SYNC_BASE). Point
+  clients at that URL; the iOS simulator reaches the host's 127.0.0.1.
+
+-------------------------------------------------------------------------------
 SETUP
 -------------------------------------------------------------------------------
   baseline deck : 60 shared GMAT::Quant cards
@@ -23,8 +36,8 @@ SETUP
 -------------------------------------------------------------------------------
 PART 1 - 10 offline reviews on each device, then reconnect
 -------------------------------------------------------------------------------
-  desktop reviewed 10 cards offline: cids 1783303183987..1783303183996
-  phone   reviewed 10 DIFFERENT cards offline: cids 1783303183997..1783303184006
+  desktop reviewed 10 cards offline: cids 1783306304530..1783306304539
+  phone   reviewed 10 DIFFERENT cards offline: cids 1783306304540..1783306304549
   after sync -> new reviews on desktop: 20   on phone: 20
   revlog id sets identical on both devices : True
   duplicate revlog ids (double-count) : desktop=0  phone=0
@@ -35,20 +48,20 @@ PART 1 - 10 offline reviews on each device, then reconnect
 -------------------------------------------------------------------------------
 PART 2 - same card reviewed on BOTH devices offline (conflict)
 -------------------------------------------------------------------------------
-  card x = 1783303184007
+  card x = 1783306304550
   desktop answered x = Good (earlier);  phone answered x = Again (later)
 
   Step 1 - incremental sync (union-merges the reviews):
     revlog rows for x : desktop=2  phone=2  (BOTH reviews preserved, no loss)
-    card state after incremental : desktop=(1, 1, 1783303804, 0, 1, 0)
-                                   phone  =(1, 1, 1783303264, 0, 1, 0)
+    card state after incremental : desktop=(1, 1, 1783306927, 0, 1, 0)
+                                   phone  =(1, 1, 1783306387, 0, 1, 0)
     card state diverged (same-object edit) : True  (expected: incremental sync keeps both reviews but does not merge
      the divergent scheduling state)
 
   Step 2 - documented resolution: FULL sync from the WINNER (the later
     review = phone's Again). Resolution syncs: ['full_upload', 'full_download']
-    final card state for x  desktop=(1, 1, 1783303264, 0, 1, 0)
-                            phone  =(1, 1, 1783303264, 0, 1, 0)
+    final card state for x  desktop=(1, 1, 1783306387, 0, 1, 0)
+                            phone  =(1, 1, 1783306387, 0, 1, 0)
     devices converged to the SAME (winner) state : True
     reviews still union-preserved after resolution : desktop=2  phone=2
 
@@ -68,5 +81,5 @@ INTEGRITY
 -------------------------------------------------------------------------------
 OVERALL VERDICT: PASS
 -------------------------------------------------------------------------------
-  generated_at : 2026-07-06T02:00:20+00:00
+  generated_at : 2026-07-06T02:52:25+00:00
 ===============================================================================
