@@ -98,6 +98,37 @@ xcrun simctl launch booted com.gmatwiz.phone
 
 The server must be running for desktop⇄phone sync to work. The desktop **Sync** button auto-targets it; the phone offers **Sync down** / **Sync up**.
 
+## Install the packaged apps (clean machine, no toolchain)
+
+For running the *shipped builds* on a clean device (what a grader does), as opposed to building from source above.
+
+### Desktop — macOS installer (`.dmg`)
+
+Build the installer once (or reuse the artifact noted in [`proof/installer.log`](./proof/installer.log)):
+
+```bash
+./ninja wheels:anki wheels:aqt && ./ninja installer:package
+# -> out/installer/dist/anki-26.05-mac-apple.dmg  (~220 MB, ad-hoc signed)
+```
+
+Install on any clean Mac (no Python / Xcode / toolchain required):
+
+1. Double-click the `.dmg` and drag **Anki** into **Applications**.
+2. First launch is Gatekeeper-warned (ad-hoc signed) — right-click the app → **Open** → **Open**, or clear the quarantine flag:
+   ```bash
+   xattr -dr com.apple.quarantine /Applications/Anki.app
+   ```
+3. Launch it — it opens straight into the GMATWiz screen.
+
+(Windows/Linux installers can be produced with `./ninja installer:package` on those platforms; macOS is the reference build.)
+
+### Phone — iOS
+
+- **Simulator (works today):** the *iOS (simulator)* steps above build, install (`xcrun simctl install booted …`), and launch `GMATWizPhone.app`.
+- **Real device / TestFlight:** add your Apple `DEVELOPMENT_TEAM` to [`ios/project.yml`](./ios/project.yml), then archive + upload via Xcode/TestFlight (or sideload the signed `.ipa`). See [`POST_XCODE_TODO.md`](./POST_XCODE_TODO.md).
+
+Both apps run **with AI off** and still produce the three scores.
+
 ## The three honest scores + the give-up rule
 
 Every score obeys the **honesty rule**: it shows a point estimate, a likely **range**, a **"how sure"** confidence note, the **evidence** behind it, what data is still missing, and the best next thing to study — or it **abstains** and tells you exactly which conditions are unmet. Abstaining under threshold is itself correct, scored behavior, not a failure. All three are computed in one place ([`rslib/src/gmatwiz.rs`](./rslib/src/gmatwiz.rs)) and consumed identically by desktop and iOS.
