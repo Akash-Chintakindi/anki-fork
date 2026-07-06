@@ -1,0 +1,1068 @@
+{
+  "id": "2026-full-01",
+  "year": 2026,
+  "label": "Full Practice Test 1",
+  "full": true,
+  "sections": [
+    {
+      "section": "quant",
+      "label": "Quantitative Reasoning",
+      "seconds": 2700,
+      "target_ms": 128571,
+      "items": [
+        {
+          "stem": "The events A and B are independent. The probability that event A occurs is 0.6, and the probability that at least one of the events A or B occurs is 0.96. What is the probability that event B occurs?",
+          "options": {
+            "A": "0.5",
+            "B": "0.6",
+            "C": "0.7",
+            "D": "0.8",
+            "E": "0.9"
+          },
+          "correct": "E",
+          "explanation": "Let x be the probability that B does not occur.\nP(A and B do not occur) = 1 - 0.96 = 0.04\n0.4x = 0.04\nx=0.1\nP(B occurs) = 1 - x = 0.9\nThe answer is E.",
+          "topic": "gmat::quant::arithmetic::probability",
+          "difficulty": "medium",
+          "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+          "license": "Apache-2.0"
+        },
+        {
+          "stem": "If set A={4,4,4,....,n times} , set B={3,3,3,3....m times} and set C={11,11,11...k time} , then in terms of m,n and k , how many possible subsets from sets A,B, and C can be created ?",
+          "options": {
+            "A": "a) k(n+m+mn)+ k",
+            "B": "b) (1+n+m+mn)(k+1)",
+            "C": "c) k^2(mn+n/m)",
+            "D": "d) kmn(k+m+n)",
+            "E": "e) None of the above."
+          },
+          "correct": "B",
+          "explanation": "a) how many 2's are included?\nb) how many 3's are included?\nand\nc) how many 11's are included?\nFor the number of 2, we could have zero 2's, or one 2, or two 2's, all the way up to n 2's. That's (n + 1) possibilities for the 2's. Similarly, (m + 1) possibilities for the 3's and (k + 1) possibilities for the 11's. We simply multiply these three numbers.\nNOTICE that one set, the set that includes no 2's, no 3's, and no 11's, is included. This is known in mathematics as thenull set, sometimes called the empty set, a set with no members. Technically, this is a subset of every possible set, but that's a technical detail of set theory that goes well beyond what the GMAT would expect students to know. Even the the calculation is not that difficult, some of the technical aspects of this question are not in line with the GMAT's expectations.\nThe number of subsets is (m + 1)(n + 1)(k + 1). The answer is not given in that form. Instead, the first two factors have been FOILed together:\n(mn + m + n + 1)(k + 1).\nMike\nB",
+          "topic": "gmat::quant::algebra::expressions",
+          "difficulty": "hard",
+          "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/train.json",
+          "license": "Apache-2.0"
+        },
+        {
+          "stem": "Factor: x4y3 â€“ 16y3",
+          "options": {
+            "A": "3y3(x2 + 4)(x + 2)(x -2)",
+            "B": "y3(x2 + 4)(x + 2)(x -2)",
+            "C": "3y3(x2 + 4)(x + 2)(x -3)",
+            "D": "3y3(x2 + 4)(x + 3)(x -2)",
+            "E": "3y3(x2 + 4)(x + 2)(x -4)"
+          },
+          "correct": "B",
+          "explanation": "x4y3â€“ 16y3.\n= y3(x4 â€“ 16).\n= y3[(x2)2 - 42].\n= y3(x2 + 4)(x2 - 4).\n= y3(x2 + 4)(x2 - 22).\n= y3(x2 + 4)(x + 2)(x -2).\nAnswer: (B) y3(x2 + 4)(x + 2)(x -2)",
+          "topic": "gmat::quant::algebra::quadratics",
+          "difficulty": "medium",
+          "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/train.json",
+          "license": "Apache-2.0"
+        },
+        {
+          "stem": "Express of the following as a fraction: 0.6%",
+          "options": {
+            "A": "1/500",
+            "B": "7/500",
+            "C": "3/500",
+            "D": "8/500",
+            "E": "None of them"
+          },
+          "correct": "C",
+          "explanation": "0.6 =6/1000 = 3/500\nAnswer is C.",
+          "topic": "gmat::quant::arithmetic::fractions",
+          "difficulty": "easy",
+          "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/train.json",
+          "license": "Apache-2.0"
+        },
+        {
+          "stem": "IF one gallon of soft drink is made of 40% orange juice and 60% water, how many additional gallons of orange juice must be mixed in order to make the orange juice 60% of the soft drink?",
+          "options": {
+            "A": "0.5",
+            "B": "1",
+            "C": "1.25",
+            "D": "1.5",
+            "E": "2"
+          },
+          "correct": "A",
+          "explanation": "Let x be the quantity to be added\n(0.4+y) / 1+y = 60/100\n=> 4+10y = 6+6y\n=> y = 2/4 = 0.5\nAnswer is A",
+          "topic": "gmat::quant::arithmetic::percents",
+          "difficulty": "medium",
+          "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+          "license": "Apache-2.0"
+        },
+        {
+          "stem": "There are 8 books on a shelf, of which 2 are paperbacks and 6 are hardbacks. How many possible selections of 3 books from this shelf include at least one paperback?",
+          "options": {
+            "A": "a) 40",
+            "B": "b) 45",
+            "C": "c) 36",
+            "D": "d) 55",
+            "E": "e) 60"
+          },
+          "correct": "C",
+          "explanation": "approach 1\nat-least 1 paper back = total - no paper back\n8c3-6c3 = 36\napproach 2\nat-least 1 paper back = 1 paper back , 3 hard back or 2 paper back 2 hard back\n= 2c1*6c2+2c2*6c1 = 36\nAnswer is C",
+          "topic": "gmat::quant::arithmetic::sets",
+          "difficulty": "hard",
+          "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/train.json",
+          "license": "Apache-2.0"
+        },
+        {
+          "stem": "Bradley owns b video game cartridges. If Bradley’s total is one-third the total owned by Andrew and twice the total owned by Charlie, how many video game cartridges do the three of them own altogether, in terms of b?",
+          "options": {
+            "A": "(16/3)b",
+            "B": "(17/4)b",
+            "C": "(13/4)b",
+            "D": "(9/2)b",
+            "E": "(7/12)b"
+          },
+          "correct": "D",
+          "explanation": "Step 1: Categorize the problem\nThis problem is testing basic algebra and equations, with an extra layer of complexity by having variables in the answer choices.\nStep 2: Think like the test maker\nWhat is the key detail or key details in the problem? The key detail to immediately recognize is that the problem gives you Andrew and Charlie’s totals in relation to Bradley’s total rather than giving you Bradley’s total in relation to the other two; and then the problem asks you to solve the problem in terms of b. This means that you have to relate Andrew and Charlie’s values in relation to Bradley’s total. The test maker is attempting to force you to structure the problem in the opposite way that most people are used to structuring information. By gaining this insight, it makes it easier to solve the problem.\nStep 3: Solve the problem\nb = Bradley’s total\n3b = Andrew’s total\n(1/2)b = Charlie’s total\nAdd each total\nb + 3b+ (1/2)b = 4b + (1/2)b = (16/4)b + (1/2)b = (9/2)b\nTherefore,choose D.",
+          "topic": "gmat::quant::algebra::expressions",
+          "difficulty": "medium",
+          "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/train.json",
+          "license": "Apache-2.0"
+        },
+        {
+          "stem": "The average of 2,7,6 and x is 5 and the average of 18,1,6,x and y is 10. What is the value of y?",
+          "options": {
+            "A": "5",
+            "B": "10",
+            "C": "20",
+            "D": "30",
+            "E": "40"
+          },
+          "correct": "C",
+          "explanation": "We have : ( 2+7+6+x)/4 = 5 or 15+x =20 or x = 5\nAlso (18+1+6+x+y)/5 = 10, 25+5+y = 50, y =20\nANSWER:C",
+          "topic": "gmat::quant::arithmetic::statistics",
+          "difficulty": "medium",
+          "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/train.json",
+          "license": "Apache-2.0"
+        },
+        {
+          "stem": "A grocer has a sale of Rs. 6435, Rs. 6927, Rs. 6855, Rs. 7230 and Rs. 6562 for 5 consecutive months. How much sale must he have in the sixth month so that he gets an average sale of Rs. 6500?",
+          "options": {
+            "A": "Rs. 4991",
+            "B": "Rs. 5991",
+            "C": "Rs. 6991",
+            "D": "Rs. 6001",
+            "E": "None of these"
+          },
+          "correct": "A",
+          "explanation": "Explanation:\nTotal sale for 5 months = Rs. (6435 + 6927 + 6855 + 7230 + 6562) = Rs. 34009.\nRequired sale = Rs. [ (6500 x 6) - 34009 ]\n= Rs. (39000 - 34009)\n= Rs. 4991.\nAnswer: A",
+          "topic": "gmat::quant::arithmetic::statistics",
+          "difficulty": "medium",
+          "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/train.json",
+          "license": "Apache-2.0"
+        },
+        {
+          "stem": "Tickets numbered from 1 to 20 are mixed and then a ticket is selected randomly. What is the probability that the selected ticket bearsa number which is a multiple of 3?",
+          "options": {
+            "A": "1/11",
+            "B": "2/13",
+            "C": "3/10",
+            "D": "4/15",
+            "E": "5/16"
+          },
+          "correct": "C",
+          "explanation": "Here, S = [1, 2, 3, 4, …., 19, 20]\nLet E = event of getting a multiple of 3 = [3, 6, 9, 12, 15, 18]\nP (E) = n (E) / n (S) = 6 / 20 = 3/10\nC",
+          "topic": "gmat::quant::arithmetic::probability",
+          "difficulty": "medium",
+          "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/train.json",
+          "license": "Apache-2.0"
+        },
+        {
+          "stem": "The average of the marks of 10 students in a class is 40. If the marks of each student are doubled, find the new average?",
+          "options": {
+            "A": "78",
+            "B": "56",
+            "C": "80",
+            "D": "27",
+            "E": "40"
+          },
+          "correct": "C",
+          "explanation": "Sum of the marks for the 10 students\n= 10 * 40 = 400. The marks of each student are doubled, the sum also will be doubled.\nThe new sum = 400 * 2 = 800. So, the new average\n= 800/10 = 80.\nAnswer: C",
+          "topic": "gmat::quant::arithmetic::statistics",
+          "difficulty": "medium",
+          "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/train.json",
+          "license": "Apache-2.0"
+        },
+        {
+          "stem": "The fourth proportional to 5, 8, 15 is:",
+          "options": {
+            "A": "15",
+            "B": "5",
+            "C": "24",
+            "D": "8",
+            "E": "28"
+          },
+          "correct": "C",
+          "explanation": "Let the fourth proportional to 5, 8, 15 be x.\nThen, 5 : 8 : 15 : x\n= 5x = (8 x 15)\nx = (8 x 15)/5= 24.\nAnswer is C.",
+          "topic": "gmat::quant::arithmetic::ratios_proportions",
+          "difficulty": "medium",
+          "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/train.json",
+          "license": "Apache-2.0"
+        },
+        {
+          "stem": "In a graduate physics course, 70 percent of the students are male and 30 percent of the students are married. If two-sevenths of the male students are married, what fraction of the male students is single?",
+          "options": {
+            "A": "2/7",
+            "B": "1/3",
+            "C": "1/2",
+            "D": "2/3",
+            "E": "5/7"
+          },
+          "correct": "E",
+          "explanation": "let assume there are 100 students of which 70 are male and 30 are females\nif 30 are married then 70 will be single.\nnow its given that two-sevenths of the male students are married that means 2/7 of 70 = 20 males are married\nif 30 is the total number of students who are married and out of that 20 are males then the remaining 10 will be females who are married.\ntotal females = 70\nmarried males = 20\nthen single males = 70-20 = 50\nwe need to find the fraction of male students who are single i.e single male students / total male student\n= 50/70 = 5/7 [E]",
+          "topic": "gmat::quant::arithmetic::percents",
+          "difficulty": "medium",
+          "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/train.json",
+          "license": "Apache-2.0"
+        },
+        {
+          "stem": "The population of a town increased from 1,75,000 to 2,62,500 in a decade. The average percent increase of population per year is :",
+          "options": {
+            "A": "4.37%",
+            "B": "5%",
+            "C": "6%",
+            "D": "8.75%",
+            "E": "None of these"
+          },
+          "correct": "B",
+          "explanation": "Solution\nIncrease in 10 year= (262500 - 175000) = 87500.\nIncrease% =( f87500/175000x 100 )% = 50%\n∴ Required average = ( 50/10 )% = 5%\nAnswer B",
+          "topic": "gmat::quant::arithmetic::percents",
+          "difficulty": "easy",
+          "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/train.json",
+          "license": "Apache-2.0"
+        },
+        {
+          "stem": "A license plate in the country Kerrania consists of four digits followed by two letters. The letters A, B, and C are used only by government vehicles while the letters D through Z are used by non-government vehicles. Kerrania's intelligence agency has recently captured a message from the country Gonzalia indicating that an electronic transmitter has been installed in a Kerrania government vehicle with a license plate starting with 79. If it takes the police 9 minutes to inspect each vehicle, what is the probability that the police will find the transmitter within three hours?",
+          "options": {
+            "A": "18/79",
+            "B": "1/6",
+            "C": "1/45",
+            "D": "1/50",
+            "E": "1/900"
+          },
+          "correct": "C",
+          "explanation": "If it takes 9 minutes to inspect one vehicle, the # of vehicles that can be inspected in 3 hours (180 minutes) = 180/9 = 20. Hence, for calculating the probability that the police will find the transmitter within three hours, the favorable cases = 20. Now, we need to figure out the total # of cases.\nThe total # of cases = Total # of such cars possible. The details given about the car is that it starts with 79, which leaves 2 more digits, both of which can be filled by all 10 numbers (0-9). In addition, we have 3 letters, each of which can be filled by any from the set {A,B,C}. Hence the total # of such cars possible = 10*10*3*3 = 900\nSo, the probability that the police will find the transmitter within three hours = 20/900 = 1/45. Option C",
+          "topic": "gmat::quant::arithmetic::probability",
+          "difficulty": "medium",
+          "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/train.json",
+          "license": "Apache-2.0"
+        },
+        {
+          "stem": "1/2, 1/4, 1/8, 1/16, 1/32,1/64, 1/128 .... In the sequence above each term after after the first one-half the previous term. If x is the tenth term of the sequence, then x satisfies which of the following inequalities?",
+          "options": {
+            "A": "0.1 < x < 1",
+            "B": "0.01 < x < 0.1",
+            "C": "0.001 < x < 0.01",
+            "D": "0.0001 < x < 0.001",
+            "E": "0.000001 < x < 0.00001"
+          },
+          "correct": "E",
+          "explanation": "In the Sequence notice that the sequence is just the 1/(2^n) ...\nso for 1st term=1/2^1=1/2\n2nd term=1/(2^2)1/4, 3rd term=1/(2^3)=1/8 and so on...\nThus the 10th term will be 1/(2^10)=1/1024\nRoughly, 1/1024 can be 1/1000=0.001 but since denominator is a bit more than 1000 therefore the actual value will be a bit less than 0.001.\nthus the ans will lie btw. 0.000001 and 0.0001.(E)",
+          "topic": "gmat::quant::algebra::sequences",
+          "difficulty": "medium",
+          "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/train.json",
+          "license": "Apache-2.0"
+        },
+        {
+          "stem": "The equation x/y - 2/5 = 0 is equivalent to each of the following EXCEPT",
+          "options": {
+            "A": "(x - y)/y = -3/5",
+            "B": "(5x - 3y)/y = 21/5",
+            "C": "(x + 3y)/y = 17/5",
+            "D": "(x + y)/x = 7/2",
+            "E": "x/y + 1 = 7/5"
+          },
+          "correct": "B",
+          "explanation": "x/y - 2/5 = 0\n5x=2y\nx= 2/5 * y or y = 5/2 *x\nplug in x or y depending on the equation. all expressions are true except for\nB. (5x - 3y)/y = 21/5\nwhere y=-21\nB. (5x - 3y)/y = 21/5\nANSWER:B",
+          "topic": "gmat::quant::algebra::expressions",
+          "difficulty": "medium",
+          "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/train.json",
+          "license": "Apache-2.0"
+        },
+        {
+          "stem": "If (x^2 + 4x - 11)/5 ≤ x + 1, then x could be represented by which of the following?",
+          "options": {
+            "A": "− 3 ≤ x ≤ 4",
+            "B": "− 4 ≤ x ≤ 3",
+            "C": "− 3 ≤ x ≤ 3",
+            "D": "− 4 ≤ x ≤ − 3",
+            "E": "3 ≤ x ≤ 4"
+          },
+          "correct": "A",
+          "explanation": "IMO A is correct answer\nsolving through eqautions\nx^2 +4x-11<= 5x+5\n(x+3)(x-4)<=0",
+          "topic": "gmat::quant::algebra::inequalities",
+          "difficulty": "medium",
+          "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/train.json",
+          "license": "Apache-2.0"
+        },
+        {
+          "stem": "John conducted a survey about car color. 60% of the people who took the survey were women. Of the men who were surveyed, 75% preferred red cars over green cars. If 10 men liked green cars more than red, how many people took the survey?",
+          "options": {
+            "A": "100",
+            "B": "120",
+            "C": "50",
+            "D": "200",
+            "E": "80"
+          },
+          "correct": "A",
+          "explanation": "Let N be the number of people who took the survey. The number of men M is given by M = N - 60%N.\nThe number of men G who liked green cars more than red cars is given by\nG = M - 25%M\nGiven that G = 10, solve for N\n40 = (N - 60%N) - 25%(N - 60%N)\nN = 100\nCorrect answer is A.",
+          "topic": "gmat::quant::arithmetic::percents",
+          "difficulty": "medium",
+          "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/test.json",
+          "license": "Apache-2.0"
+        },
+        {
+          "stem": "In how many ways can a five-letter password be chosen, using the letters A, B, C, D, E, F, G, and/or H such that at least one letter is repeated within the password?",
+          "options": {
+            "A": "720",
+            "B": "864",
+            "C": "900",
+            "D": "936",
+            "E": "26048"
+          },
+          "correct": "E",
+          "explanation": "Total number of four letter passwords = 8*8*8*8*8= 32768 ------(1)\nTotal number of passwords in which no letter repeats = 8C5*5!= 56*120=6720------(2)\ntherefore required value = (1)-(2)= 32768-6720=26048\nE",
+          "topic": "gmat::quant::arithmetic::counting",
+          "difficulty": "hard",
+          "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/train.json",
+          "license": "Apache-2.0"
+        },
+        {
+          "stem": "If 2x^2 + y^2 = 2xy, then (x - y)^2 =",
+          "options": {
+            "A": "-x^2",
+            "B": "3x^2",
+            "C": "4xy",
+            "D": "2y^2",
+            "E": "– y^2"
+          },
+          "correct": "A",
+          "explanation": "(x-y)^2 = x^2 + y^2 - 2xy = x^2 + y^2-2x^2-y^2 = -x^2\nCorrect option : A",
+          "topic": "gmat::quant::algebra::quadratics",
+          "difficulty": "medium",
+          "source": "AQuA-RAT (DeepMind) https://raw.githubusercontent.com/google-deepmind/AQuA/master/train.json",
+          "license": "Apache-2.0"
+        }
+      ]
+    },
+    {
+      "section": "verbal",
+      "label": "Verbal Reasoning",
+      "seconds": 2700,
+      "target_ms": 117391,
+      "items": [
+        {
+          "stem": "Columnist: The mayor claims that her policies reduced unemployment. But the mayor is wealthy and has never been unemployed herself, so her claim should be dismissed. The columnist's reasoning is most vulnerable to the criticism that it",
+          "options": {
+            "A": "attacks the mayor's personal circumstances instead of addressing the substance of her claim.",
+            "B": "relies on a sample that is too small to be representative.",
+            "C": "confuses a cause with an effect.",
+            "D": "assumes the very point it is trying to prove.",
+            "E": "draws a general conclusion from a single exceptional case."
+          },
+          "correct": "A",
+          "explanation": "The columnist dismisses the claim by pointing to the mayor's wealth and personal history, an ad hominem, rather than addressing whether the policies actually reduced unemployment.",
+          "topic": "gmat::verbal::cr::flaw",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "Nutritionists claim that eating a daily handful of almonds lowers cholesterol, noting that people who eat almonds daily tend to have lower cholesterol than those who do not. Which of the following, if true, would most strengthen the claim?",
+          "options": {
+            "A": "In a trial, participants randomly assigned to eat almonds daily had lower cholesterol after three months than those assigned no almonds.",
+            "B": "Almonds are a good source of protein and dietary fiber.",
+            "C": "People who eat almonds daily also tend to exercise regularly.",
+            "D": "Cholesterol levels are known to vary with age and genetics.",
+            "E": "Almond consumption has increased over the past decade."
+          },
+          "correct": "A",
+          "explanation": "A randomized trial isolates almond consumption from confounders such as exercise, directly supporting that almonds themselves lower cholesterol.",
+          "topic": "gmat::verbal::cr::strengthen",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "Every employee in the marketing department speaks at least two languages. No employee who speaks at least two languages is required to attend the weekly translation workshop. If the statements above are true, which of the following must also be true?",
+          "options": {
+            "A": "No employee in the marketing department is required to attend the weekly translation workshop.",
+            "B": "Every employee who attends the workshop speaks only one language.",
+            "C": "Some marketing employees speak exactly two languages.",
+            "D": "Employees outside the marketing department speak only one language.",
+            "E": "The workshop is intended primarily for newly hired employees."
+          },
+          "correct": "A",
+          "explanation": "Marketing employees all speak at least two languages, and no one who does is required to attend; therefore no marketing employee is required to attend. A follows necessarily.",
+          "topic": "gmat::verbal::cr::inference",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "Which of the following best describes the organization of the passage?",
+          "options": {
+            "A": "A common view is stated, complicated by additional considerations, and left as an open debate.",
+            "B": "A thesis is stated and then supported by a single extended example.",
+            "C": "Two historians' theories are compared and one is shown to be false.",
+            "D": "A chronological history of guilds is presented from origin to decline.",
+            "E": "A problem is described and a definitive solution is proposed."
+          },
+          "correct": "A",
+          "explanation": "The passage gives the simple portrayal, adds broader functions and the risk-lowering argument, and ends noting the debate is 'unresolved.' A matches.",
+          "topic": "gmat::verbal::rc::structure",
+          "difficulty": "hard",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz",
+          "passage": "Medieval craft guilds are often portrayed simply as early trade unions that protected workers. Their role, however, was considerably broader. A guild regulated the quality of goods produced in its trade, set standards for training, and controlled who could practice the craft within a town. To many historians, these functions look restrictive, and it is true that guilds limited competition. Yet the same rules that limited entry also guaranteed buyers a predictable level of quality at a time when there were few other ways to verify a craftsman's skill. A customer purchasing a barrel from a guild cooper could reasonably assume it would not leak, because the cooper had passed the guild's examination. Some economic historians therefore argue that guilds, whatever their costs to would-be competitors, lowered the risk of commerce and so helped trade to expand. The debate over whether guilds were on balance helpful or harmful remains unresolved."
+        },
+        {
+          "stem": "A streaming service intends to raise its subscriber numbers by producing more original comedy shows. To evaluate this strategy, it would be most helpful to determine",
+          "options": {
+            "A": "whether the viewers the service hopes to attract choose streaming services based on the availability of original comedies.",
+            "B": "how much it costs to produce a single original comedy.",
+            "C": "whether the service's current shows are mostly dramas.",
+            "D": "how many comedies the service's competitors produce.",
+            "E": "whether comedies win more awards than dramas."
+          },
+          "correct": "A",
+          "explanation": "The strategy assumes original comedies attract subscribers; knowing whether target viewers actually choose services for comedies tests that link.",
+          "topic": "gmat::verbal::cr::evaluate",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "All members of the hiking club have completed a first-aid course. Anyone who has completed a first-aid course is permitted to lead a group hike. Which of the following must be true on the basis of the statements above?",
+          "options": {
+            "A": "Every member of the hiking club is permitted to lead a group hike.",
+            "B": "Only hiking club members are permitted to lead a group hike.",
+            "C": "Some group hikes are led by people without first-aid training.",
+            "D": "Completing a first-aid course requires joining the hiking club.",
+            "E": "All people who lead group hikes are members of the hiking club."
+          },
+          "correct": "A",
+          "explanation": "Club members have all completed first aid, and anyone with first aid may lead hikes; so every member may lead hikes. A follows; the other options reverse or overextend the conditionals.",
+          "topic": "gmat::verbal::cr::inference",
+          "difficulty": "hard",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "The author mentions that the protective proteins can be transferred to other cells primarily in order to",
+          "options": {
+            "A": "support the suggestion that the proteins might have practical uses",
+            "B": "prove that trehalose is unnecessary for any organism",
+            "C": "explain why tardigrades expel water when their habitats dry out",
+            "D": "question whether tardigrades can survive radiation",
+            "E": "describe the structure of the tun state"
+          },
+          "correct": "A",
+          "explanation": "The transfer-to-other-cells detail sets up the closing point that the proteins 'might one day help preserve biological materials.' Its function is to support that application.",
+          "topic": "gmat::verbal::rc::function",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz",
+          "passage": "Tardigrades, microscopic animals often called water bears, are among the hardiest organisms known. When their watery habitats dry out, tardigrades expel most of the water from their bodies and enter a dormant state called the tun, in which metabolism slows to a virtual standstill. In this state they can survive extreme cold, intense radiation, and even the vacuum of space. Early researchers assumed that a sugar called trehalose, which some dormant organisms use to protect their cells, was the key to this endurance. More recent work, however, has shown that many tardigrade species produce little trehalose. Instead, these species rely on a set of proteins, unique to tardigrades, that form a glass-like matrix around delicate cellular structures as the animal dries. Because these proteins can be transferred to other cells in the laboratory, some scientists hope they might one day help preserve biological materials such as vaccines without refrigeration."
+        },
+        {
+          "stem": "A company requires all job applicants to pass a typing-speed test, believing that faster typists make better administrative assistants. This policy may be misguided, however, because ___. Which of the following most logically completes the argument?",
+          "options": {
+            "A": "the most important duties of the company's administrative assistants rarely involve typing",
+            "B": "typing tests are inexpensive to administer",
+            "C": "many applicants practice before taking the test",
+            "D": "the company has used the test for several years",
+            "E": "some administrative assistants can type very quickly"
+          },
+          "correct": "A",
+          "explanation": "If the role rarely involves typing, screening on typing speed would not select better assistants, showing the policy may be misguided.",
+          "topic": "gmat::verbal::cr::complete_argument",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "A supermarket lowered the price of its store-brand cereal, expecting to sell more boxes than before. Instead, it sold fewer boxes of the store-brand cereal than it had at the higher price. Which of the following, if true, most helps to explain this surprising result?",
+          "options": {
+            "A": "Shoppers took the lower price as a sign of lower quality and switched to more expensive name brands.",
+            "B": "The store-brand cereal is displayed on a low shelf.",
+            "C": "Cereal prices rose at competing supermarkets.",
+            "D": "The store-brand cereal is available in several flavors.",
+            "E": "The supermarket advertised the price cut in its weekly flyer."
+          },
+          "correct": "A",
+          "explanation": "If shoppers read the lower price as lower quality and traded up to name brands, that explains why cutting the price reduced store-brand sales.",
+          "topic": "gmat::verbal::cr::explain_paradox",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "Economist: <b>Raising the minimum wage will increase the earnings of low-wage workers.</b> Some argue that it will also lead employers to cut jobs. However, <b>studies of recent minimum-wage increases have found no significant loss of employment.</b> In the economist's argument, the two portions in boldface play which of the following roles?",
+          "options": {
+            "A": "The first is the conclusion the economist defends; the second is evidence offered against an objection to that conclusion.",
+            "B": "The first is an objection the economist rejects; the second is the economist's conclusion.",
+            "C": "Both portions are objections that the economist seeks to refute.",
+            "D": "The first is evidence for the conclusion; the second is the conclusion itself.",
+            "E": "The first states the conclusion; the second states an assumption the conclusion relies on."
+          },
+          "correct": "A",
+          "explanation": "The first bold portion is the economist's main claim (the conclusion); the second is evidence rebutting the objection that jobs would be lost.",
+          "topic": "gmat::verbal::cr::boldface",
+          "difficulty": "hard",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "A bookstore added a café, and its book sales rose the following month. The owner concludes that the café caused the increase in book sales. Which of the following, if true, most strengthens the owner's conclusion?",
+          "options": {
+            "A": "Customers who bought coffee at the café browsed longer and bought more books than customers who did not.",
+            "B": "The café turned a profit in its first month of operation.",
+            "C": "Book sales at a competing store nearby fell during the same month.",
+            "D": "The café serves pastries in addition to coffee.",
+            "E": "The owner had wanted to open a café for many years."
+          },
+          "correct": "A",
+          "explanation": "Linking café use to longer browsing and more book purchases supplies a mechanism connecting the café to higher book sales, supporting causation.",
+          "topic": "gmat::verbal::cr::strengthen",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "The author mentions migrating birds and sea turtles primarily in order to",
+          "options": {
+            "A": "illustrate that the harms of skyglow extend beyond astronomy",
+            "B": "argue that wildlife matters more than human sleep",
+            "C": "explain how ground-based telescopes work",
+            "D": "prove that outdoor lighting should be abandoned",
+            "E": "describe how warmer light tones are produced"
+          },
+          "correct": "A",
+          "explanation": "The birds and turtles are examples introduced after 'the concern has widened,' showing skyglow's reach beyond astronomy. A gives their function.",
+          "topic": "gmat::verbal::rc::function",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz",
+          "passage": "For most of human history the night sky was a shared feature of experience, but artificial lighting has made truly dark skies rare near cities. The glow of streetlights and buildings scatters in the atmosphere and washes out all but the brightest stars, a phenomenon known as skyglow. Astronomers were the first to raise the alarm, since skyglow degrades observations from ground-based telescopes. In recent decades, however, the concern has widened. Researchers have documented that excessive nighttime light disrupts the behavior of nocturnal animals: migrating birds veer off course, and hatchling sea turtles, which navigate toward the brightest horizon, crawl inland toward roads instead of out to sea. Some studies also link chronic exposure to light at night with disrupted sleep in humans. Advocates for dark skies stress that the remedy is not to abandon outdoor lighting but to use it more thoughtfully—shielding fixtures so light points downward and switching to warmer tones—measures that reduce skyglow while still lighting the ground where people need it."
+        },
+        {
+          "stem": "The bakery sells out of croissants every day that it opens before 7 a.m. Yesterday, the bakery did not sell out of croissants. Which of the following must be true?",
+          "options": {
+            "A": "Yesterday the bakery did not open before 7 a.m.",
+            "B": "The bakery never opens before 7 a.m.",
+            "C": "The bakery baked fewer croissants than usual yesterday.",
+            "D": "The bakery will open before 7 a.m. today.",
+            "E": "Croissants are the bakery's most popular item."
+          },
+          "correct": "A",
+          "explanation": "Opening before 7 a.m. guarantees selling out. Since it did not sell out, by the contrapositive it did not open before 7 a.m.",
+          "topic": "gmat::verbal::cr::inference",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "According to the passage, the tun state is characterized by",
+          "options": {
+            "A": "a metabolism that slows to a virtual standstill",
+            "B": "an increase in the animal's water content",
+            "C": "the production of large amounts of trehalose",
+            "D": "a permanent loss of the ability to revive",
+            "E": "the transfer of proteins to other organisms"
+          },
+          "correct": "A",
+          "explanation": "The passage states that in the tun state 'metabolism slows to a virtual standstill.' The other options contradict or overstate the text.",
+          "topic": "gmat::verbal::rc::detail",
+          "difficulty": "easy",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz",
+          "passage": "Tardigrades, microscopic animals often called water bears, are among the hardiest organisms known. When their watery habitats dry out, tardigrades expel most of the water from their bodies and enter a dormant state called the tun, in which metabolism slows to a virtual standstill. In this state they can survive extreme cold, intense radiation, and even the vacuum of space. Early researchers assumed that a sugar called trehalose, which some dormant organisms use to protect their cells, was the key to this endurance. More recent work, however, has shown that many tardigrade species produce little trehalose. Instead, these species rely on a set of proteins, unique to tardigrades, that form a glass-like matrix around delicate cellular structures as the animal dries. Because these proteins can be transferred to other cells in the laboratory, some scientists hope they might one day help preserve biological materials such as vaccines without refrigeration."
+        },
+        {
+          "stem": "A manager claims that a new bonus scheme caused her sales team to sell more, since sales rose after the scheme began. Which of the following, if true, most weakens the claim?",
+          "options": {
+            "A": "The company launched a major advertising campaign the same week the bonus scheme began.",
+            "B": "The bonus scheme rewards the top three salespeople each month.",
+            "C": "Some team members preferred the old commission structure.",
+            "D": "Sales are recorded automatically by the point-of-sale system.",
+            "E": "The manager has led the team for two years."
+          },
+          "correct": "A",
+          "explanation": "A simultaneous advertising campaign is an alternative explanation for the sales increase, weakening the claim that the bonus scheme was the cause.",
+          "topic": "gmat::verbal::cr::weaken",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "Scientist: Every swan I have observed in this country is white. Therefore all swans everywhere are white. The scientist's reasoning is most vulnerable to the criticism that it",
+          "options": {
+            "A": "draws a sweeping general conclusion from a limited set of observations.",
+            "B": "relies on a definition of 'swan' that is too narrow.",
+            "C": "mistakes correlation for causation.",
+            "D": "assumes the very point it is trying to establish.",
+            "E": "appeals to the authority of other scientists."
+          },
+          "correct": "A",
+          "explanation": "Generalizing from swans seen in one country to all swans everywhere is a hasty generalization; the sample cannot support the universal claim.",
+          "topic": "gmat::verbal::cr::flaw",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "A software firm let employees set their own hours, expecting productivity to rise. Overall productivity instead declined. Which of the following, if true, most helps to explain the decline?",
+          "options": {
+            "A": "Because employees now worked at widely different times, teams could rarely meet to coordinate projects that required close collaboration.",
+            "B": "Employees appreciated the new flexibility.",
+            "C": "The firm's software is used by customers worldwide.",
+            "D": "The policy applied to all departments equally.",
+            "E": "The firm kept its existing vacation policy."
+          },
+          "correct": "A",
+          "explanation": "If flexible hours reduced the overlap teams needed to collaborate, coordination-heavy work could suffer, lowering overall productivity.",
+          "topic": "gmat::verbal::cr::explain_paradox",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "Columnist: Many people claim that <b>working long hours leads to greater career success.</b> But <b>employees who take regular breaks and work moderate hours are often promoted faster than those who overwork.</b> The popular belief is therefore mistaken. In the columnist's argument, the two boldfaced portions play which of the following roles?",
+          "options": {
+            "A": "The first is the position the columnist argues against; the second is evidence the columnist uses to reject that position.",
+            "B": "The first is the columnist's conclusion; the second supports it.",
+            "C": "Both portions are evidence for the columnist's conclusion.",
+            "D": "The first is evidence against the conclusion; the second is the conclusion.",
+            "E": "The first is the columnist's conclusion; the second is an objection to it."
+          },
+          "correct": "A",
+          "explanation": "The first bold portion is the popular claim the columnist opposes; the second is the columnist's counter-evidence (moderate-hour workers promoted faster).",
+          "topic": "gmat::verbal::cr::boldface",
+          "difficulty": "hard",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "TechCorp expects to boost annual profit by replacing its phone-based customer support with an automated chatbot, since the chatbot costs far less to operate than a call center. The argument assumes that",
+          "options": {
+            "A": "switching to the chatbot will not cause enough customers to leave to offset the cost savings.",
+            "B": "the chatbot will be able to answer every possible customer question.",
+            "C": "competitors have not already adopted similar chatbots.",
+            "D": "the displaced call-center employees can be retrained for other roles.",
+            "E": "customers generally prefer chatbots to speaking with a person."
+          },
+          "correct": "A",
+          "explanation": "Profit is revenue minus cost. Lower cost raises profit only if revenue does not fall by more than the savings; the argument assumes customer losses will not wipe out the cost reduction.",
+          "topic": "gmat::verbal::cr::assumption",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "It can be inferred from the passage that, in the period discussed, buyers",
+          "options": {
+            "A": "had limited means of judging a craftsman's skill apart from guild membership",
+            "B": "always preferred goods made outside the guild system",
+            "C": "were legally required to buy from guild members",
+            "D": "could easily test every product before purchase",
+            "E": "distrusted goods that carried a guild's approval"
+          },
+          "correct": "A",
+          "explanation": "The passage says there 'were few other ways to verify a craftsman's skill,' implying buyers relied on guild membership as a signal. A follows.",
+          "topic": "gmat::verbal::rc::inference",
+          "difficulty": "hard",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz",
+          "passage": "Medieval craft guilds are often portrayed simply as early trade unions that protected workers. Their role, however, was considerably broader. A guild regulated the quality of goods produced in its trade, set standards for training, and controlled who could practice the craft within a town. To many historians, these functions look restrictive, and it is true that guilds limited competition. Yet the same rules that limited entry also guaranteed buyers a predictable level of quality at a time when there were few other ways to verify a craftsman's skill. A customer purchasing a barrel from a guild cooper could reasonably assume it would not leak, because the cooper had passed the guild's examination. Some economic historians therefore argue that guilds, whatever their costs to would-be competitors, lowered the risk of commerce and so helped trade to expand. The debate over whether guilds were on balance helpful or harmful remains unresolved."
+        },
+        {
+          "stem": "The mayor argues that installing more streetlights will reduce nighttime crime in the park, citing studies that link brighter lighting to lower crime. The argument presupposes that",
+          "options": {
+            "A": "the crime examined in those studies is similar in kind to the crime occurring in the park.",
+            "B": "the park has more nighttime crime than any other location in the city.",
+            "C": "streetlights are the cheapest available way to reduce crime.",
+            "D": "residents have requested additional lighting for the park.",
+            "E": "the park is used mainly during the night."
+          },
+          "correct": "A",
+          "explanation": "Applying the studies' finding to the park assumes the park's crime resembles the crime those studies examined; otherwise the link may not transfer.",
+          "topic": "gmat::verbal::cr::assumption",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "Editorial: If we let the store stay open one hour later, employees will soon demand to work fewer days, and eventually the store will be unable to operate at all. We must therefore not extend the hours. The editorial's reasoning is flawed because it",
+          "options": {
+            "A": "assumes, without justification, that one modest change will inevitably set off a chain of increasingly serious consequences.",
+            "B": "relies on statistics drawn from an unrepresentative sample.",
+            "C": "attacks the character of the store's employees.",
+            "D": "confuses a necessary condition with a sufficient one.",
+            "E": "treats a product's popularity as evidence of its quality."
+          },
+          "correct": "A",
+          "explanation": "The argument is a slippery slope: it assumes without support that extending hours must trigger an escalating series of demands ending in collapse.",
+          "topic": "gmat::verbal::cr::flaw",
+          "difficulty": "hard",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "A city claims its new recycling program cut landfill waste, noting that landfill waste fell after the program launched. Which of the following, if true, most weakens the claim?",
+          "options": {
+            "A": "A large factory that had sent most of the city's landfill waste shut down the same month the program launched.",
+            "B": "The recycling program accepts glass, paper, and plastic.",
+            "C": "Participation in the program was voluntary.",
+            "D": "The city advertised the program widely.",
+            "E": "Landfill fees were unchanged during the period."
+          },
+          "correct": "A",
+          "explanation": "The factory's closure independently removed most landfill waste, providing an alternative cause for the decline and weakening the program's claimed effect.",
+          "topic": "gmat::verbal::cr::weaken",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        }
+      ]
+    },
+    {
+      "section": "di",
+      "label": "Data Insights",
+      "seconds": 2700,
+      "target_ms": 135000,
+      "items": [
+        {
+          "stem": "Is the integer p greater than 50? (1) p is a multiple of 20, and 40 < p < 100. (2) p is even.",
+          "options": {
+            "A": "Statement (1) ALONE is sufficient, but statement (2) alone is not sufficient.",
+            "B": "Statement (2) ALONE is sufficient, but statement (1) alone is not sufficient.",
+            "C": "BOTH statements TOGETHER are sufficient, but NEITHER statement ALONE is sufficient.",
+            "D": "EACH statement ALONE is sufficient.",
+            "E": "Statements (1) and (2) TOGETHER are NOT sufficient."
+          },
+          "correct": "A",
+          "explanation": "Statement (1): the multiples of 20 strictly between 40 and 100 are 60 and 80, both of which exceed 50, so p > 50 is definitely true -- sufficient. Statement (2): p even allows p = 2 (not > 50) or p = 60 (> 50) -- not sufficient. Since (1) alone settles the question and (2) does not, the answer is A.",
+          "topic": "gmat::di::reasoning::data_sufficiency",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "In a points game, each easy task is worth e points and each hard task is worth h points, where e and h are whole numbers. Two conditions must both hold: (i) one easy task and one hard task together are worth 25 points; and (ii) a hard task is worth four times as many points as an easy task. This is a two-part analysis: select one value for e and one value for h so that both conditions are satisfied. Which of the following pairs does so?",
+          "options": {
+            "A": "e = 20, h = 5",
+            "B": "e = 5, h = 20",
+            "C": "e = 10, h = 15",
+            "D": "e = 4, h = 16",
+            "E": "e = 5, h = 15"
+          },
+          "correct": "B",
+          "explanation": "From (ii), h = 4e. Substituting into (i): e + 4e = 25, so 5e = 25 and e = 5, giving h = 20. The pair e = 5, h = 20 meets both conditions. A reverses the multiple; C totals 25 but h is not four times e; D has h = 4e but totals only 20; E totals 20 and lacks the 4-to-1 relationship.",
+          "topic": "gmat::di::reasoning::two_part_analysis",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "At a market, what is the price of one apple? (1) Three apples and two oranges together cost 4.20 dollars. (2) One orange costs 0.90 dollars.",
+          "options": {
+            "A": "Statement (1) ALONE is sufficient, but statement (2) alone is not sufficient.",
+            "B": "Statement (2) ALONE is sufficient, but statement (1) alone is not sufficient.",
+            "C": "BOTH statements TOGETHER are sufficient, but NEITHER statement ALONE is sufficient.",
+            "D": "EACH statement ALONE is sufficient.",
+            "E": "Statements (1) and (2) TOGETHER are NOT sufficient."
+          },
+          "correct": "C",
+          "explanation": "Let a be the price of an apple and r the price of an orange. Statement (1): 3a + 2r = 4.20 alone has many solutions -- not sufficient. Statement (2): r = 0.90 alone says nothing about a -- not sufficient. Together: 3a + 2(0.90) = 4.20, so 3a = 2.40 and a = 0.80 -- sufficient. Neither works alone, so the answer is C.",
+          "topic": "gmat::di::reasoning::data_sufficiency",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "On a test, a student answered a whole number of multiple-choice questions and a whole number of essay questions. Two conditions must both hold: (i) the student answered 24 questions in all; and (ii) the number of multiple-choice questions was five times the number of essay questions. This is a two-part analysis: select one value for the multiple-choice questions and one value for the essay questions so that both conditions are satisfied. Which of the following pairs does so?",
+          "options": {
+            "A": "Multiple-choice = 4, Essay = 20",
+            "B": "Multiple-choice = 18, Essay = 6",
+            "C": "Multiple-choice = 20, Essay = 4",
+            "D": "Multiple-choice = 12, Essay = 12",
+            "E": "Multiple-choice = 25, Essay = 5"
+          },
+          "correct": "C",
+          "explanation": "Let the essay count be x; from (ii) the multiple-choice count is 5x. Then (i) gives 5x + x = 24, so 6x = 24 and x = 4, making the multiple-choice count 20. The pair 20 and 4 meets both conditions. A reverses the multiple; B and D total 24 but multiple-choice is not five times essay; E has the 5-to-1 ratio but totals 30, not 24.",
+          "topic": "gmat::di::reasoning::two_part_analysis",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "Based on the sources above, which blend both contains caffeine and must be reordered this week?",
+          "options": {
+            "A": "The Morning blend",
+            "B": "The Afternoon blend",
+            "C": "The Evening blend",
+            "D": "Both the Morning and Afternoon blends",
+            "E": "None of the blends"
+          },
+          "correct": "B",
+          "explanation": "The caffeinated blends are Morning and Afternoon (Source 1). Reordering is required for any blend under 30 cases (Source 3); by Source 2 only the Afternoon blend (25 cases) is under 30. Morning has 40 cases, so it is not reordered, and Evening is caffeine-free. Only the Afternoon blend meets both conditions.",
+          "topic": "gmat::di::reasoning::multi_source_reasoning",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz",
+          "passage": "Source 1 (Product memo): GreenLeaf Tea sells exactly three blends. The Morning blend and the Afternoon blend both contain caffeine; the Evening blend is caffeine-free.\n\nSource 2 (Inventory note): Current stock, in cases: Morning 40, Afternoon 25, Evening 60.\n\nSource 3 (Purchasing policy): Any blend with fewer than 30 cases in stock must be reordered this week."
+        },
+        {
+          "stem": "What is the value of the number x? (1) x^2 = 16. (2) x^3 = -64.",
+          "options": {
+            "A": "Statement (1) ALONE is sufficient, but statement (2) alone is not sufficient.",
+            "B": "Statement (2) ALONE is sufficient, but statement (1) alone is not sufficient.",
+            "C": "BOTH statements TOGETHER are sufficient, but NEITHER statement ALONE is sufficient.",
+            "D": "EACH statement ALONE is sufficient.",
+            "E": "Statements (1) and (2) TOGETHER are NOT sufficient."
+          },
+          "correct": "B",
+          "explanation": "Statement (1): x^2 = 16 gives x = 4 or x = -4 -- two values, not sufficient. Statement (2): x^3 = -64 has the single real solution x = -4 -- sufficient. Because (2) alone determines x and (1) does not, the answer is B.",
+          "topic": "gmat::di::reasoning::data_sufficiency",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "Based on the sources above, which passengers receive lounge access today?",
+          "options": {
+            "A": "Ms. Adams only",
+            "B": "Mr. Boone only",
+            "C": "All three passengers",
+            "D": "Ms. Adams and Mr. Boone",
+            "E": "None of the passengers"
+          },
+          "correct": "D",
+          "explanation": "Lounge access is granted to anyone flying business class or holding Gold membership (Source 1). Ms. Adams flies economy but is a Gold member, so she qualifies; Mr. Boone flies business class, so he qualifies regardless of his Silver status; Ms. Carr is an economy-class Silver member, so she does not qualify. Thus Ms. Adams and Mr. Boone receive access.",
+          "topic": "gmat::di::reasoning::multi_source_reasoning",
+          "difficulty": "hard",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz",
+          "passage": "Source 1 (Policy memo): A passenger receives airport lounge access if the passenger is flying business class or is a Gold member. A Silver member receives lounge access only when flying business class.\n\nSource 2 (Passenger list, today): Ms. Adams -- economy class, Gold member. Mr. Boone -- business class, Silver member. Ms. Carr -- economy class, Silver member."
+        },
+        {
+          "stem": "A recipe uses a whole number of cups of flour and a whole number of cups of sugar. Two conditions must both hold: (i) the recipe uses 10 cups of flour and sugar combined; and (ii) it uses four times as many cups of flour as cups of sugar. This is a two-part analysis: select one value for the cups of flour and one value for the cups of sugar so that both conditions are satisfied. Which of the following pairs does so?",
+          "options": {
+            "A": "Flour = 8, Sugar = 2",
+            "B": "Flour = 2, Sugar = 8",
+            "C": "Flour = 6, Sugar = 4",
+            "D": "Flour = 5, Sugar = 5",
+            "E": "Flour = 12, Sugar = 3"
+          },
+          "correct": "A",
+          "explanation": "Let the cups of sugar be s; from (ii) the cups of flour is 4s. Then (i) gives 4s + s = 10, so 5s = 10 and s = 2, making the flour 8. The pair Flour = 8, Sugar = 2 meets both conditions. B reverses the multiple; C and D total 10 but flour is not four times sugar; E has flour equal to four times sugar but totals 15, not 10.",
+          "topic": "gmat::di::reasoning::two_part_analysis",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "A conference splits its talks between a morning track and an afternoon track, each with a whole number of talks. Two conditions must both hold: (i) the two tracks have 21 talks combined; and (ii) the morning track has half as many talks as the afternoon track. This is a two-part analysis: select one value for the morning track and one value for the afternoon track so that both conditions are satisfied. Which of the following pairs does so?",
+          "options": {
+            "A": "Morning = 14, Afternoon = 7",
+            "B": "Morning = 10, Afternoon = 11",
+            "C": "Morning = 8, Afternoon = 13",
+            "D": "Morning = 7, Afternoon = 14",
+            "E": "Morning = 6, Afternoon = 12"
+          },
+          "correct": "D",
+          "explanation": "From (ii), morning = (1/2) x afternoon, so afternoon = 2 x morning. Then (i) gives morning + 2 x morning = 21, so 3 x morning = 21 and morning = 7, making the afternoon track 14. The pair Morning = 7, Afternoon = 14 meets both conditions. A reverses the halving; B and C total 21 but the morning track is not half the afternoon track; E has the correct 1-to-2 ratio but totals only 18.",
+          "topic": "gmat::di::reasoning::two_part_analysis",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "Is the average (arithmetic mean) of five different integers greater than 10? (1) The smallest of the five integers is 11. (2) The largest of the five integers is 20.",
+          "options": {
+            "A": "Statement (1) ALONE is sufficient, but statement (2) alone is not sufficient.",
+            "B": "Statement (2) ALONE is sufficient, but statement (1) alone is not sufficient.",
+            "C": "BOTH statements TOGETHER are sufficient, but NEITHER statement ALONE is sufficient.",
+            "D": "EACH statement ALONE is sufficient.",
+            "E": "Statements (1) and (2) TOGETHER are NOT sufficient."
+          },
+          "correct": "A",
+          "explanation": "Statement (1): if the smallest of five different integers is 11, then all five are at least 11, so their mean is at least 11, which exceeds 10 -- sufficient (the answer is 'yes'). Statement (2): if the largest is 20, the others could be small (e.g., 1, 2, 3, 4, giving mean 6) or large (e.g., 16, 17, 18, 19, giving mean 18), so the mean may or may not exceed 10 -- not sufficient. The answer is A.",
+          "topic": "gmat::di::reasoning::data_sufficiency",
+          "difficulty": "hard",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "Based on the sources above, which tier should the customer choose?",
+          "options": {
+            "A": "Plus",
+            "B": "Basic",
+            "C": "Pro",
+            "D": "Either Plus or Pro",
+            "E": "None of the tiers"
+          },
+          "correct": "A",
+          "explanation": "Priority support rules out Basic, leaving Plus and Pro (Source 1). The customer does not need the analytics dashboard, the only feature exclusive to Pro, so Plus meets every stated need. Between the two qualifying tiers, Plus (20 dollars) is cheaper than Pro (35 dollars) (Source 2), so the lowest-priced tier that works is Plus.",
+          "topic": "gmat::di::reasoning::multi_source_reasoning",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz",
+          "passage": "Source 1 (Product memo): TechStart offers three subscription tiers -- Basic, Plus, and Pro. Priority support is included with Plus and Pro only. The analytics dashboard is included with Pro only.\n\nSource 2 (Price list, per month): Basic 10 dollars, Plus 20 dollars, Pro 35 dollars.\n\nSource 3 (Customer request): A customer needs priority support, does not need the analytics dashboard, and wants the lowest-priced tier that meets these needs."
+        },
+        {
+          "stem": "If n is an integer, what is the value of n? (1) n is a prime number less than 10. (2) n is odd.",
+          "options": {
+            "A": "Statement (1) ALONE is sufficient, but statement (2) alone is not sufficient.",
+            "B": "Statement (2) ALONE is sufficient, but statement (1) alone is not sufficient.",
+            "C": "BOTH statements TOGETHER are sufficient, but NEITHER statement ALONE is sufficient.",
+            "D": "EACH statement ALONE is sufficient.",
+            "E": "Statements (1) and (2) TOGETHER are NOT sufficient."
+          },
+          "correct": "E",
+          "explanation": "Statement (1): the primes less than 10 are 2, 3, 5, and 7 -- not a single value, not sufficient. Statement (2): 'n is odd' allows many values -- not sufficient. Together, the odd primes less than 10 are 3, 5, and 7 -- still more than one value, so even combined they do not fix n. The answer is E.",
+          "topic": "gmat::di::reasoning::data_sufficiency",
+          "difficulty": "hard",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "A cafe sells one cup of coffee and one pastry, each priced at a whole number of dollars. Two conditions must both hold: (i) one coffee plus one pastry costs 9 dollars; and (ii) the coffee costs 3 dollars more than the pastry. This is a two-part analysis: select one price for the coffee and one price for the pastry so that both conditions are satisfied. Which of the following pairs does so?",
+          "options": {
+            "A": "Coffee = 3, Pastry = 6",
+            "B": "Coffee = 5, Pastry = 4",
+            "C": "Coffee = 6, Pastry = 3",
+            "D": "Coffee = 7, Pastry = 2",
+            "E": "Coffee = 6, Pastry = 2"
+          },
+          "correct": "C",
+          "explanation": "Let the pastry cost p; from (ii) the coffee costs p + 3. Then (i) gives (p + 3) + p = 9, so 2p = 6 and p = 3, making the coffee 6. The pair Coffee = 6, Pastry = 3 satisfies both. A reverses the difference; B and D total 9 but the gap is not 3 dollars; E totals only 8.",
+          "topic": "gmat::di::reasoning::two_part_analysis",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "Based on the sources above, which branch qualifies for the annual grant?",
+          "options": {
+            "A": "Downtown",
+            "B": "Hillside",
+            "C": "Riverside",
+            "D": "Both Downtown and Riverside",
+            "E": "All three branches"
+          },
+          "correct": "C",
+          "explanation": "Qualifying requires both more than 5,000 visitors and at least 500 new members (Source 1). From Source 2: Downtown had enough visitors (6,200) but only 400 new members; Hillside had 700 new members but only 4,800 visitors; Riverside had 5,500 visitors and 600 new members, meeting both thresholds. Only Riverside qualifies.",
+          "topic": "gmat::di::reasoning::multi_source_reasoning",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz",
+          "passage": "Source 1 (Grant memo): A library branch qualifies for the annual grant only if it recorded more than 5,000 visitors last year AND signed up at least 500 new members last year.\n\nSource 2 (Data table, last year): Downtown -- 6,200 visitors, 400 new members. Riverside -- 5,500 visitors, 600 new members. Hillside -- 4,800 visitors, 700 new members."
+        },
+        {
+          "stem": "A department is assigning full-time staff to two projects, Project X and Project Y, with a whole number of staff on each. Two conditions must both hold: (i) the total number of staff assigned to the two projects is 18; and (ii) Project X receives exactly twice as many staff as Project Y. This is a two-part analysis: select one value for Project X and one value for Project Y so that both conditions are satisfied. Which of the following pairs does so?",
+          "options": {
+            "A": "Project X = 12, Project Y = 6",
+            "B": "Project X = 6, Project Y = 12",
+            "C": "Project X = 10, Project Y = 8",
+            "D": "Project X = 14, Project Y = 4",
+            "E": "Project X = 8, Project Y = 4"
+          },
+          "correct": "A",
+          "explanation": "From (ii), X = 2Y. Substituting into (i): 2Y + Y = 18, so 3Y = 18, giving Y = 6 and X = 12. The pair X = 12, Y = 6 meets both conditions. B reverses the doubling; C and D total 18 but violate the 2-to-1 ratio; E has the correct ratio but totals only 12.",
+          "topic": "gmat::di::reasoning::two_part_analysis",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "Based on the sources above, on which day or days next week can the maintenance be scheduled?",
+          "options": {
+            "A": "Only Sunday",
+            "B": "Monday or Sunday",
+            "C": "Only Monday",
+            "D": "Any day from Tuesday through Saturday",
+            "E": "No day next week"
+          },
+          "correct": "B",
+          "explanation": "Maintenance is allowed only on days the building is closed -- Sundays and public holidays (Source 1). Next week, Monday is a public holiday and Sunday is closed, while Tuesday through Saturday the building is open (Source 2). Both closed days fall within the required window (Source 3), so the maintenance can be scheduled on Monday or Sunday.",
+          "topic": "gmat::di::reasoning::multi_source_reasoning",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz",
+          "passage": "Source 1 (Facilities email): Building maintenance can be scheduled only on a day when the building is closed. The building is closed every Sunday and on any public holiday.\n\nSource 2 (Next week's calendar): Monday is a public holiday. Tuesday through Saturday the building is open as usual. Sunday is a normal Sunday.\n\nSource 3 (Deadline note): The maintenance must be completed at some point next week (Monday through Sunday)."
+        },
+        {
+          "stem": "A chemist combines Solution A and Solution B, using a whole number of liters of each. Two conditions must both hold: (i) the combined volume is 20 liters; and (ii) Solution A's volume is 4 liters greater than Solution B's volume. This is a two-part analysis: select one volume for Solution A and one volume for Solution B so that both conditions are satisfied. Which of the following pairs does so?",
+          "options": {
+            "A": "Solution A = 8 L, Solution B = 12 L",
+            "B": "Solution A = 14 L, Solution B = 6 L",
+            "C": "Solution A = 10 L, Solution B = 10 L",
+            "D": "Solution A = 12 L, Solution B = 8 L",
+            "E": "Solution A = 11 L, Solution B = 7 L"
+          },
+          "correct": "D",
+          "explanation": "Let B be Solution B's volume; from (ii) Solution A is B + 4. Then (i) gives (B + 4) + B = 20, so 2B = 16 and B = 8, making Solution A 12. The pair 12 L and 8 L meets both conditions. A reverses which solution is larger; B and C total 20 but the difference is not 4 liters; E has the correct 4-liter difference but totals only 18.",
+          "topic": "gmat::di::reasoning::two_part_analysis",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "If k is a positive integer, is k divisible by 6? (1) k is divisible by 3. (2) k is divisible by 12.",
+          "options": {
+            "A": "Statement (1) ALONE is sufficient, but statement (2) alone is not sufficient.",
+            "B": "Statement (2) ALONE is sufficient, but statement (1) alone is not sufficient.",
+            "C": "BOTH statements TOGETHER are sufficient, but NEITHER statement ALONE is sufficient.",
+            "D": "EACH statement ALONE is sufficient.",
+            "E": "Statements (1) and (2) TOGETHER are NOT sufficient."
+          },
+          "correct": "B",
+          "explanation": "Statement (1): k divisible by 3 could be 3 (not divisible by 6) or 6 (divisible by 6) -- not sufficient. Statement (2): any multiple of 12 is also a multiple of 6, since 6 divides 12, so k is divisible by 6 -- sufficient. Because (2) alone answers the question and (1) does not, the answer is B.",
+          "topic": "gmat::di::reasoning::data_sufficiency",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz"
+        },
+        {
+          "stem": "Based on the sources above, which supplier qualifies as preferred?",
+          "options": {
+            "A": "Orchard One",
+            "B": "Orchard Two",
+            "C": "Orchard Three",
+            "D": "Orchard One and Orchard Three",
+            "E": "None of the suppliers"
+          },
+          "correct": "C",
+          "explanation": "A preferred supplier must be both organic-certified and able to deliver within 2 days (Source 1). From Source 2: Orchard One is organic but takes 3 days; Orchard Two delivers in 1 day but is not organic; Orchard Three is organic-certified and delivers in 1 day, satisfying both criteria. Only Orchard Three qualifies.",
+          "topic": "gmat::di::reasoning::multi_source_reasoning",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz",
+          "passage": "Source 1 (Sourcing memo): A supplier is designated 'preferred' only if it is organic-certified and can deliver within 2 days.\n\nSource 2 (Supplier table): Orchard One -- organic-certified, 3-day delivery. Orchard Two -- not organic-certified, 1-day delivery. Orchard Three -- organic-certified, 1-day delivery."
+        },
+        {
+          "stem": "Based on the sources above, which submission qualifies to be fast-tracked?",
+          "options": {
+            "A": "The Ledger",
+            "B": "Red Comet",
+            "C": "All three submissions",
+            "D": "The Ledger and Harbor Lights",
+            "E": "Harbor Lights"
+          },
+          "correct": "E",
+          "explanation": "Fast-tracking requires both a returning author and a length under 80,000 words (Source 1). From Source 2: 'Red Comet' is by a new author; 'The Ledger,' though by a returning author, is 95,000 words; 'Harbor Lights' is by a returning author and is 75,000 words, meeting both requirements. Only 'Harbor Lights' qualifies.",
+          "topic": "gmat::di::reasoning::multi_source_reasoning",
+          "difficulty": "medium",
+          "source": "GMATWiz original (authored)",
+          "license": "authored-gmatwiz",
+          "passage": "Source 1 (Editorial memo): A submitted manuscript is fast-tracked only if it is written by a returning author and is under 80,000 words.\n\nSource 2 (Submissions log): 'Harbor Lights' -- returning author, 75,000 words. 'Red Comet' -- new author, 60,000 words. 'The Ledger' -- returning author, 95,000 words."
+        }
+      ]
+    }
+  ]
+}

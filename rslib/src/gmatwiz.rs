@@ -3806,6 +3806,8 @@ impl Collection {
                                     "count": f.get("count").cloned().unwrap_or(json!(21)),
                                     "topics": f.get("topics").cloned().unwrap_or_else(|| json!({})),
                                     "sources": f.get("sources").cloned().unwrap_or_else(|| json!([])),
+                                    "full": f.get("full").and_then(|v| v.as_bool()).unwrap_or(false),
+                                    "sections": f.get("sections").cloned().unwrap_or_else(|| json!({})),
                                     "taken": status.is_some(),
                                     "accuracy": status.and_then(|s| s.get("accuracy")).cloned().unwrap_or(Value::Null),
                                     "q": status.and_then(|s| s.get("q")).cloned().unwrap_or(Value::Null),
@@ -3824,25 +3826,58 @@ impl Collection {
                 let form_id = body["id"].as_str().unwrap_or("");
                 match gmat_read_test_form(resource_dir, form_id) {
                     Some(form) => {
-                        let empty: Vec<Value> = Vec::new();
-                        let items = form["items"].as_array().unwrap_or(&empty);
-                        let pool: Vec<Value> = items
-                            .iter()
-                            .map(|it| {
-                                let difficulty = it["difficulty"]
-                                    .as_str()
-                                    .filter(|s| !s.is_empty())
-                                    .unwrap_or("medium");
-                                json!({
-                                    "stem": it["stem"].as_str().unwrap_or(""),
-                                    "options": it.get("options").cloned().unwrap_or_else(|| json!({})),
-                                    "correct": it["correct"].as_str().unwrap_or(""),
-                                    "topic": it["topic"].as_str().unwrap_or(""),
-                                    "difficulty": difficulty,
-                                    "seen": false,
+                        let to_pool = |items: &Value| -> Vec<Value> {
+                            let empty: Vec<Value> = Vec::new();
+                            items
+                                .as_array()
+                                .unwrap_or(&empty)
+                                .iter()
+                                .map(|it| {
+                                    let difficulty = it["difficulty"]
+                                        .as_str()
+                                        .filter(|s| !s.is_empty())
+                                        .unwrap_or("medium");
+                                    json!({
+                                        "stem": it["stem"].as_str().unwrap_or(""),
+                                        "options": it.get("options").cloned().unwrap_or_else(|| json!({})),
+                                        "correct": it["correct"].as_str().unwrap_or(""),
+                                        "topic": it["topic"].as_str().unwrap_or(""),
+                                        "difficulty": difficulty,
+                                        "passage": it["passage"].as_str().unwrap_or(""),
+                                        "seen": false,
+                                    })
                                 })
+                                .collect()
+                        };
+                        // Full 3-section form: return the sections for the client to
+                        // run sequentially (each on its own timer).
+                        if form.get("full").and_then(|v| v.as_bool()).unwrap_or(false)
+                            && form.get("sections").map(|s| s.is_array()).unwrap_or(false)
+                        {
+                            let empty: Vec<Value> = Vec::new();
+                            let sections: Vec<Value> = form["sections"]
+                                .as_array()
+                                .unwrap_or(&empty)
+                                .iter()
+                                .map(|sec| {
+                                    json!({
+                                        "section": sec["section"].as_str().unwrap_or(""),
+                                        "label": sec["label"].as_str().unwrap_or(""),
+                                        "pool": to_pool(&sec["items"]),
+                                        "seconds": sec.get("seconds").cloned().unwrap_or(json!(45 * 60)),
+                                        "target_ms": sec.get("target_ms").cloned().unwrap_or(json!(128_000)),
+                                    })
+                                })
+                                .collect();
+                            return Ok(json!({
+                                "full": true,
+                                "form_id": form["id"].as_str().unwrap_or(form_id),
+                                "label": form["label"].as_str().unwrap_or(""),
+                                "sections": sections,
                             })
-                            .collect();
+                            .to_string());
+                        }
+                        let pool = to_pool(&form["items"]);
                         let count = pool.len();
                         json!({
                             "pool": pool,

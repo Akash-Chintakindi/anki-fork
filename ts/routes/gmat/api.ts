@@ -805,10 +805,22 @@ export interface TestFormMeta {
     count: number;
     topics: Record<string, number>;
     sources: string[];
+    // Full 3-section forms carry full:true + per-section counts {quant,verbal,di}.
+    full?: boolean;
+    sections?: Record<string, number>;
     taken: boolean;
     accuracy: number | null;
     q: number | null;
     ts: number | null;
+}
+
+/** One section of a full-length test: its own pool + 45-min clock, run in order. */
+export interface TestSectionPool {
+    section: string;
+    label: string;
+    pool: MockQuestion[];
+    seconds: number;
+    target_ms: number;
 }
 
 export interface TestLibrary {
@@ -826,8 +838,16 @@ export async function fetchTests(): Promise<TestLibrary> {
  */
 export async function fetchTestQuestions(
     id: string,
-): Promise<MockPool & { form_id?: string; label?: string }> {
-    return postJson<MockPool & { form_id?: string; label?: string }>(
+): Promise<
+    MockPool & {
+        form_id?: string;
+        label?: string;
+        // present for full 3-section forms (Quant + Verbal + Data Insights)
+        full?: boolean;
+        sections?: TestSectionPool[];
+    }
+> {
+    return postJson(
         "gmatTestQuestions",
         { pool: [], count: 21, seconds: 2700, target_ms: 128000 },
         { id },

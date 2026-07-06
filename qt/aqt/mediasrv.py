@@ -1445,6 +1445,13 @@ GMAT_STATE_KEYS = [
     "gmatProfile",
     "gmatPlan",
     "gmatDiagnosis",
+    # Verbal + Data Insights parallel tracks - MUST sync too, else a device that
+    # took all three diagnostics loses Verbal/DI on logout/login (only Quant is
+    # config-synced). Keep in lock-step with rslib/src/gmatwiz.rs GMAT_STATE_KEYS.
+    "gmatPlanVerbal",
+    "gmatDiagnosisVerbal",
+    "gmatPlanDI",
+    "gmatDiagnosisDI",
     "gmatMocks",
     "gmatOfficialScores",
     "gmatLearned",
@@ -3515,6 +3522,9 @@ def gmat_tests() -> bytes:
                     "count": form.get("count", 21),
                     "topics": form.get("topics", {}) or {},
                     "sources": form.get("sources", []) or [],
+                    # Full 3-section forms carry full:true + per-section counts.
+                    "full": bool(form.get("full", False)),
+                    "sections": form.get("sections", {}) or {},
                     "taken": fid in taken,
                     "accuracy": status.get("accuracy"),
                     "q": status.get("q"),
@@ -3543,17 +3553,45 @@ def gmat_test_questions() -> bytes:
                 "target_ms": GMAT_MOCK_TARGET_MS,
             }
         ).encode("utf-8")
-    pool = [
-        {
-            "stem": it.get("stem", ""),
-            "options": it.get("options", {}) or {},
-            "correct": it.get("correct", ""),
-            "topic": it.get("topic", ""),
-            "difficulty": it.get("difficulty", "medium") or "medium",
-            "seen": False,
-        }
-        for it in (form.get("items", []) or [])
-    ]
+
+    def _pool(items: list) -> list:
+        return [
+            {
+                "stem": it.get("stem", ""),
+                "options": it.get("options", {}) or {},
+                "correct": it.get("correct", ""),
+                "topic": it.get("topic", ""),
+                "difficulty": it.get("difficulty", "medium") or "medium",
+                "passage": it.get("passage", "") or "",
+                "seen": False,
+            }
+            for it in (items or [])
+        ]
+
+    # Full-length 3-section form (Quant + Verbal + Data Insights): return the
+    # sections so the client runs them sequentially, each on its own timer.
+    if form.get("full") and isinstance(form.get("sections"), list):
+        sections = [
+            {
+                "section": sec.get("section", ""),
+                "label": sec.get("label", ""),
+                "pool": _pool(sec.get("items", []) or []),
+                "seconds": sec.get("seconds", 45 * 60),
+                "target_ms": sec.get("target_ms", GMAT_MOCK_TARGET_MS),
+            }
+            for sec in form.get("sections", [])
+        ]
+        return json.dumps(
+            {
+                "full": True,
+                "form_id": form.get("id", form_id),
+                "label": form.get("label", ""),
+                "sections": sections,
+            }
+        ).encode("utf-8")
+
+    # Legacy single-section (Quant-only) form.
+    pool = _pool(form.get("items", []) or [])
     return json.dumps(
         {
             "pool": pool,

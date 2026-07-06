@@ -167,6 +167,54 @@
           "AQuA-RAT (DeepMind), Apache-2.0",
           "GMATWiz authored (authored-gmatwiz)"
         ]
+      },
+      {
+        "id": "2026-full-01",
+        "year": 2026,
+        "label": "Full Practice Test 1",
+        "full": true,
+        "count": 64,
+        "sections": {
+          "quant": 21,
+          "verbal": 23,
+          "di": 20
+        },
+        "sources": [
+          "AQuA-RAT (DeepMind), Apache-2.0",
+          "GMATWiz authored (authored-gmatwiz)"
+        ]
+      },
+      {
+        "id": "2026-full-02",
+        "year": 2026,
+        "label": "Full Practice Test 2",
+        "full": true,
+        "count": 64,
+        "sections": {
+          "quant": 21,
+          "verbal": 23,
+          "di": 20
+        },
+        "sources": [
+          "AQuA-RAT (DeepMind), Apache-2.0",
+          "GMATWiz authored (authored-gmatwiz)"
+        ]
+      },
+      {
+        "id": "2026-full-03",
+        "year": 2026,
+        "label": "Full Practice Test 3",
+        "full": true,
+        "count": 64,
+        "sections": {
+          "quant": 21,
+          "verbal": 23,
+          "di": 20
+        },
+        "sources": [
+          "AQuA-RAT (DeepMind), Apache-2.0",
+          "GMATWiz authored (authored-gmatwiz)"
+        ]
       }
     ]
   }

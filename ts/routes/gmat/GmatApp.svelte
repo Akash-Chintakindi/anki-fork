@@ -384,14 +384,31 @@ chrome77/es2020 webview.
         rest: "\u00B7", // rest
     };
 
-    /** Short chip label for a calendar item (the topic name for teach/quiz, a
-        plain word otherwise) - the title carries the full text on hover. */
+    /** Full, readable label for a calendar item: what the student actually does
+        that day, prettified (e.g. "Learn: Number Properties", "Verbal quiz:
+        Weaken", "Milestone test"). Section-prefixed for Verbal/DI. */
     function calChipLabel(it: CalendarItem): string {
-        if (
-            (it.kind === "lesson" || it.kind === "quiz" || it.kind === "requiz") &&
-            it.topic
-        ) {
-            return topicLabel(it.topic);
+        const sec =
+            it.section === "verbal" ? "Verbal" : it.section === "di" ? "Data Insights" : "";
+        const topic = it.topic ? topicLabel(it.topic) : "";
+        const tail = topic ? `: ${topic}` : "";
+        switch (it.kind) {
+            case "lesson":
+                return `Learn${sec ? " " + sec : ""}${tail}`;
+            case "quiz":
+                return `${sec ? sec + " quiz" : "Quiz"}${tail}`;
+            case "requiz":
+                return `${sec ? sec + " re-quiz" : "Re-quiz"}${tail}`;
+            case "milestone":
+                return "Milestone test";
+            case "practice_test":
+                return "Practice test";
+            case "review":
+                return sec ? `${sec} review` : "Spaced review";
+            case "drill":
+                return sec ? `${sec} drill` : "Targeted drill";
+            case "rest":
+                return "Rest";
         }
         const words: Record<string, string> = {
             milestone: "Milestone",
@@ -683,6 +700,33 @@ chrome77/es2020 webview.
     let mockQuizTopic = ""; // topic id for a "quiz"
     let mockQuizLabel = ""; // display label for a "quiz"/"milestone"
     let mockReturnView: View = "home"; // where "Done" returns (Today vs Study)
+
+    // ---- full-length 3-section practice test (Quant -> Verbal -> Data Insights) ----
+    // A "full" test runs each section back-to-back on the shared timed-mock UI,
+    // then shows one combined per-section + Total report. `fullTest` is set while a
+    // full test is in progress; `fullReport` holds the aggregated result.
+    interface FullSection {
+        section: string;
+        label: string;
+        pool: MockQuestion[];
+        seconds: number;
+        target_ms: number;
+    }
+    let fullTest: {
+        formId: string;
+        year: string | null;
+        label: string;
+        sections: FullSection[];
+        idx: number;
+        results: MockResult[][]; // per-section MockResult lists, in section order
+    } | null = null;
+    let fullReport:
+        | {
+              label: string;
+              sections: { section: string; label: string; correct: number; total: number }[];
+              total: number;
+          }
+        | null = null;
 
     // ---- practice-test library (full-length timed forms, grouped by year) ----
     let tests: TestLibrary | null = null;
@@ -1652,6 +1696,106 @@ chrome77/es2020 webview.
         }
     }
 
+    /** This section's answers as MockResults (shared by the mock + full-test flows). */
+    function collectMockResults(): MockResult[] {
+        return mockItems.map((it) => ({
+            topic: it.q.topic,
+            difficulty: it.q.difficulty,
+            correct: it.answer === it.q.correct,
+            ms: it.ms,
+            stem: it.q.stem,
+            chosen: it.answer ?? "",
+            correct_key: it.q.correct,
+        }));
+    }
+
+    // Client-side section score (60-90) + GMAT Focus Total (205-805), mirroring
+    // the backend heuristic (gmat_accuracy_to_* / gmat_sections_to_total) so the
+    // full-test report can show a live projection.
+    function accToSection(acc: number): number {
+        return Math.round(
+            Math.max(60, Math.min(90, 70 + ((acc - 0.4) * (88 - 70)) / (0.9 - 0.4))),
+        );
+    }
+    function sectionsToTotal(scores: number[]): number {
+        if (!scores.length) return 205;
+        const norm = (s: number) => Math.max(0, Math.min(1, (s - 60) / 30));
+        const avg = scores.reduce((a, s) => a + norm(s), 0) / scores.length;
+        return Math.round((205 + avg * 600) / 10) * 10;
+    }
+
+    /** Start a full-length 3-section practice test (Quant -> Verbal -> Data
+        Insights). Falls back to the single-section flow if the form isn't full. */
+    async function startFullTest(formId: string, year?: string): Promise<void> {
+        stopTimer();
+        view = "mock";
+        mockPhase = "intro";
+        mockReport = null;
+        fullReport = null;
+        const data = await fetchTestQuestions(formId);
+        if (!data.full || !data.sections?.length) {
+            await startMock(formId, year);
+            return;
+        }
+        fullTest = {
+            formId,
+            year: year ?? null,
+            label: data.label ?? "",
+            sections: data.sections,
+            idx: 0,
+            results: [],
+        };
+        mockKind = "mock";
+        mockReturnView = "home";
+        loadFullSection(0);
+    }
+
+    /** Seed the shared timed runner with one full-test section (served in order,
+        its own 45-min clock), landing on that section's intro screen. */
+    function loadFullSection(i: number): void {
+        if (!fullTest) return;
+        const sec = fullTest.sections[i];
+        mockFormId = fullTest.formId; // fixed order (pickMockQuestion serves in order)
+        mockFormYear = fullTest.year;
+        mockLabel = sec.label;
+        mockPool = sec.pool.map((q) => ({ ...q }));
+        mockCount = sec.pool.length;
+        mockSecondsLeft = sec.seconds;
+        mockReport = null;
+        mockItems = [];
+        mockPos = 0;
+        mockPhase = "intro";
+    }
+
+    /** Aggregate the finished full test into one per-section + Total report,
+        persist it (records the form taken + calibrates via the Quant section), and
+        surface every miss for classification. */
+    async function finishFullTest(): Promise<void> {
+        if (!fullTest) return;
+        const secs = fullTest.sections.map((s, i) => {
+            const rs = fullTest!.results[i] ?? [];
+            return {
+                section: s.section,
+                label: s.label,
+                correct: rs.filter((r) => r.correct).length,
+                total: rs.length,
+            };
+        });
+        const scores = secs
+            .filter((s) => s.total > 0)
+            .map((s) => accToSection(s.correct / s.total));
+        fullReport = { label: fullTest.label, sections: secs, total: sectionsToTotal(scores) };
+        // Persist once: mark the form taken + calibrate Readiness from the Quant
+        // section (the mock-calibrated section today).
+        const qIdx = fullTest.sections.findIndex((s) => s.section === "quant");
+        const persist = qIdx >= 0 ? fullTest.results[qIdx] ?? [] : fullTest.results.flat();
+        await submitMock(persist, fullTest.formId, fullTest.year ?? undefined);
+        mockMissResults = fullTest.results.flat().filter((r) => !r.correct);
+        mockWhy = mockMissResults.map(() => null);
+        mockReport = null;
+        mockPhase = "report";
+    }
+
     /** A single-topic quiz (soft mastery gate) run through the timed-mock flow:
         7 questions, lighter clock, submitted via gmatSubmitQuiz. */
     async function startQuiz(
@@ -1801,17 +1945,24 @@ chrome77/es2020 webview.
 
     async function finishMock(): Promise<void> {
         if (mockSubmitting || mockPhase === "report") return;
+        // Full test: capture this section, then advance to the next section's intro
+        // or aggregate the combined report after the last one.
+        if (fullTest) {
+            mockSubmitting = true;
+            stopTimer();
+            fullTest.results[fullTest.idx] = collectMockResults();
+            if (fullTest.idx < fullTest.sections.length - 1) {
+                fullTest.idx += 1;
+                loadFullSection(fullTest.idx);
+            } else {
+                await finishFullTest();
+            }
+            mockSubmitting = false;
+            return;
+        }
         mockSubmitting = true;
         stopTimer();
-        const results: MockResult[] = mockItems.map((it) => ({
-            topic: it.q.topic,
-            difficulty: it.q.difficulty,
-            correct: it.answer === it.q.correct,
-            ms: it.ms,
-            stem: it.q.stem,
-            chosen: it.answer ?? "",
-            correct_key: it.q.correct,
-        }));
+        const results: MockResult[] = collectMockResults();
         if (mockKind === "quiz") {
             mockReport = await submitQuiz({
                 kind: "topic",
@@ -1857,6 +2008,8 @@ chrome77/es2020 webview.
         const fresh = await refreshOverview();
         if (fresh) overview = fresh;
         pushIfAuthed();
+        fullTest = null;
+        fullReport = null;
         // quiz/milestone return to wherever they were launched (Study vs Today);
         // a plain mock/practice-test returns to Today.
         await go(mockReturnView);
@@ -1931,7 +2084,14 @@ chrome77/es2020 webview.
                     // was blanked, e.g. Bob after an earlier bad reset).
                     const col = await pullCollectionOnLogin(u.uid, { switching: true });
                     if (col.landed === "downloaded") {
-                        // This account's own cloud collection was restored - done.
+                        // This account's own cloud collection was restored. Still
+                        // layer its config-synced state on top (plans incl. Verbal
+                        // + Data Insights, progress): the downloaded collection can
+                        // be stale when Storage uploads are unavailable, so the
+                        // Firestore config (which always saves on mutation) wins for
+                        // the keys it owns. importState only sets present keys, so
+                        // this never wipes anything the collection already carried.
+                        if (remote) await applyAccountState(remote);
                         claimCollectionOwner(u.uid);
                     } else if (col.landed === "empty") {
                         // DEFINITIVELY no cloud collection for this account (it doesn't
@@ -2176,6 +2336,98 @@ chrome77/es2020 webview.
                 {/if}
             </div>
         </section>
+    {/snippet}
+
+    <!-- Forward study calendar (the run-up to exam day), shown on Today for
+         motivation. Derived live so it recalibrates as topics are mastered. Each
+         day spells out exactly what to do; "View calendar" expands the grid. -->
+    {#snippet runupCalendar()}
+        {#if calendar && calendar.days.length}
+            <section class="calendar">
+                <div class="cal-head">
+                    <span class="eyebrow">The run-up &mdash; your plan to exam day</span>
+                    <span class="pill">tentative &middot; recalibrates</span>
+                </div>
+                <p class="cal-lede">
+                    {calendar.study_days} study day{calendar.study_days === 1 ? "" : "s"}
+                    to your exam{#if calendar.days_to_exam !== null}
+                        ({calendar.days_to_exam} days away){/if}.
+                    {#if calendar.lessons_finish_date}
+                        New lessons wrap up by <strong>{shortDate(calendar.lessons_finish_date)}</strong>
+                        &mdash; then the last stretch is review and timed tests.
+                    {:else}
+                        Lessons are done &mdash; the run-up is consolidation and timed tests.
+                    {/if}
+                </p>
+                <button class="primary" on:click={() => (calendarOpen = !calendarOpen)}>
+                    {calendarOpen ? "Hide calendar" : "View my full plan"}
+                </button>
+                {#if calendarOpen}
+                    <div class="cal-inline">
+                        <div class="cal-legend">
+                            <span class="cal-leg phase-learn">Learn</span>
+                            <span class="cal-leg phase-review">Review</span>
+                            <span class="cal-leg phase-final">Final 10 &middot; tests only</span>
+                        </div>
+                        <div class="cal-grid">
+                            <div class="cal-dow-head">
+                                {#each WEEKDAYS as w}
+                                    <span class="cal-dow-h">{w}</span>
+                                {/each}
+                            </div>
+                            {#each calendarGrid as week}
+                                <div class="cal-grid-row">
+                                    {#each week as d}
+                                        {#if d}
+                                            <div
+                                                class="cal-day phase-{d.phase}"
+                                                class:today={d.is_today}
+                                                class:exam={d.is_exam}
+                                                class:rest={!d.is_study_day && !d.is_exam}
+                                            >
+                                                <div class="cal-day-top">
+                                                    <span class="cal-date">{shortDate(d.date)}</span>
+                                                    {#if d.is_today}
+                                                        <span class="cal-flag">Today</span>
+                                                    {/if}
+                                                </div>
+                                                {#if d.is_exam}
+                                                    <div class="cal-exam">
+                                                        <span class="cal-exam-g">&#9733;</span>
+                                                        <span>Exam</span>
+                                                    </div>
+                                                {:else if d.is_study_day}
+                                                    <ul class="cal-items">
+                                                        {#each d.items as it}
+                                                            <li
+                                                                class="cal-chip chip-{it.kind}"
+                                                                title="~{it.est_minutes} min"
+                                                            >
+                                                                <span class="cal-chip-g"
+                                                                    >{CAL_ITEM_GLYPH[it.kind]}</span
+                                                                >
+                                                                <span class="cal-chip-t">{calChipLabel(it)}</span>
+                                                            </li>
+                                                        {/each}
+                                                    </ul>
+                                                    {#if d.est_minutes > 0}
+                                                        <span class="cal-min">~{d.est_minutes}m</span>
+                                                    {/if}
+                                                {:else}
+                                                    <div class="cal-rest">Rest</div>
+                                                {/if}
+                                            </div>
+                                        {:else}
+                                            <div class="cal-day blank" aria-hidden="true"></div>
+                                        {/if}
+                                    {/each}
+                                </div>
+                            {/each}
+                        </div>
+                    </div>
+                {/if}
+            </section>
+        {/if}
     {/snippet}
 
     <!-- Reusable practice card: rendered standalone (Drill view) AND inline
@@ -2710,6 +2962,9 @@ chrome77/es2020 webview.
                         {/if}
                     </div>
                 {/if}
+
+                <!-- The run-up calendar lives on Today for daily motivation. -->
+                {@render runupCalendar()}
             {/if}
         </main>
     {:else if view === "drill"}
@@ -2958,97 +3213,7 @@ chrome77/es2020 webview.
                 </section>
             </div>
 
-            <!-- Forward study calendar: the tentative run-up to the exam, derived
-                 live so it recalibrates as topics are mastered / pulled forward. -->
-            <section class="calendar">
-                <div class="cal-head">
-                    <span class="eyebrow">The run-up &mdash; your plan to exam day</span>
-                    <span class="pill">tentative &middot; recalibrates</span>
-                </div>
-                {#if calendar && calendar.days.length}
-                    <p class="cal-lede">
-                        {calendar.study_days} study day{calendar.study_days === 1 ? "" : "s"}
-                        to your exam{#if calendar.days_to_exam !== null}
-                            ({calendar.days_to_exam} days away){/if}.
-                        {#if calendar.lessons_finish_date}
-                            New lessons wrap up by <strong>{shortDate(calendar.lessons_finish_date)}</strong>
-                            &mdash; then the last stretch is review and timed tests.
-                        {:else}
-                            Lessons are done &mdash; the run-up is consolidation and timed tests.
-                        {/if}
-                    </p>
-                    <button class="primary" on:click={() => (calendarOpen = !calendarOpen)}>
-                        {calendarOpen ? "Hide calendar" : "View calendar"}
-                    </button>
-                    {#if calendarOpen}
-                        <div class="cal-inline">
-                            <div class="cal-legend">
-                                <span class="cal-leg phase-learn">Learn</span>
-                                <span class="cal-leg phase-review">Review</span>
-                                <span class="cal-leg phase-final">Final 10 &middot; tests only</span>
-                            </div>
-                            <div class="cal-grid">
-                                <div class="cal-dow-head">
-                                    {#each WEEKDAYS as w}
-                                        <span class="cal-dow-h">{w}</span>
-                                    {/each}
-                                </div>
-                                {#each calendarGrid as week}
-                                    <div class="cal-grid-row">
-                                        {#each week as d}
-                                            {#if d}
-                                                <div
-                                                    class="cal-day phase-{d.phase}"
-                                                    class:today={d.is_today}
-                                                    class:exam={d.is_exam}
-                                                    class:rest={!d.is_study_day && !d.is_exam}
-                                                >
-                                                    <div class="cal-day-top">
-                                                        <span class="cal-date">{shortDate(d.date)}</span>
-                                                    </div>
-                                                    {#if d.is_today}
-                                                        <span class="cal-flag">Today</span>
-                                                    {/if}
-                                                    {#if d.is_exam}
-                                                        <div class="cal-exam">
-                                                            <span class="cal-exam-g">&#9733;</span>
-                                                            <span>Exam</span>
-                                                        </div>
-                                                    {:else if d.is_study_day}
-                                                        <ul class="cal-items">
-                                                            {#each d.items as it}
-                                                                <li
-                                                                    class="cal-chip chip-{it.kind}"
-                                                                    title="{it.title} &middot; ~{it.est_minutes} min"
-                                                                >
-                                                                    <span class="cal-chip-g">{CAL_ITEM_GLYPH[it.kind]}</span>
-                                                                    <span class="cal-chip-t">{calChipLabel(it)}</span>
-                                                                </li>
-                                                            {/each}
-                                                        </ul>
-                                                        {#if d.est_minutes > 0}
-                                                            <span class="cal-min">~{d.est_minutes}m</span>
-                                                        {/if}
-                                                    {:else}
-                                                        <div class="cal-rest">Rest</div>
-                                                    {/if}
-                                                </div>
-                                            {:else}
-                                                <div class="cal-day blank" aria-hidden="true"></div>
-                                            {/if}
-                                        {/each}
-                                    </div>
-                                {/each}
-                            </div>
-                        </div>
-                    {/if}
-                {:else}
-                    <p class="muted">
-                        Your day-by-day plan appears here once your exam date is set. It's built from
-                        where you are now and updates every time you master a topic or get ahead.
-                    </p>
-                {/if}
-            </section>
+            <!-- Run-up calendar moved to the Today tab (daily motivation). -->
 
             <section class="action-card tests-cta">
                 <div class="action-head">
@@ -3619,6 +3784,22 @@ chrome77/es2020 webview.
                         A timed, mixed set drawn from your learned topics &mdash; a periodic read on
                         whether it's holding together. It feeds Readiness like a mock does.
                     </p>
+                {:else if fullTest}
+                    <p class="eyebrow">
+                        Full practice test{#if fullTest.label} &middot; {fullTest.label}{/if}
+                        &middot; section {fullTest.idx + 1} of {fullTest.sections.length}
+                    </p>
+                    <h1 class="display">{mockLabel}</h1>
+                    <p class="lede">
+                        {#if fullTest.idx === 0}
+                            A full GMAT Focus practice test: three timed sections back to back
+                            &mdash; Quantitative, Verbal, and Data Insights, 45 minutes each. No
+                            feedback until the end, then a per-section score and a Total projection.
+                        {:else}
+                            Section {fullTest.idx + 1} of {fullTest.sections.length}. Same rules:
+                            45 minutes, sealed until you submit. Keep your pace.
+                        {/if}
+                    </p>
                 {:else}
                     <p class="eyebrow">
                         {#if mockFormId}
@@ -3647,15 +3828,24 @@ chrome77/es2020 webview.
                         up to 3 answers before you submit &mdash; just like the real section.
                         Guessing beats leaving blanks, but you'll classify every miss afterwards.
                     </p>
-                    <p class="muted">Quant only for now (Verbal + Data Insights come later).</p>
+                    {#if !fullTest && mockKind === "mock" && !mockFormId}
+                        <p class="muted">Quant only for now (Verbal + Data Insights come later).</p>
+                    {/if}
                     <button
                         class="primary"
                         disabled={mockPool.length === 0}
                         on:click={beginMock}
                     >
-                        Start the clock
+                        {#if fullTest}Start section {fullTest.idx + 1}{:else}Start the clock{/if}
                     </button>
-                    <button class="ghost" on:click={() => go(mockReturnView)}>Not now</button>
+                    <button
+                        class="ghost"
+                        on:click={() => {
+                            fullTest = null;
+                            fullReport = null;
+                            void go(mockReturnView);
+                        }}>Not now</button
+                    >
                 </section>
             {:else if mockPhase === "run"}
                 <div class="session-meter">
@@ -3756,7 +3946,38 @@ chrome77/es2020 webview.
                         </p>
                     {/if}
                 </section>
-            {:else if mockReport}
+            {:else if mockReport || fullReport}
+                {#if fullReport}
+                    <p class="eyebrow">
+                        Full practice test report{#if fullReport.label} &middot; {fullReport.label}{/if}
+                    </p>
+                    <h1 class="display">
+                        Total {fullReport.total}
+                        <span class="muted-display">&middot; scale 205&ndash;805</span>
+                    </h1>
+                    <p class="lede">
+                        Your projected GMAT Focus Total from this full-length test, on the same
+                        transparent scale as Readiness. One test is a data point, not a verdict.
+                    </p>
+                    <section class="action-card">
+                        <div class="action-head"><span class="eyebrow">By section</span></div>
+                        <ul class="breakdown">
+                            {#each fullReport.sections as s}
+                                <li>
+                                    <span class="bd-label">{s.label}</span>
+                                    {#if s.total}
+                                        <span class="bd-val"
+                                            >{accToSection(s.correct / s.total)}<small>/90</small></span
+                                        >
+                                    {:else}
+                                        <span class="bd-val muted">&mdash;</span>
+                                    {/if}
+                                    <span class="bd-band">{s.correct}/{s.total} correct</span>
+                                </li>
+                            {/each}
+                        </ul>
+                    </section>
+                {:else if mockReport}
                 <p class="eyebrow">
                     {#if mockKind === "quiz"}
                         Topic quiz report{#if mockQuizLabel} &middot; {mockQuizLabel}{/if}
@@ -3815,6 +4036,7 @@ chrome77/es2020 webview.
                         </p>
                     {/if}
                 </section>
+                {/if}
 
                 {#if mockMisses.length > 0}
                     <section class="action-card">
@@ -3866,8 +4088,9 @@ chrome77/es2020 webview.
             <p class="eyebrow">Practice tests &mdash; full-length, timed</p>
             <h1 class="display">Sit a real one.</h1>
             <p class="lede">
-                Complete 21-question sections under exam conditions. Each form runs on the same
-                timed engine as a mock and calibrates your Readiness against reality.
+                Full tests run all three GMAT Focus sections back to back &mdash; Quant, Verbal,
+                and Data Insights, 45 minutes each &mdash; then give you a per-section score and a
+                Total projection. Single-section forms are here too for a quicker rep.
             </p>
             {#if !tests || testYears.length === 0}
                 <section class="q-card empty">
@@ -3884,9 +4107,16 @@ chrome77/es2020 webview.
                             {#each tests.years[year] as f}
                                 <li class="test-row" class:taken={f.taken}>
                                     <div class="test-meta">
-                                        <span class="test-label">{f.label}</span>
+                                        <span class="test-label">
+                                            {f.label}
+                                            {#if f.full}<span class="pill">Full test</span>{/if}
+                                        </span>
                                         <span class="muted">
-                                            {f.count} questions &middot; timed 45:00
+                                            {#if f.full}
+                                                {f.count} questions &middot; 3 sections &middot; 3 &times; 45:00
+                                            {:else}
+                                                {f.count} questions &middot; timed 45:00
+                                            {/if}
                                         </span>
                                     </div>
                                     {#if f.taken}
@@ -3901,7 +4131,10 @@ chrome77/es2020 webview.
                                             {/if}
                                             <button
                                                 class="tb-go"
-                                                on:click={() => startMock(f.id, f.year)}
+                                                on:click={() =>
+                                                    f.full
+                                                        ? startFullTest(f.id, f.year)
+                                                        : startMock(f.id, f.year)}
                                             >
                                                 Retake
                                             </button>
@@ -3909,7 +4142,10 @@ chrome77/es2020 webview.
                                     {:else}
                                         <button
                                             class="primary test-start"
-                                            on:click={() => startMock(f.id, f.year)}
+                                            on:click={() =>
+                                                f.full
+                                                    ? startFullTest(f.id, f.year)
+                                                    : startMock(f.id, f.year)}
                                         >
                                             Start
                                         </button>
@@ -4099,9 +4335,10 @@ chrome77/es2020 webview.
         --surface: #221a46;
         --surface-2: #2b2159;
         --sunk: #191234;
-        --ink: #efeaff;
-        --ink-soft: #c4b8ea;
-        --ink-faint: #8f83b8;
+        --ink: #f4f1ff;
+        /* brightened for contrast over the decorative background */
+        --ink-soft: #ddd5f7;
+        --ink-faint: #b3a9d8;
         /* amethyst = primary action / selection */
         --indicator: #9a6bf5;
         --indicator-ink: #7c4de0;
@@ -4173,7 +4410,7 @@ chrome77/es2020 webview.
         animation-name: spellfall;
         animation-timing-function: linear;
         animation-iteration-count: infinite;
-        text-shadow: 0 0 14px currentColor;
+        text-shadow: 0 0 6px currentColor;
         will-change: transform, opacity;
     }
     @keyframes spellfall {
@@ -4182,10 +4419,10 @@ chrome77/es2020 webview.
             opacity: 0;
         }
         12% {
-            opacity: 0.3;
+            opacity: 0.12;
         }
         88% {
-            opacity: 0.3;
+            opacity: 0.12;
         }
         100% {
             transform: translateY(112vh) rotate(45deg);
@@ -4397,28 +4634,32 @@ chrome77/es2020 webview.
 
     .eyebrow {
         font-family: var(--mono);
-        font-size: 12px;
+        font-size: 13px;
         letter-spacing: 0.14em;
         text-transform: uppercase;
         color: var(--ink-faint);
         margin: 0 0 10px;
+        text-shadow: 0 1px 3px rgba(9, 6, 22, 0.7);
     }
     .display {
         font-family: var(--voice);
-        font-size: 34px;
+        font-size: 36px;
         line-height: 1.15;
         margin: 0 0 12px;
         font-weight: 700;
+        text-shadow: 0 1px 4px rgba(9, 6, 22, 0.7);
     }
     .lede {
-        font-size: 18px;
+        font-size: 19px;
         line-height: 1.6;
         color: var(--ink-soft);
         margin: 0 0 28px;
+        text-shadow: 0 1px 3px rgba(9, 6, 22, 0.6);
     }
     .muted {
         color: var(--ink-faint);
-        font-size: 13px;
+        font-size: 14px;
+        text-shadow: 0 1px 2px rgba(9, 6, 22, 0.5);
     }
 
     .action-card {
@@ -5236,10 +5477,11 @@ chrome77/es2020 webview.
         margin-bottom: 8px;
     }
     .cal-lede {
-        font-size: 14px;
+        font-size: 15px;
         line-height: 1.55;
         color: var(--ink-soft);
         margin: 0 0 12px;
+        text-shadow: 0 1px 3px rgba(9, 6, 22, 0.6);
     }
     .cal-lede strong {
         color: var(--gold);
@@ -5333,15 +5575,17 @@ chrome77/es2020 webview.
     .cal-inline .cal-dow-head {
         gap: 4px;
     }
+    /* Roomy cells so each day spells out exactly what the student does (labels are
+       always visible, not collapsed to glyphs). */
     .cal-inline .cal-day {
-        min-height: 46px;
-        padding: 4px 3px;
-        gap: 3px;
-        border-radius: 8px;
-        border-top-width: 2px;
+        min-height: 118px;
+        padding: 7px 7px;
+        gap: 5px;
+        border-radius: 9px;
+        border-top-width: 3px;
     }
     .cal-inline .cal-date {
-        font-size: 10px;
+        font-size: 11px;
     }
     .cal-inline .cal-flag {
         display: none;
@@ -5352,17 +5596,18 @@ chrome77/es2020 webview.
         box-shadow: 0 0 0 1px var(--indicator) inset;
     }
     .cal-inline .cal-items {
-        gap: 2px;
+        gap: 4px;
     }
     .cal-inline .cal-chip {
-        justify-content: center;
-        padding: 1px 2px;
+        justify-content: flex-start;
+        padding: 3px 6px;
+        font-size: 11.5px;
     }
     .cal-inline .cal-chip-t {
-        display: none;
+        display: block;
     }
     .cal-inline .cal-rest {
-        font-size: 9px;
+        font-size: 11px;
     }
     .cal-day {
         min-width: 0;
@@ -5461,8 +5706,9 @@ chrome77/es2020 webview.
     .cal-chip-t {
         min-width: 0;
         overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        line-height: 1.25;
     }
     .cal-chip.chip-lesson {
         border-left-color: var(--brass-ink);
