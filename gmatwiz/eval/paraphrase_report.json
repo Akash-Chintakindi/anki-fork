@@ -1,0 +1,37 @@
+{
+  "generated_at": "2026-07-06T01:53:08+00:00",
+  "gold_file": "gmatwiz/content/paraphrase_gold.json",
+  "k_study": 6,
+  "memorizer": {
+    "wording_memorization": 0.6,
+    "memory_acc": 0.9412438946961805,
+    "performance_acc": 0.5932222222222222,
+    "gap": 0.3480216724739583,
+    "per_topic_gap": {
+      "gmat::quant::algebra::linear_equations": 0.2798433391406249,
+      "gmat::quant::arithmetic::exponents_roots": 0.3471831695703125,
+      "gmat::quant::arithmetic::fractions": 0.4050393449479166,
+      "gmat::quant::arithmetic::percents": 0.35304783623697916,
+      "gmat::quant::arithmetic::ratios_proportions": 0.3674776724739583,
+      "gmat::quant::arithmetic::statistics": 0.33553867247395824
+    },
+    "n_items": 30,
+    "seeds": 12
+  },
+  "control": {
+    "wording_memorization": 0.0,
+    "memory_acc": 0.5932222222222222,
+    "performance_acc": 0.5932222222222222,
+    "gap": 0.0,
+    "per_topic_gap": {
+      "gmat::quant::algebra::linear_equations": 0.0,
+      "gmat::quant::arithmetic::exponents_roots": 0.0,
+      "gmat::quant::arithmetic::fractions": 0.0,
+      "gmat::quant::arithmetic::percents": 0.0,
+      "gmat::quant::arithmetic::ratios_proportions": 0.0,
+      "gmat::quant::arithmetic::statistics": 0.0
+    },
+    "n_items": 30,
+    "seeds": 12
+  }
+}

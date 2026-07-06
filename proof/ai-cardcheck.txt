@@ -1,0 +1,72 @@
+===============================================================================
+GMATWiz - 7f AI CARD CHECK  (generate -> check -> block -> report)
+===============================================================================
+What this proves (challenge 7f): build a 50-pair gold set with known-correct
+answers; generate 50 cards from ONE real source; run them through a checker;
+report three counts (correct & useful / wrong / correct-but-bad-teaching);
+set a passing cutoff BEFORE looking at results and block any card that fails.
+
+GOLD SET   : gmatwiz/content/cardcheck_gold.json - 50 ORIGINAL GMAT Quant PS
+             Q&A pairs, answers independently recomputed + verified by
+             make_cardcheck_gold.py (license authored-gmatwiz).
+SOURCE     : gmatwiz/content/cardcheck_source.md - ONE original chapter
+             (percents + linear equations), the single source cards are made from.
+CHECKER    : mirrors ts/routes/gmat/aiChecker.ts - fields pass / correctness /
+             in_scope / well_formed / teaching_quality(0-10) / reasons. Where a
+             generated card matches a gold pair, its answer is ALSO cross-
+             verified against the known-correct gold answer.
+
+-------------------------------------------------------------------------------
+PRE-SET CUTOFF (fixed BEFORE the results below; see card_check.py constants)
+-------------------------------------------------------------------------------
+A generated card is ADMITTED only if ALL of:
+    correctness == true      (the marked answer is actually correct)
+  AND in_scope == true       (GMAT Quant PS: arithmetic/algebra, in taxonomy)
+  AND well_formed == true    (5 distinct non-empty options, valid key, clear)
+  AND teaching_quality >= 7   (0-10 scale; duplicates capped at 3)
+Any card that fails the cutoff is BLOCKED. A wrong-fact card is always blocked
+(a wrong fact is worse than no card).
+
+-------------------------------------------------------------------------------
+REPRODUCE
+-------------------------------------------------------------------------------
+  # Offline smoke test (no key) - validates the pipeline end-to-end:
+  cd /Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork && out/pyenv/bin/python gmatwiz/content/card_check.py --mock
+
+  # Real numbers - pull the app's key from Firebase and run the live pipeline:
+  export OPENAI_API_KEY="$(npx -y firebase-tools@latest functions:secrets:access OPENAI_API_KEY --project gmatwiz)"
+  cd /Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork && out/pyenv/bin/python gmatwiz/content/card_check.py
+
+Full machine-readable per-card audit trail (every check + reasons) is written
+to gmatwiz/content/cardcheck_report.json.
+
+-------------------------------------------------------------------------------
+RESULTS - MOCK smoke run (NOT real numbers)   [client=mock]
+n_generated=50, gold=50, cross-verified against gold=50, cutoff teaching_quality>=7
+-------------------------------------------------------------------------------
+bucket                             count     share
+correct & useful (admitted)           25     50.0%
+wrong (blocked)                       10     20.0%
+correct but bad teaching (blk)        15     30.0%
+-------------------------------------------------------------------------------
+ADMITTED (passed cutoff)              25     50.0%
+BLOCKED (failed cutoff)               25     50.0%
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+HONEST INTERPRETATION
+-------------------------------------------------------------------------------
+These are NOT real quality numbers. --mock has no API key and no model: the
+50 candidates are deterministic perturbations of the gold set, planted to
+exercise every path - some faithful (correct + full explanation), some with a
+deliberately wrong answer letter, some with vague/trivial explanations, and
+some exact duplicates. So the split above just proves the pipeline WORKS end-
+to-end: it generates candidates, cross-verifies correctness against the known-
+correct gold answers, scores teaching quality, applies the pre-set cutoff, and
+BLOCKS every card that fails (all wrong-answer and bad-teaching/duplicate
+cards were blocked; only faithful cards were admitted). For REAL numbers -
+the model actually generating from the source and the checker re-solving each
+item - run the LIVE command above with the OpenAI key. This environment has
+no key, so only the mock smoke run is captured here.
+
+===============================================================================

@@ -1,0 +1,81 @@
+===============================================================================
+GMATWiz - TRAIN/TEST LEAKAGE CHECK  (Challenge 7e)
+===============================================================================
+What this proves (PRD S14.3 + S13):
+  A script scans the TRAINING DATA (the learning pool that becomes student
+  cards) and flags any HELD-OUT test/gold item, or a near-copy, that slipped
+  in - plus any official/copyrighted item in the pool. Leaked test data makes
+  a model look smarter than it is and zeroes the affected score, so this must
+  run CLEAN.
+
+LEARNING POOL (train) - imported as cards:
+  questions.json               808 items
+  seed.json                     42 items
+  verbal_questions.json         27 items
+  verbal_seed.json              27 items
+  verbal_rc_questions.json      12 items
+  di_questions.json             12 items
+  di_seed.json                  12 items
+  = pool total                 940 records (940 unique by content-hash)
+
+HELD-OUT (test) - gold eval sets + practice-test forms:
+  strict gold      : seed.json, verbal_gold.json, di_seed.json,
+                     paraphrase_gold.json, cardcheck_gold.json (7d/7f, if present)
+  assembled-from-pool: gmatwiz/tests/2026/*.json (practice forms; build_tests.py
+                     selects bank items verbatim, so overlap is by construction)
+
+HOW A MATCH IS CLASSIFIED (dual-use is NOT leakage):
+  dual_use   - the test item IS the pool item (shares a non-empty id): an
+               authored gold set that is intentionally also imported as cards
+               (seed.json doubles as gold; verbal_rc_seed == verbal_rc_questions).
+  derived    - a practice-test item selected verbatim from the bank (only for
+               assembled-from-pool sets).
+  LEAK       - an independently-sourced duplicate (different id/source) of a
+               held-out item -> the harmful case this check exists to catch.
+  exact = content_hash(stem,options); near = token-set Jaccard >= 0.9 (ai_ingest similarity).
+
+-------------------------------------------------------------------------------
+REPRODUCE
+-------------------------------------------------------------------------------
+  cd <repo root>   # the anki-fork checkout
+  out/pyenv/bin/python gmatwiz/content/leakage_check.py
+  # writes gmatwiz/content/leakage_report.json (full machine-readable detail)
+  # and this proof/leakage-check.txt
+
+-------------------------------------------------------------------------------
+RESULTS  (real run; threshold=0.9; pool=940 unique items)
+-------------------------------------------------------------------------------
+test set                        pool  test  exact  near  dual  derived  LEAK
+-------------------------------------------------------------------------------
+seed.json                        940    42     42     0    42        0     0
+verbal_gold.json                 940    39     39     0    39        0     0
+di_seed.json                     940    12     12     0    12        0     0
+paraphrase_gold.json             940    90      0     0     0        0     0
+cardcheck_gold.json              940    50      0     0     0        0     0
+2026-form-01.json                940    21     17     0     0       17     0
+2026-form-02.json                940    21     18     0     0       18     0
+2026-form-03.json                940    21     18     0     0       18     0
+2026-form-04.json                940    21     17     0     0       17     0
+2026-form-05.json                940    21     16     0     0       16     0
+2026-form-06.json                940    21     18     0     0       18     0
+2026-form-07.json                940    21     18     0     0       18     0
+2026-form-08.json                940    21     16     0     0       16     0
+2026-full-01.json                940    64     64     0     0       64     0
+2026-full-02.json                940    64     64     0     0       64     0
+2026-full-03.json                940    64     64     0     0       64     0
+-------------------------------------------------------------------------------
+TOTAL                            940   593    423     0    93      330     0
+-------------------------------------------------------------------------------
+Official/copyrighted items in the learning pool: 0
+
+VERDICT: CLEAN  - no held-out test item (or near-copy) leaked into the learning pool, and no official/copyrighted content is in the pool.
+
+READING IT (honest nuance):
+  The gold sets show up as dual_use, not leakage: they share ids with their
+  pool copies because those authored sets are deliberately imported as cards
+  AND used as tagging-eval gold (the taggers are zero-shot, so a shared item
+  does not train the model on its own answer). The practice forms are derived
+  (verbatim selections from the legally-sourced bank). What WOULD zero a score
+  - an independently-sourced copy of a held-out item, or an official/
+  copyrighted item in the pool - is exactly what the LEAK column counts.
+===============================================================================

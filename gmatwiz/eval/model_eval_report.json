@@ -1,0 +1,99 @@
+{
+  "generated_at": "2026-07-06T01:52:12+00:00",
+  "seed": 42,
+  "memory": {
+    "n_reviews_total": 9600,
+    "n_heldout": 2880,
+    "brier": 0.12533966639810928,
+    "log_loss": 0.42142412223336756,
+    "ece": 0.043213702117854996,
+    "mean_pred": 0.89693968334282,
+    "mean_obs": 0.8538194444444445,
+    "reliability": [
+      {
+        "bin": 0,
+        "n": 0,
+        "pred": null,
+        "obs": null
+      },
+      {
+        "bin": 1,
+        "n": 1,
+        "pred": 0.17953381732661924,
+        "obs": 0.0
+      },
+      {
+        "bin": 2,
+        "n": 1,
+        "pred": 0.24990360516317958,
+        "obs": 0.0
+      },
+      {
+        "bin": 3,
+        "n": 1,
+        "pred": 0.3428726929917567,
+        "obs": 0.0
+      },
+      {
+        "bin": 4,
+        "n": 2,
+        "pred": 0.458682472293863,
+        "obs": 0.5
+      },
+      {
+        "bin": 5,
+        "n": 5,
+        "pred": 0.5896096038723766,
+        "obs": 0.6
+      },
+      {
+        "bin": 6,
+        "n": 0,
+        "pred": null,
+        "obs": null
+      },
+      {
+        "bin": 7,
+        "n": 8,
+        "pred": 0.71827819602086,
+        "obs": 0.375
+      },
+      {
+        "bin": 8,
+        "n": 42,
+        "pred": 0.828627128088652,
+        "obs": 0.8095238095238095
+      },
+      {
+        "bin": 9,
+        "n": 2820,
+        "pred": 0.9,
+        "obs": 0.8574468085106383
+      }
+    ],
+    "calibrated": true
+  },
+  "performance": {
+    "n_heldout_items": 2160,
+    "learners": 6,
+    "model_brier": 0.16378870535235152,
+    "baseline_brier": 0.18148765432098765,
+    "beats_baseline": true,
+    "model_accuracy": 0.7615740740740741,
+    "global_baseline_acc": 0.6803703703703704
+  },
+  "readiness": {
+    "quant_accuracy": 0.7615740740740741,
+    "section_score": 82.5,
+    "section_range": [
+      80.5,
+      84.5
+    ],
+    "illustrative_total_if_all_sections_equal": 650,
+    "total_range": [
+      610,
+      690
+    ],
+    "note": "Illustrative only: the shipped engine ABSTAINS on the 205-805 Total until all three sections have evidence and the give-up thresholds are met (see docs/models/readiness.md). This maps Quant accuracy alone."
+  }
+}

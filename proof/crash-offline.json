@@ -1,0 +1,665 @@
+{
+  "generated_at": "2026-07-06T01:45:35+00:00",
+  "python": "3.13.13",
+  "collection": "/Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork/out/crashtest/crash.anki2",
+  "ai_key_present": false,
+  "seed_rng": 1234,
+  "seed": {
+    "added": 80,
+    "cards": 80,
+    "revlog": 0
+  },
+  "runs": [
+    {
+      "run": 1,
+      "kill_after_ms": 874,
+      "child_started": true,
+      "alive_at_kill": true,
+      "revlog_before": 0,
+      "revlog_after": 2573,
+      "delta": 2573,
+      "opened": true,
+      "open_error": "",
+      "pragma_ok": true,
+      "quick_ok": true,
+      "dbcheck_ok": true,
+      "integrity_ok": true,
+      "dbcheck_msg": "Database rebuilt and optimized.",
+      "monotonic": true
+    },
+    {
+      "run": 2,
+      "kill_after_ms": 464,
+      "child_started": true,
+      "alive_at_kill": true,
+      "revlog_before": 2573,
+      "revlog_after": 4241,
+      "delta": 1668,
+      "opened": true,
+      "open_error": "",
+      "pragma_ok": true,
+      "quick_ok": true,
+      "dbcheck_ok": true,
+      "integrity_ok": true,
+      "dbcheck_msg": "Database rebuilt and optimized.",
+      "monotonic": true
+    },
+    {
+      "run": 3,
+      "kill_after_ms": 126,
+      "child_started": true,
+      "alive_at_kill": true,
+      "revlog_before": 4241,
+      "revlog_after": 4716,
+      "delta": 475,
+      "opened": true,
+      "open_error": "",
+      "pragma_ok": true,
+      "quick_ok": true,
+      "dbcheck_ok": true,
+      "integrity_ok": true,
+      "dbcheck_msg": "Database rebuilt and optimized.",
+      "monotonic": true
+    },
+    {
+      "run": 4,
+      "kill_after_ms": 831,
+      "child_started": true,
+      "alive_at_kill": true,
+      "revlog_before": 4716,
+      "revlog_after": 7874,
+      "delta": 3158,
+      "opened": true,
+      "open_error": "",
+      "pragma_ok": true,
+      "quick_ok": true,
+      "dbcheck_ok": true,
+      "integrity_ok": true,
+      "dbcheck_msg": "Database rebuilt and optimized.",
+      "monotonic": true
+    },
+    {
+      "run": 5,
+      "kill_after_ms": 853,
+      "child_started": true,
+      "alive_at_kill": true,
+      "revlog_before": 7874,
+      "revlog_after": 11174,
+      "delta": 3300,
+      "opened": true,
+      "open_error": "",
+      "pragma_ok": true,
+      "quick_ok": true,
+      "dbcheck_ok": true,
+      "integrity_ok": true,
+      "dbcheck_msg": "Database rebuilt and optimized.",
+      "monotonic": true
+    },
+    {
+      "run": 6,
+      "kill_after_ms": 574,
+      "child_started": true,
+      "alive_at_kill": true,
+      "revlog_before": 11174,
+      "revlog_after": 13278,
+      "delta": 2104,
+      "opened": true,
+      "open_error": "",
+      "pragma_ok": true,
+      "quick_ok": true,
+      "dbcheck_ok": true,
+      "integrity_ok": true,
+      "dbcheck_msg": "Database rebuilt and optimized.",
+      "monotonic": true
+    },
+    {
+      "run": 7,
+      "kill_after_ms": 644,
+      "child_started": true,
+      "alive_at_kill": true,
+      "revlog_before": 13278,
+      "revlog_after": 15677,
+      "delta": 2399,
+      "opened": true,
+      "open_error": "",
+      "pragma_ok": true,
+      "quick_ok": true,
+      "dbcheck_ok": true,
+      "integrity_ok": true,
+      "dbcheck_msg": "Database rebuilt and optimized.",
+      "monotonic": true
+    },
+    {
+      "run": 8,
+      "kill_after_ms": 185,
+      "child_started": true,
+      "alive_at_kill": true,
+      "revlog_before": 15677,
+      "revlog_after": 16351,
+      "delta": 674,
+      "opened": true,
+      "open_error": "",
+      "pragma_ok": true,
+      "quick_ok": true,
+      "dbcheck_ok": true,
+      "integrity_ok": true,
+      "dbcheck_msg": "Database rebuilt and optimized.",
+      "monotonic": true
+    },
+    {
+      "run": 9,
+      "kill_after_ms": 718,
+      "child_started": true,
+      "alive_at_kill": true,
+      "revlog_before": 16351,
+      "revlog_after": 18770,
+      "delta": 2419,
+      "opened": true,
+      "open_error": "",
+      "pragma_ok": true,
+      "quick_ok": true,
+      "dbcheck_ok": true,
+      "integrity_ok": true,
+      "dbcheck_msg": "Database rebuilt and optimized.",
+      "monotonic": true
+    },
+    {
+      "run": 10,
+      "kill_after_ms": 305,
+      "child_started": true,
+      "alive_at_kill": true,
+      "revlog_before": 18770,
+      "revlog_after": 19847,
+      "delta": 1077,
+      "opened": true,
+      "open_error": "",
+      "pragma_ok": true,
+      "quick_ok": true,
+      "dbcheck_ok": true,
+      "integrity_ok": true,
+      "dbcheck_msg": "Database rebuilt and optimized.",
+      "monotonic": true
+    },
+    {
+      "run": 11,
+      "kill_after_ms": 144,
+      "child_started": true,
+      "alive_at_kill": true,
+      "revlog_before": 19847,
+      "revlog_after": 20332,
+      "delta": 485,
+      "opened": true,
+      "open_error": "",
+      "pragma_ok": true,
+      "quick_ok": true,
+      "dbcheck_ok": true,
+      "integrity_ok": true,
+      "dbcheck_msg": "Database rebuilt and optimized.",
+      "monotonic": true
+    },
+    {
+      "run": 12,
+      "kill_after_ms": 735,
+      "child_started": true,
+      "alive_at_kill": true,
+      "revlog_before": 20332,
+      "revlog_after": 22952,
+      "delta": 2620,
+      "opened": true,
+      "open_error": "",
+      "pragma_ok": true,
+      "quick_ok": true,
+      "dbcheck_ok": true,
+      "integrity_ok": true,
+      "dbcheck_msg": "Database rebuilt and optimized.",
+      "monotonic": true
+    },
+    {
+      "run": 13,
+      "kill_after_ms": 390,
+      "child_started": true,
+      "alive_at_kill": true,
+      "revlog_before": 22952,
+      "revlog_after": 24333,
+      "delta": 1381,
+      "opened": true,
+      "open_error": "",
+      "pragma_ok": true,
+      "quick_ok": true,
+      "dbcheck_ok": true,
+      "integrity_ok": true,
+      "dbcheck_msg": "Database rebuilt and optimized.",
+      "monotonic": true
+    },
+    {
+      "run": 14,
+      "kill_after_ms": 606,
+      "child_started": true,
+      "alive_at_kill": true,
+      "revlog_before": 24333,
+      "revlog_after": 26525,
+      "delta": 2192,
+      "opened": true,
+      "open_error": "",
+      "pragma_ok": true,
+      "quick_ok": true,
+      "dbcheck_ok": true,
+      "integrity_ok": true,
+      "dbcheck_msg": "Database rebuilt and optimized.",
+      "monotonic": true
+    },
+    {
+      "run": 15,
+      "kill_after_ms": 600,
+      "child_started": true,
+      "alive_at_kill": true,
+      "revlog_before": 26525,
+      "revlog_after": 28384,
+      "delta": 1859,
+      "opened": true,
+      "open_error": "",
+      "pragma_ok": true,
+      "quick_ok": true,
+      "dbcheck_ok": true,
+      "integrity_ok": true,
+      "dbcheck_msg": "Database rebuilt and optimized.",
+      "monotonic": true
+    },
+    {
+      "run": 16,
+      "kill_after_ms": 236,
+      "child_started": true,
+      "alive_at_kill": true,
+      "revlog_before": 28384,
+      "revlog_after": 29077,
+      "delta": 693,
+      "opened": true,
+      "open_error": "",
+      "pragma_ok": true,
+      "quick_ok": true,
+      "dbcheck_ok": true,
+      "integrity_ok": true,
+      "dbcheck_msg": "Database rebuilt and optimized.",
+      "monotonic": true
+    },
+    {
+      "run": 17,
+      "kill_after_ms": 263,
+      "child_started": true,
+      "alive_at_kill": true,
+      "revlog_before": 29077,
+      "revlog_after": 30070,
+      "delta": 993,
+      "opened": true,
+      "open_error": "",
+      "pragma_ok": true,
+      "quick_ok": true,
+      "dbcheck_ok": true,
+      "integrity_ok": true,
+      "dbcheck_msg": "Database rebuilt and optimized.",
+      "monotonic": true
+    },
+    {
+      "run": 18,
+      "kill_after_ms": 209,
+      "child_started": true,
+      "alive_at_kill": true,
+      "revlog_before": 30070,
+      "revlog_after": 30863,
+      "delta": 793,
+      "opened": true,
+      "open_error": "",
+      "pragma_ok": true,
+      "quick_ok": true,
+      "dbcheck_ok": true,
+      "integrity_ok": true,
+      "dbcheck_msg": "Database rebuilt and optimized.",
+      "monotonic": true
+    },
+    {
+      "run": 19,
+      "kill_after_ms": 131,
+      "child_started": true,
+      "alive_at_kill": true,
+      "revlog_before": 30863,
+      "revlog_after": 31327,
+      "delta": 464,
+      "opened": true,
+      "open_error": "",
+      "pragma_ok": true,
+      "quick_ok": true,
+      "dbcheck_ok": true,
+      "integrity_ok": true,
+      "dbcheck_msg": "Database rebuilt and optimized.",
+      "monotonic": true
+    },
+    {
+      "run": 20,
+      "kill_after_ms": 500,
+      "child_started": true,
+      "alive_at_kill": true,
+      "revlog_before": 31327,
+      "revlog_after": 33230,
+      "delta": 1903,
+      "opened": true,
+      "open_error": "",
+      "pragma_ok": true,
+      "quick_ok": true,
+      "dbcheck_ok": true,
+      "integrity_ok": true,
+      "dbcheck_msg": "Database rebuilt and optimized.",
+      "monotonic": true
+    }
+  ],
+  "summary": {
+    "runs": 20,
+    "alive_at_kill": 20,
+    "corruptions": 0,
+    "integrity_clean": 20,
+    "monotonic": true,
+    "revlog_start": 0,
+    "revlog_end": 33230,
+    "total_delta": 33230
+  },
+  "crash_ok": true,
+  "crash_verdict": "PASS - 0 corrupted collections across 20 SIGKILLs; revlog monotonic (no lost reviews).",
+  "wellfed": {
+    "path": "/Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork/out/crashtest/degrade.anki2",
+    "fe": {
+      "quant": 80,
+      "verbal": 80,
+      "di": 60,
+      "revlog": 220
+    },
+    "scores": {
+      "memory": {
+        "bins": [],
+        "calibrated": true,
+        "ece": 0.0,
+        "high": 81,
+        "low": 69,
+        "point": 75,
+        "reviews": 220,
+        "status": "shown",
+        "target": 90,
+        "updated_ts": 1783302334
+      },
+      "performance": {
+        "attempts": 220,
+        "by_section": {
+          "di": {
+            "attempts": 60,
+            "eval": {
+              "baseline_brier": 0.1531,
+              "beats_baseline": true,
+              "model_brier": 0.1531,
+              "test_n": 18
+            },
+            "high": 86,
+            "low": 64,
+            "point": 75,
+            "status": "shown",
+            "timing": null,
+            "updated_ts": 1783302334,
+            "weak_topics": [
+              {
+                "accuracy": 0.75,
+                "n": 20,
+                "topic": "gmat::di::reasoning::data_sufficiency"
+              },
+              {
+                "accuracy": 0.75,
+                "n": 20,
+                "topic": "gmat::di::reasoning::multi_source_reasoning"
+              },
+              {
+                "accuracy": 0.75,
+                "n": 20,
+                "topic": "gmat::di::reasoning::two_part_analysis"
+              }
+            ]
+          },
+          "quant": {
+            "attempts": 80,
+            "eval": {
+              "baseline_brier": 0.1531,
+              "beats_baseline": true,
+              "model_brier": 0.1288,
+              "test_n": 24
+            },
+            "high": 84,
+            "low": 66,
+            "point": 75,
+            "status": "shown",
+            "timing": null,
+            "updated_ts": 1783302334,
+            "weak_topics": []
+          },
+          "verbal": {
+            "attempts": 80,
+            "eval": {
+              "baseline_brier": 0.1531,
+              "beats_baseline": true,
+              "model_brier": 0.0,
+              "test_n": 24
+            },
+            "high": 84,
+            "low": 66,
+            "point": 75,
+            "status": "shown",
+            "timing": null,
+            "updated_ts": 1783302334,
+            "weak_topics": []
+          }
+        },
+        "eval": {
+          "baseline_brier": 0.1531,
+          "beats_baseline": true,
+          "model_brier": 0.0886,
+          "test_n": 66
+        },
+        "high": 81,
+        "low": 69,
+        "point": 75,
+        "status": "shown",
+        "timing": null,
+        "updated_ts": 1783302334,
+        "weak_topics": [
+          {
+            "accuracy": 0.75,
+            "n": 20,
+            "topic": "gmat::di::reasoning::data_sufficiency"
+          },
+          {
+            "accuracy": 0.75,
+            "n": 20,
+            "topic": "gmat::di::reasoning::multi_source_reasoning"
+          },
+          {
+            "accuracy": 0.75,
+            "n": 20,
+            "topic": "gmat::di::reasoning::two_part_analysis"
+          }
+        ]
+      },
+      "readiness": {
+        "by_section": {
+          "di": {
+            "calibration": null,
+            "confidence": "low",
+            "high": 87,
+            "low": 79,
+            "method": "Heuristic map from held-out first-exposure accuracy; not yet validated against official practice-test scores.",
+            "mock_gap": null,
+            "mocks": [],
+            "official": [],
+            "point": 83,
+            "scale": "GMAT Focus Data Insights section (60-90)",
+            "section": "Data Insights",
+            "status": "shown",
+            "updated_ts": 1783302334
+          },
+          "quant": {
+            "calibration": null,
+            "confidence": "low",
+            "high": 86,
+            "low": 79,
+            "method": "Heuristic map from held-out first-exposure accuracy; not yet validated against official practice-test scores.",
+            "mock_gap": null,
+            "mocks": [],
+            "official": [],
+            "point": 83,
+            "scale": "GMAT Focus Quant section (60-90)",
+            "section": "Quant",
+            "status": "shown",
+            "updated_ts": 1783302334
+          },
+          "verbal": {
+            "calibration": null,
+            "confidence": "low",
+            "high": 86,
+            "low": 79,
+            "method": "Heuristic map from held-out first-exposure accuracy; not yet validated against official practice-test scores.",
+            "mock_gap": null,
+            "mocks": [],
+            "official": [],
+            "point": 83,
+            "scale": "GMAT Focus Verbal section (60-90)",
+            "section": "Verbal",
+            "status": "shown",
+            "updated_ts": 1783302334
+          }
+        },
+        "high": 730,
+        "low": 590,
+        "method": "Heuristic composite of the three section scores; GMAC's exact total formula is undisclosed, so the per-section breakdown is always shown.",
+        "point": 670,
+        "scale": "GMAT Focus Total (205-805)",
+        "status": "shown",
+        "total": 670,
+        "updated_ts": 1783302334
+      },
+      "topics_covered": 37,
+      "topics_total": 37
+    },
+    "all_shown": true
+  },
+  "postcrash": {
+    "scores": {
+      "memory": {
+        "bins": [],
+        "calibrated": true,
+        "ece": 0.0,
+        "high": 51,
+        "low": 49,
+        "point": 50,
+        "reviews": 33230,
+        "status": "shown",
+        "target": 90,
+        "updated_ts": 1783302335
+      },
+      "performance": {
+        "attempts": 80,
+        "by_section": {
+          "di": {
+            "attempts": 0,
+            "attempts_required": 50,
+            "reason": "No GMAT questions yet.",
+            "status": "abstain",
+            "updated_ts": 1783302335
+          },
+          "quant": {
+            "attempts": 80,
+            "eval": {
+              "baseline_brier": 0.2789,
+              "beats_baseline": true,
+              "model_brier": 0.0,
+              "test_n": 24
+            },
+            "high": 61,
+            "low": 39,
+            "point": 50,
+            "status": "shown",
+            "timing": null,
+            "updated_ts": 1783302335,
+            "weak_topics": []
+          },
+          "verbal": {
+            "attempts": 0,
+            "attempts_required": 50,
+            "reason": "No GMAT questions yet.",
+            "status": "abstain",
+            "updated_ts": 1783302335
+          }
+        },
+        "eval": {
+          "baseline_brier": 0.2789,
+          "beats_baseline": true,
+          "model_brier": 0.0,
+          "test_n": 24
+        },
+        "high": 61,
+        "low": 39,
+        "point": 50,
+        "status": "shown",
+        "timing": null,
+        "updated_ts": 1783302335,
+        "weak_topics": []
+      },
+      "readiness": {
+        "by_section": {
+          "di": {
+            "mocks": [],
+            "official": [],
+            "reason": "A confident number with no evidence is just a guess.",
+            "status": "abstain",
+            "unmet": [
+              "topic coverage 0% (need 50%)",
+              "0 application attempts (need 50)"
+            ],
+            "updated_ts": 1783302335
+          },
+          "quant": {
+            "calibration": null,
+            "confidence": "low",
+            "high": 78,
+            "low": 70,
+            "method": "Heuristic map from held-out first-exposure accuracy; not yet validated against official practice-test scores.",
+            "mock_gap": null,
+            "mocks": [],
+            "official": [],
+            "point": 74,
+            "scale": "GMAT Focus Quant section (60-90)",
+            "section": "Quant",
+            "status": "shown",
+            "updated_ts": 1783302335
+          },
+          "verbal": {
+            "mocks": [],
+            "official": [],
+            "reason": "A confident number with no evidence is just a guess.",
+            "status": "abstain",
+            "unmet": [
+              "topic coverage 0% (need 50%)",
+              "0 application attempts (need 50)"
+            ],
+            "updated_ts": 1783302335
+          }
+        },
+        "reason": "A Total (205-805) needs enough evidence in all three sections.",
+        "scale": "GMAT Focus Total (205-805)",
+        "status": "abstain",
+        "unmet": [
+          "Verbal: A confident number with no evidence is just a guess.",
+          "Data Insights: A confident number with no evidence is just a guess."
+        ],
+        "updated_ts": 1783302335
+      },
+      "topics_covered": 18,
+      "topics_total": 37
+    },
+    "well_formed": true
+  },
+  "degrade_ok": true,
+  "degrade_verdict": "PASS - with AI off/no network the three scores compute (well-fed run yields a full Total=670; the post-crash collection still returns a valid score object)."
+}

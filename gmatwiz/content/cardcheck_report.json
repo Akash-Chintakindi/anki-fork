@@ -1,0 +1,1187 @@
+{
+  "generated_at": "2026-07-06T01:46:46+00:00",
+  "mode": "mock",
+  "ai_client": "mock",
+  "source_file": "/Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork/gmatwiz/content/cardcheck_source.md",
+  "gold_file": "/Users/akashchintakindi/Documents/AlphaProjects/GMATWiz/anki-fork/gmatwiz/content/cardcheck_gold.json",
+  "gold_count": 50,
+  "n_requested": 50,
+  "n_generated": 50,
+  "cutoff": {
+    "teaching_quality_min": 7,
+    "duplicate_teaching_cap": 3,
+    "pass_rule": "correctness AND in_scope AND well_formed AND teaching_quality >= 7",
+    "preset_before_results": true
+  },
+  "counts": {
+    "correct_and_useful": 25,
+    "wrong": 10,
+    "correct_but_bad_teaching": 15
+  },
+  "admitted_count": 25,
+  "blocked_count": 25,
+  "gold_cross_verified": 50,
+  "blocked_ids": [
+    "cardgen-819ce0d7a512",
+    "cardgen-9fee4713ad5c",
+    "cardgen-b801a13217be",
+    "cardgen-f1fdb0ba908a",
+    "cardgen-715dd3bfb16f",
+    "cardgen-33431de19b06",
+    "cardgen-3b27ea6c52cf",
+    "cardgen-b801a13217be",
+    "cardgen-71a1960e91a6",
+    "cardgen-7bbbe2240f92",
+    "cardgen-7510a4e16837",
+    "cardgen-51e431305922",
+    "cardgen-b801a13217be",
+    "cardgen-a2d5493eba0d",
+    "cardgen-13ec2a3e4489",
+    "cardgen-520042a5496c",
+    "cardgen-c52d82287379",
+    "cardgen-b801a13217be",
+    "cardgen-481c3da2a2c4",
+    "cardgen-9ca2dee9a2df",
+    "cardgen-74af2e0d9489",
+    "cardgen-a1135a15751a",
+    "cardgen-b801a13217be",
+    "cardgen-54dbaacf8df9",
+    "cardgen-cf88ab2afbda"
+  ],
+  "per_card": [
+    {
+      "id": "cardgen-b801a13217be",
+      "topic": "gmat::quant::algebra::absolute_value",
+      "difficulty": "medium",
+      "correct": "C",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": false,
+      "topic_confidence": 0.6,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": []
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "If |2x - 1| = 9, what is the sum of all possible values of x?"
+    },
+    {
+      "id": "cardgen-e9658d68b458",
+      "topic": "gmat::quant::algebra::absolute_value",
+      "difficulty": "easy",
+      "correct": "C",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": false,
+      "topic_confidence": 0.6,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": []
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "How many integer values of x satisfy |x - 2| <= 3 ?"
+    },
+    {
+      "id": "cardgen-2aa061aa287c",
+      "topic": "gmat::quant::algebra::expressions",
+      "difficulty": "medium",
+      "correct": "C",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": false,
+      "topic_confidence": 0.6,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": []
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "For any nonzero x, which of the following is equivalent to (4x^5)(3x^2) ?"
+    },
+    {
+      "id": "cardgen-7e1808f9b364",
+      "topic": "gmat::quant::algebra::expressions",
+      "difficulty": "easy",
+      "correct": "C",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": false,
+      "topic_confidence": 0.6,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": []
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "For any nonzero x, which of the following is equivalent to (x^6) / (x^2) ?"
+    },
+    {
+      "id": "cardgen-2f6cd18fc86f",
+      "topic": "gmat::quant::algebra::functions",
+      "difficulty": "medium",
+      "correct": "C",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": false,
+      "topic_confidence": 0.7,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": []
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "If g(x) = (x + 5) / 2, for what value of x does g(x) = 9?"
+    },
+    {
+      "id": "cardgen-819ce0d7a512",
+      "topic": "gmat::quant::algebra::functions",
+      "difficulty": "easy",
+      "correct": "C",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": false,
+      "topic_confidence": 0.7,
+      "check": {
+        "pass": false,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 1.0,
+        "reasons": [
+          "teaching_quality_below_cutoff(1.0<7)"
+        ]
+      },
+      "bucket": "correct_but_bad_teaching",
+      "blocked": true,
+      "stem": "If f(x) = 3x^2 - 2x + 4, what is f(2)?"
+    },
+    {
+      "id": "cardgen-9fee4713ad5c",
+      "topic": "gmat::quant::algebra::functions",
+      "difficulty": "medium",
+      "correct": "D",
+      "gold_matched": true,
+      "gold_correct": "D",
+      "duplicate": false,
+      "topic_confidence": 0.55,
+      "check": {
+        "pass": false,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 0.0,
+        "reasons": [
+          "explanation_too_short",
+          "teaching_quality_below_cutoff(0.0<7)",
+          "low_topic_confidence"
+        ]
+      },
+      "bucket": "correct_but_bad_teaching",
+      "blocked": true,
+      "stem": "For all numbers a and b, the operation @ is defined by a @ b = 2a + b^2. What is the value of 3 @ 4?"
+    },
+    {
+      "id": "cardgen-b801a13217be",
+      "topic": "gmat::quant::algebra::absolute_value",
+      "difficulty": "medium",
+      "correct": "C",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": true,
+      "topic_confidence": 0.6,
+      "check": {
+        "pass": false,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 3.0,
+        "reasons": [
+          "duplicate_of_earlier_card",
+          "teaching_quality_below_cutoff(3.0<7)"
+        ]
+      },
+      "bucket": "correct_but_bad_teaching",
+      "blocked": true,
+      "stem": "If |2x - 1| = 9, what is the sum of all possible values of x?"
+    },
+    {
+      "id": "cardgen-f1fdb0ba908a",
+      "topic": "gmat::quant::algebra::inequalities",
+      "difficulty": "medium",
+      "correct": "A",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": false,
+      "topic_confidence": 0.35,
+      "check": {
+        "pass": false,
+        "correctness": false,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": [
+          "answer_disagrees_with_gold(gold=C)",
+          "low_topic_confidence"
+        ]
+      },
+      "bucket": "wrong",
+      "blocked": true,
+      "stem": "How many integer values of x satisfy 1 <= 2x - 3 <= 9 ?"
+    },
+    {
+      "id": "cardgen-715dd3bfb16f",
+      "topic": "gmat::quant::algebra::linear_equations",
+      "difficulty": "medium",
+      "correct": "A",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": false,
+      "topic_confidence": 0.35,
+      "check": {
+        "pass": false,
+        "correctness": false,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": [
+          "answer_disagrees_with_gold(gold=C)",
+          "low_topic_confidence"
+        ]
+      },
+      "bucket": "wrong",
+      "blocked": true,
+      "stem": "If 3x - 2y = 12 and x + 2y = 8, what is the value of x?"
+    },
+    {
+      "id": "cardgen-aad255f0c7d9",
+      "topic": "gmat::quant::algebra::linear_equations",
+      "difficulty": "easy",
+      "correct": "C",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": false,
+      "topic_confidence": 0.35,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": [
+          "low_topic_confidence"
+        ]
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "If 4x + 7 = 2x + 19, what is the value of x?"
+    },
+    {
+      "id": "cardgen-befdeb36bd59",
+      "topic": "gmat::quant::algebra::linear_equations",
+      "difficulty": "easy",
+      "correct": "C",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": false,
+      "topic_confidence": 0.35,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": [
+          "low_topic_confidence"
+        ]
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "A number added to three times itself equals 48. What is the number?"
+    },
+    {
+      "id": "cardgen-0b87a57fb42f",
+      "topic": "gmat::quant::algebra::quadratics",
+      "difficulty": "medium",
+      "correct": "E",
+      "gold_matched": true,
+      "gold_correct": "E",
+      "duplicate": false,
+      "topic_confidence": 0.6,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": []
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "If x^2 - 3x - 10 = 0, which of the following is a possible value of x?"
+    },
+    {
+      "id": "cardgen-0ebca92b0dd1",
+      "topic": "gmat::quant::algebra::quadratics",
+      "difficulty": "hard",
+      "correct": "C",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": false,
+      "topic_confidence": 0.35,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": [
+          "low_topic_confidence"
+        ]
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "The product of two consecutive positive integers is 56. What is the larger of the two integers?"
+    },
+    {
+      "id": "cardgen-161fef1c5e8f",
+      "topic": "gmat::quant::algebra::quadratics",
+      "difficulty": "medium",
+      "correct": "C",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": false,
+      "topic_confidence": 0.6,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": []
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "If x^2 - 9x + 20 = 0 and x > 4, what is the value of x?"
+    },
+    {
+      "id": "cardgen-33431de19b06",
+      "topic": "gmat::quant::algebra::sequences",
+      "difficulty": "medium",
+      "correct": "C",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": false,
+      "topic_confidence": 0.95,
+      "check": {
+        "pass": false,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 1.0,
+        "reasons": [
+          "teaching_quality_below_cutoff(1.0<7)"
+        ]
+      },
+      "bucket": "correct_but_bad_teaching",
+      "blocked": true,
+      "stem": "The first term of a geometric sequence is 2 and the common ratio is 3. What is the 4th term?"
+    },
+    {
+      "id": "cardgen-3b27ea6c52cf",
+      "topic": "gmat::quant::algebra::sequences",
+      "difficulty": "medium",
+      "correct": "C",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": false,
+      "topic_confidence": 0.95,
+      "check": {
+        "pass": false,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 0.0,
+        "reasons": [
+          "explanation_too_short",
+          "teaching_quality_below_cutoff(0.0<7)"
+        ]
+      },
+      "bucket": "correct_but_bad_teaching",
+      "blocked": true,
+      "stem": "In an arithmetic sequence, the first term is 7 and the common difference is 5. What is the 8th term?"
+    },
+    {
+      "id": "cardgen-b801a13217be",
+      "topic": "gmat::quant::algebra::absolute_value",
+      "difficulty": "medium",
+      "correct": "C",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": true,
+      "topic_confidence": 0.6,
+      "check": {
+        "pass": false,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 3.0,
+        "reasons": [
+          "duplicate_of_earlier_card",
+          "teaching_quality_below_cutoff(3.0<7)"
+        ]
+      },
+      "bucket": "correct_but_bad_teaching",
+      "blocked": true,
+      "stem": "If |2x - 1| = 9, what is the sum of all possible values of x?"
+    },
+    {
+      "id": "cardgen-71a1960e91a6",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "hard",
+      "correct": "A",
+      "gold_matched": true,
+      "gold_correct": "B",
+      "duplicate": false,
+      "topic_confidence": 0.95,
+      "check": {
+        "pass": false,
+        "correctness": false,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": [
+          "answer_disagrees_with_gold(gold=B)"
+        ]
+      },
+      "bucket": "wrong",
+      "blocked": true,
+      "stem": "Pipe X can fill a tank in 4 hours and pipe Y can fill the same tank in 12 hours. Working together, how many hours will they take to fill the tank?"
+    },
+    {
+      "id": "cardgen-7bbbe2240f92",
+      "topic": "gmat::quant::algebra::word_problems",
+      "difficulty": "medium",
+      "correct": "A",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": false,
+      "topic_confidence": 0.75,
+      "check": {
+        "pass": false,
+        "correctness": false,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": [
+          "answer_disagrees_with_gold(gold=C)"
+        ]
+      },
+      "bucket": "wrong",
+      "blocked": true,
+      "stem": "A car travels 300 kilometers in 5 hours. At the same constant rate, how far will it travel in 8 hours?"
+    },
+    {
+      "id": "cardgen-9e8c2ce00b70",
+      "topic": "gmat::quant::arithmetic::counting",
+      "difficulty": "medium",
+      "correct": "D",
+      "gold_matched": true,
+      "gold_correct": "D",
+      "duplicate": false,
+      "topic_confidence": 0.35,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 9.0,
+        "reasons": [
+          "low_topic_confidence"
+        ]
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "In how many different ways can all the letters of the word NUMBER be arranged? (All six letters are distinct.)"
+    },
+    {
+      "id": "cardgen-bf9fcf1dcee1",
+      "topic": "gmat::quant::arithmetic::counting",
+      "difficulty": "medium",
+      "correct": "B",
+      "gold_matched": true,
+      "gold_correct": "B",
+      "duplicate": false,
+      "topic_confidence": 0.35,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": [
+          "low_topic_confidence"
+        ]
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "A team of 2 people is to be chosen from a group of 7 people. How many different teams are possible?"
+    },
+    {
+      "id": "cardgen-ff134c50aa4f",
+      "topic": "gmat::quant::arithmetic::counting",
+      "difficulty": "medium",
+      "correct": "A",
+      "gold_matched": true,
+      "gold_correct": "A",
+      "duplicate": false,
+      "topic_confidence": 0.6,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": []
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "How many 3-digit numbers can be formed from the digits 1, 2, 3, 4, 5 if no digit is repeated?"
+    },
+    {
+      "id": "cardgen-2887f4932d4d",
+      "topic": "gmat::quant::arithmetic::decimals",
+      "difficulty": "easy",
+      "correct": "B",
+      "gold_matched": true,
+      "gold_correct": "B",
+      "duplicate": false,
+      "topic_confidence": 0.8,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 8.0,
+        "reasons": []
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "What is 4.7823 rounded to the nearest hundredth?"
+    },
+    {
+      "id": "cardgen-3f5e339d02e3",
+      "topic": "gmat::quant::arithmetic::decimals",
+      "difficulty": "medium",
+      "correct": "D",
+      "gold_matched": true,
+      "gold_correct": "D",
+      "duplicate": false,
+      "topic_confidence": 0.35,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 9.0,
+        "reasons": [
+          "low_topic_confidence"
+        ]
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "What is the value of 2.5 / 0.05 ?"
+    },
+    {
+      "id": "cardgen-7510a4e16837",
+      "topic": "gmat::quant::arithmetic::decimals",
+      "difficulty": "easy",
+      "correct": "C",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": false,
+      "topic_confidence": 0.35,
+      "check": {
+        "pass": false,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 1.0,
+        "reasons": [
+          "teaching_quality_below_cutoff(1.0<7)",
+          "low_topic_confidence"
+        ]
+      },
+      "bucket": "correct_but_bad_teaching",
+      "blocked": true,
+      "stem": "What is the value of 0.6 x 0.15 ?"
+    },
+    {
+      "id": "cardgen-51e431305922",
+      "topic": "gmat::quant::arithmetic::exponents_roots",
+      "difficulty": "easy",
+      "correct": "B",
+      "gold_matched": true,
+      "gold_correct": "B",
+      "duplicate": false,
+      "topic_confidence": 0.35,
+      "check": {
+        "pass": false,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 0.0,
+        "reasons": [
+          "explanation_too_short",
+          "teaching_quality_below_cutoff(0.0<7)",
+          "low_topic_confidence"
+        ]
+      },
+      "bucket": "correct_but_bad_teaching",
+      "blocked": true,
+      "stem": "What is the value of sqrt(196) - sqrt(49) ?"
+    },
+    {
+      "id": "cardgen-b801a13217be",
+      "topic": "gmat::quant::algebra::absolute_value",
+      "difficulty": "medium",
+      "correct": "C",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": true,
+      "topic_confidence": 0.6,
+      "check": {
+        "pass": false,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 3.0,
+        "reasons": [
+          "duplicate_of_earlier_card",
+          "teaching_quality_below_cutoff(3.0<7)"
+        ]
+      },
+      "bucket": "correct_but_bad_teaching",
+      "blocked": true,
+      "stem": "If |2x - 1| = 9, what is the sum of all possible values of x?"
+    },
+    {
+      "id": "cardgen-a2d5493eba0d",
+      "topic": "gmat::quant::arithmetic::exponents_roots",
+      "difficulty": "easy",
+      "correct": "A",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": false,
+      "topic_confidence": 0.35,
+      "check": {
+        "pass": false,
+        "correctness": false,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": [
+          "answer_disagrees_with_gold(gold=C)",
+          "low_topic_confidence"
+        ]
+      },
+      "bucket": "wrong",
+      "blocked": true,
+      "stem": "If 3^x = 81, what is the value of x?"
+    },
+    {
+      "id": "cardgen-13ec2a3e4489",
+      "topic": "gmat::quant::arithmetic::fractions",
+      "difficulty": "medium",
+      "correct": "A",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": false,
+      "topic_confidence": 0.65,
+      "check": {
+        "pass": false,
+        "correctness": false,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 9.0,
+        "reasons": [
+          "answer_disagrees_with_gold(gold=C)"
+        ]
+      },
+      "bucket": "wrong",
+      "blocked": true,
+      "stem": "A tank is 5/8 full of water. Water equal to 1/4 of the tank's capacity is then added. What fraction of the tank is filled?"
+    },
+    {
+      "id": "cardgen-4446d56b9978",
+      "topic": "gmat::quant::arithmetic::fractions",
+      "difficulty": "medium",
+      "correct": "C",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": false,
+      "topic_confidence": 0.6,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": []
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "What is the reciprocal of 2/5 + 1/10 ?"
+    },
+    {
+      "id": "cardgen-c533ce8b0821",
+      "topic": "gmat::quant::arithmetic::fractions",
+      "difficulty": "easy",
+      "correct": "D",
+      "gold_matched": true,
+      "gold_correct": "D",
+      "duplicate": false,
+      "topic_confidence": 0.35,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": [
+          "low_topic_confidence"
+        ]
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "What is the value of 3/4 - 1/6 ?"
+    },
+    {
+      "id": "cardgen-07e08279c367",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "correct": "A",
+      "gold_matched": true,
+      "gold_correct": "A",
+      "duplicate": false,
+      "topic_confidence": 0.65,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": []
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "What is the units digit of 3^24?"
+    },
+    {
+      "id": "cardgen-9ab0a2bcb497",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "medium",
+      "correct": "D",
+      "gold_matched": true,
+      "gold_correct": "D",
+      "duplicate": false,
+      "topic_confidence": 0.6,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": []
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "How many distinct positive factors does 72 have?"
+    },
+    {
+      "id": "cardgen-e493e96d270d",
+      "topic": "gmat::quant::arithmetic::number_properties",
+      "difficulty": "easy",
+      "correct": "C",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": false,
+      "topic_confidence": 0.65,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": []
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "When the positive integer n is divided by 5, the remainder is 3. What is the remainder when 4n is divided by 5?"
+    },
+    {
+      "id": "cardgen-520042a5496c",
+      "topic": "gmat::quant::arithmetic::percents",
+      "difficulty": "easy",
+      "correct": "D",
+      "gold_matched": true,
+      "gold_correct": "D",
+      "duplicate": false,
+      "topic_confidence": 0.6,
+      "check": {
+        "pass": false,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 1.0,
+        "reasons": [
+          "teaching_quality_below_cutoff(1.0<7)"
+        ]
+      },
+      "bucket": "correct_but_bad_teaching",
+      "blocked": true,
+      "stem": "What is 30% of 250?"
+    },
+    {
+      "id": "cardgen-c52d82287379",
+      "topic": "gmat::quant::arithmetic::percents",
+      "difficulty": "medium",
+      "correct": "D",
+      "gold_matched": true,
+      "gold_correct": "D",
+      "duplicate": false,
+      "topic_confidence": 0.75,
+      "check": {
+        "pass": false,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 0.0,
+        "reasons": [
+          "explanation_too_short",
+          "teaching_quality_below_cutoff(0.0<7)"
+        ]
+      },
+      "bucket": "correct_but_bad_teaching",
+      "blocked": true,
+      "stem": "After a 20% discount, a book sells for $48. What was its original price?"
+    },
+    {
+      "id": "cardgen-b801a13217be",
+      "topic": "gmat::quant::algebra::absolute_value",
+      "difficulty": "medium",
+      "correct": "C",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": true,
+      "topic_confidence": 0.6,
+      "check": {
+        "pass": false,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 3.0,
+        "reasons": [
+          "duplicate_of_earlier_card",
+          "teaching_quality_below_cutoff(3.0<7)"
+        ]
+      },
+      "bucket": "correct_but_bad_teaching",
+      "blocked": true,
+      "stem": "If |2x - 1| = 9, what is the sum of all possible values of x?"
+    },
+    {
+      "id": "cardgen-481c3da2a2c4",
+      "topic": "gmat::quant::arithmetic::probability",
+      "difficulty": "easy",
+      "correct": "A",
+      "gold_matched": true,
+      "gold_correct": "B",
+      "duplicate": false,
+      "topic_confidence": 0.7,
+      "check": {
+        "pass": false,
+        "correctness": false,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": [
+          "answer_disagrees_with_gold(gold=B)"
+        ]
+      },
+      "bucket": "wrong",
+      "blocked": true,
+      "stem": "A fair six-sided die is rolled once. What is the probability of rolling a number greater than 4?"
+    },
+    {
+      "id": "cardgen-9ca2dee9a2df",
+      "topic": "gmat::quant::arithmetic::probability",
+      "difficulty": "hard",
+      "correct": "B",
+      "gold_matched": true,
+      "gold_correct": "A",
+      "duplicate": false,
+      "topic_confidence": 0.85,
+      "check": {
+        "pass": false,
+        "correctness": false,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 9.0,
+        "reasons": [
+          "answer_disagrees_with_gold(gold=A)"
+        ]
+      },
+      "bucket": "wrong",
+      "blocked": true,
+      "stem": "A box contains 4 red and 6 blue pens. If 2 pens are drawn at random without replacement, what is the probability that both are blue?"
+    },
+    {
+      "id": "cardgen-e96a5818adcf",
+      "topic": "gmat::quant::arithmetic::probability",
+      "difficulty": "easy",
+      "correct": "B",
+      "gold_matched": true,
+      "gold_correct": "B",
+      "duplicate": false,
+      "topic_confidence": 0.85,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 9.0,
+        "reasons": []
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "A bag contains 5 green and 3 yellow balls. If one ball is drawn at random, what is the probability that it is yellow?"
+    },
+    {
+      "id": "cardgen-07239acdf7a9",
+      "topic": "gmat::quant::arithmetic::ratios_proportions",
+      "difficulty": "easy",
+      "correct": "C",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": false,
+      "topic_confidence": 0.7,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": []
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "The ratio of cats to dogs in a shelter is 4 to 7. If there are 28 dogs, how many cats are there?"
+    },
+    {
+      "id": "cardgen-903b738820e2",
+      "topic": "gmat::quant::arithmetic::ratios_proportions",
+      "difficulty": "medium",
+      "correct": "D",
+      "gold_matched": true,
+      "gold_correct": "D",
+      "duplicate": false,
+      "topic_confidence": 0.7,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": []
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "Two numbers are in the ratio 3 to 5, and their sum is 64. What is the larger number?"
+    },
+    {
+      "id": "cardgen-96cb89a69196",
+      "topic": "gmat::quant::arithmetic::ratios_proportions",
+      "difficulty": "medium",
+      "correct": "C",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": false,
+      "topic_confidence": 0.35,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": [
+          "low_topic_confidence"
+        ]
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "If 5 workers assemble 60 chairs in a day, how many chairs do 8 workers assemble in a day at the same rate?"
+    },
+    {
+      "id": "cardgen-04ac0db41d89",
+      "topic": "gmat::quant::arithmetic::sets",
+      "difficulty": "easy",
+      "correct": "A",
+      "gold_matched": true,
+      "gold_correct": "A",
+      "duplicate": false,
+      "topic_confidence": 0.55,
+      "check": {
+        "pass": true,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": [
+          "low_topic_confidence"
+        ]
+      },
+      "bucket": "correct_and_useful",
+      "blocked": false,
+      "stem": "In a class of 30 students, 18 play soccer and 14 play tennis, and every student plays at least one of the two. How many play both?"
+    },
+    {
+      "id": "cardgen-74af2e0d9489",
+      "topic": "gmat::quant::arithmetic::sets",
+      "difficulty": "medium",
+      "correct": "B",
+      "gold_matched": true,
+      "gold_correct": "B",
+      "duplicate": false,
+      "topic_confidence": 0.6,
+      "check": {
+        "pass": false,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 1.0,
+        "reasons": [
+          "teaching_quality_below_cutoff(1.0<7)"
+        ]
+      },
+      "bucket": "correct_but_bad_teaching",
+      "blocked": true,
+      "stem": "In a group of 60 people, 35 own a car and 30 own a bicycle. If 15 own both, how many own neither?"
+    },
+    {
+      "id": "cardgen-a1135a15751a",
+      "topic": "gmat::quant::arithmetic::sets",
+      "difficulty": "medium",
+      "correct": "B",
+      "gold_matched": true,
+      "gold_correct": "B",
+      "duplicate": false,
+      "topic_confidence": 0.6,
+      "check": {
+        "pass": false,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 0.0,
+        "reasons": [
+          "explanation_too_short",
+          "teaching_quality_below_cutoff(0.0<7)"
+        ]
+      },
+      "bucket": "correct_but_bad_teaching",
+      "blocked": true,
+      "stem": "Of 80 students, 50 study math and 45 study science. If 5 study neither, how many study both?"
+    },
+    {
+      "id": "cardgen-b801a13217be",
+      "topic": "gmat::quant::algebra::absolute_value",
+      "difficulty": "medium",
+      "correct": "C",
+      "gold_matched": true,
+      "gold_correct": "C",
+      "duplicate": true,
+      "topic_confidence": 0.6,
+      "check": {
+        "pass": false,
+        "correctness": true,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 3.0,
+        "reasons": [
+          "duplicate_of_earlier_card",
+          "teaching_quality_below_cutoff(3.0<7)"
+        ]
+      },
+      "bucket": "correct_but_bad_teaching",
+      "blocked": true,
+      "stem": "If |2x - 1| = 9, what is the sum of all possible values of x?"
+    },
+    {
+      "id": "cardgen-54dbaacf8df9",
+      "topic": "gmat::quant::arithmetic::statistics",
+      "difficulty": "easy",
+      "correct": "A",
+      "gold_matched": true,
+      "gold_correct": "D",
+      "duplicate": false,
+      "topic_confidence": 0.8,
+      "check": {
+        "pass": false,
+        "correctness": false,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 10.0,
+        "reasons": [
+          "answer_disagrees_with_gold(gold=D)"
+        ]
+      },
+      "bucket": "wrong",
+      "blocked": true,
+      "stem": "The average (arithmetic mean) of 8 numbers is 15. What is the sum of the 8 numbers?"
+    },
+    {
+      "id": "cardgen-cf88ab2afbda",
+      "topic": "gmat::quant::arithmetic::statistics",
+      "difficulty": "easy",
+      "correct": "A",
+      "gold_matched": true,
+      "gold_correct": "B",
+      "duplicate": false,
+      "topic_confidence": 0.7,
+      "check": {
+        "pass": false,
+        "correctness": false,
+        "in_scope": true,
+        "well_formed": true,
+        "teaching_quality": 7.0,
+        "reasons": [
+          "answer_disagrees_with_gold(gold=B)"
+        ]
+      },
+      "bucket": "wrong",
+      "blocked": true,
+      "stem": "What is the median of the list 14, 3, 9, 21, 6 ?"
+    }
+  ]
+}

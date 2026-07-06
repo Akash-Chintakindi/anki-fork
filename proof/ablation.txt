@@ -1,0 +1,61 @@
+===============================================================================
+GMATWiz - STUDY-FEATURE ABLATION  (spec Section 8): topic-aware scheduling
+===============================================================================
+
+PRE-REGISTERED (fixed before results were seen):
+  Hypothesis    : Topic-aware scheduling raises accuracy on new mixed-topic questions at equal study time, versus the same app with the feature off and versus plain Anki.
+  Primary metric: mean expected held-out accuracy on new mixed-topic items
+  Decision      : compare arm 'full' vs arm 'ablation' (isolated feature effect).
+
+THREE ARMS (same simulated learners, same bank, same study time):
+  full      = GMATWiz with topic-aware scheduling ON
+  ablation  = the identical app, that ONE feature OFF
+  plain     = vanilla Anki ordering (no topic mastery)
+
+-------------------------------------------------------------------------------
+REPRODUCE
+-------------------------------------------------------------------------------
+  PYTHONPATH=out/pylib ANKI_TEST_MODE=1 out/pyenv/bin/python \
+      -m gmatwiz.eval.ablation --seeds 20 --base-seed 100
+  # machine-readable: gmatwiz/eval/ablation_report.json
+
+-------------------------------------------------------------------------------
+SETUP
+-------------------------------------------------------------------------------
+  learners (seeds)      : 20   (seeds 100..119)
+  topics / cards        : 12 Quant leaves x 20 cards
+  schedule              : 12 days x 30 reviews/day
+  equal-study-time      : 360 reviews each (identical across all arms)
+  held-out test items   : 20/topic, never studied (new wording)
+
+-------------------------------------------------------------------------------
+RESULTS  (primary metric: expected held-out accuracy; 95% bootstrap CI)
+-------------------------------------------------------------------------------
+arm             mean acc                95% CI   weak reps  strong reps
+-------------------------------------------------------------------------------
+full              97.52%      [97.19%, 97.86%]         206          154
+ablation          95.43%      [94.53%, 96.30%]         179          181
+plain             95.28%      [94.35%, 96.11%]         176          184
+-------------------------------------------------------------------------------
+
+EFFECT SIZES (paired across the same learners):
+  full - ablation : +2.10 pts  95% CI [+1.20, +3.04]  -> SUPPORTED
+  full - plain    : +2.24 pts  95% CI [+1.32, +3.21]
+
+-------------------------------------------------------------------------------
+HONEST INTERPRETATION
+-------------------------------------------------------------------------------
+Mechanism: at equal total study time, 'full' spent 206 reviews on weak
+topics vs 179 in 'ablation' - topic-aware ordering reallocates reps from
+already-strong topics to weak ones, where diminishing returns make each rep
+worth more.
+Result: the hypothesis is SUPPORTED - the full-vs-ablation gap is +2.10 pts with a 95% CI entirely above 0, so the effect is
+attributable to the feature (same learners, same cards, same reviews).
+Arms 'ablation' and 'plain' are close by construction: the only scheduling
+lever GMATWiz changes is the topic-aware toggle, so with it off the app
+behaves like vanilla ordering. That is why full-vs-ablation is the clean
+isolation of the feature (Section 8's whole point).
+Caveat: these are SIMULATED learners (a reproducible stand-in; real-student
+validation is the bonus Step 4 in PRD Section 11). The learner model, seeds,
+and metric are fixed and seeded, so anyone re-running gets these same numbers.
+===============================================================================

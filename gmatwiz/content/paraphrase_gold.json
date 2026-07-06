@@ -1,0 +1,1292 @@
+[
+  {
+    "id": "para-00",
+    "topic": "gmat::quant::arithmetic::percents",
+    "answer": 12,
+    "base": {
+      "stem": "What is 15% of 80?",
+      "options": {
+        "A": "11",
+        "B": "14",
+        "C": "12",
+        "D": "24",
+        "E": "13"
+      },
+      "correct": "C",
+      "explanation": "15% of 80 = 15/100 * 80 = 12."
+    },
+    "variants": [
+      {
+        "stem": "Find 15 percent of 80.",
+        "options": {
+          "A": "24",
+          "B": "14",
+          "C": "13",
+          "D": "12",
+          "E": "11"
+        },
+        "correct": "D"
+      },
+      {
+        "stem": "In a group of 80 people, 15% attended. How many people attended?",
+        "options": {
+          "A": "12",
+          "B": "14",
+          "C": "11",
+          "D": "24",
+          "E": "13"
+        },
+        "correct": "A"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-01",
+    "topic": "gmat::quant::arithmetic::percents",
+    "answer": 30,
+    "base": {
+      "stem": "What is 25% of 120?",
+      "options": {
+        "A": "31",
+        "B": "29",
+        "C": "60",
+        "D": "30",
+        "E": "32"
+      },
+      "correct": "D",
+      "explanation": "25% of 120 = 25/100 * 120 = 30."
+    },
+    "variants": [
+      {
+        "stem": "Find 25 percent of 120.",
+        "options": {
+          "A": "30",
+          "B": "60",
+          "C": "29",
+          "D": "32",
+          "E": "31"
+        },
+        "correct": "A"
+      },
+      {
+        "stem": "In a group of 120 people, 25% attended. How many people attended?",
+        "options": {
+          "A": "32",
+          "B": "60",
+          "C": "29",
+          "D": "30",
+          "E": "31"
+        },
+        "correct": "D"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-02",
+    "topic": "gmat::quant::arithmetic::percents",
+    "answer": 24,
+    "base": {
+      "stem": "What is 40% of 60?",
+      "options": {
+        "A": "23",
+        "B": "25",
+        "C": "24",
+        "D": "26",
+        "E": "48"
+      },
+      "correct": "C",
+      "explanation": "40% of 60 = 40/100 * 60 = 24."
+    },
+    "variants": [
+      {
+        "stem": "Find 40 percent of 60.",
+        "options": {
+          "A": "23",
+          "B": "25",
+          "C": "48",
+          "D": "24",
+          "E": "26"
+        },
+        "correct": "D"
+      },
+      {
+        "stem": "In a group of 60 people, 40% attended. How many people attended?",
+        "options": {
+          "A": "26",
+          "B": "25",
+          "C": "24",
+          "D": "23",
+          "E": "48"
+        },
+        "correct": "C"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-03",
+    "topic": "gmat::quant::arithmetic::percents",
+    "answer": 6,
+    "base": {
+      "stem": "What is 12% of 50?",
+      "options": {
+        "A": "12",
+        "B": "8",
+        "C": "5",
+        "D": "7",
+        "E": "6"
+      },
+      "correct": "E",
+      "explanation": "12% of 50 = 12/100 * 50 = 6."
+    },
+    "variants": [
+      {
+        "stem": "Find 12 percent of 50.",
+        "options": {
+          "A": "5",
+          "B": "12",
+          "C": "8",
+          "D": "6",
+          "E": "7"
+        },
+        "correct": "D"
+      },
+      {
+        "stem": "In a group of 50 people, 12% attended. How many people attended?",
+        "options": {
+          "A": "12",
+          "B": "7",
+          "C": "6",
+          "D": "8",
+          "E": "5"
+        },
+        "correct": "C"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-04",
+    "topic": "gmat::quant::arithmetic::percents",
+    "answer": 27,
+    "base": {
+      "stem": "What is 30% of 90?",
+      "options": {
+        "A": "29",
+        "B": "26",
+        "C": "27",
+        "D": "54",
+        "E": "28"
+      },
+      "correct": "C",
+      "explanation": "30% of 90 = 30/100 * 90 = 27."
+    },
+    "variants": [
+      {
+        "stem": "Find 30 percent of 90.",
+        "options": {
+          "A": "28",
+          "B": "27",
+          "C": "29",
+          "D": "26",
+          "E": "54"
+        },
+        "correct": "B"
+      },
+      {
+        "stem": "In a group of 90 people, 30% attended. How many people attended?",
+        "options": {
+          "A": "27",
+          "B": "54",
+          "C": "26",
+          "D": "29",
+          "E": "28"
+        },
+        "correct": "A"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-05",
+    "topic": "gmat::quant::algebra::linear_equations",
+    "answer": 4,
+    "base": {
+      "stem": "If 2x + 3 = 11, what is the value of x?",
+      "options": {
+        "A": "6",
+        "B": "3",
+        "C": "4",
+        "D": "5",
+        "E": "8"
+      },
+      "correct": "C",
+      "explanation": "2x + 3 = 11  =>  2x = 8  =>  x = 4."
+    },
+    "variants": [
+      {
+        "stem": "Solve for x:  2x + 3 = 11.",
+        "options": {
+          "A": "4",
+          "B": "6",
+          "C": "3",
+          "D": "5",
+          "E": "8"
+        },
+        "correct": "A"
+      },
+      {
+        "stem": "A number x satisfies '2 times x, increased by 3, equals 11.' Find x.",
+        "options": {
+          "A": "6",
+          "B": "4",
+          "C": "8",
+          "D": "5",
+          "E": "3"
+        },
+        "correct": "B"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-06",
+    "topic": "gmat::quant::algebra::linear_equations",
+    "answer": 5,
+    "base": {
+      "stem": "If 3x + 2 = 17, what is the value of x?",
+      "options": {
+        "A": "7",
+        "B": "4",
+        "C": "5",
+        "D": "10",
+        "E": "6"
+      },
+      "correct": "C",
+      "explanation": "3x + 2 = 17  =>  3x = 15  =>  x = 5."
+    },
+    "variants": [
+      {
+        "stem": "Solve for x:  3x + 2 = 17.",
+        "options": {
+          "A": "6",
+          "B": "10",
+          "C": "5",
+          "D": "4",
+          "E": "7"
+        },
+        "correct": "C"
+      },
+      {
+        "stem": "A number x satisfies '3 times x, increased by 2, equals 17.' Find x.",
+        "options": {
+          "A": "5",
+          "B": "7",
+          "C": "4",
+          "D": "6",
+          "E": "10"
+        },
+        "correct": "A"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-07",
+    "topic": "gmat::quant::algebra::linear_equations",
+    "answer": 6,
+    "base": {
+      "stem": "If 5x + 4 = 34, what is the value of x?",
+      "options": {
+        "A": "5",
+        "B": "6",
+        "C": "7",
+        "D": "12",
+        "E": "8"
+      },
+      "correct": "B",
+      "explanation": "5x + 4 = 34  =>  5x = 30  =>  x = 6."
+    },
+    "variants": [
+      {
+        "stem": "Solve for x:  5x + 4 = 34.",
+        "options": {
+          "A": "12",
+          "B": "6",
+          "C": "7",
+          "D": "5",
+          "E": "8"
+        },
+        "correct": "B"
+      },
+      {
+        "stem": "A number x satisfies '5 times x, increased by 4, equals 34.' Find x.",
+        "options": {
+          "A": "7",
+          "B": "6",
+          "C": "5",
+          "D": "12",
+          "E": "8"
+        },
+        "correct": "B"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-08",
+    "topic": "gmat::quant::algebra::linear_equations",
+    "answer": 7,
+    "base": {
+      "stem": "If 4x + 1 = 29, what is the value of x?",
+      "options": {
+        "A": "14",
+        "B": "6",
+        "C": "9",
+        "D": "8",
+        "E": "7"
+      },
+      "correct": "E",
+      "explanation": "4x + 1 = 29  =>  4x = 28  =>  x = 7."
+    },
+    "variants": [
+      {
+        "stem": "Solve for x:  4x + 1 = 29.",
+        "options": {
+          "A": "7",
+          "B": "9",
+          "C": "8",
+          "D": "14",
+          "E": "6"
+        },
+        "correct": "A"
+      },
+      {
+        "stem": "A number x satisfies '4 times x, increased by 1, equals 29.' Find x.",
+        "options": {
+          "A": "8",
+          "B": "9",
+          "C": "6",
+          "D": "7",
+          "E": "14"
+        },
+        "correct": "D"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-09",
+    "topic": "gmat::quant::algebra::linear_equations",
+    "answer": 3,
+    "base": {
+      "stem": "If 6x + 5 = 23, what is the value of x?",
+      "options": {
+        "A": "5",
+        "B": "3",
+        "C": "6",
+        "D": "2",
+        "E": "4"
+      },
+      "correct": "B",
+      "explanation": "6x + 5 = 23  =>  6x = 18  =>  x = 3."
+    },
+    "variants": [
+      {
+        "stem": "Solve for x:  6x + 5 = 23.",
+        "options": {
+          "A": "5",
+          "B": "4",
+          "C": "2",
+          "D": "6",
+          "E": "3"
+        },
+        "correct": "E"
+      },
+      {
+        "stem": "A number x satisfies '6 times x, increased by 5, equals 23.' Find x.",
+        "options": {
+          "A": "2",
+          "B": "6",
+          "C": "5",
+          "D": "4",
+          "E": "3"
+        },
+        "correct": "E"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-10",
+    "topic": "gmat::quant::arithmetic::fractions",
+    "answer": 30,
+    "base": {
+      "stem": "What is 3/4 of 40?",
+      "options": {
+        "A": "31",
+        "B": "60",
+        "C": "29",
+        "D": "32",
+        "E": "30"
+      },
+      "correct": "E",
+      "explanation": "(3/4) * 40 = 30."
+    },
+    "variants": [
+      {
+        "stem": "Compute the product (3/4) x 40.",
+        "options": {
+          "A": "60",
+          "B": "31",
+          "C": "32",
+          "D": "30",
+          "E": "29"
+        },
+        "correct": "D"
+      },
+      {
+        "stem": "3/4 of a shipment of 40 boxes were delivered. How many boxes were delivered?",
+        "options": {
+          "A": "29",
+          "B": "30",
+          "C": "32",
+          "D": "60",
+          "E": "31"
+        },
+        "correct": "B"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-11",
+    "topic": "gmat::quant::arithmetic::fractions",
+    "answer": 18,
+    "base": {
+      "stem": "What is 2/5 of 45?",
+      "options": {
+        "A": "17",
+        "B": "19",
+        "C": "36",
+        "D": "18",
+        "E": "20"
+      },
+      "correct": "D",
+      "explanation": "(2/5) * 45 = 18."
+    },
+    "variants": [
+      {
+        "stem": "Compute the product (2/5) x 45.",
+        "options": {
+          "A": "19",
+          "B": "20",
+          "C": "36",
+          "D": "17",
+          "E": "18"
+        },
+        "correct": "E"
+      },
+      {
+        "stem": "2/5 of a shipment of 45 boxes were delivered. How many boxes were delivered?",
+        "options": {
+          "A": "36",
+          "B": "20",
+          "C": "18",
+          "D": "17",
+          "E": "19"
+        },
+        "correct": "C"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-12",
+    "topic": "gmat::quant::arithmetic::fractions",
+    "answer": 35,
+    "base": {
+      "stem": "What is 5/6 of 42?",
+      "options": {
+        "A": "34",
+        "B": "70",
+        "C": "36",
+        "D": "35",
+        "E": "37"
+      },
+      "correct": "D",
+      "explanation": "(5/6) * 42 = 35."
+    },
+    "variants": [
+      {
+        "stem": "Compute the product (5/6) x 42.",
+        "options": {
+          "A": "37",
+          "B": "34",
+          "C": "70",
+          "D": "36",
+          "E": "35"
+        },
+        "correct": "E"
+      },
+      {
+        "stem": "5/6 of a shipment of 42 boxes were delivered. How many boxes were delivered?",
+        "options": {
+          "A": "34",
+          "B": "70",
+          "C": "37",
+          "D": "36",
+          "E": "35"
+        },
+        "correct": "E"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-13",
+    "topic": "gmat::quant::arithmetic::fractions",
+    "answer": 21,
+    "base": {
+      "stem": "What is 3/8 of 56?",
+      "options": {
+        "A": "20",
+        "B": "42",
+        "C": "23",
+        "D": "22",
+        "E": "21"
+      },
+      "correct": "E",
+      "explanation": "(3/8) * 56 = 21."
+    },
+    "variants": [
+      {
+        "stem": "Compute the product (3/8) x 56.",
+        "options": {
+          "A": "20",
+          "B": "42",
+          "C": "22",
+          "D": "21",
+          "E": "23"
+        },
+        "correct": "D"
+      },
+      {
+        "stem": "3/8 of a shipment of 56 boxes were delivered. How many boxes were delivered?",
+        "options": {
+          "A": "42",
+          "B": "20",
+          "C": "23",
+          "D": "21",
+          "E": "22"
+        },
+        "correct": "D"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-14",
+    "topic": "gmat::quant::arithmetic::fractions",
+    "answer": 21,
+    "base": {
+      "stem": "What is 7/9 of 27?",
+      "options": {
+        "A": "21",
+        "B": "42",
+        "C": "20",
+        "D": "23",
+        "E": "22"
+      },
+      "correct": "A",
+      "explanation": "(7/9) * 27 = 21."
+    },
+    "variants": [
+      {
+        "stem": "Compute the product (7/9) x 27.",
+        "options": {
+          "A": "22",
+          "B": "42",
+          "C": "21",
+          "D": "20",
+          "E": "23"
+        },
+        "correct": "C"
+      },
+      {
+        "stem": "7/9 of a shipment of 27 boxes were delivered. How many boxes were delivered?",
+        "options": {
+          "A": "23",
+          "B": "42",
+          "C": "20",
+          "D": "21",
+          "E": "22"
+        },
+        "correct": "D"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-15",
+    "topic": "gmat::quant::arithmetic::ratios_proportions",
+    "answer": 36,
+    "base": {
+      "stem": "60 is divided in the ratio 2:3. What is the larger of the two parts?",
+      "options": {
+        "A": "36",
+        "B": "37",
+        "C": "35",
+        "D": "72",
+        "E": "38"
+      },
+      "correct": "A",
+      "explanation": "Ratio 2:3 over 60 => one share = 12; larger part = 3 * 12 = 36."
+    },
+    "variants": [
+      {
+        "stem": "Two amounts are in the ratio 2 to 3 and sum to 60. Find the bigger amount.",
+        "options": {
+          "A": "36",
+          "B": "35",
+          "C": "38",
+          "D": "72",
+          "E": "37"
+        },
+        "correct": "A"
+      },
+      {
+        "stem": "A prize of 60 dollars is split between two teams in a 2:3 ratio. How much does the larger share get?",
+        "options": {
+          "A": "38",
+          "B": "37",
+          "C": "35",
+          "D": "36",
+          "E": "72"
+        },
+        "correct": "D"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-16",
+    "topic": "gmat::quant::arithmetic::ratios_proportions",
+    "answer": 40,
+    "base": {
+      "stem": "64 is divided in the ratio 3:5. What is the larger of the two parts?",
+      "options": {
+        "A": "39",
+        "B": "41",
+        "C": "42",
+        "D": "80",
+        "E": "40"
+      },
+      "correct": "E",
+      "explanation": "Ratio 3:5 over 64 => one share = 8; larger part = 5 * 8 = 40."
+    },
+    "variants": [
+      {
+        "stem": "Two amounts are in the ratio 3 to 5 and sum to 64. Find the bigger amount.",
+        "options": {
+          "A": "80",
+          "B": "41",
+          "C": "39",
+          "D": "40",
+          "E": "42"
+        },
+        "correct": "D"
+      },
+      {
+        "stem": "A prize of 64 dollars is split between two teams in a 3:5 ratio. How much does the larger share get?",
+        "options": {
+          "A": "41",
+          "B": "40",
+          "C": "42",
+          "D": "39",
+          "E": "80"
+        },
+        "correct": "B"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-17",
+    "topic": "gmat::quant::arithmetic::ratios_proportions",
+    "answer": 40,
+    "base": {
+      "stem": "50 is divided in the ratio 4:1. What is the larger of the two parts?",
+      "options": {
+        "A": "39",
+        "B": "80",
+        "C": "40",
+        "D": "41",
+        "E": "42"
+      },
+      "correct": "C",
+      "explanation": "Ratio 4:1 over 50 => one share = 10; larger part = 4 * 10 = 40."
+    },
+    "variants": [
+      {
+        "stem": "Two amounts are in the ratio 4 to 1 and sum to 50. Find the bigger amount.",
+        "options": {
+          "A": "40",
+          "B": "80",
+          "C": "42",
+          "D": "41",
+          "E": "39"
+        },
+        "correct": "A"
+      },
+      {
+        "stem": "A prize of 50 dollars is split between two teams in a 4:1 ratio. How much does the larger share get?",
+        "options": {
+          "A": "40",
+          "B": "39",
+          "C": "80",
+          "D": "41",
+          "E": "42"
+        },
+        "correct": "A"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-18",
+    "topic": "gmat::quant::arithmetic::ratios_proportions",
+    "answer": 42,
+    "base": {
+      "stem": "72 is divided in the ratio 5:7. What is the larger of the two parts?",
+      "options": {
+        "A": "84",
+        "B": "43",
+        "C": "44",
+        "D": "42",
+        "E": "41"
+      },
+      "correct": "D",
+      "explanation": "Ratio 5:7 over 72 => one share = 6; larger part = 7 * 6 = 42."
+    },
+    "variants": [
+      {
+        "stem": "Two amounts are in the ratio 5 to 7 and sum to 72. Find the bigger amount.",
+        "options": {
+          "A": "84",
+          "B": "41",
+          "C": "42",
+          "D": "43",
+          "E": "44"
+        },
+        "correct": "C"
+      },
+      {
+        "stem": "A prize of 72 dollars is split between two teams in a 5:7 ratio. How much does the larger share get?",
+        "options": {
+          "A": "42",
+          "B": "44",
+          "C": "84",
+          "D": "43",
+          "E": "41"
+        },
+        "correct": "A"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-19",
+    "topic": "gmat::quant::arithmetic::ratios_proportions",
+    "answer": 63,
+    "base": {
+      "stem": "81 is divided in the ratio 2:7. What is the larger of the two parts?",
+      "options": {
+        "A": "65",
+        "B": "63",
+        "C": "64",
+        "D": "126",
+        "E": "62"
+      },
+      "correct": "B",
+      "explanation": "Ratio 2:7 over 81 => one share = 9; larger part = 7 * 9 = 63."
+    },
+    "variants": [
+      {
+        "stem": "Two amounts are in the ratio 2 to 7 and sum to 81. Find the bigger amount.",
+        "options": {
+          "A": "65",
+          "B": "126",
+          "C": "63",
+          "D": "64",
+          "E": "62"
+        },
+        "correct": "C"
+      },
+      {
+        "stem": "A prize of 81 dollars is split between two teams in a 2:7 ratio. How much does the larger share get?",
+        "options": {
+          "A": "65",
+          "B": "62",
+          "C": "126",
+          "D": "63",
+          "E": "64"
+        },
+        "correct": "D"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-20",
+    "topic": "gmat::quant::arithmetic::statistics",
+    "answer": 20,
+    "base": {
+      "stem": "What is the average (arithmetic mean) of 10, 20, and 30?",
+      "options": {
+        "A": "20",
+        "B": "21",
+        "C": "40",
+        "D": "22",
+        "E": "19"
+      },
+      "correct": "A",
+      "explanation": "mean = (10+20+30)/3 = 20."
+    },
+    "variants": [
+      {
+        "stem": "Three values are 10, 20, and 30. Find their mean.",
+        "options": {
+          "A": "22",
+          "B": "40",
+          "C": "21",
+          "D": "19",
+          "E": "20"
+        },
+        "correct": "E"
+      },
+      {
+        "stem": "Over three days a store sold 10, 20, and 30 units. What was the average daily number sold?",
+        "options": {
+          "A": "19",
+          "B": "20",
+          "C": "21",
+          "D": "22",
+          "E": "40"
+        },
+        "correct": "B"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-21",
+    "topic": "gmat::quant::arithmetic::statistics",
+    "answer": 18,
+    "base": {
+      "stem": "What is the average (arithmetic mean) of 12, 18, and 24?",
+      "options": {
+        "A": "36",
+        "B": "18",
+        "C": "19",
+        "D": "20",
+        "E": "17"
+      },
+      "correct": "B",
+      "explanation": "mean = (12+18+24)/3 = 18."
+    },
+    "variants": [
+      {
+        "stem": "Three values are 12, 18, and 24. Find their mean.",
+        "options": {
+          "A": "19",
+          "B": "20",
+          "C": "18",
+          "D": "17",
+          "E": "36"
+        },
+        "correct": "C"
+      },
+      {
+        "stem": "Over three days a store sold 12, 18, and 24 units. What was the average daily number sold?",
+        "options": {
+          "A": "36",
+          "B": "19",
+          "C": "17",
+          "D": "18",
+          "E": "20"
+        },
+        "correct": "D"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-22",
+    "topic": "gmat::quant::arithmetic::statistics",
+    "answer": 45,
+    "base": {
+      "stem": "What is the average (arithmetic mean) of 30, 45, and 60?",
+      "options": {
+        "A": "46",
+        "B": "90",
+        "C": "47",
+        "D": "45",
+        "E": "44"
+      },
+      "correct": "D",
+      "explanation": "mean = (30+45+60)/3 = 45."
+    },
+    "variants": [
+      {
+        "stem": "Three values are 30, 45, and 60. Find their mean.",
+        "options": {
+          "A": "47",
+          "B": "45",
+          "C": "46",
+          "D": "44",
+          "E": "90"
+        },
+        "correct": "B"
+      },
+      {
+        "stem": "Over three days a store sold 30, 45, and 60 units. What was the average daily number sold?",
+        "options": {
+          "A": "46",
+          "B": "45",
+          "C": "44",
+          "D": "90",
+          "E": "47"
+        },
+        "correct": "B"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-23",
+    "topic": "gmat::quant::arithmetic::statistics",
+    "answer": 28,
+    "base": {
+      "stem": "What is the average (arithmetic mean) of 14, 28, and 42?",
+      "options": {
+        "A": "56",
+        "B": "28",
+        "C": "30",
+        "D": "27",
+        "E": "29"
+      },
+      "correct": "B",
+      "explanation": "mean = (14+28+42)/3 = 28."
+    },
+    "variants": [
+      {
+        "stem": "Three values are 14, 28, and 42. Find their mean.",
+        "options": {
+          "A": "30",
+          "B": "27",
+          "C": "28",
+          "D": "56",
+          "E": "29"
+        },
+        "correct": "C"
+      },
+      {
+        "stem": "Over three days a store sold 14, 28, and 42 units. What was the average daily number sold?",
+        "options": {
+          "A": "56",
+          "B": "27",
+          "C": "30",
+          "D": "29",
+          "E": "28"
+        },
+        "correct": "E"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-24",
+    "topic": "gmat::quant::arithmetic::statistics",
+    "answer": 15,
+    "base": {
+      "stem": "What is the average (arithmetic mean) of 9, 15, and 21?",
+      "options": {
+        "A": "14",
+        "B": "15",
+        "C": "17",
+        "D": "16",
+        "E": "30"
+      },
+      "correct": "B",
+      "explanation": "mean = (9+15+21)/3 = 15."
+    },
+    "variants": [
+      {
+        "stem": "Three values are 9, 15, and 21. Find their mean.",
+        "options": {
+          "A": "17",
+          "B": "14",
+          "C": "16",
+          "D": "15",
+          "E": "30"
+        },
+        "correct": "D"
+      },
+      {
+        "stem": "Over three days a store sold 9, 15, and 21 units. What was the average daily number sold?",
+        "options": {
+          "A": "14",
+          "B": "30",
+          "C": "16",
+          "D": "17",
+          "E": "15"
+        },
+        "correct": "E"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-25",
+    "topic": "gmat::quant::arithmetic::exponents_roots",
+    "answer": 32,
+    "base": {
+      "stem": "What is the value of 2^5?",
+      "options": {
+        "A": "33",
+        "B": "64",
+        "C": "34",
+        "D": "32",
+        "E": "31"
+      },
+      "correct": "D",
+      "explanation": "2^5 = 32."
+    },
+    "variants": [
+      {
+        "stem": "Compute 2 raised to the power 5.",
+        "options": {
+          "A": "32",
+          "B": "34",
+          "C": "31",
+          "D": "33",
+          "E": "64"
+        },
+        "correct": "A"
+      },
+      {
+        "stem": "A quantity doubles-style growth: evaluate 2 multiplied by itself 5 times.",
+        "options": {
+          "A": "31",
+          "B": "34",
+          "C": "33",
+          "D": "32",
+          "E": "64"
+        },
+        "correct": "D"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-26",
+    "topic": "gmat::quant::arithmetic::exponents_roots",
+    "answer": 27,
+    "base": {
+      "stem": "What is the value of 3^3?",
+      "options": {
+        "A": "26",
+        "B": "54",
+        "C": "28",
+        "D": "27",
+        "E": "29"
+      },
+      "correct": "D",
+      "explanation": "3^3 = 27."
+    },
+    "variants": [
+      {
+        "stem": "Compute 3 raised to the power 3.",
+        "options": {
+          "A": "54",
+          "B": "26",
+          "C": "28",
+          "D": "29",
+          "E": "27"
+        },
+        "correct": "E"
+      },
+      {
+        "stem": "A quantity doubles-style growth: evaluate 3 multiplied by itself 3 times.",
+        "options": {
+          "A": "26",
+          "B": "28",
+          "C": "29",
+          "D": "54",
+          "E": "27"
+        },
+        "correct": "E"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-27",
+    "topic": "gmat::quant::arithmetic::exponents_roots",
+    "answer": 125,
+    "base": {
+      "stem": "What is the value of 5^3?",
+      "options": {
+        "A": "126",
+        "B": "124",
+        "C": "127",
+        "D": "125",
+        "E": "250"
+      },
+      "correct": "D",
+      "explanation": "5^3 = 125."
+    },
+    "variants": [
+      {
+        "stem": "Compute 5 raised to the power 3.",
+        "options": {
+          "A": "127",
+          "B": "250",
+          "C": "125",
+          "D": "126",
+          "E": "124"
+        },
+        "correct": "C"
+      },
+      {
+        "stem": "A quantity doubles-style growth: evaluate 5 multiplied by itself 3 times.",
+        "options": {
+          "A": "126",
+          "B": "125",
+          "C": "250",
+          "D": "127",
+          "E": "124"
+        },
+        "correct": "B"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-28",
+    "topic": "gmat::quant::arithmetic::exponents_roots",
+    "answer": 128,
+    "base": {
+      "stem": "What is the value of 2^7?",
+      "options": {
+        "A": "256",
+        "B": "130",
+        "C": "129",
+        "D": "127",
+        "E": "128"
+      },
+      "correct": "E",
+      "explanation": "2^7 = 128."
+    },
+    "variants": [
+      {
+        "stem": "Compute 2 raised to the power 7.",
+        "options": {
+          "A": "127",
+          "B": "256",
+          "C": "129",
+          "D": "130",
+          "E": "128"
+        },
+        "correct": "E"
+      },
+      {
+        "stem": "A quantity doubles-style growth: evaluate 2 multiplied by itself 7 times.",
+        "options": {
+          "A": "130",
+          "B": "129",
+          "C": "127",
+          "D": "128",
+          "E": "256"
+        },
+        "correct": "D"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  },
+  {
+    "id": "para-29",
+    "topic": "gmat::quant::arithmetic::exponents_roots",
+    "answer": 64,
+    "base": {
+      "stem": "What is the value of 4^3?",
+      "options": {
+        "A": "65",
+        "B": "64",
+        "C": "66",
+        "D": "128",
+        "E": "63"
+      },
+      "correct": "B",
+      "explanation": "4^3 = 64."
+    },
+    "variants": [
+      {
+        "stem": "Compute 4 raised to the power 3.",
+        "options": {
+          "A": "65",
+          "B": "128",
+          "C": "63",
+          "D": "66",
+          "E": "64"
+        },
+        "correct": "E"
+      },
+      {
+        "stem": "A quantity doubles-style growth: evaluate 4 multiplied by itself 3 times.",
+        "options": {
+          "A": "66",
+          "B": "63",
+          "C": "64",
+          "D": "128",
+          "E": "65"
+        },
+        "correct": "C"
+      }
+    ],
+    "source": "authored-gmatwiz",
+    "license": "authored-gmatwiz"
+  }
+]

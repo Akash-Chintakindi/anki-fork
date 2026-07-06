@@ -183,3 +183,53 @@ Record the phone review -> sync -> the same review/count appearing on desktop.
 (The Firebase Cloud Storage collection layer also syncs now that the bucket CORS
 is set, but the sync-server path above is the one to record for the strict
 no-lost/no-double-count claim.)
+
+---
+
+# Sunday deliverables - "prove it, and ship"
+
+All of the models/tests below are **seeded and re-runnable** (spec Section 2). The
+numbers are captured in each `proof/*.txt`; re-running reproduces them. See
+[`proof/DEMO_SCRIPT.md`](DEMO_SCRIPT.md) for the full rubric-coverage script.
+
+## Headline results (this commit)
+
+| Area | Artifact | Result |
+| --- | --- | --- |
+| Study-feature ablation (Sec 8) | `proof/ablation.txt` | full **97.5%** vs ablation **95.4%** vs plain **95.3%**; full-ablation **+2.10 pts**, 95% CI **[+1.20, +3.04]** -> SUPPORTED |
+| Memory calibration (Step 1) | `proof/model-eval.txt` + `proof/calibration.svg` | held-out **Brier 0.125**, **log-loss 0.421**, **ECE 0.043** -> calibrated (<= 0.10) |
+| Performance vs baseline (Step 2) | `proof/model-eval.txt` | model Brier **0.164** < global-mean baseline **0.182** -> beats baseline |
+| Paraphrase (7d) | `proof/paraphrase.txt` | memorizer memory **94.1%** vs performance **59.3%** = **34.8-pt gap**; control gap **0.0** |
+| AI card check (7f) | `proof/ai-cardcheck.txt` | 50 gold + 50 generated, cutoff stated up front, failures blocked (mock-validated; live cmd embedded) |
+| AI beats simpler method | `proof/ai-eval.txt` | tagging AI **81%** > keyword **69%** > vector **36%** on held-out |
+| Leakage (7e) | `proof/leakage-check.txt` | **CLEAN**: pool 940, test 593, near-dup 0, leakage 0 |
+| 50k benchmark (7h) | `proof/bench.txt` | button **0.06 ms** p95, next-card **0.39 ms**, sync **22 ms**, mem **193 MB** -> PASS; dashboard **~1.2 s** -> FAIL (honest) |
+| Crash durability (7g) | `proof/crash-offline.txt` | 20 SIGKILLs mid-review -> **0 corrupted collections**, revlog monotonic; scores compute with AI off |
+| Sync + conflict (7b) | `proof/sync-test.txt` | 10+10 offline -> **all 20 land once**, no dupes; same-card conflict -> both reviews kept, winner resolved, converged |
+
+## Reproduce them all
+
+```bash
+cd anki-fork
+PYTHONPATH=out/pylib ANKI_TEST_MODE=1 out/pyenv/bin/python -m gmatwiz.eval.ablation
+PYTHONPATH=out/pylib ANKI_TEST_MODE=1 out/pyenv/bin/python -m gmatwiz.eval.model_eval
+PYTHONPATH=out/pylib ANKI_TEST_MODE=1 out/pyenv/bin/python -m gmatwiz.eval.paraphrase
+out/pyenv/bin/python gmatwiz/content/leakage_check.py
+out/pyenv/bin/python gmatwiz/content/card_check.py --mock     # live: set OPENAI_API_KEY
+./tools/gmat-bench.sh          # 50k p50/p95/worst
+./tools/gmat-crash-test.sh     # 20x kill, 0 corruption
+./tools/gmat-sync-test.sh      # 7b: 10+10 offline + conflict
+```
+
+## Models & docs (hand-in)
+
+- Model one-pagers: [`docs/models/memory.md`](../docs/models/memory.md), [`performance.md`](../docs/models/performance.md), [`readiness.md`](../docs/models/readiness.md)
+- Brainlift scaffold: [`docs/BRAINLIFT.md`](../docs/BRAINLIFT.md) (finish the narrative)
+- Submission README: [`README.md`](../README.md) (exam stated, both-app build, architecture, Rust note, files touched, AGPL + Anki credit)
+
+## Still requires YOU (credentials / manual)
+
+- Record the 3-5 min demo video (see `DEMO_SCRIPT.md` Part 2).
+- `git push` the new work to the public repo (`origin` = `Akash-Chintakindi/anki-fork`, currently ahead of remote).
+- iOS device/TestFlight build: add your Apple `DEVELOPMENT_TEAM` to `ios/project.yml` (simulator already works).
+- Optional live AI numbers: `export OPENAI_API_KEY="$(npx -y firebase-tools@latest functions:secrets:access OPENAI_API_KEY --project gmatwiz)"` then re-run `card_check.py` / `eval_tagging.py`.

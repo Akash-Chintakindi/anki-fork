@@ -1,0 +1,42 @@
+===============================================================================
+GMATWiz - PARAPHRASE TEST  (challenge 7d): memory vs performance bridge
+===============================================================================
+
+Gold set: 30 authored base cards x 2 reworded variants each
+(gmatwiz/content/paraphrase_gold.json). We compare recall on the EXACT
+studied card (memory) with accuracy on the reworded variants (performance).
+A large gap proves the performance signal is NOT just copying memory.
+
+-------------------------------------------------------------------------------
+REPRODUCE
+-------------------------------------------------------------------------------
+  out/pyenv/bin/python gmatwiz/content/make_paraphrase_gold.py   # (re)author the gold
+  PYTHONPATH=out/pylib ANKI_TEST_MODE=1 out/pyenv/bin/python -m gmatwiz.eval.paraphrase
+  # machine-readable: gmatwiz/eval/paraphrase_report.json
+
+-------------------------------------------------------------------------------
+RESULTS  (expected accuracy over 30 base cards x 2 variants, 12 seeded learners)
+-------------------------------------------------------------------------------
+learner                     memory (card)  performance (reworded)      gap
+-------------------------------------------------------------------------------
+memorizer (wm=0.6)                  94.1%                   59.3%    34.8
+control   (wm=0.0)                  59.3%                   59.3%     0.0
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+HONEST INTERPRETATION
+-------------------------------------------------------------------------------
+The memorizer scores 94.1% recalling the EXACT cards it
+drilled, but only 59.3% on the same ideas reworded - a
+34.8-point gap. That gap is exactly what a memory-only score would
+HIDE: GMATWiz scores Performance from first-exposure / new-item attempts, so a
+student who memorizes wording cannot inflate it. The control learner (no
+memorization) shows a gap of 0.0 points - i.e. when nothing is
+memorized, memory and performance coincide, confirming the gap is caused by
+rote wording recall, not by the harness.
+
+Takeaway (spec 7d): the two numbers are NOT the same, so the performance model
+is not merely copying the memory model - the memory->performance bridge is real
+and measured. (Simulated learners are a reproducible stand-in; the same
+comparison runs on real study logs when available.)
+===============================================================================

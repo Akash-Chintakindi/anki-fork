@@ -1,0 +1,93 @@
+{
+  "generated_at": "2026-07-06T01:50:05+00:00",
+  "machine": {
+    "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "cpu": "arm",
+    "logical_cpus": 10,
+    "ram_gb": 16.0,
+    "python": "3.13.13",
+    "anki_version": "26.05 (b00308e5)"
+  },
+  "deck": {
+    "cards": 50000,
+    "notes": 50000,
+    "new": 30059,
+    "learning": 0,
+    "review": 19941,
+    "queued_new": 0,
+    "queued_learning": 0,
+    "queued_review": 9999,
+    "revlog": 19941,
+    "topics": 18,
+    "topic_aware": true
+  },
+  "iterations": {
+    "review_iters": 3000,
+    "reopens": 8,
+    "refresh": 50,
+    "sync_cycles": 6,
+    "reviews_per_session": 5
+  },
+  "targets_ms": {
+    "button_ack": 50.0,
+    "next_card": 100.0,
+    "dash_first": 1000.0,
+    "dash_refresh": 500.0,
+    "sync_session": 5000.0
+  },
+  "results_ms": {
+    "button_ack": {
+      "n": 3000,
+      "p50": 0.040917017031461,
+      "p95": 0.05554826202569526,
+      "worst": 0.2797079796437174,
+      "min": 0.03766600275412202,
+      "mean": 0.04453447256431294
+    },
+    "next_card": {
+      "n": 3000,
+      "p50": 0.22762498701922596,
+      "p95": 0.39054410153767094,
+      "worst": 8.043834008276463,
+      "min": 0.1959160144906491,
+      "mean": 0.3296801399070925
+    },
+    "dash_first": {
+      "n": 8,
+      "p50": 1080.5418334930437,
+      "p95": 1217.620010652172,
+      "worst": 1239.6493749984074,
+      "min": 1054.5269169961102,
+      "mean": 1107.3667086275236
+    },
+    "dash_refresh": {
+      "n": 50,
+      "p50": 1063.7341670080787,
+      "p95": 1127.885420905659,
+      "worst": 1205.22620799602,
+      "min": 991.6942919953726,
+      "mean": 1070.4962724790676
+    },
+    "sync_session": {
+      "n": 6,
+      "p50": 13.797541512758471,
+      "p95": 22.455489495769143,
+      "worst": 25.160624994896352,
+      "min": 13.185167015763,
+      "mean": 15.641479170881212
+    }
+  },
+  "cold_queue_build_ms": 72.57,
+  "sync": {
+    "mode": "real",
+    "ok": true,
+    "note": "real self-hosted sync (5 reviews/session); first full upload of the 50k deck timed separately as setup, not the target.",
+    "full_upload_ms": 1380.7573749800213
+  },
+  "memory": {
+    "peak_rss_mb": 192.7,
+    "limit_mb": 2048,
+    "pass": true
+  }
+}

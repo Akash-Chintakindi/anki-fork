@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="360" viewBox="0 0 360 360" font-family="sans-serif" font-size="11">
+<rect x="0" y="0" width="360" height="360" fill="white"/>
+<rect x="45" y="45" width="270" height="270" fill="none" stroke="#888" stroke-width="1"/>
+<line x1="45" y1="315" x2="315" y2="45" stroke="#bbb" stroke-dasharray="4 3" stroke-width="1"/>
+<line x1="112.5" y1="315" x2="112.5" y2="45" stroke="#eee"/>
+<line x1="45" y1="247.5" x2="315" y2="247.5" stroke="#eee"/>
+<text x="104.5" y="331">0.25</text>
+<text x="13" y="251.5">0.25</text>
+<line x1="180.0" y1="315" x2="180.0" y2="45" stroke="#eee"/>
+<line x1="45" y1="180.0" x2="315" y2="180.0" stroke="#eee"/>
+<text x="172.0" y="331">0.50</text>
+<text x="13" y="184.0">0.50</text>
+<line x1="247.5" y1="315" x2="247.5" y2="45" stroke="#eee"/>
+<line x1="45" y1="112.5" x2="315" y2="112.5" stroke="#eee"/>
+<text x="239.5" y="331">0.75</text>
+<text x="13" y="116.5">0.75</text>
+<line x1="315.0" y1="315" x2="315.0" y2="45" stroke="#eee"/>
+<line x1="45" y1="45.0" x2="315" y2="45.0" stroke="#eee"/>
+<text x="307.0" y="331">1.00</text>
+<text x="13" y="49.0">1.00</text>
+<line x1="93.4741306781872" y1="315.0" x2="112.47397339405849" y2="315.0" stroke="#4b3f8f" stroke-width="2"/>
+<line x1="112.47397339405849" y1="315.0" x2="137.57562710777432" y2="315.0" stroke="#4b3f8f" stroke-width="2"/>
+<line x1="137.57562710777432" y1="315.0" x2="168.84426751934302" y2="180.0" stroke="#4b3f8f" stroke-width="2"/>
+<line x1="168.84426751934302" y1="180.0" x2="204.1945930455417" y2="153.0" stroke="#4b3f8f" stroke-width="2"/>
+<line x1="204.1945930455417" y1="153.0" x2="238.93511292563218" y2="213.75" stroke="#4b3f8f" stroke-width="2"/>
+<line x1="238.93511292563218" y1="213.75" x2="268.72932458393603" y2="96.42857142857142" stroke="#4b3f8f" stroke-width="2"/>
+<line x1="268.72932458393603" y1="96.42857142857142" x2="288.0" y2="83.48936170212767" stroke="#4b3f8f" stroke-width="2"/>
+<circle cx="93.4741306781872" cy="315.0" r="2.0" fill="#4b3f8f" fill-opacity="0.75"/>
+<circle cx="112.47397339405849" cy="315.0" r="2.0" fill="#4b3f8f" fill-opacity="0.75"/>
+<circle cx="137.57562710777432" cy="315.0" r="2.0" fill="#4b3f8f" fill-opacity="0.75"/>
+<circle cx="168.84426751934302" cy="180.0" r="2.0" fill="#4b3f8f" fill-opacity="0.75"/>
+<circle cx="204.1945930455417" cy="153.0" r="2.0" fill="#4b3f8f" fill-opacity="0.75"/>
+<circle cx="238.93511292563218" cy="213.75" r="2.0" fill="#4b3f8f" fill-opacity="0.75"/>
+<circle cx="268.72932458393603" cy="96.42857142857142" r="2.1" fill="#4b3f8f" fill-opacity="0.75"/>
+<circle cx="288.0" cy="83.48936170212767" r="7.0" fill="#4b3f8f" fill-opacity="0.75"/>
+<text x="110.0" y="348">predicted P(recall)  (FSRS)</text>
+<text x="14" y="220.0" transform="rotate(-90 14 220.0)">observed recall frequency</text>
+<text x="45" y="31" font-weight="bold">GMATWiz memory calibration (held-out reviews)</text>
+</svg>

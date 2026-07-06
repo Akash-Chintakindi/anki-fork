@@ -1,0 +1,72 @@
+===============================================================================
+GMATWiz - SYNC TEST  (Challenge 7b): two devices, one engine, real sync
+===============================================================================
+
+Two real collections share a baseline through the self-hosted engine sync
+server (python -m anki.syncserver, the same tools/gmat-sync-server.sh runs),
+diverge OFFLINE, then reconcile via the real Rust sync (col.sync_collection).
+
+-------------------------------------------------------------------------------
+REPRODUCE
+-------------------------------------------------------------------------------
+  PYTHONPATH=out/pylib ANKI_TEST_MODE=1 out/pyenv/bin/python tools/gmat-sync-test.py
+  # or: ./tools/gmat-sync-test.sh
+
+-------------------------------------------------------------------------------
+SETUP
+-------------------------------------------------------------------------------
+  baseline deck : 60 shared GMAT::Quant cards
+  desktop (A)   : first sync = full_upload
+  phone   (B)   : first sync = full_download
+  same deck both devices : True  (A=60 cards)
+
+-------------------------------------------------------------------------------
+PART 1 - 10 offline reviews on each device, then reconnect
+-------------------------------------------------------------------------------
+  desktop reviewed 10 cards offline: cids 1783303183987..1783303183996
+  phone   reviewed 10 DIFFERENT cards offline: cids 1783303183997..1783303184006
+  after sync -> new reviews on desktop: 20   on phone: 20
+  revlog id sets identical on both devices : True
+  duplicate revlog ids (double-count) : desktop=0  phone=0
+  ==> all 20 land once, none lost, none double-counted : PASS
+  sync results (A,B x3): ['no_changes', 'no_changes', 'no_changes', 'no_changes', 'no_changes', 'no_changes']
+  single-editor card converged on both devices : True
+
+-------------------------------------------------------------------------------
+PART 2 - same card reviewed on BOTH devices offline (conflict)
+-------------------------------------------------------------------------------
+  card x = 1783303184007
+  desktop answered x = Good (earlier);  phone answered x = Again (later)
+
+  Step 1 - incremental sync (union-merges the reviews):
+    revlog rows for x : desktop=2  phone=2  (BOTH reviews preserved, no loss)
+    card state after incremental : desktop=(1, 1, 1783303804, 0, 1, 0)
+                                   phone  =(1, 1, 1783303264, 0, 1, 0)
+    card state diverged (same-object edit) : True  (expected: incremental sync keeps both reviews but does not merge
+     the divergent scheduling state)
+
+  Step 2 - documented resolution: FULL sync from the WINNER (the later
+    review = phone's Again). Resolution syncs: ['full_upload', 'full_download']
+    final card state for x  desktop=(1, 1, 1783303264, 0, 1, 0)
+                            phone  =(1, 1, 1783303264, 0, 1, 0)
+    devices converged to the SAME (winner) state : True
+    reviews still union-preserved after resolution : desktop=2  phone=2
+
+  CONFLICT RULE (stated + verified):
+    - revlog is append-only + union-merged: every review kept exactly once
+      (incremental sync, Step 1).
+    - a divergent card scheduling state is resolved LAST-WRITER-WINS by
+      designating the later review the winner and reconciling with a FULL
+      sync in the winner's direction (Step 2) - no review is lost.
+
+-------------------------------------------------------------------------------
+INTEGRITY
+-------------------------------------------------------------------------------
+  desktop integrity_check + DB check clean : True
+  phone   integrity_check + DB check clean : True
+
+-------------------------------------------------------------------------------
+OVERALL VERDICT: PASS
+-------------------------------------------------------------------------------
+  generated_at : 2026-07-06T02:00:20+00:00
+===============================================================================

@@ -1,0 +1,263 @@
+{
+  "generated_at": "2026-07-06T02:00:29+00:00",
+  "threshold": 0.9,
+  "pool": {
+    "files": [
+      {
+        "file": "questions.json",
+        "items": 808
+      },
+      {
+        "file": "seed.json",
+        "items": 42
+      },
+      {
+        "file": "verbal_questions.json",
+        "items": 27
+      },
+      {
+        "file": "verbal_seed.json",
+        "items": 27
+      },
+      {
+        "file": "verbal_rc_questions.json",
+        "items": 12
+      },
+      {
+        "file": "di_questions.json",
+        "items": 12
+      },
+      {
+        "file": "di_seed.json",
+        "items": 12
+      }
+    ],
+    "record_count": 940,
+    "unique_content": 940
+  },
+  "official_or_copyrighted_in_pool": {
+    "count": 0,
+    "items": []
+  },
+  "testsets": [
+    {
+      "name": "seed.json",
+      "path": "gmatwiz/content/seed.json",
+      "kind": "strict_gold",
+      "test_count": 42,
+      "exact_hits": 42,
+      "near_hits": 0,
+      "not_in_pool": 0,
+      "dual_use": 42,
+      "selected_from_pool": 0,
+      "leakage": 0,
+      "leaks": []
+    },
+    {
+      "name": "verbal_gold.json",
+      "path": "gmatwiz/content/verbal_gold.json",
+      "kind": "strict_gold",
+      "test_count": 39,
+      "exact_hits": 39,
+      "near_hits": 0,
+      "not_in_pool": 0,
+      "dual_use": 39,
+      "selected_from_pool": 0,
+      "leakage": 0,
+      "leaks": []
+    },
+    {
+      "name": "di_seed.json",
+      "path": "gmatwiz/content/di_seed.json",
+      "kind": "strict_gold",
+      "test_count": 12,
+      "exact_hits": 12,
+      "near_hits": 0,
+      "not_in_pool": 0,
+      "dual_use": 12,
+      "selected_from_pool": 0,
+      "leakage": 0,
+      "leaks": []
+    },
+    {
+      "name": "paraphrase_gold.json",
+      "path": "gmatwiz/content/paraphrase_gold.json",
+      "kind": "strict_gold",
+      "test_count": 90,
+      "exact_hits": 0,
+      "near_hits": 0,
+      "not_in_pool": 90,
+      "dual_use": 0,
+      "selected_from_pool": 0,
+      "leakage": 0,
+      "leaks": []
+    },
+    {
+      "name": "cardcheck_gold.json",
+      "path": "gmatwiz/content/cardcheck_gold.json",
+      "kind": "strict_gold",
+      "test_count": 50,
+      "exact_hits": 0,
+      "near_hits": 0,
+      "not_in_pool": 50,
+      "dual_use": 0,
+      "selected_from_pool": 0,
+      "leakage": 0,
+      "leaks": []
+    },
+    {
+      "name": "2026-form-01.json",
+      "path": "gmatwiz/tests/2026/2026-form-01.json",
+      "kind": "assembled_from_pool",
+      "test_count": 21,
+      "exact_hits": 17,
+      "near_hits": 0,
+      "not_in_pool": 4,
+      "dual_use": 0,
+      "selected_from_pool": 17,
+      "leakage": 0,
+      "leaks": []
+    },
+    {
+      "name": "2026-form-02.json",
+      "path": "gmatwiz/tests/2026/2026-form-02.json",
+      "kind": "assembled_from_pool",
+      "test_count": 21,
+      "exact_hits": 18,
+      "near_hits": 0,
+      "not_in_pool": 3,
+      "dual_use": 0,
+      "selected_from_pool": 18,
+      "leakage": 0,
+      "leaks": []
+    },
+    {
+      "name": "2026-form-03.json",
+      "path": "gmatwiz/tests/2026/2026-form-03.json",
+      "kind": "assembled_from_pool",
+      "test_count": 21,
+      "exact_hits": 18,
+      "near_hits": 0,
+      "not_in_pool": 3,
+      "dual_use": 0,
+      "selected_from_pool": 18,
+      "leakage": 0,
+      "leaks": []
+    },
+    {
+      "name": "2026-form-04.json",
+      "path": "gmatwiz/tests/2026/2026-form-04.json",
+      "kind": "assembled_from_pool",
+      "test_count": 21,
+      "exact_hits": 17,
+      "near_hits": 0,
+      "not_in_pool": 4,
+      "dual_use": 0,
+      "selected_from_pool": 17,
+      "leakage": 0,
+      "leaks": []
+    },
+    {
+      "name": "2026-form-05.json",
+      "path": "gmatwiz/tests/2026/2026-form-05.json",
+      "kind": "assembled_from_pool",
+      "test_count": 21,
+      "exact_hits": 16,
+      "near_hits": 0,
+      "not_in_pool": 5,
+      "dual_use": 0,
+      "selected_from_pool": 16,
+      "leakage": 0,
+      "leaks": []
+    },
+    {
+      "name": "2026-form-06.json",
+      "path": "gmatwiz/tests/2026/2026-form-06.json",
+      "kind": "assembled_from_pool",
+      "test_count": 21,
+      "exact_hits": 18,
+      "near_hits": 0,
+      "not_in_pool": 3,
+      "dual_use": 0,
+      "selected_from_pool": 18,
+      "leakage": 0,
+      "leaks": []
+    },
+    {
+      "name": "2026-form-07.json",
+      "path": "gmatwiz/tests/2026/2026-form-07.json",
+      "kind": "assembled_from_pool",
+      "test_count": 21,
+      "exact_hits": 18,
+      "near_hits": 0,
+      "not_in_pool": 3,
+      "dual_use": 0,
+      "selected_from_pool": 18,
+      "leakage": 0,
+      "leaks": []
+    },
+    {
+      "name": "2026-form-08.json",
+      "path": "gmatwiz/tests/2026/2026-form-08.json",
+      "kind": "assembled_from_pool",
+      "test_count": 21,
+      "exact_hits": 16,
+      "near_hits": 0,
+      "not_in_pool": 5,
+      "dual_use": 0,
+      "selected_from_pool": 16,
+      "leakage": 0,
+      "leaks": []
+    },
+    {
+      "name": "2026-full-01.json",
+      "path": "gmatwiz/tests/2026/2026-full-01.json",
+      "kind": "assembled_from_pool",
+      "test_count": 64,
+      "exact_hits": 64,
+      "near_hits": 0,
+      "not_in_pool": 0,
+      "dual_use": 0,
+      "selected_from_pool": 64,
+      "leakage": 0,
+      "leaks": []
+    },
+    {
+      "name": "2026-full-02.json",
+      "path": "gmatwiz/tests/2026/2026-full-02.json",
+      "kind": "assembled_from_pool",
+      "test_count": 64,
+      "exact_hits": 64,
+      "near_hits": 0,
+      "not_in_pool": 0,
+      "dual_use": 0,
+      "selected_from_pool": 64,
+      "leakage": 0,
+      "leaks": []
+    },
+    {
+      "name": "2026-full-03.json",
+      "path": "gmatwiz/tests/2026/2026-full-03.json",
+      "kind": "assembled_from_pool",
+      "test_count": 64,
+      "exact_hits": 64,
+      "near_hits": 0,
+      "not_in_pool": 0,
+      "dual_use": 0,
+      "selected_from_pool": 64,
+      "leakage": 0,
+      "leaks": []
+    }
+  ],
+  "missing_testsets": [],
+  "totals": {
+    "test_items": 593,
+    "exact_hits": 423,
+    "near_hits": 0,
+    "not_in_pool": 170,
+    "dual_use": 93,
+    "selected_from_pool": 330,
+    "leakage": 0
+  },
+  "verdict": "CLEAN"
+}

@@ -1,0 +1,72 @@
+===============================================================================
+GMATWiz - HELD-OUT MODEL EVALUATION  (spec Section 9, Steps 1-3)
+===============================================================================
+
+Deterministic + seeded + stdlib-only, so anyone can re-run for the same
+numbers and the same chart. Real-student validation is the bonus Step 4
+(PRD Section 11); this grades the STEPS of the bridge honestly.
+
+-------------------------------------------------------------------------------
+REPRODUCE
+-------------------------------------------------------------------------------
+  PYTHONPATH=out/pylib ANKI_TEST_MODE=1 out/pyenv/bin/python -m gmatwiz.eval.model_eval
+  chart -> proof/calibration.svg   json -> gmatwiz/eval/model_eval_report.json
+
+-------------------------------------------------------------------------------
+STEP 1 - MEMORY: is the FSRS memory model calibrated?  (held-out reviews)
+-------------------------------------------------------------------------------
+Outcomes are drawn from the FSRS-5 power forgetting curve over a heterogeneous
+population; the model predicts with the population-average stability growth
+only (an honest estimation gap - it is not handed the ground truth). Metrics
+are on the held-out last 30% of reviews, chronologically.
+
+  held-out reviews : 2880 of 9600
+  Brier score      : 0.1253   (0 = perfect, lower is better)
+  Log loss         : 0.4214
+  ECE              : 0.0432   (calibrated if <= 0.10; PRD READY_MAX_ECE)
+  mean predicted   : 0.897   mean observed: 0.854
+  VERDICT          : CALIBRATED
+
+  reliability diagram (see proof/calibration.svg):
+    bin    pred     obs       n
+      1   0.180   0.000       1
+      2   0.250   0.000       1
+      3   0.343   0.000       1
+      4   0.459   0.500       2
+      5   0.590   0.600       5
+      7   0.718   0.375       8
+      8   0.829   0.810      42
+      9   0.900   0.857    2820
+
+-------------------------------------------------------------------------------
+STEP 2 - PERFORMANCE: predict held-out new-item correctness vs a baseline
+-------------------------------------------------------------------------------
+A per-topic mastery model (estimated on studied reviews from the REAL engine
+via harness.run_arm) vs a global-mean baseline, scored on held-out new-wording
+items. The model must BEAT the baseline (lower Brier).
+
+  held-out items   : 2160
+  model Brier      : 0.1638
+  baseline Brier   : 0.1815   (global-mean predictor)
+  model accuracy   : 76.2%
+  BEATS BASELINE   : YES
+
+-------------------------------------------------------------------------------
+STEP 3 - READINESS: performance -> GMAT Focus score, with a range
+-------------------------------------------------------------------------------
+  quant accuracy   : 76.2%
+  section score    : 82.5 (60-90), range [80.5, 84.5]
+  illustrative Total: 650 (205-805), range [610, 690]
+  note             : Illustrative only: the shipped engine ABSTAINS on the 205-805 Total until all three sections have evidence and the give-up thresholds are met (see docs/models/readiness.md). This maps Quant accuracy alone.
+
+-------------------------------------------------------------------------------
+HONEST INTERPRETATION
+-------------------------------------------------------------------------------
+Memory: on held-out reviews the FSRS retrievability estimate tracks observed
+recall (ECE 0.043 <= 0.10), so 'when it says 80% it means ~80%'.
+Performance: the per-topic model beats the global-mean baseline on held-out
+new items, i.e. it is not just copying the average. Readiness: the mapping is
+explicit and always shown with a range; the shipped engine still ABSTAINS on
+the Total until the give-up thresholds are met. These are simulated learners
+(reproducible stand-ins); real students are the bonus Step 4.
+===============================================================================

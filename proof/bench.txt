@@ -1,0 +1,72 @@
+===============================================================================
+GMATWiz - ONE-COMMAND SPEED BENCHMARK  (Challenge 7h; PRD 14.5 / 14.6)
+===============================================================================
+What this proves: on a SHARED 50,000-card deck, each interactive action is
+measured over many iterations and reported as p50 / p95 / worst-case (no
+cherry-picked number), each with an honest PASS/FAIL vs its PRD 14.6 target
+on THIS machine. The dashboard path timed is the exact one the app serves
+(qt/aqt/mediasrv.py _gmat_scores -> col._backend.gmat_scores()).
+
+-------------------------------------------------------------------------------
+REPRODUCE
+-------------------------------------------------------------------------------
+  # one command (builds the 50k deck if missing, then benchmarks):
+  ./tools/gmat-bench.sh
+
+  # or drive the prebuilt engine directly (do NOT rebuild the project):
+  PYTHONPATH=out/pylib ANKI_TEST_MODE=1 out/pyenv/bin/python \
+      gmatwiz/bench/make_bench_deck.py --path out/bench/col.anki2 --count 50000 --seed 7
+  PYTHONPATH=out/pylib ANKI_TEST_MODE=1 out/pyenv/bin/python \
+      gmatwiz/bench/gmat_bench.py --path out/bench/col.anki2
+
+-------------------------------------------------------------------------------
+MACHINE
+-------------------------------------------------------------------------------
+  platform     : macOS-26.5.2-arm64-arm-64bit-Mach-O
+  cpu          : arm  (10 logical cores)
+  ram          : 16.0 GB
+  python       : 3.13.13   anki: 26.05 (b00308e5)
+  generated_at : 2026-07-06T01:50:05+00:00
+
+-------------------------------------------------------------------------------
+DECK UNDER TEST
+-------------------------------------------------------------------------------
+  50000 cards / 50000 notes in GMAT::Quant, across 18 Quant leaves
+  full deck composition: new=30059  review=19941  learning=0  revlog=19941
+  active session queue (engine caps perDay at 9999): new=0  review=9999  learning=0
+  topic-aware scheduling: ON  (per-topic mastery set so the review reorder path does real work)
+
+-------------------------------------------------------------------------------
+RESULTS  (milliseconds; PASS/FAIL is p95 vs target on THIS machine)
+-------------------------------------------------------------------------------
+action                           n     p50     p95   worst    target   verdict
+-------------------------------------------------------------------------------
+Button press acknowledged     3000    0.04    0.06    0.28        50   PASS
+Next card after grading       3000    0.23    0.39    8.04       100   PASS
+Dashboard first load             8 1080.54 1217.62 1239.65      1000   FAIL
+Dashboard refresh               50 1063.73 1127.89 1205.23       500   FAIL
+Sync of a normal session         6   13.80   22.46   25.16      5000   PASS
+-------------------------------------------------------------------------------
+Memory (peak RSS, 50k)                                 193      2048   PASS   (MB)
+
+Informational: cold session-start queue build (first getCard over the deck) = 72.6 ms.
+  (One-time per session; excluded from steady-state 'next card' above so that metric
+   is not inflated. Shown here so the 50k-scale scheduling cost is not hidden.)
+
+-------------------------------------------------------------------------------
+SYNC DETAIL
+-------------------------------------------------------------------------------
+  mode measured : real  (ok=True)
+  first full upload of the 50k deck: 1381 ms (one-time setup, NOT the < 5 s target)
+  note          : real self-hosted sync (5 reviews/session); first full upload of the 50k deck timed separately as setup, not the target.
+
+-------------------------------------------------------------------------------
+HONEST INTERPRETATION
+-------------------------------------------------------------------------------
+PASS on this machine: Button press acknowledged; Next card after grading; Sync of a normal session.
+FAIL on this machine: Dashboard first load; Dashboard refresh.
+Peak memory for the whole 50k run was 193 MB against a stated 2048 MB desktop limit (within limit).
+Numbers are wall-clock in the Python-driven engine (same Rust core desktop
+and phone share); worst-case includes cold caches and GC pauses, which is why
+it is reported alongside p50/p95 rather than hidden. p95 is the target metric.
+===============================================================================
